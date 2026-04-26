@@ -85,8 +85,8 @@ th{background:var(--surface2);padding:5px 4px;text-align:center;border:0.5px sol
 th.emp{background:var(--accent);color:#fff;min-width:60px;}
 td{padding:1px 2px;border:0.5px solid var(--border);text-align:center;vertical-align:middle;height:20px;}
 td.dc{font-size:10px;color:var(--text2);background:#fafaf8;white-space:nowrap;min-width:28px;}
-tr.wknd td{background:#f2f0ec!important;}
-tr.wknd td.dc{background:#eceae5!important;}
+tr.wknd td{background:#e0ddd6!important;}
+tr.wknd td.dc{background:#d4d1c8!important;}
 tr.prev-month td{background:#fffbf0;}
 tr.prev-month td.dc{border-right:3px solid var(--warn)!important;background:#fff3d0!important;}
 tr.after-cutoff td{background:#fff8ee;}
@@ -884,9 +884,23 @@ function importFromXlsx(input){
       var firstRows=Object.values(importedMonths)[0];
       if(firstRows&&firstRows.length) yr=parseD(firstRows[0].date).getFullYear();
       state={year:yr,emps:allEmps,months:importedMonths,holidays:[],cutoff:null};
-      saveLocal();setupUI();show('leave');render();
-      setInterval(checkLock,15000);acquireLock();
-      toast('✓ יובא בהצלחה');
+      saveLocal();
+      // הגדר משתמש
+      document.getElementById('user-dot').textContent=user.substring(0,2);
+      document.getElementById('user-name-lbl').textContent=user;
+      document.getElementById('user-info').style.display='flex';
+      document.getElementById('year-lbl').textContent=state.year;
+      document.getElementById('annual-year-lbl').textContent=state.year;
+      // קפוץ לחודש הנוכחי
+      var nowM2=MONTHS[new Date().getMonth()];
+      idx=0;
+      for(var jj=0;jj<MONTHS.length;jj++){if(MONTHS[jj]===nowM2&&state.months[MONTHS[jj]]){idx=jj;break;}}
+      renderEmpList();
+      show('leave');
+      render();
+      setInterval(checkLock,15000);
+      acquireLock();
+      toast('✓ יובא בהצלחה — '+allEmps.length+' עובדים');
     }catch(ex){alert('שגיאה: '+ex.message);show('login');}
   };
   reader.readAsArrayBuffer(input.files[0]);
