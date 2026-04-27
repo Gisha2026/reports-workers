@@ -327,7 +327,7 @@ var VFCLS={'חופש':'fv','מחלה':'fs','חצי חופש':'fhv','חצי מח�
 var SCOL={'v':'var(--v-bg)','s':'var(--s-bg)','hv':'var(--hv-bg)','hs':'var(--hs-bg)','h':'var(--h-bg)','a':'var(--a-bg)','o':'var(--o-bg)'};
 var STCOL={'v':'var(--v-text)','s':'var(--s-text)','hv':'var(--hv-text)','hs':'var(--hs-text)','h':'var(--h-text)','a':'var(--a-text)','o':'var(--o-text)'};
 
-var STORE='rw_v24',LOCK='rw_lock_v24';
+var STORE='rw_v25',LOCK='rw_lock_v25';
 var GH_TOKEN='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';
 var GH_API='https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json';
 var _ghSha=null;
@@ -612,35 +612,36 @@ function render(){
   wbar.style.display=hasAfter?'block':'none';
 
   // Build display rows
+  // The Excel already includes prev month rows at the top of each sheet
+  // So we just read ALL rows in the current sheet
   var displayRows=[];
-
-  // 1. Rows from PREVIOUS month that are >= cutoff date of PREVIOUS month
-  // These are shown EMPTY (no values) so user can enter them in current month
-  if(prevM&&state.months[prevM]){
-    var prevCutoffStr=state.cutoffs&&state.cutoffs[prevM];
-    if(prevCutoffStr){
-      var prevCutoff=parseD(prevCutoffStr);
-      var prevFiltered=state.months[prevM].filter(function(r){return parseD(r.date)>=prevCutoff;});
-      prevFiltered.forEach(function(r,i){
-        displayRows.push({t:'prev',date:r.date});
-        // Insert weekend separator after Thursday
-        if(isThu(r.date)){
-          displayRows.push({t:'wknd'});
-        }
-      });
+  var currRows=state.months[currM]||[];
+  
+  for(var ri=0;ri<currRows.length;ri++){
+    var r=currRows[ri];
+    var rDate=parseD(r.date);
+    var rMonth=rDate.getMonth(); // 0-11
+    var currMonthIdx=MONTHS.indexOf(currM);
+    // Is this row from a previous month?
+    var isPrev=(rDate.getFullYear()<state.year)||(rDate.getFullYear()===state.year&&rMonth<currMonthIdx);
+    // Is this row after the cutoff of the current month?
+    var isAfter=!isPrev&&cutoff&&rDate>cutoff;
+    
+    if(isPrev){
+      displayRows.push({t:'prev',row:r});
+    } else {
+      displayRows.push({t:isAfter?'after':'curr',row:r});
+    }
+    
+    // Insert weekend separator after Thursday (JS getDay()===4)
+    // when next row is Sunday (JS getDay()===0) or there is no next row
+    if(jsDay(r.date)===4){
+      var nextRow=currRows[ri+1];
+      if(!nextRow||jsDay(nextRow.date)===0){
+        displayRows.push({t:'wknd'});
+      }
     }
   }
-
-  // 2. Current month rows
-  var currRows=state.months[currM]||[];
-  currRows.forEach(function(r){
-    var isAfter=cutoff&&parseD(r.date)>cutoff;
-    displayRows.push({t:isAfter?'after':'curr',row:r});
-    // Insert weekend separator after Thursday
-    if(isThu(r.date)){
-      displayRows.push({t:'wknd'});
-    }
-  });
 
   // Calculate duplicates
   _dupKeys=calcDups(cutoff,prevM,currM,emps);
@@ -650,23 +651,38 @@ function render(){
 }
 
 function calcDups(cutoff,prevM,currM,emps){
-  // A duplicate occurs when:
-  // - There is a cutoff for the CURRENT month
-  // - A day appears in CURRENT month with a value
-  // - The SAME day appears in PREVIOUS month with a value (i.e., it was already counted there)
-  if(!cutoff||!prevM) return {};
-  var prevCutoffStr=state.cutoffs&&state.cutoffs[prevM];
-  if(!prevCutoffStr) return {};
-  var prevCutoff=parseD(prevCutoffStr);
+  // Duplicates: a date that appears in prev month section of current sheet
+  // AND also has a value already entered for that date in prev month data
+  // This means: prev month rows at top of current sheet that have values in BOTH months
+  if(!cutoff) return {};
+  
+  // Get all prev month rows from current sheet (dates from previous month)
+  var currRows=state.months[currM]||[];
+  var currMonthIdx=MONTHS.indexOf(currM);
+  var prevDatesInCurr={};
+  currRows.forEach(function(r){
+    var rDate=parseD(r.date);
+    var rMonth=rDate.getMonth();
+    if(rDate.getFullYear()===state.year&&rMonth<currMonthIdx){
+      prevDatesInCurr[r.date]=r;
+    } else if(rDate.getFullYear()<state.year){
+      prevDatesInCurr[r.date]=r;
+    }
+  });
+  
+  // Now check: if a prev-month date in current sheet has a value,
+  // AND the same date in prev month's own sheet also has a value = duplicate
+  if(!prevM||!state.months[prevM]) return {};
   var pm=state.months[prevM]||[],po={};
-  // Only prev month rows that are >= prev month cutoff (these would show in current month display)
-  pm.forEach(function(r){if(parseD(r.date)>=prevCutoff) po[r.date]=r;});
+  pm.forEach(function(r){po[r.date]=r;});
+  
   var dups={},dl=[];
-  (state.months[currM]||[]).forEach(function(r){
-    if(po[r.date]) emps.forEach(function(e){
-      var pv=po[r.date].vals&&po[r.date].vals[e];
-      var cv=r.vals&&r.vals[e];
-      if(pv&&cv){dups[r.date+'|'+e]=1;dl.push({e:e,d:r.date});}
+  Object.keys(prevDatesInCurr).forEach(function(dateStr){
+    var currRow=prevDatesInCurr[dateStr];
+    if(po[dateStr]) emps.forEach(function(e){
+      var pv=po[dateStr].vals&&po[dateStr].vals[e];
+      var cv=currRow.vals&&currRow.vals[e];
+      if(pv&&cv){dups[dateStr+'|'+e]=1;dl.push({e:e,d:dateStr});}
     });
   });
   var bar=document.getElementById('dup-bar');
@@ -1035,9 +1051,9 @@ function importFromXlsx(input){
             }
           }
 
-          // Only store workdays (Sun-Thu in JS = 0-4)
+          // Only store workdays - skip Fri(5) and Sat(6) in JS
           var dow=date.getDay();
-          if(dow>4) continue; // Skip Fri(5) and Sat(6)
+          if(dow===5||dow===6) continue; // Skip Fri and Sat
 
           var vals={};
           emps.forEach(function(emp,i){
