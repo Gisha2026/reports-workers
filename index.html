@@ -15,15 +15,12 @@
   --hv-bg:#dbeeff;--hv-text:#185fa5;--hs-bg:#ffd9d9;--hs-text:#993535;
   --h-bg:#fef3d8;--h-text:#854f0b;--a-bg:#eeedfe;--a-text:#534ab7;
   --o-bg:#f0f0f0;--o-text:#444;--warn:#e8a020;--success:#1d9e75;
-  --wknd-bg:#d8d5ce;--wknd-dc:#ccc9c1;
-  --prev-bg:#fff3d0;--prev-border:#e8a020;
-  --after-bg:#f5f0e8;
+  --wknd:#d4d1c8;--prev-bg:#fffbf0;--prev-border:#e8a020;
   --dup-bg:#ffc0c0;--dup-border:#e05050;
   --font:'Segoe UI','Arial',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;}
-
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:10px;height:52px;position:sticky;top:0;z-index:100;}
 .logo-icon{width:30px;height:30px;background:var(--teal);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:#fff;}
 .logo{font-size:14px;font-weight:700;color:var(--accent);}
@@ -42,7 +39,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .btn.teal{background:var(--teal);color:#fff;border-color:var(--teal);}
 .btn.teal:hover{background:var(--teal-dark);}
 .btn.ok{background:var(--success);color:#fff;border-color:var(--success);}
-
+.btn.sm{padding:3px 8px;font-size:11px;}
 #screen-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 52px);}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:36px 44px;text-align:center;max-width:360px;width:90%;}
 .login-logo{width:52px;height:52px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;margin:0 auto 14px;}
@@ -56,11 +53,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .import-label{display:block;width:100%;padding:8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);cursor:pointer;font-size:12px;color:var(--text2);text-align:center;}
 .import-label:hover{background:var(--surface2);}
 #file-import{display:none;}
-
 #screen-loading{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 52px);gap:12px;}
 .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
 #screen-leave{display:none;padding:12px 16px;}
 .toolbar{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
 .month-nav{display:flex;align-items:center;gap:5px;}
@@ -73,41 +68,23 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .view-btns{display:flex;gap:3px;}
 .vbtn{padding:4px 10px;border:1px solid var(--border2);border-radius:5px;background:var(--surface);cursor:pointer;font-size:11px;color:var(--text2);font-family:var(--font);}
 .vbtn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-
+.warn-bar{background:#fff8e8;border:1px solid #f0c040;border-radius:6px;padding:6px 12px;font-size:11px;color:#7a5500;margin-bottom:6px;display:none;}
 .dup-bar{background:#fff0f0;border:1px solid var(--dup-border);border-radius:6px;padding:6px 12px;font-size:11px;color:#8b0000;margin-bottom:6px;display:none;}
-.dup-bar.show{display:block;}
-
 .tbl-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border);max-height:calc(100vh - 200px);overflow-y:auto;}
 table{border-collapse:collapse;background:var(--surface);font-size:11px;}
 th{background:var(--surface2);padding:5px 4px;text-align:center;border:0.5px solid var(--border);font-weight:600;font-size:10px;white-space:nowrap;position:sticky;top:0;z-index:5;}
 th.emp{background:var(--accent);color:#fff;min-width:62px;}
 td{padding:1px 2px;border:0.5px solid var(--border);text-align:center;vertical-align:middle;height:20px;}
 td.dc{font-size:10px;color:var(--text2);background:#fafaf8;white-space:nowrap;min-width:28px;}
-
-/* Weekend - clearly gray */
-tr.wknd td{background:var(--wknd-bg)!important;}
-tr.wknd td.dc{background:var(--wknd-dc)!important;color:var(--text3);}
-
-/* Rows from previous month (after cutoff) */
-tr.from-prev td{background:var(--prev-bg);}
-tr.from-prev td.dc{background:var(--prev-bg)!important;border-right:3px solid var(--prev-border)!important;color:#7a5500;}
-tr.from-prev.wknd td{background:#ede8d0!important;}
-tr.from-prev.wknd td.dc{background:#ede8d0!important;}
-
-/* Rows after cutoff in current month */
-tr.after-cut td{background:var(--after-bg);opacity:0.75;}
-tr.after-cut td.dc{background:var(--after-bg)!important;}
-
-/* Value colors */
-td.v{background:var(--v-bg)!important;}
-td.s{background:var(--s-bg)!important;}
-td.hv{background:var(--hv-bg)!important;}
-td.hs{background:var(--hs-bg)!important;}
-td.h{background:var(--h-bg)!important;}
-td.a{background:var(--a-bg)!important;}
-td.o{background:var(--o-bg)!important;}
+tr.wknd td{background:var(--wknd)!important;height:7px!important;padding:0!important;font-size:0!important;line-height:0;}
+tr.prev-row td{background:var(--prev-bg);}
+tr.prev-row td.dc{background:var(--prev-bg)!important;border-right:3px solid var(--prev-border)!important;color:#7a5500;}
+tr.after-cut td{background:#f5f0e0;opacity:0.75;}
+tr.after-cut td.dc{background:#f5f0e0!important;}
+td.v{background:var(--v-bg)!important;}td.s{background:var(--s-bg)!important;}
+td.hv{background:var(--hv-bg)!important;}td.hs{background:var(--hs-bg)!important;}
+td.h{background:var(--h-bg)!important;}td.a{background:var(--a-bg)!important;}td.o{background:var(--o-bg)!important;}
 td.dup{background:var(--dup-bg)!important;outline:2px solid var(--dup-border);}
-
 select.cs{border:none;background:transparent;font-size:10px;width:60px;color:inherit;cursor:pointer;font-family:var(--font);text-align:center;outline:none;padding:0;}
 .full-val{display:inline-block;padding:0 3px;border-radius:2px;font-size:9px;font-weight:600;}
 .fv{background:var(--v-bg);color:var(--v-text);}
@@ -117,43 +94,34 @@ select.cs{border:none;background:transparent;font-size:10px;width:60px;color:inh
 .fh{background:var(--h-bg);color:var(--h-text);}
 .fa{background:var(--a-bg);color:var(--a-text);}
 .fo{background:var(--o-bg);color:var(--o-text);}
-
-/* Summary row */
 tr.sumrow td{background:var(--teal-light)!important;border-top:2px solid var(--teal);padding:4px 2px;}
 tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
 .sum-cell{display:flex;flex-direction:column;gap:2px;align-items:center;}
 .sum-item{font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;white-space:nowrap;}
-
 .legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:10px;}
 .leg{display:flex;align-items:center;gap:3px;}
 .ldot{width:11px;height:11px;border-radius:2px;border:0.5px solid var(--border2);}
-
 .save-bar{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:8px 18px;display:none;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.13);z-index:200;}
 .save-bar.show{display:flex;}
 .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#1a1916;color:#fff;padding:8px 18px;border-radius:8px;font-size:12px;display:none;z-index:300;text-align:center;}
 .toast.show{display:block;}
-
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:400;display:none;align-items:center;justify-content:center;}
 .modal-bg.show{display:flex;}
-.modal{background:var(--surface);border-radius:12px;padding:22px 26px;max-width:440px;width:90%;border:1px solid var(--border);max-height:80vh;overflow-y:auto;}
+.modal{background:var(--surface);border-radius:12px;padding:22px 26px;max-width:460px;width:90%;border:1px solid var(--border);max-height:80vh;overflow-y:auto;}
 .modal h3{font-size:14px;margin-bottom:14px;color:var(--teal);font-weight:700;}
 .modal-row{display:flex;gap:8px;margin-bottom:9px;align-items:center;}
-.modal-row label{font-size:12px;color:var(--text2);min-width:65px;}
-.modal-row input{flex:1;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;font-family:var(--font);text-align:right;direction:rtl;}
+.modal-row label{font-size:12px;color:var(--text2);min-width:80px;}
+.modal-row input,.modal-row select{flex:1;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;font-family:var(--font);text-align:right;direction:rtl;}
 .modal-btns{display:flex;gap:8px;margin-top:14px;}
 .emp-cbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
 .emp-cb{display:flex;align-items:center;gap:3px;font-size:11px;background:var(--surface2);padding:3px 7px;border-radius:4px;cursor:pointer;}
-
 #screen-holidays,#screen-annual,#screen-settings{display:none;padding:16px 20px;}
 .screen-title{font-size:15px;font-weight:700;color:var(--teal);margin-bottom:14px;}
-
 .h-item{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:8px;background:var(--surface);border:0.5px solid var(--border);margin-bottom:6px;}
 .h-item .hn{flex:1;font-weight:600;font-size:13px;}
 .h-item .hd{color:var(--text2);font-size:12px;}
 .h-item .he{color:var(--teal);font-size:11px;background:var(--teal-light);padding:1px 6px;border-radius:4px;}
 .del-btn{background:none;border:none;cursor:pointer;color:#e05050;font-size:13px;padding:1px 5px;}
-
-/* Annual */
 .ann-section{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;overflow-x:auto;}
 .ann-section-title{font-size:12px;font-weight:600;padding:3px 10px;border-radius:4px;margin-bottom:10px;display:inline-block;}
 .ann-tbl{border-collapse:collapse;font-size:10px;min-width:100%;}
@@ -165,19 +133,21 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
 .ann-tbl td.zero{color:var(--text3);}
 .ann-tbl tr.sum-row td{background:var(--teal-light);color:var(--teal);font-weight:600;border-top:1.5px solid var(--teal);}
 .ann-tbl tr.sum-row td.emp-name{background:var(--teal-light);color:var(--teal);}
-
 .settings-section{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:12px;}
 .settings-section h4{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:10px;}
-.emp-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);}
+.emp-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:0.5px solid var(--border);}
 .emp-row:last-child{border-bottom:none;}
-.emp-row span{flex:1;font-size:13px;}
+.emp-name-lbl{flex:1;font-size:13px;}
+.emp-status-lbl{font-size:11px;color:var(--text3);padding:1px 6px;background:var(--surface2);border-radius:4px;}
+.emp-status-lbl.ended{color:#e05050;background:#fff0f0;}
+.order-btns{display:flex;flex-direction:column;gap:2px;}
+.order-btn{width:18px;height:18px;border:1px solid var(--border2);border-radius:3px;background:var(--surface);cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;padding:0;}
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div class="logo-icon">ג</div>
-  <div class="logo">Reports_Workers <span>v18</span></div>
+  <div class="logo">Reports_Workers <span>v20</span></div>
   <div class="topbar-nav">
     <button class="nav-btn active" id="tab-leave" onclick="switchTab('leave')">חופש ומחלה</button>
     <button class="nav-btn" id="tab-holidays" onclick="switchTab('holidays')">חגים</button>
@@ -199,11 +169,8 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
     <div class="login-org">גישה — מרכז לשמירה על הזכות לנוע</div>
     <input type="text" id="inp-name" placeholder="שמך" onkeydown="if(event.key==='Enter') enterApp()">
     <button class="login-btn" onclick="enterApp()">כניסה</button>
-    <div class="divider">או במקרה חירום</div>
-    <label class="import-label">
-      📥 ייבוא מקובץ אקסל
-      <input type="file" id="file-import" accept=".xlsx,.xls" onchange="importFromXlsx(this)">
-    </label>
+    <div class="divider">כניסה ראשונה או חירום</div>
+    <label class="import-label">📥 ייבוא מקובץ אקסל<input type="file" id="file-import" accept=".xlsx,.xls" onchange="importFromXlsx(this)"></label>
     <div id="err-msg" style="color:#c00;font-size:12px;margin-top:8px;display:none"></div>
   </div>
 </div>
@@ -232,14 +199,12 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
       <button class="vbtn" id="vbtn-full" onclick="setView('full')">תצוגה מלאה</button>
     </div>
     <div class="spacer"></div>
-    <button class="btn" onclick="exportXlsx()" style="font-size:11px">📥 גיבוי אקסל</button>
+    <button class="btn" onclick="exportXlsx()" style="font-size:11px">📥 גיבוי</button>
     <button class="btn primary" onclick="saveData()">💾 שמירה</button>
   </div>
-  <div class="warn-bar" id="warn-cutoff" style="background:#fff8e8;border:1px solid #f0c040;border-radius:6px;padding:6px 12px;font-size:11px;color:#7a5500;margin-bottom:6px;display:none;">ימים אחרי תאריך החיתוך — יחושבו בחודש הבא.</div>
+  <div class="warn-bar" id="warn-cutoff">ימים אחרי תאריך החיתוך — יחושבו בחודש הבא.</div>
   <div class="dup-bar" id="dup-bar"></div>
-  <div class="tbl-wrap">
-    <table><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table>
-  </div>
+  <div class="tbl-wrap"><table><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table></div>
   <div class="legend">
     <div class="leg"><div class="ldot" style="background:var(--v-bg)"></div>חופש</div>
     <div class="leg"><div class="ldot" style="background:var(--s-bg)"></div>מחלה</div>
@@ -248,7 +213,7 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
     <div class="leg"><div class="ldot" style="background:var(--h-bg)"></div>חג</div>
     <div class="leg"><div class="ldot" style="background:var(--a-bg)"></div>אבל</div>
     <div class="leg"><div class="ldot" style="background:var(--o-bg)"></div>אחר</div>
-    <div class="leg"><div class="ldot" style="background:var(--wknd-bg)"></div>שישי/שבת</div>
+    <div class="leg"><div class="ldot" style="background:var(--wknd)"></div>ו/ש</div>
     <div class="leg"><div class="ldot" style="background:var(--dup-bg);border:2px solid var(--dup-border)"></div>כפילות</div>
     <div class="leg"><div class="ldot" style="background:var(--prev-bg);border-right:3px solid var(--prev-border)"></div>מחודש קודם</div>
   </div>
@@ -268,9 +233,9 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
 <div id="screen-settings">
   <div class="screen-title">הגדרות</div>
   <div class="settings-section">
-    <h4>רשימת עובדים</h4>
+    <h4>עובדים</h4>
     <div id="emp-list"></div>
-    <div style="display:flex;gap:8px;margin-top:10px;">
+    <div style="display:flex;gap:8px;margin-top:12px;">
       <input type="text" id="new-emp" placeholder="שם עובד חדש" style="flex:1;padding:7px 10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;font-family:var(--font);text-align:right;direction:rtl;" onkeydown="if(event.key==='Enter') addEmployee()">
       <button class="btn teal" onclick="addEmployee()">הוסף</button>
     </div>
@@ -278,8 +243,7 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
   <div class="settings-section">
     <h4>שנת עבודה</h4>
     <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-      <span>שנה נוכחית:</span>
-      <strong id="year-lbl" style="color:var(--teal)"></strong>
+      <span>שנה נוכחית:</span><strong id="year-lbl" style="color:var(--teal)"></strong>
       <button class="btn" onclick="newYear()">התחל שנה חדשה</button>
     </div>
   </div>
@@ -296,7 +260,8 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
   <div class="modal">
     <h3>הוספת חג</h3>
     <div class="modal-row"><label>שם החג:</label><input type="text" id="h-name" placeholder="למשל: פסח"></div>
-    <div class="modal-row"><label>תאריך:</label><input type="date" id="h-date"></div>
+    <div class="modal-row"><label>תאריך התחלה:</label><input type="date" id="h-date-start"></div>
+    <div class="modal-row"><label>תאריך סיום:</label><input type="date" id="h-date-end"></div>
     <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">חל על:</div>
     <label class="emp-cb" style="background:var(--teal-light);color:var(--teal);margin-bottom:6px;display:inline-flex;">
       <input type="checkbox" id="h-all" onchange="toggleAll(this)"> כל העובדים
@@ -305,6 +270,20 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
     <div class="modal-btns">
       <button class="btn teal" onclick="addHoliday()">הוסף</button>
       <button class="btn" onclick="closeModal('h-modal')">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="end-modal">
+  <div class="modal">
+    <h3 id="end-title">סיום עבודה</h3>
+    <div class="modal-row">
+      <label>החל מחודש:</label>
+      <select id="end-month" style="flex:1;padding:6px 10px;border:1px solid var(--border2);border-radius:6px;font-size:13px;font-family:var(--font);direction:rtl;"></select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn teal" onclick="confirmEnd()">אישור</button>
+      <button class="btn" onclick="closeModal('end-modal')">ביטול</button>
     </div>
   </div>
 </div>
@@ -318,103 +297,70 @@ var VLBL={'חופש':'חופש','מחלה':'מחלה','חצי חופש':'½חו�
 var VFCLS={'חופש':'fv','מחלה':'fs','חצי חופש':'fhv','חצי מחלה':'fhs','חג':'fh','פסח':'fh','אבל':'fa','אחר':'fo'};
 var SCOL={'v':'var(--v-bg)','s':'var(--s-bg)','hv':'var(--hv-bg)','hs':'var(--hs-bg)','h':'var(--h-bg)','a':'var(--a-bg)','o':'var(--o-bg)'};
 var STCOL={'v':'var(--v-text)','s':'var(--s-text)','hv':'var(--hv-text)','hs':'var(--hs-text)','h':'var(--h-text)','a':'var(--a-text)','o':'var(--o-text)'};
-var SLBL={'vs':'חופש','ss':'מחלה','h':'חג','a':'אבל','o':'אחר'};
 
-var STORE='rw_v18';
-var LOCK='rw_lock_v18';
+var STORE='rw_v20',LOCK='rw_lock_v20';
 var GH_TOKEN='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';
-var GH_OWNER='Gisha2026';
-var GH_REPO='reports-workers';
-var GH_FILE='data.json';
-var GH_API='https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+GH_FILE;
+var GH_API='https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json';
 var _ghSha=null;
-
 var state={year:new Date().getFullYear(),emps:[],months:{},holidays:[],cutoff:null};
-var idx=0,view='edit',changed=false,user='';
-var _dupKeys={};
+var idx=0,view='edit',changed=false,user='',_dupKeys={},_endName='';
 
-// ===== GITHUB =====
-function ghH(){return{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};}
-
-function ghLoad(cb){
-  fetch(GH_API,{headers:ghH()})
-    .then(function(r){if(r.status===404){cb(null);return null;}return r.json();})
-    .then(function(d){
-      if(!d) return;
-      _ghSha=d.sha;
-      try{cb(JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))))));}
-      catch(e){cb(null);}
-    })
-    .catch(function(){cb(null);});
-}
-
-function ghSave(cb){
-  var content=btoa(unescape(encodeURIComponent(JSON.stringify(state))));
-  var body={message:'עדכון — '+user,content:content};
-  if(_ghSha) body.sha=_ghSha;
-  fetch(GH_API,{method:'PUT',headers:ghH(),body:JSON.stringify(body)})
-    .then(function(r){return r.json();})
-    .then(function(d){if(d&&d.content) _ghSha=d.content.sha;if(cb) cb(true);})
-    .catch(function(){if(cb) cb(false);});
-}
-
-// ===== HELPERS =====
 function pad(n){return String(n).padStart(2,'0');}
 function fmt(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 function parseD(s){return new Date(s+'T00:00:00');}
-function isWknd(s){var d=parseD(s).getDay();return d===5||d===6;}
-function dayName(s){return DAYS[parseD(s).getDay()]||'';}
-function dayNum(s){var d=parseD(s);return d.getDate()+'/'+(d.getMonth()+1);}
+function dow(s){return parseD(s).getDay();}
+function isW(s){var d=dow(s);return d===5||d===6;}
+function dname(s){return DAYS[dow(s)]||'';}
+function dnum(s){var d=parseD(s);return d.getDate()+'/'+(d.getMonth()+1);}
 function getCutoff(){return state.cutoff?parseD(state.cutoff):null;}
+function fmtDate(s){if(!s) return '';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
 
-// ===== STORAGE =====
+function activeEmps(mName){
+  var mi=MONTHS.indexOf(mName);
+  return state.emps.filter(function(e){if(!e.endMonth) return true;return mi<MONTHS.indexOf(e.endMonth);}).map(function(e){return e.name;});
+}
+
+function ghH(){return{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};}
+function ghLoad(cb){
+  fetch(GH_API,{headers:ghH()}).then(function(r){if(r.status===404){cb(null);return null;}return r.json();})
+  .then(function(d){if(!d) return;_ghSha=d.sha;try{cb(JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))))));}catch(e){cb(null);}})
+  .catch(function(){cb(null);});
+}
+function ghSave(cb){
+  var c=btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+  var b={message:'עדכון — '+user,content:c};if(_ghSha) b.sha=_ghSha;
+  fetch(GH_API,{method:'PUT',headers:ghH(),body:JSON.stringify(b)}).then(function(r){return r.json();})
+  .then(function(d){if(d&&d.content) _ghSha=d.content.sha;if(cb) cb(true);}).catch(function(){if(cb) cb(false);});
+}
+
 function saveLocal(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(e){}}
-function loadLocal(){
-  try{var r=localStorage.getItem(STORE);if(r) state=JSON.parse(r);else initEmpty();}
-  catch(e){initEmpty();}
-}
-
-function initEmpty(){
-  state={year:new Date().getFullYear(),emps:[],months:{},holidays:[],cutoff:null};
-  buildMonths(state.year);
-}
-
+function loadLocal(){try{var r=localStorage.getItem(STORE);if(r){state=JSON.parse(r);normEmps();}else initEmpty();}catch(e){initEmpty();}}
+function normEmps(){state.emps=state.emps.map(function(e){return typeof e==='string'?{name:e,endMonth:null}:e;});}
+function initEmpty(){state={year:new Date().getFullYear(),emps:[],months:{},holidays:[],cutoff:null};buildMonths(state.year);}
 function buildMonths(yr){
   state.months={};
   MONTHS.forEach(function(m,mi){
     state.months[m]=[];
     var d=new Date(yr,mi,1);
-    while(d.getMonth()===mi){
-      state.months[m].push({date:fmt(d),vals:{}});
-      d.setDate(d.getDate()+1);
-    }
+    while(d.getMonth()===mi){state.months[m].push({date:fmt(d),vals:{}});d.setDate(d.getDate()+1);}
   });
 }
 
-// ===== LOGIN =====
 function enterApp(){
   var name=document.getElementById('inp-name').value.trim();
   if(!name){document.getElementById('err-msg').textContent='נא להכניס שם';document.getElementById('err-msg').style.display='block';return;}
-  user=name;
-  document.getElementById('loading-txt').textContent='טוען נתונים...';
-  show('loading');
-  ghLoad(function(ghData){
-    if(ghData) state=ghData;
-    else loadLocal();
+  user=name;document.getElementById('loading-txt').textContent='טוען...';show('loading');
+  ghLoad(function(d){
+    if(d){state=d;normEmps();saveLocal();}else loadLocal();
     if(!state.months||!Object.keys(state.months).length) buildMonths(state.year);
     finishLogin();
   });
 }
 
 function finishLogin(){
-  setupUI();
-  show('leave');
-  render();
-  acquireLock();
+  setupUI();show('leave');render();acquireLock();
   setInterval(checkLock,15000);
-  setInterval(function(){
-    if(!changed) ghLoad(function(d){if(d){state=d;saveLocal();render();}});
-  },45000);
+  setInterval(function(){if(!changed) ghLoad(function(d){if(d){state=d;normEmps();saveLocal();render();}});},45000);
 }
 
 function setupUI(){
@@ -423,53 +369,29 @@ function setupUI(){
   document.getElementById('user-info').style.display='flex';
   document.getElementById('year-lbl').textContent=state.year;
   document.getElementById('annual-year-lbl').textContent=state.year;
-  // קפוץ לחודש הנוכחי
   var nowM=MONTHS[new Date().getMonth()];
-  idx=0;
-  for(var j=0;j<MONTHS.length;j++){if(MONTHS[j]===nowM&&state.months[MONTHS[j]]){idx=j;break;}}
-  // שחזר חיתוך
-  if(state.cutoff){
-    document.getElementById('cutoff-in').value=state.cutoff;
-    updateCutoffBadge();
-  }
+  idx=0;for(var j=0;j<MONTHS.length;j++){if(MONTHS[j]===nowM&&state.months[MONTHS[j]]){idx=j;break;}}
+  if(state.cutoff){document.getElementById('cutoff-in').value=state.cutoff;updBadge();}
   renderEmpList();
 }
 
-function updateCutoffBadge(){
+function updBadge(){
   var b=document.getElementById('cutoff-badge');
-  if(state.cutoff){
-    var c=parseD(state.cutoff);
-    b.textContent=c.getDate()+'/'+(c.getMonth()+1);
-    b.style.display='inline-block';
-  } else {
-    b.style.display='none';
-  }
+  if(state.cutoff){var c=parseD(state.cutoff);b.textContent=c.getDate()+'/'+(c.getMonth()+1);b.style.display='inline-block';}
+  else b.style.display='none';
 }
 
-// ===== SAVE =====
-function saveData(){
-  saveLocal();
-  ghSave(function(ok){
-    changed=false;
-    document.getElementById('save-bar').className='save-bar';
-    toast(ok?'✓ נשמר ומסונכרן':'✓ נשמר מקומית');
-  });
-}
-function discardChanges(){
-  if(!confirm('לבטל שינויים?')) return;
-  ghLoad(function(d){if(d) state=d;else loadLocal();changed=false;document.getElementById('save-bar').className='save-bar';render();});
-}
+function saveData(){saveLocal();ghSave(function(ok){changed=false;document.getElementById('save-bar').className='save-bar';toast(ok?'✓ נשמר ומסונכרן':'✓ נשמר מקומית');});}
+function discardChanges(){if(!confirm('לבטל?')) return;ghLoad(function(d){if(d){state=d;normEmps();}else loadLocal();changed=false;document.getElementById('save-bar').className='save-bar';render();});}
 function markChanged(){changed=true;document.getElementById('save-bar').className='save-bar show';}
 
-// ===== LOCK =====
 function acquireLock(){
   try{localStorage.setItem(LOCK,JSON.stringify({user:user,time:new Date().toISOString()}));}catch(e){}
   setInterval(function(){try{var l=JSON.parse(localStorage.getItem(LOCK)||'{}');if(l.user===user){l.time=new Date().toISOString();localStorage.setItem(LOCK,JSON.stringify(l));}}catch(e){}},15000);
 }
 function checkLock(){
   try{
-    var l=JSON.parse(localStorage.getItem(LOCK)||'{}');
-    var n=document.getElementById('lock-notice');
+    var l=JSON.parse(localStorage.getItem(LOCK)||'{}'),n=document.getElementById('lock-notice');
     if(!l.user||l.user===user){n.className='lock-notice';return;}
     if((new Date()-new Date(l.time))/60000>5){localStorage.setItem(LOCK,JSON.stringify({user:user,time:new Date().toISOString()}));n.className='lock-notice';}
     else{n.textContent=l.user+' עובד/ת כרגע';n.className='lock-notice show';}
@@ -477,385 +399,336 @@ function checkLock(){
 }
 window.addEventListener('beforeunload',function(){try{var l=JSON.parse(localStorage.getItem(LOCK)||'{}');if(l.user===user) localStorage.removeItem(LOCK);}catch(e){}});
 
-// ===== CUTOFF =====
-function setCutoff(val){
-  state.cutoff=val||null;
-  updateCutoffBadge();
-  markChanged();
-  render();
-}
-
-// ===== NAVIGATION =====
+function setCutoff(val){state.cutoff=val||null;updBadge();markChanged();render();}
 function chMonth(d){idx=Math.max(0,Math.min(MONTHS.length-1,idx+d));render();}
 function setView(v){view=v;document.getElementById('vbtn-edit').className='vbtn'+(v==='edit'?' active':'');document.getElementById('vbtn-full').className='vbtn'+(v==='full'?' active':'');render();}
 
-// ===== EMPLOYEES =====
 function addEmployee(){
-  var name=document.getElementById('new-emp').value.trim();
-  if(!name||state.emps.indexOf(name)>=0) return;
-  state.emps.push(name);
-  document.getElementById('new-emp').value='';
-  renderEmpList();markChanged();render();toast('✓ '+name+' נוסף');
+  var name=document.getElementById('new-emp').value.trim();if(!name) return;
+  if(state.emps.some(function(e){return e.name===name;})){alert('עובד זה כבר קיים');return;}
+  state.emps.push({name:name,endMonth:null});
+  document.getElementById('new-emp').value='';renderEmpList();markChanged();render();toast('✓ '+name+' נוסף');
 }
-function removeEmployee(name){
-  if(!confirm('למחוק את '+name+'?')) return;
-  state.emps=state.emps.filter(function(e){return e!==name;});
-  markChanged();renderEmpList();render();
+function moveEmp(i,d){var j=i+d;if(j<0||j>=state.emps.length) return;var t=state.emps[i];state.emps[i]=state.emps[j];state.emps[j]=t;renderEmpList();markChanged();render();}
+function openEndModal(name){
+  _endName=name;document.getElementById('end-title').textContent='סיום עבודה — '+name;
+  var sel=document.getElementById('end-month');sel.innerHTML='<option value="">בחר חודש</option>';
+  MONTHS.forEach(function(m){var op=document.createElement('option');op.value=m;op.textContent=m;sel.appendChild(op);});
+  var emp=state.emps.find(function(e){return e.name===name;});
+  if(emp&&emp.endMonth) sel.value=emp.endMonth;
+  document.getElementById('end-modal').className='modal-bg show';
 }
+function confirmEnd(){
+  var month=document.getElementById('end-month').value;if(!month){alert('נא לבחור חודש');return;}
+  var emp=state.emps.find(function(e){return e.name===_endName;});if(emp) emp.endMonth=month;
+  closeModal('end-modal');renderEmpList();markChanged();render();toast('✓ עודכן');
+}
+function reactivate(name){var emp=state.emps.find(function(e){return e.name===name;});if(emp) emp.endMonth=null;renderEmpList();markChanged();render();}
+
 function renderEmpList(){
   var c=document.getElementById('emp-list');c.innerHTML='';
-  if(!state.emps.length){c.innerHTML='<div style="color:var(--text3);font-size:12px;padding:6px 0">אין עובדים — הוסף בשדה למטה</div>';return;}
-  state.emps.forEach(function(emp){
+  if(!state.emps.length){c.innerHTML='<div style="color:var(--text3);font-size:12px;padding:6px 0">אין עובדים</div>';return;}
+  state.emps.forEach(function(emp,i){
     var row=document.createElement('div');row.className='emp-row';
-    var sp=document.createElement('span');sp.textContent=emp;
-    var btn=document.createElement('button');btn.className='btn';btn.style.fontSize='11px';btn.textContent='הסר';
-    (function(n){btn.onclick=function(){removeEmployee(n);};})(emp);
-    row.appendChild(sp);row.appendChild(btn);c.appendChild(row);
+    var ob=document.createElement('div');ob.className='order-btns';
+    var ub=document.createElement('button');ub.className='order-btn';ub.textContent='▲';
+    var db=document.createElement('button');db.className='order-btn';db.textContent='▼';
+    (function(i){ub.onclick=function(){moveEmp(i,-1);};db.onclick=function(){moveEmp(i,1);};})(i);
+    ob.appendChild(ub);ob.appendChild(db);
+    var ns=document.createElement('span');ns.className='emp-name-lbl';ns.textContent=emp.name;
+    var ss=document.createElement('span');ss.className=emp.endMonth?'emp-status-lbl ended':'emp-status-lbl';
+    ss.textContent=emp.endMonth?'סיים — '+emp.endMonth:'פעיל';
+    row.appendChild(ob);row.appendChild(ns);row.appendChild(ss);
+    if(emp.endMonth){
+      var rb=document.createElement('button');rb.className='btn sm';rb.textContent='החזר לפעיל';
+      (function(n){rb.onclick=function(){reactivate(n);};})(emp.name);row.appendChild(rb);
+    } else {
+      var eb=document.createElement('button');eb.className='btn sm';eb.textContent='סיום עבודה';eb.style.color='#e05050';eb.style.borderColor='#e05050';
+      (function(n){eb.onclick=function(){openEndModal(n);};})(emp.name);row.appendChild(eb);
+    }
+    c.appendChild(row);
   });
 }
 
-// ===== DUPLICATES =====
-function findDups(){
-  var cutoff=getCutoff();
-  if(!cutoff||idx===0) return {};
-  var prevM=MONTHS[idx-1];
-  var prevRows=state.months[prevM]||[];
-  // ימים מהחודש הקודם שהם >= תאריך החיתוך
-  var prevOnCutoff={};
-  prevRows.forEach(function(row){
-    if(parseD(row.date)>=cutoff) prevOnCutoff[row.date]=row;
-  });
-  var dups={},dupList=[];
-  (state.months[MONTHS[idx]]||[]).forEach(function(row){
-    if(prevOnCutoff[row.date]){
-      state.emps.forEach(function(emp){
-        var pv=prevOnCutoff[row.date].vals&&prevOnCutoff[row.date].vals[emp];
-        var cv=row.vals&&row.vals[emp];
-        if(pv&&cv){dups[row.date+'|'+emp]=1;dupList.push({emp:emp,date:row.date});}
-      });
+function render(){
+  if(!state.months) return;
+  var cutoff=getCutoff(),currM=MONTHS[idx],prevM=idx>0?MONTHS[idx-1]:null;
+  var emps=activeEmps(currM);
+  document.getElementById('mlbl').textContent=currM+' '+state.year;
+  var wbar=document.getElementById('warn-cutoff');
+  wbar.style.display=(cutoff&&(state.months[currM]||[]).some(function(r){return parseD(r.date)>cutoff;}))?'block':'none';
+  var rows=[];
+  // ימים מהחודש הקודם החל מתאריך החיתוך — מוצגים ריקים
+  if(cutoff&&prevM&&state.months[prevM]){
+    var pf=state.months[prevM].filter(function(r){return parseD(r.date)>=cutoff;});
+    var pi=0;
+    while(pi<pf.length){
+      var pd=dow(pf[pi].date);
+      if(pd===5&&pi+1<pf.length&&dow(pf[pi+1].date)===6){rows.push({t:'wknd'});pi+=2;}
+      else if(pd===6){rows.push({t:'wknd'});pi++;}
+      else{rows.push({t:'prev',date:pf[pi].date});pi++;}
     }
+  }
+  // ימי החודש הנוכחי
+  var cr=state.months[currM]||[],ci=0;
+  while(ci<cr.length){
+    var cd=dow(cr[ci].date);
+    if(cd===5&&ci+1<cr.length&&dow(cr[ci+1].date)===6){rows.push({t:'wknd'});ci+=2;}
+    else if(cd===6){rows.push({t:'wknd'});ci++;}
+    else{
+      var isAfter=cutoff&&parseD(cr[ci].date)>cutoff;
+      rows.push({t:isAfter?'after':'curr',row:cr[ci]});ci++;
+    }
+  }
+  _dupKeys=calcDups(cutoff,prevM,currM,emps);
+  if(view==='edit') renderEdit(rows,emps,currM);else renderFull(rows,emps,currM);
+}
+
+function calcDups(cutoff,prevM,currM,emps){
+  if(!cutoff||!prevM) return {};
+  var pm=state.months[prevM]||[],po={};
+  pm.forEach(function(r){if(parseD(r.date)>=cutoff) po[r.date]=r;});
+  var dups={},dl=[];
+  (state.months[currM]||[]).forEach(function(r){
+    if(po[r.date]) emps.forEach(function(e){
+      if(po[r.date].vals&&po[r.date].vals[e]&&r.vals&&r.vals[e]){dups[r.date+'|'+e]=1;dl.push({e:e,d:r.date});}
+    });
   });
   var bar=document.getElementById('dup-bar');
-  if(dupList.length){
-    var byEmp={};
-    dupList.forEach(function(d){if(!byEmp[d.emp]) byEmp[d.emp]=[];byEmp[d.emp].push(dayNum(d.date));});
-    var parts=[];Object.keys(byEmp).forEach(function(e){parts.push(e+': '+byEmp[e].join(', '));});
-    bar.textContent='⚠ כפילויות — מחק את הערך בחודש הנוכחי: '+parts.join(' | ');
-    bar.className='dup-bar show';
-  } else bar.className='dup-bar';
+  if(dl.length){
+    var be={};dl.forEach(function(x){if(!be[x.e]) be[x.e]=[];be[x.e].push(dnum(x.d));});
+    var pts=[];Object.keys(be).forEach(function(e){pts.push(e+': '+be[e].join(', '));});
+    bar.textContent='⚠ כפילויות — מחק את הערך בחודש הנוכחי: '+pts.join(' | ');bar.style.display='block';
+  } else bar.style.display='none';
   return dups;
 }
 
-// ===== RENDER =====
-function render(){
-  if(!state.months) return;
-  var cutoff=getCutoff();
-  var currM=MONTHS[idx];
-  var prevM=idx>0?MONTHS[idx-1]:null;
-  document.getElementById('mlbl').textContent=currM+' '+state.year;
-
-  // בנה רשימת שורות להצגה
-  var displayRows=[];
-
-  // ימים מהחודש הקודם החל מתאריך החיתוך — מיזוג ששי+שבת
-  if(cutoff&&prevM&&state.months[prevM]){
-    var prevFiltered=state.months[prevM].filter(function(r){return parseD(r.date)>=cutoff;});
-    var pi=0;
-    while(pi<prevFiltered.length){
-      var pr=prevFiltered[pi];
-      var pdow=parseD(pr.date).getDay();
-      if(pdow===5&&pi+1<prevFiltered.length&&parseD(prevFiltered[pi+1].date).getDay()===6){
-        displayRows.push({row:pr,src:'prev',weekend:true,endDate:prevFiltered[pi+1].date});
-        pi+=2;
-      } else if(pdow===6){
-        displayRows.push({row:pr,src:'prev',weekend:true});
-        pi++;
-      } else {
-        displayRows.push({row:pr,src:'prev'});
-        pi++;
-      }
-    }
-  }
-
-  // כל ימי החודש הנוכחי — מיזוג ששי+שבת לשורה אחת
-  var currRows=state.months[currM]||[];
-  var i=0;
-  while(i<currRows.length){
-    var row=currRows[i];
-    var dow=parseD(row.date).getDay();
-    if(dow===5&&i+1<currRows.length&&parseD(currRows[i+1].date).getDay()===6){
-      // ששי ושבת — שורה אחת
-      displayRows.push({row:row,src:'curr',weekend:true,endDate:currRows[i+1].date});
-      i+=2;
-    } else if(dow===6){
-      // שבת בודדת (תחילת חודש)
-      displayRows.push({row:row,src:'curr',weekend:true});
-      i++;
-    } else {
-      displayRows.push({row:row,src:'curr'});
-      i++;
-    }
-  }
-
-  // הצג התראת חיתוך
-  var wbar=document.getElementById('warn-cutoff');
-  var hasAfterCut=cutoff&&(state.months[currM]||[]).some(function(r){return parseD(r.date)>cutoff;});
-  wbar.style.display=hasAfterCut?'block':'none';
-  _dupKeys=findDups();
-
-  if(view==='edit') renderEdit(displayRows);
-  else renderFull(displayRows);
+function buildTblHead(emps){
+  var th=document.getElementById('tbl-head');th.innerHTML='';
+  var hr=document.createElement('tr');
+  ['יום','תאריך'].forEach(function(h){var t=document.createElement('th');t.textContent=h;hr.appendChild(t);});
+  emps.forEach(function(e){var t=document.createElement('th');t.className='emp';t.textContent=e;hr.appendChild(t);});
+  th.appendChild(hr);
 }
 
-function buildRow(item,counts,editMode){
-  var row=item.row,src=item.src;
-  var cutoff=getCutoff();
-  var d=parseD(row.date);
-  var wknd=item.weekend||false;
-  var afterCut=src==='curr'&&cutoff&&d>cutoff;
+function addWkndRow(tb,numEmps){
+  var tr=document.createElement('tr');tr.className='wknd';
+  for(var i=0;i<numEmps+2;i++){var td=document.createElement('td');tr.appendChild(td);}
+  tb.appendChild(tr);
+}
 
-  var tr=document.createElement('tr');
-  if(wknd&&src==='prev') tr.className='from-prev wknd';
-  else if(wknd) tr.className='wknd';
-  else if(src==='prev') tr.className='from-prev';
-  else if(afterCut) tr.className='after-cut';
-
-  var td1=document.createElement('td');td1.className='dc';
-  td1.textContent=wknd?'ו/ש':dayName(row.date);
-  tr.appendChild(td1);
-  var td2=document.createElement('td');td2.className='dc';
-  if(wknd&&item.endDate){
-    td2.textContent=dayNum(row.date)+'-'+dayNum(item.endDate);
-  } else {
-    td2.textContent=dayNum(row.date);
-  }
-  tr.appendChild(td2);
-
-  if(wknd){
-    state.emps.forEach(function(){var td=document.createElement('td');td.className='wknd';tr.appendChild(td);});
-  } else {
-    state.emps.forEach(function(emp){
-      var val=(row.vals&&row.vals[emp])||'';
-      var td=document.createElement('td');
-      var dk=row.date+'|'+emp;
-      if(_dupKeys[dk]) td.className='dup';
-      else if(VCLS[val]) td.className=VCLS[val];
-
-      if(editMode){
+function renderEdit(rows,emps,currM){
+  buildTblHead(emps);
+  var tb=document.getElementById('tbl-body');tb.innerHTML='';
+  var counts={};emps.forEach(function(e){counts[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});
+  rows.forEach(function(item){
+    if(item.t==='wknd'){addWkndRow(tb,emps.length);return;}
+    var tr=document.createElement('tr');
+    if(item.t==='prev') tr.className='prev-row';
+    else if(item.t==='after') tr.className='after-cut';
+    var td1=document.createElement('td');td1.className='dc';
+    var td2=document.createElement('td');td2.className='dc';
+    if(item.t==='prev'){
+      td1.textContent=dname(item.date);td2.textContent=dnum(item.date);
+      tr.appendChild(td1);tr.appendChild(td2);
+      emps.forEach(function(emp){
+        var td=document.createElement('td');
+        var dk=item.date+'|'+emp;
+        if(_dupKeys[dk]) td.className='dup';
+        // ריק — לא מציג ערכים מהחודש הקודם
         var sel=document.createElement('select');sel.className='cs';
-        OPTS.forEach(function(o){
-          var op=document.createElement('option');op.value=o;op.textContent=o||'—';
-          if(o===val||(val==='פסח'&&o==='חג')) op.selected=true;
-          sel.appendChild(op);
-        });
-        (function(row,emp,td,dk){
-          sel.onchange=function(){
-            if(!row.vals) row.vals={};
-            row.vals[emp]=this.value;
-            td.className=_dupKeys[dk]?'dup':(VCLS[this.value]||'');
-            markChanged();
-            _dupKeys=findDups();
-          };
-        })(row,emp,td,dk);
-        td.appendChild(sel);
-      } else {
+        OPTS.forEach(function(o){var op=document.createElement('option');op.value=o;op.textContent=o||'—';sel.appendChild(op);});
+        sel.value='';
+        sel.onchange=function(){markChanged();_dupKeys=calcDups(getCutoff(),idx>0?MONTHS[idx-1]:null,MONTHS[idx],activeEmps(MONTHS[idx]));};
+        td.appendChild(sel);tr.appendChild(td);
+      });
+    } else {
+      var row=item.row;
+      td1.textContent=dname(row.date);td2.textContent=dnum(row.date);
+      tr.appendChild(td1);tr.appendChild(td2);
+      emps.forEach(function(emp){
+        var val=(row.vals&&row.vals[emp])||'';
+        var td=document.createElement('td');
+        var dk=row.date+'|'+emp;
+        if(_dupKeys[dk]) td.className='dup';else if(VCLS[val]) td.className=VCLS[val];
+        var sel=document.createElement('select');sel.className='cs';
+        OPTS.forEach(function(o){var op=document.createElement('option');op.value=o;op.textContent=o||'—';if(o===val||(val==='פסח'&&o==='חג')) op.selected=true;sel.appendChild(op);});
+        (function(row,emp,td,dk){sel.onchange=function(){if(!row.vals) row.vals={};row.vals[emp]=this.value;td.className=_dupKeys[dk]?'dup':(VCLS[this.value]||'');markChanged();_dupKeys=calcDups(getCutoff(),idx>0?MONTHS[idx-1]:null,MONTHS[idx],activeEmps(MONTHS[idx]));updateSummaryRow();};})(row,emp,td,dk);
+        td.appendChild(sel);tr.appendChild(td);
+        if(item.t==='curr') addCnt(counts[emp],val);
+      });
+    }
+    tb.appendChild(tr);
+  });
+  makeSummary(tb,emps,counts);
+}
+
+function renderFull(rows,emps,currM){
+  buildTblHead(emps);
+  var tb=document.getElementById('tbl-body');tb.innerHTML='';
+  var counts={};emps.forEach(function(e){counts[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});
+  rows.forEach(function(item){
+    if(item.t==='wknd'){addWkndRow(tb,emps.length);return;}
+    var tr=document.createElement('tr');
+    if(item.t==='prev') tr.className='prev-row';
+    else if(item.t==='after') tr.className='after-cut';
+    var td1=document.createElement('td');td1.className='dc';
+    var td2=document.createElement('td');td2.className='dc';
+    if(item.t==='prev'){
+      td1.textContent=dname(item.date);td2.textContent=dnum(item.date);tr.appendChild(td1);tr.appendChild(td2);
+      emps.forEach(function(){var td=document.createElement('td');tr.appendChild(td);});
+    } else {
+      var row=item.row;
+      td1.textContent=dname(row.date);td2.textContent=dnum(row.date);tr.appendChild(td1);tr.appendChild(td2);
+      emps.forEach(function(emp){
+        var val=(row.vals&&row.vals[emp])||'';
+        var td=document.createElement('td');
         var lbl=VLBL[val]||val||'';
         if(lbl) td.innerHTML='<span class="full-val '+(VFCLS[val]||'')+'">'+lbl+'</span>';
-      }
-      tr.appendChild(td);
-      // ספור רק ימים בחודש הנוכחי שלפני/בתאריך החיתוך
-      if(src==='curr'&&!afterCut&&counts) addCnt(counts[emp],val);
-    });
-  }
-  return tr;
+        tr.appendChild(td);
+        if(item.t==='curr') addCnt(counts[emp],val);
+      });
+    }
+    tb.appendChild(tr);
+  });
+  makeSummary(tb,emps,counts);
 }
 
-function renderEdit(displayRows){
-  var th=document.getElementById('tbl-head'),tb=document.getElementById('tbl-body');
-  th.innerHTML='';tb.innerHTML='';
-  var hr=document.createElement('tr');
-  ['יום','תאריך'].forEach(function(h){var t=document.createElement('th');t.textContent=h;hr.appendChild(t);});
-  state.emps.forEach(function(e){var t=document.createElement('th');t.className='emp';t.textContent=e;hr.appendChild(t);});
-  th.appendChild(hr);
-  var counts={};state.emps.forEach(function(e){counts[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});
-  displayRows.forEach(function(item){tb.appendChild(buildRow(item,counts,true));});
-  makeSummary(tb,counts);
-}
-
-function renderFull(displayRows){
-  var th=document.getElementById('tbl-head'),tb=document.getElementById('tbl-body');
-  th.innerHTML='';tb.innerHTML='';
-  var hr=document.createElement('tr');
-  ['יום','תאריך'].forEach(function(h){var t=document.createElement('th');t.textContent=h;hr.appendChild(t);});
-  state.emps.forEach(function(e){var t=document.createElement('th');t.className='emp';t.style.minWidth='75px';t.textContent=e;hr.appendChild(t);});
-  th.appendChild(hr);
-  var counts={};state.emps.forEach(function(e){counts[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});
-  displayRows.forEach(function(item){tb.appendChild(buildRow(item,counts,false));});
-  makeSummary(tb,counts);
-}
-
-function makeSummary(tb,counts){
+function makeSummary(tb,emps,counts){
   var sr=document.createElement('tr');sr.className='sumrow';
-  var st=document.createElement('td');st.colSpan=2;st.textContent='סיכום';sr.appendChild(st);
-  state.emps.forEach(function(emp){
-    var c=counts[emp]||{};
-    var td=document.createElement('td');
-    var div=document.createElement('div');div.className='sum-cell';
-    // חופש + חצי חופש ביחד
-    var totalV=c.v+(c.hv||0);
-    if(totalV>0){var sp=document.createElement('span');sp.className='sum-item';sp.style.background=SCOL['v'];sp.style.color=STCOL['v'];sp.textContent='חופש:'+totalV;div.appendChild(sp);}
-    // מחלה + חצי מחלה ביחד
-    var totalS=c.s+(c.hs||0);
-    if(totalS>0){var sp2=document.createElement('span');sp2.className='sum-item';sp2.style.background=SCOL['s'];sp2.style.color=STCOL['s'];sp2.textContent='מחלה:'+totalS;div.appendChild(sp2);}
-    if(c.h>0){var sp3=document.createElement('span');sp3.className='sum-item';sp3.style.background=SCOL['h'];sp3.style.color=STCOL['h'];sp3.textContent='חג:'+c.h;div.appendChild(sp3);}
-    if(c.a>0){var sp4=document.createElement('span');sp4.className='sum-item';sp4.style.background=SCOL['a'];sp4.style.color=STCOL['a'];sp4.textContent='אבל:'+c.a;div.appendChild(sp4);}
-    if(c.o>0){var sp5=document.createElement('span');sp5.className='sum-item';sp5.style.background=SCOL['o'];sp5.style.color=STCOL['o'];sp5.textContent='אחר:'+c.o;div.appendChild(sp5);}
+  var cutoff=getCutoff();
+  var st=document.createElement('td');st.colSpan=2;
+  st.textContent=cutoff?'סיכום':'סיכום (טרם נקבע חיתוך)';
+  st.style.fontSize='10px';
+  sr.appendChild(st);
+  emps.forEach(function(emp){
+    var c=counts[emp]||{},td=document.createElement('td'),div=document.createElement('div');div.className='sum-cell';
+    var tv=c.v+(c.hv||0),ts=c.s+(c.hs||0);
+    if(tv>0){var s=document.createElement('span');s.className='sum-item';s.style.background=SCOL['v'];s.style.color=STCOL['v'];s.textContent='חופש:'+tv;div.appendChild(s);}
+    if(ts>0){var s2=document.createElement('span');s2.className='sum-item';s2.style.background=SCOL['s'];s2.style.color=STCOL['s'];s2.textContent='מחלה:'+ts;div.appendChild(s2);}
+    if(c.h>0){var s3=document.createElement('span');s3.className='sum-item';s3.style.background=SCOL['h'];s3.style.color=STCOL['h'];s3.textContent='חג:'+c.h;div.appendChild(s3);}
+    if(c.a>0){var s4=document.createElement('span');s4.className='sum-item';s4.style.background=SCOL['a'];s4.style.color=STCOL['a'];s4.textContent='אבל:'+c.a;div.appendChild(s4);}
+    if(c.o>0){var s5=document.createElement('span');s5.className='sum-item';s5.style.background=SCOL['o'];s5.style.color=STCOL['o'];s5.textContent='אחר:'+c.o;div.appendChild(s5);}
     if(!div.children.length){div.textContent='—';div.style.color='var(--text3)';}
     td.appendChild(div);sr.appendChild(td);
   });
   tb.appendChild(sr);
 }
 
-function addCnt(c,v){
-  if(!c) return;
-  if(v==='חופש') c.v++;
-  else if(v==='מחלה') c.s++;
-  else if(v==='חצי חופש') c.hv+=0.5;
-  else if(v==='חצי מחלה') c.hs+=0.5;
-  else if(v==='חג'||v==='פסח') c.h++;
-  else if(v==='אבל') c.a++;
-  else if(v==='אחר') c.o++;
+function updateSummaryRow(){
+  // מחשב מחדש את שורת הסיכום בלי לרנדר את כל הטבלה
+  var cutoff=getCutoff();
+  var currM=MONTHS[idx];
+  var emps=activeEmps(currM);
+  var counts={};emps.forEach(function(e){counts[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});
+  (state.months[currM]||[]).forEach(function(row){
+    if(!isW(row.date)){
+      var isAfter=cutoff&&parseD(row.date)>cutoff;
+      if(!isAfter) emps.forEach(function(emp){addCnt(counts[emp],(row.vals&&row.vals[emp])||'');});
+    }
+  });
+  // מחק שורת סיכום קיימת
+  var tb=document.getElementById('tbl-body');
+  var existing=tb.querySelector('tr.sumrow');
+  if(existing) tb.removeChild(existing);
+  makeSummary(tb,emps,counts);
 }
 
-// ===== ANNUAL SUMMARY =====
+function addCnt(c,v){
+  if(!c) return;
+  if(v==='חופש') c.v++;else if(v==='מחלה') c.s++;else if(v==='חצי חופש') c.hv+=0.5;
+  else if(v==='חצי מחלה') c.hs+=0.5;else if(v==='חג'||v==='פסח') c.h++;
+  else if(v==='אבל') c.a++;else if(v==='אחר') c.o++;
+}
+
 function renderAnnual(){
   var content=document.getElementById('annual-content');content.innerHTML='';
-  if(!state.emps.length){content.innerHTML='<div style="color:var(--text3)">אין עובדים מוגדרים.</div>';return;}
-
+  var enames=state.emps.map(function(e){return e.name;});
+  if(!enames.length){content.innerHTML='<div style="color:var(--text3)">אין עובדים.</div>';return;}
   var types=[
-    {key:'vs',label:'ימי חופש (כולל חצי)',bg:'var(--v-bg)',tc:'var(--v-text)'},
-    {key:'ss',label:'ימי מחלה (כולל חצי)',bg:'var(--s-bg)',tc:'var(--s-text)'},
+    {key:'vs',label:'ימי חופש',bg:'var(--v-bg)',tc:'var(--v-text)'},
+    {key:'ss',label:'ימי מחלה',bg:'var(--s-bg)',tc:'var(--s-text)'},
     {key:'h',label:'ימי חג',bg:'var(--h-bg)',tc:'var(--h-text)'},
     {key:'a',label:'ימי אבל',bg:'var(--a-bg)',tc:'var(--a-text)'},
     {key:'o',label:'אחר',bg:'var(--o-bg)',tc:'var(--o-text)'}
   ];
-
   types.forEach(function(type){
     var hasData=false;
-    state.emps.forEach(function(emp){
-      MONTHS.forEach(function(m){
-        (state.months[m]||[]).forEach(function(row){
-          if(!isWknd(row.date)&&row.vals&&row.vals[emp]){
-            var c={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};
-            addCnt(c,row.vals[emp]);
-            var val=getAnnualVal(c,type.key);
-            if(val>0) hasData=true;
-          }
-        });
-      });
-    });
+    enames.forEach(function(emp){MONTHS.forEach(function(m){(state.months[m]||[]).forEach(function(row){if(!isW(row.date)&&row.vals&&row.vals[emp]){var c={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};addCnt(c,row.vals[emp]);if(getAV(c,type.key)>0) hasData=true;}});});});
     if(!hasData) return;
-
-    var section=document.createElement('div');section.className='ann-section';
-    var titleEl=document.createElement('div');titleEl.className='ann-section-title';
-    titleEl.style.background=type.bg;titleEl.style.color=type.tc;
-    titleEl.textContent=type.label;section.appendChild(titleEl);
-
+    var sec=document.createElement('div');sec.className='ann-section';
+    var tit=document.createElement('div');tit.className='ann-section-title';tit.style.background=type.bg;tit.style.color=type.tc;tit.textContent=type.label;sec.appendChild(tit);
     var tbl=document.createElement('table');tbl.className='ann-tbl';
     var hrow=document.createElement('tr');
     var th0=document.createElement('th');th0.className='emp-h';th0.textContent='עובד';hrow.appendChild(th0);
     MONTHS.forEach(function(m){var th=document.createElement('th');th.textContent=m.substring(0,3);hrow.appendChild(th);});
-    var thT=document.createElement('th');thT.textContent='סה"כ';hrow.appendChild(thT);
-    tbl.appendChild(hrow);
-
-    var colTotals=MONTHS.map(function(){return 0;});
-    var grand=0;
-
-    state.emps.forEach(function(emp){
+    var thT=document.createElement('th');thT.textContent='סה"כ';hrow.appendChild(thT);tbl.appendChild(hrow);
+    var colT=MONTHS.map(function(){return 0;}),grand=0;
+    enames.forEach(function(emp){
       var tr=document.createElement('tr');
       var tdE=document.createElement('td');tdE.className='emp-name';tdE.textContent=emp;tr.appendChild(tdE);
-      var empTotal=0;
+      var et=0;
       MONTHS.forEach(function(m,mi){
         var c={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};
-        (state.months[m]||[]).forEach(function(row){if(!isWknd(row.date)&&row.vals&&row.vals[emp]) addCnt(c,row.vals[emp]);});
-        var val=getAnnualVal(c,type.key);
-        empTotal+=val;colTotals[mi]+=val;
+        (state.months[m]||[]).forEach(function(row){if(!isW(row.date)&&row.vals&&row.vals[emp]) addCnt(c,row.vals[emp]);});
+        var val=getAV(c,type.key);et+=val;colT[mi]+=val;
         var td=document.createElement('td');
-        if(val>0){td.textContent=val;td.style.background=type.bg;td.style.color=type.tc;td.style.fontWeight='500';}
-        else{td.textContent='—';td.className='zero';}
+        if(val>0){td.textContent=val;td.style.background=type.bg;td.style.color=type.tc;td.style.fontWeight='500';}else{td.textContent='—';td.className='zero';}
         tr.appendChild(td);
       });
-      grand+=empTotal;
-      var tdT=document.createElement('td');tdT.className='total';tdT.textContent=empTotal||'—';tr.appendChild(tdT);
-      tbl.appendChild(tr);
+      grand+=et;var tdT=document.createElement('td');tdT.className='total';tdT.textContent=et||'—';tr.appendChild(tdT);tbl.appendChild(tr);
     });
-
-    var sumRow=document.createElement('tr');sumRow.className='sum-row';
-    var tdSL=document.createElement('td');tdSL.className='emp-name';tdSL.textContent='סה"כ';sumRow.appendChild(tdSL);
-    colTotals.forEach(function(val){var td=document.createElement('td');td.textContent=val||'—';sumRow.appendChild(td);});
-    var tdG=document.createElement('td');tdG.textContent=grand||'—';sumRow.appendChild(tdG);
-    tbl.appendChild(sumRow);
-    section.appendChild(tbl);content.appendChild(section);
+    var srow=document.createElement('tr');srow.className='sum-row';
+    var sdE=document.createElement('td');sdE.className='emp-name';sdE.textContent='סה"כ';srow.appendChild(sdE);
+    colT.forEach(function(v){var td=document.createElement('td');td.textContent=v||'—';srow.appendChild(td);});
+    var sdT=document.createElement('td');sdT.textContent=grand||'—';srow.appendChild(sdT);tbl.appendChild(srow);sec.appendChild(tbl);content.appendChild(sec);
   });
 }
+function getAV(c,k){if(k==='vs') return c.v+(c.hv||0);if(k==='ss') return c.s+(c.hs||0);return c[k]||0;}
 
-function getAnnualVal(c,key){
-  if(key==='vs') return c.v+(c.hv||0);
-  if(key==='ss') return c.s+(c.hs||0);
-  return c[key]||0;
-}
-
-// ===== HOLIDAYS =====
 function openHolidayModal(){
   var c=document.getElementById('h-emps');c.innerHTML='';
-  state.emps.forEach(function(emp){
+  state.emps.filter(function(e){return !e.endMonth;}).forEach(function(emp){
     var lbl=document.createElement('label');lbl.className='emp-cb';
-    var cb=document.createElement('input');cb.type='checkbox';cb.value=emp;cb.className='emp-checkbox';
-    lbl.appendChild(cb);lbl.appendChild(document.createTextNode(emp));c.appendChild(lbl);
+    var cb=document.createElement('input');cb.type='checkbox';cb.value=emp.name;cb.className='emp-checkbox';
+    lbl.appendChild(cb);lbl.appendChild(document.createTextNode(emp.name));c.appendChild(lbl);
   });
-  document.getElementById('h-name').value='';document.getElementById('h-date').value='';
-  document.getElementById('h-all').checked=false;
+  document.getElementById('h-name').value='';document.getElementById('h-date-start').value='';document.getElementById('h-date-end').value='';document.getElementById('h-all').checked=false;
   document.getElementById('h-modal').className='modal-bg show';
 }
 function closeModal(id){document.getElementById(id).className='modal-bg';}
 function toggleAll(cb){document.querySelectorAll('.emp-checkbox').forEach(function(c){c.checked=cb.checked;});}
-
 function addHoliday(){
   var name=document.getElementById('h-name').value.trim();
-  var date=document.getElementById('h-date').value;
-  if(!name||!date){alert('נא למלא שם ותאריך');return;}
+  var ds=document.getElementById('h-date-start').value;
+  var de=document.getElementById('h-date-end').value||ds;
+  if(!name||!ds){alert('נא למלא שם ותאריך התחלה');return;}
   var allC=document.getElementById('h-all').checked;
   var emps=allC?'all':[];
   if(!allC){document.querySelectorAll('.emp-checkbox:checked').forEach(function(c){emps.push(c.value);});if(!emps.length){alert('נא לבחור עובד לפחות');return;}}
   if(!state.holidays) state.holidays=[];
-  var h={name:name,date:date,emps:emps};
-  state.holidays.push(h);
-  applyHoliday(h);
-  closeModal('h-modal');renderHolidayList();markChanged();toast('✓ החג נוסף');
+  var h={name:name,dateStart:ds,dateEnd:de,emps:emps};
+  state.holidays.push(h);applyHoliday(h);closeModal('h-modal');renderHolidayList();markChanged();toast('✓ החג נוסף');
 }
-
 function applyHoliday(h){
+  var start=parseD(h.dateStart),end=parseD(h.dateEnd||h.dateStart);
   MONTHS.forEach(function(m){
     (state.months[m]||[]).forEach(function(row){
-      if(row.date===h.date){
-        state.emps.forEach(function(emp){
-          var applies=h.emps==='all'||(Array.isArray(h.emps)&&h.emps.indexOf(emp)>=0);
-          if(applies){if(!row.vals) row.vals={};if(!row.vals[emp]) row.vals[emp]='חג';}
-        });
+      var d=parseD(row.date);
+      if(d>=start&&d<=end){
+        var en=h.emps==='all'?state.emps.filter(function(e){return !e.endMonth;}).map(function(e){return e.name;}):h.emps;
+        en.forEach(function(emp){if(!row.vals) row.vals={};if(!row.vals[emp]) row.vals[emp]='חג';});
       }
     });
-  });
-  render();
+  });render();
 }
-
 function deleteHoliday(i){if(!confirm('למחוק?')) return;state.holidays.splice(i,1);renderHolidayList();markChanged();}
-
 function renderHolidayList(){
   var c=document.getElementById('holiday-list');c.innerHTML='';
-  if(!state.holidays||!state.holidays.length){c.innerHTML='<div style="color:var(--text3);font-size:12px">אין חגים מוגדרים.</div>';return;}
+  if(!state.holidays||!state.holidays.length){c.innerHTML='<div style="color:var(--text3);font-size:12px">אין חגים.</div>';return;}
   state.holidays.forEach(function(h,i){
     var d=document.createElement('div');d.className='h-item';
-    var pts=h.date.split('-');var ds=pts[2]+'/'+pts[1]+'/'+pts[0];
+    var ds=fmtDate(h.dateStart)+(h.dateEnd&&h.dateEnd!==h.dateStart?' — '+fmtDate(h.dateEnd):'');
     var es=h.emps==='all'?'כל העובדים':h.emps.join(', ');
     var hn=document.createElement('span');hn.className='hn';hn.textContent=h.name;
     var hd=document.createElement('span');hd.className='hd';hd.textContent=ds;
@@ -866,114 +739,79 @@ function renderHolidayList(){
   });
 }
 
-// ===== TABS =====
 function switchTab(tab){
   ['leave','holidays','annual','settings'].forEach(function(t){
     document.getElementById('screen-'+t).style.display='none';
     var b=document.getElementById('tab-'+t);if(b) b.className='nav-btn'+(t===tab?' active':'');
   });
   document.getElementById('screen-'+tab).style.display='block';
-  if(tab==='annual') renderAnnual();
-  if(tab==='holidays') renderHolidayList();
-  if(tab==='settings') renderEmpList();
+  if(tab==='annual') renderAnnual();if(tab==='holidays') renderHolidayList();if(tab==='settings') renderEmpList();
 }
 
-// ===== NEW YEAR =====
 function newYear(){
   if(!confirm('להתחיל שנת '+(state.year+1)+'?')) return;
-  exportXlsx();
-  var ny=state.year+1;
-  state={year:ny,emps:state.emps,months:{},holidays:[],cutoff:null};
-  buildMonths(ny);
-  document.getElementById('year-lbl').textContent=ny;
-  document.getElementById('annual-year-lbl').textContent=ny;
-  document.getElementById('cutoff-in').value='';
-  document.getElementById('cutoff-badge').style.display='none';
+  exportXlsx();var ny=state.year+1;
+  state={year:ny,emps:state.emps,months:{},holidays:[],cutoff:null};buildMonths(ny);
+  document.getElementById('year-lbl').textContent=ny;document.getElementById('annual-year-lbl').textContent=ny;
+  document.getElementById('cutoff-in').value='';document.getElementById('cutoff-badge').style.display='none';
   saveData();idx=0;render();toast('✓ שנת '+ny+' החלה');
 }
 
-// ===== IMPORT =====
 function importFromXlsx(input){
-  var name=document.getElementById('inp-name').value.trim();
-  if(!name){alert('נא להכניס שם קודם');return;}
-  user=name;
-  if(!input.files||!input.files[0]) return;
-  show('loading');
+  var name=document.getElementById('inp-name').value.trim();if(!name){alert('נא להכניס שם');return;}
+  user=name;if(!input.files||!input.files[0]) return;show('loading');
   var reader=new FileReader();
   reader.onload=function(e){
     try{
       var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true,raw:false});
       var skip={'א':1,'ב':1,'ג':1,'ד':1,'ה':1,'ו':1,'ש':1,'':1};
-      var allEmps=[],importedMonths={};
+      var allNames=[],months={},yr=new Date().getFullYear();
       wb.SheetNames.forEach(function(sn){
         var ws=wb.Sheets[sn];if(!ws||!ws['!ref']) return;
         var range=XLSX.utils.decode_range(ws['!ref']);
         var hr=-1,emps=[],ec=-1;
         for(var r=0;r<=Math.min(range.e.r,20);r++){
           var found=[];
-          for(var c=0;c<=range.e.c;c++){
-            var cell=ws[XLSX.utils.encode_cell({r:r,c:c})];
-            if(!cell) continue;
-            var v=String(cell.v||'').trim();
-            if(cell.t==='s'&&v.length>=2&&!skip[v]&&!/^\d/.test(v)&&/[\u05d0-\u05ea]/.test(v)) found.push({c:c,v:v});
-          }
+          for(var c=0;c<=range.e.c;c++){var cell=ws[XLSX.utils.encode_cell({r:r,c:c})];if(!cell) continue;var v=String(cell.v||'').trim();if(cell.t==='s'&&v.length>=2&&!skip[v]&&!/^\d/.test(v)&&/[\u05d0-\u05ea]/.test(v)) found.push({c:c,v:v});}
           if(found.length>=3){hr=r;emps=found.map(function(x){return x.v;});ec=found[0].c;break;}
         }
         if(hr===-1) return;
-        emps.forEach(function(e){if(allEmps.indexOf(e)<0) allEmps.push(e);});
+        emps.forEach(function(e){if(allNames.indexOf(e)<0) allNames.push(e);});
         var rows=[];
         for(var r2=hr+1;r2<=range.e.r;r2++){
           var date=null;
-          for(var c2=0;c2<=Math.min(range.e.c,3);c2++){
-            var cell2=ws[XLSX.utils.encode_cell({r:r2,c:c2})];
-            if(!cell2) continue;
-            if(cell2.t==='d'&&cell2.v){date=new Date(cell2.v);break;}
-            if(cell2.t==='n'&&cell2.v>40000&&cell2.v<60000){var p=XLSX.SSF.parse_date_code(cell2.v);if(p){date=new Date(p.y,p.m-1,p.d);break;}}
-          }
+          for(var c2=0;c2<=Math.min(range.e.c,3);c2++){var cell2=ws[XLSX.utils.encode_cell({r:r2,c:c2})];if(!cell2) continue;if(cell2.t==='d'&&cell2.v){date=new Date(cell2.v);break;}if(cell2.t==='n'&&cell2.v>40000&&cell2.v<60000){var p=XLSX.SSF.parse_date_code(cell2.v);if(p){date=new Date(p.y,p.m-1,p.d);break;}}}
           if(!date||isNaN(date.getTime())) continue;
+          if(rows.length===0) yr=date.getFullYear();
           var vals={};
-          emps.forEach(function(emp,i){
-            var cell3=ws[XLSX.utils.encode_cell({r:r2,c:ec+i})];
-            vals[emp]=(cell3&&cell3.t!=='z'&&cell3.v!=null)?String(cell3.v).trim():'';
-          });
+          emps.forEach(function(emp,i){var cell3=ws[XLSX.utils.encode_cell({r:r2,c:ec+i})];vals[emp]=(cell3&&cell3.t!=='z'&&cell3.v!=null)?String(cell3.v).trim():'';});
           rows.push({date:fmt(date),vals:vals});
         }
-        if(rows.length) importedMonths[sn]=rows;
+        if(rows.length) months[sn]=rows;
       });
-      var yr=new Date().getFullYear();
-      var keys=Object.keys(importedMonths);
-      if(keys.length&&importedMonths[keys[0]].length) yr=parseD(importedMonths[keys[0]][0].date).getFullYear();
-      state={year:yr,emps:allEmps,months:importedMonths,holidays:[],cutoff:null};
-      saveLocal();
-      finishLogin();
-      toast('✓ יובאו '+allEmps.length+' עובדים');
+      if(!allNames.length){alert('לא נמצאו עובדים');show('login');return;}
+      state={year:yr,emps:allNames.map(function(n){return{name:n,endMonth:null};}),months:months,holidays:[],cutoff:null};
+      saveLocal();finishLogin();toast('✓ יובאו '+allNames.length+' עובדים לשנת '+yr);
     }catch(ex){alert('שגיאה: '+ex.message);show('login');}
   };
   reader.readAsArrayBuffer(input.files[0]);
 }
 
-// ===== EXPORT =====
 function exportXlsx(){
   var newWb=XLSX.utils.book_new();
+  var enames=state.emps.map(function(e){return e.name;});
   MONTHS.forEach(function(m){
     var rows=state.months[m]||[];if(!rows.length) return;
-    var aoa=[['יום','תאריך'].concat(state.emps)];
-    rows.forEach(function(row){
-      var rd=[dayName(row.date),dayNum(row.date)];
-      state.emps.forEach(function(emp){rd.push((row.vals&&row.vals[emp])||'');});
-      aoa.push(rd);
-    });
+    var aoa=[['יום','תאריך'].concat(enames)];
+    rows.forEach(function(row){var rd=[dname(row.date),dnum(row.date)];enames.forEach(function(emp){rd.push((row.vals&&row.vals[emp])||'');});aoa.push(rd);});
     XLSX.utils.book_append_sheet(newWb,XLSX.utils.aoa_to_sheet(aoa),m);
   });
   var out=XLSX.write(newWb,{bookType:'xlsx',type:'array'});
   var blob=new Blob([out],{type:'application/octet-stream'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');a.href=url;a.download='חופש_מחלה_'+state.year+'_גיבוי.xlsx';a.click();
-  URL.revokeObjectURL(url);
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='חופש_מחלה_'+state.year+'_גיבוי.xlsx';a.click();URL.revokeObjectURL(url);
   toast('✓ קובץ גיבוי הורד');
 }
 
-// ===== UTILS =====
 function show(s){
   ['screen-login','screen-loading','screen-leave','screen-holidays','screen-annual','screen-settings'].forEach(function(id){document.getElementById(id).style.display='none';});
   if(s==='login') document.getElementById('screen-login').style.display='flex';
