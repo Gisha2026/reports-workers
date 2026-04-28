@@ -331,7 +331,7 @@ var VFCLS={'חופש':'fv','מחלה':'fs','חצי חופש':'fhv','חצי מח�
 var SCOL={'v':'var(--v-bg)','s':'var(--s-bg)','hv':'var(--hv-bg)','hs':'var(--hs-bg)','h':'var(--h-bg)','a':'var(--a-bg)','o':'var(--o-bg)'};
 var STCOL={'v':'var(--v-text)','s':'var(--s-text)','hv':'var(--hv-text)','hs':'var(--hs-text)','h':'var(--h-text)','a':'var(--a-text)','o':'var(--o-text)'};
 
-var STORE='rw_v29',LOCK='rw_lock_v29';
+var STORE='rw_v28',LOCK='rw_lock_v28';
 var GH_OWNER='Gisha2026';
 var GH_REPO='reports-workers';
 var GH_FILE='data.json';
@@ -365,6 +365,44 @@ function getCutoff(){
   return state.cutoffs&&state.cutoffs[m]?parseD(state.cutoffs[m]):null;
 }
 function getCutoffStr(){var m=MONTHS[idx];return(state.cutoffs&&state.cutoffs[m])||'';}
+function getMonthCutoff(mi){
+  var m=MONTHS[mi];
+  return state.cutoffs&&state.cutoffs[m]?parseD(state.cutoffs[m]):null;
+}
+function getMonthCutoffStr(mi){
+  var m=MONTHS[mi];
+  return(state.cutoffs&&state.cutoffs[m])||'';
+}
+function sameWorkYearMonth(s,mi){var d=parseD(s);return d.getFullYear()===state.year&&d.getMonth()===mi;}
+function blankCounts(emps){var c={};emps.forEach(function(e){c[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});return c;}
+function calcMonthlySummary(mi,emps){
+  var nextMi=mi+1;
+  var ready=nextMi<MONTHS.length && !!getMonthCutoffStr(nextMi);
+  var cutoff=ready?getMonthCutoff(nextMi):null;
+  var counts=blankCounts(emps);
+  var counted={};
+  var currM=MONTHS[mi];
+  (state.months[currM]||[]).forEach(function(r){
+    if(!sameWorkYearMonth(r.date,mi)) return;
+    emps.forEach(function(emp){
+      var v=(r.vals&&r.vals[emp])||'';
+      if(v){addCnt(counts[emp],v);counted[r.date+'|'+emp]=1;}
+    });
+  });
+  if(ready&&nextMi<MONTHS.length){
+    var nextM=MONTHS[nextMi];
+    (state.months[nextM]||[]).forEach(function(r){
+      if(!sameWorkYearMonth(r.date,mi)) return;
+      if(cutoff&&parseD(r.date)<=cutoff) return;
+      emps.forEach(function(emp){
+        var key=r.date+'|'+emp;
+        var v=(r.vals&&r.vals[emp])||'';
+        if(v&&!counted[key]){addCnt(counts[emp],v);counted[key]=1;}
+      });
+    });
+  }
+  return{ready:ready,counts:counts,cutoff:cutoff};
+}
 
 // Active employees for a given month index
 function activeEmps(mi){
@@ -639,6 +677,7 @@ function render(){
   var displayRows=[];
   var currRows=state.months[currM]||[];
   
+  if(currRows.length>0) console.log('First row date:',currRows[0].date,'jsDay:',jsDay(currRows[0].date));
   for(var ri=0;ri<currRows.length;ri++){
     var r=currRows[ri];
     var rDate=parseD(r.date);
@@ -675,17 +714,15 @@ function render(){
   }
 
   // Calculate duplicates
-  _dupKeys=calcDups(cutoff,prevM,currM,emps);
+  _dupKeys=calcDups(prevM,currM,emps);
 
   if(view==='edit') renderEdit(displayRows,emps,currM);
   else renderFull(displayRows,emps,currM);
 }
 
-function calcDups(cutoff,prevM,currM,emps){
-  // Duplicates: a date that appears in prev month section of current sheet
-  // AND also has a value already entered for that date in prev month data
-  // This means: prev month rows at top of current sheet that have values in BOTH months
-  if(!cutoff) return {};
+function calcDups(prevM,currM,emps){
+  // Duplicates: same employee and date has a value both in the previous month's sheet
+  // and in the previous-month rows shown at the top of the current sheet.
   
   // Get all prev month rows from current sheet (dates from previous month)
   var currRows=state.months[currM]||[];
@@ -744,13 +781,14 @@ function renderEdit(displayRows,emps,currM){
   buildHead(emps);
   var tb=document.getElementById('tbl-body');tb.innerHTML='';
   var cutoff=getCutoff();
-  var counts={};emps.forEach(function(e){counts[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});
+  var summary=calcMonthlySummary(idx,emps);
+  var counts=summary.counts;
 
   displayRows.forEach(function(item){
     if(item.t==='wknd'){addWknd(tb,emps.length);return;}
 
     var tr=document.createElement('tr');
-    var date=item.t==='prev'?item.date:item.row.date;
+    var date=item.row.date;
 
     if(item.t==='prev') tr.className='prev-row';
     else if(item.t==='after') tr.className='after-cut';
@@ -766,10 +804,21 @@ function renderEdit(displayRows,emps,currM){
       OPTS.forEach(function(o){var op=document.createElement('option');op.value=o;op.textContent=o||'—';sel.appendChild(op);});
 
       if(item.t==='prev'){
-        // Always shown empty — user can only read prev month values
+        // Do not copy values from the previous sheet; show/edit only values stored in this sheet.
+        var pval=(item.row.vals&&item.row.vals[emp])||'';
         if(_dupKeys[dk]) td.className='dup';
-        sel.value='';
-        sel.onchange=function(){markChanged();};
+        else if(VCLS[pval]) td.className=VCLS[pval];
+        OPTS.forEach(function(o){if(o===pval||(pval==='פסח'&&o==='חג')){var ops=sel.options;for(var oi=0;oi<ops.length;oi++) if(ops[oi].value===o){ops[oi].selected=true;break;}}});
+        (function(row,emp,td,dk){
+          sel.onchange=function(){
+            if(!row.vals) row.vals={};
+            row.vals[emp]=this.value;
+            markChanged();
+            _dupKeys=calcDups(idx>0?MONTHS[idx-1]:null,MONTHS[idx],activeEmps(idx));
+            td.className=_dupKeys[dk]?'dup':(VCLS[this.value]||'');
+            refreshSummary(emps,currM);
+          };
+        })(item.row,emp,td,dk);
       } else {
         var val=(item.row.vals&&item.row.vals[emp])||'';
         if(_dupKeys[dk]) td.className='dup';
@@ -779,47 +828,42 @@ function renderEdit(displayRows,emps,currM){
           sel.onchange=function(){
             if(!row.vals) row.vals={};
             row.vals[emp]=this.value;
-            td.className=_dupKeys[dk]?'dup':(VCLS[this.value]||'');
             markChanged();
-            // Recalculate dups
-            var cutoff=getCutoff();
-            _dupKeys=calcDups(cutoff,idx>0?MONTHS[idx-1]:null,MONTHS[idx],activeEmps(idx));
-            // Update summary
+            // Recalculate duplicates and update the current cell immediately
+            _dupKeys=calcDups(idx>0?MONTHS[idx-1]:null,MONTHS[idx],activeEmps(idx));
+            td.className=_dupKeys[dk]?'dup':(VCLS[this.value]||'');
+            // Update summary immediately
             refreshSummary(emps,currM);
           };
         })(item.row,emp,td,dk);
-        if(item.t==='curr') addCnt(counts[emp],val);
       }
       td.appendChild(sel);tr.appendChild(td);
     });
     tb.appendChild(tr);
   });
 
-  appendSummary(tb,emps,counts,cutoff);
+  appendSummary(tb,emps,counts,summary.ready);
 }
 
 function refreshSummary(emps,currM){
-  var cutoff=getCutoff();
-  var counts={};emps.forEach(function(e){counts[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});
-  (state.months[currM]||[]).forEach(function(r){
-    var isAfter=cutoff&&parseD(r.date)>cutoff;
-    if(!isAfter) emps.forEach(function(emp){addCnt(counts[emp],(r.vals&&r.vals[emp])||'');});
-  });
+  var summary=calcMonthlySummary(idx,emps);
   var tb=document.getElementById('tbl-body');
   var ex=tb.querySelector('tr.sumrow');if(ex) tb.removeChild(ex);
-  appendSummary(tb,emps,counts,cutoff);
+  appendSummary(tb,emps,summary.counts,summary.ready);
 }
+
 
 function renderFull(displayRows,emps,currM){
   buildHead(emps);
   var tb=document.getElementById('tbl-body');tb.innerHTML='';
   var cutoff=getCutoff();
-  var counts={};emps.forEach(function(e){counts[e]={v:0,s:0,hv:0,hs:0,h:0,a:0,o:0};});
+  var summary=calcMonthlySummary(idx,emps);
+  var counts=summary.counts;
 
   displayRows.forEach(function(item){
     if(item.t==='wknd'){addWknd(tb,emps.length);return;}
     var tr=document.createElement('tr');
-    var date=item.t==='prev'?item.date:item.row.date;
+    var date=item.row.date;
     if(item.t==='prev') tr.className='prev-row';
     else if(item.t==='after') tr.className='after-cut';
     var td1=document.createElement('td');td1.className='dc';td1.textContent=dname(date);
@@ -831,20 +875,19 @@ function renderFull(displayRows,emps,currM){
         var val=(item.row.vals&&item.row.vals[emp])||'';
         var lbl=VLBL[val]||val||'';
         if(lbl) td.innerHTML='<span class="full-val '+(VFCLS[val]||'')+'">'+lbl+'</span>';
-        if(item.t==='curr') addCnt(counts[emp],val);
       }
       tr.appendChild(td);
     });
     tb.appendChild(tr);
   });
-  appendSummary(tb,emps,counts,cutoff);
+  appendSummary(tb,emps,counts,summary.ready);
 }
 
-function appendSummary(tb,emps,counts,cutoff){
+function appendSummary(tb,emps,counts,ready){
   var sr=document.createElement('tr');sr.className='sumrow';
   var st=document.createElement('td');st.colSpan=2;
-  // Show summary only if cutoff is set for this month
-  if(!cutoff){
+  // Show summary only after the next month's cutoff is set
+  if(!ready){
     st.textContent='קבע חיתוך לסיכום';st.style.color='var(--text3)';st.style.fontStyle='italic';
     sr.appendChild(st);
     for(var i=0;i<emps.length;i++){var td=document.createElement('td');sr.appendChild(td);}
@@ -1027,22 +1070,21 @@ function importFromXlsx(input){
       var allEmpNames=[],importedMonths={};
       var detectedYear=new Date().getFullYear();
       var yearFound=false;
-      var KNOWN={'חופש':1,'מחלה':1,'חצי חופש':1,'חצי מחלה':1,'חג':1,'אבל':1,'אחר':1,'פסח':1,'חצי יום':1};
-      var DAYLTR={'א':1,'ב':1,'ג':1,'ד':1,'ה':1,'ו':1,'ש':1};
 
       wb.SheetNames.forEach(function(sn){
         var ws=wb.Sheets[sn];if(!ws||!ws['!ref']) return;
         var range=XLSX.utils.decode_range(ws['!ref']);
-        var hr=-1,emps=[],ec=3;
+        var hr=-1,emps=[],ec=-1;
 
-        // Find header row: row with 3+ Hebrew names not known values/day letters
-        for(var r=0;r<=Math.min(range.e.r,25);r++){
+        // Find header row: look for row with 5+ Hebrew names that are not known values
+        for(var r=0;r<=Math.min(range.e.r,20);r++){
           var found=[];
           for(var c=0;c<=range.e.c;c++){
             var cell=ws[XLSX.utils.encode_cell({r:r,c:c})];
             if(!cell||cell.t!=='s') continue;
             var v=String(cell.v||'').trim();
-            if(v.length>=2&&!KNOWN[v]&&!DAYLTR[v]&&/[א-ת]/.test(v)&&!/^\d/.test(v)){
+            // Valid employee name: Hebrew, 2+ chars, not a known value, not a day letter
+            if(v.length>=2 && /[\u05d0-\u05ea]/.test(v) && !KNOWN_VALS[v] && !/^\d/.test(v)){
               found.push({c:c,v:v});
             }
           }
@@ -1055,31 +1097,28 @@ function importFromXlsx(input){
         }
         if(hr===-1||emps.length===0) return;
 
+        // Add employees
         emps.forEach(function(e){if(allEmpNames.indexOf(e)<0) allEmpNames.push(e);});
 
+        // Read data rows
         var rows=[];
-        for(var r2=0;r2<=range.e.r;r2++){
-          if(r2===hr) continue; // skip header row
-          // Col 0 = day letter, Col 1 = date
-          var dayCell=ws[XLSX.utils.encode_cell({r:r2,c:0})];
-          var dateCell=ws[XLSX.utils.encode_cell({r:r2,c:1})];
-          if(!dayCell||!dateCell) continue;
-          if(dayCell.t!=='s'||!DAYLTR[dayCell.v]) continue;
-          
+        for(var r2=hr+1;r2<=range.e.r;r2++){
           var date=null;
-          if(dateCell.t==='d'&&dateCell.v){
-            date=new Date(dateCell.v);
-          } else if(dateCell.t==='n'&&dateCell.v>40000&&dateCell.v<60000){
-            var p=XLSX.SSF.parse_date_code(dateCell.v);
-            if(p) date=new Date(p.y,p.m-1,p.d);
+          // Look for date in first 3 columns
+          for(var c2=0;c2<=Math.min(range.e.c,3);c2++){
+            var cell2=ws[XLSX.utils.encode_cell({r:r2,c:c2})];
+            if(!cell2) continue;
+            if(cell2.t==='d'&&cell2.v){date=new Date(cell2.v);break;}
+            if(cell2.t==='n'&&cell2.v>40000&&cell2.v<60000){
+              var p=XLSX.SSF.parse_date_code(cell2.v);
+              if(p){date=new Date(p.y,p.m-1,p.d);break;}
+            }
           }
           if(!date||isNaN(date.getTime())) continue;
+          // Debug: log each date
+          if(sn==='אפריל') console.log('Import April row:',date.toISOString().slice(0,10),'getDay:',date.getDay());
 
-          // Skip Fri(5) and Sat(6)
-          var dow=date.getDay();
-          if(dow===5||dow===6) continue;
-
-          // Detect year
+          // Detect year from first date matching the sheet's month
           if(!yearFound){
             var mIdx=MONTHS.indexOf(sn);
             if(mIdx>=0&&date.getMonth()===mIdx){
@@ -1088,14 +1127,15 @@ function importFromXlsx(input){
             }
           }
 
-          // Read values at employee columns
+          // Only store workdays - skip Fri(5) and Sat(6) in JS
+          var dow=date.getDay();
+          if(dow===5||dow===6) continue; // Skip Fri and Sat
+
           var vals={};
-          emps.forEach(function(emp,ei){
-            var vc=ws[XLSX.utils.encode_cell({r:r2,c:ec+ei})];
-            if(vc&&vc.t!=='z'&&vc.v!=null){
-              var v=String(vc.v).trim();
-              if(v) vals[emp]=v;
-            }
+          emps.forEach(function(emp,i){
+            var cell3=ws[XLSX.utils.encode_cell({r:r2,c:ec+i})];
+            var v=(cell3&&cell3.t!=='z'&&cell3.v!=null)?String(cell3.v).trim():'';
+            if(v) vals[emp]=v;
           });
           rows.push({date:fmt(date),vals:vals});
         }
