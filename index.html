@@ -173,7 +173,7 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
 
 <div class="topbar">
   <div class="logo-icon">ג</div>
-  <div class="logo">Reports_Workers <span>v28</span></div>
+  <div class="logo">Reports_Workers <span>v29</span></div>
   <div class="topbar-nav">
     <button class="nav-btn active" id="tab-leave" onclick="switchTab('leave')">חופש ומחלה</button>
     <button class="nav-btn" id="tab-holidays" onclick="switchTab('holidays')">חגים</button>
@@ -331,7 +331,7 @@ var VFCLS={'חופש':'fv','מחלה':'fs','חצי חופש':'fhv','חצי מח�
 var SCOL={'v':'var(--v-bg)','s':'var(--s-bg)','hv':'var(--hv-bg)','hs':'var(--hs-bg)','h':'var(--h-bg)','a':'var(--a-bg)','o':'var(--o-bg)'};
 var STCOL={'v':'var(--v-text)','s':'var(--s-text)','hv':'var(--hv-text)','hs':'var(--hs-text)','h':'var(--h-text)','a':'var(--a-text)','o':'var(--o-text)'};
 
-var STORE='rw_v28',LOCK='rw_lock_v28';
+var STORE='rw_v29',LOCK='rw_lock_v29';
 var GH_OWNER='Gisha2026';
 var GH_REPO='reports-workers';
 var GH_FILE='data.json';
@@ -639,7 +639,6 @@ function render(){
   var displayRows=[];
   var currRows=state.months[currM]||[];
   
-  if(currRows.length>0) console.log('First row date:',currRows[0].date,'jsDay:',jsDay(currRows[0].date));
   for(var ri=0;ri<currRows.length;ri++){
     var r=currRows[ri];
     var rDate=parseD(r.date);
@@ -1028,21 +1027,22 @@ function importFromXlsx(input){
       var allEmpNames=[],importedMonths={};
       var detectedYear=new Date().getFullYear();
       var yearFound=false;
+      var KNOWN={'חופש':1,'מחלה':1,'חצי חופש':1,'חצי מחלה':1,'חג':1,'אבל':1,'אחר':1,'פסח':1,'חצי יום':1};
+      var DAYLTR={'א':1,'ב':1,'ג':1,'ד':1,'ה':1,'ו':1,'ש':1};
 
       wb.SheetNames.forEach(function(sn){
         var ws=wb.Sheets[sn];if(!ws||!ws['!ref']) return;
         var range=XLSX.utils.decode_range(ws['!ref']);
-        var hr=-1,emps=[],ec=-1;
+        var hr=-1,emps=[],ec=3;
 
-        // Find header row: look for row with 5+ Hebrew names that are not known values
-        for(var r=0;r<=Math.min(range.e.r,20);r++){
+        // Find header row: row with 3+ Hebrew names not known values/day letters
+        for(var r=0;r<=Math.min(range.e.r,25);r++){
           var found=[];
           for(var c=0;c<=range.e.c;c++){
             var cell=ws[XLSX.utils.encode_cell({r:r,c:c})];
             if(!cell||cell.t!=='s') continue;
             var v=String(cell.v||'').trim();
-            // Valid employee name: Hebrew, 2+ chars, not a known value, not a day letter
-            if(v.length>=2 && /[\u05d0-\u05ea]/.test(v) && !KNOWN_VALS[v] && !/^\d/.test(v)){
+            if(v.length>=2&&!KNOWN[v]&&!DAYLTR[v]&&/[א-ת]/.test(v)&&!/^\d/.test(v)){
               found.push({c:c,v:v});
             }
           }
@@ -1055,28 +1055,31 @@ function importFromXlsx(input){
         }
         if(hr===-1||emps.length===0) return;
 
-        // Add employees
         emps.forEach(function(e){if(allEmpNames.indexOf(e)<0) allEmpNames.push(e);});
 
-        // Read data rows
         var rows=[];
-        for(var r2=hr+1;r2<=range.e.r;r2++){
+        for(var r2=0;r2<=range.e.r;r2++){
+          if(r2===hr) continue; // skip header row
+          // Col 0 = day letter, Col 1 = date
+          var dayCell=ws[XLSX.utils.encode_cell({r:r2,c:0})];
+          var dateCell=ws[XLSX.utils.encode_cell({r:r2,c:1})];
+          if(!dayCell||!dateCell) continue;
+          if(dayCell.t!=='s'||!DAYLTR[dayCell.v]) continue;
+          
           var date=null;
-          // Look for date in first 3 columns
-          for(var c2=0;c2<=Math.min(range.e.c,3);c2++){
-            var cell2=ws[XLSX.utils.encode_cell({r:r2,c:c2})];
-            if(!cell2) continue;
-            if(cell2.t==='d'&&cell2.v){date=new Date(cell2.v);break;}
-            if(cell2.t==='n'&&cell2.v>40000&&cell2.v<60000){
-              var p=XLSX.SSF.parse_date_code(cell2.v);
-              if(p){date=new Date(p.y,p.m-1,p.d);break;}
-            }
+          if(dateCell.t==='d'&&dateCell.v){
+            date=new Date(dateCell.v);
+          } else if(dateCell.t==='n'&&dateCell.v>40000&&dateCell.v<60000){
+            var p=XLSX.SSF.parse_date_code(dateCell.v);
+            if(p) date=new Date(p.y,p.m-1,p.d);
           }
           if(!date||isNaN(date.getTime())) continue;
-          // Debug: log each date
-          if(sn==='אפריל') console.log('Import April row:',date.toISOString().slice(0,10),'getDay:',date.getDay());
 
-          // Detect year from first date matching the sheet's month
+          // Skip Fri(5) and Sat(6)
+          var dow=date.getDay();
+          if(dow===5||dow===6) continue;
+
+          // Detect year
           if(!yearFound){
             var mIdx=MONTHS.indexOf(sn);
             if(mIdx>=0&&date.getMonth()===mIdx){
@@ -1085,15 +1088,14 @@ function importFromXlsx(input){
             }
           }
 
-          // Only store workdays - skip Fri(5) and Sat(6) in JS
-          var dow=date.getDay();
-          if(dow===5||dow===6) continue; // Skip Fri and Sat
-
+          // Read values at employee columns
           var vals={};
-          emps.forEach(function(emp,i){
-            var cell3=ws[XLSX.utils.encode_cell({r:r2,c:ec+i})];
-            var v=(cell3&&cell3.t!=='z'&&cell3.v!=null)?String(cell3.v).trim():'';
-            if(v) vals[emp]=v;
+          emps.forEach(function(emp,ei){
+            var vc=ws[XLSX.utils.encode_cell({r:r2,c:ec+ei})];
+            if(vc&&vc.t!=='z'&&vc.v!=null){
+              var v=String(vc.v).trim();
+              if(v) vals[emp]=v;
+            }
           });
           rows.push({date:fmt(date),vals:vals});
         }
