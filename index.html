@@ -6,164 +6,124 @@
 <title>Reports_Workers | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
-* { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:Arial,sans-serif; background:#f5f5f5; font-size:13px; direction:rtl; }
-
-/* LOGIN */
-#loginScreen { display:flex; align-items:center; justify-content:center; min-height:100vh; background:#f0f4f8; }
-.login-box { background:white; border-radius:12px; padding:40px; box-shadow:0 4px 20px rgba(0,0,0,.1); width:360px; text-align:center; }
-.login-logo { width:56px; height:56px; background:#00897B; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:bold; color:white; margin:0 auto 16px; }
-.login-box h2 { color:#333; margin-bottom:8px; font-size:20px; }
-.login-box p { color:#666; font-size:12px; margin-bottom:24px; }
-.login-box input { width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px; margin-bottom:12px; direction:rtl; text-align:right; }
-.login-box button { width:100%; padding:10px; background:#00897B; color:white; border:none; border-radius:6px; font-size:14px; cursor:pointer; font-weight:bold; }
-.login-box button:hover { background:#00796B; }
-.login-divider { border-top:1px solid #eee; margin:16px 0; }
-.login-import-label { display:block; width:100%; padding:8px; background:white; color:#00897B; border:1px solid #00897B; border-radius:6px; font-size:13px; cursor:pointer; text-align:center; }
-.login-import-label:hover { background:#e8f5e9; }
-
-/* APP */
-#app { display:none; }
-
-/* TOPBAR */
-.topbar { background:#00897B; color:white; padding:8px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
-.topbar-right { display:flex; align-items:center; gap:10px; }
-.topbar-logo { width:30px; height:30px; background:white; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; color:#00897B; }
-.topbar-title { font-size:14px; font-weight:bold; }
-.topbar-left { display:flex; align-items:center; gap:8px; }
-.user-badge { background:rgba(255,255,255,.2); padding:3px 10px; border-radius:12px; font-size:12px; }
-.lock-warning { background:#FF8F00; color:white; padding:3px 10px; border-radius:12px; font-size:11px; display:none; }
-
-/* TABS */
-.tabs { background:white; border-bottom:2px solid #e0e0e0; display:flex; padding:0 16px; }
-.tab { padding:10px 16px; cursor:pointer; border-bottom:3px solid transparent; font-size:13px; color:#666; }
-.tab.active { color:#00897B; border-bottom-color:#00897B; font-weight:bold; }
-.tab:hover { color:#00897B; }
-
-/* CONTENT */
-.tab-content { display:none; padding:12px 16px 70px; }
-.tab-content.active { display:block; }
-
-/* MONTH NAV — buttons tight around title */
-.month-nav { background:white; padding:8px 12px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; box-shadow:0 1px 4px rgba(0,0,0,.08); gap:8px; }
-.nav-group { display:flex; align-items:center; gap:4px; }
-.nav-btn { background:#e8f5e9; border:none; padding:5px 9px; border-radius:5px; cursor:pointer; font-size:15px; color:#00897B; line-height:1; }
-.nav-btn:hover { background:#c8e6c9; }
-.month-title-center { display:flex; align-items:center; gap:6px; }
-.month-title-center h2 { font-size:15px; color:#333; white-space:nowrap; }
-.month-jump { padding:4px 6px; border:1px solid #ddd; border-radius:5px; font-size:12px; }
-.view-toggle { padding:5px 10px; border:1px solid #00897B; border-radius:5px; cursor:pointer; font-size:12px; color:#00897B; background:white; }
-.view-toggle.active { background:#00897B; color:white; }
-
-/* CUTOFF */
-.cutoff-bar { background:white; padding:7px 12px; border-radius:8px; display:flex; align-items:center; gap:10px; margin-bottom:10px; box-shadow:0 1px 4px rgba(0,0,0,.08); flex-wrap:wrap; }
-.cutoff-bar label { font-size:12px; color:#666; }
-.cutoff-bar input[type=date] { padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; }
-.cutoff-badge { background:#FF8F00; color:white; padding:3px 10px; border-radius:12px; font-size:11px; white-space:nowrap; }
-
-/* TABLE */
-.table-wrap { overflow-x:auto; }
-table { border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.08); width:100%; }
-th { background:#00897B; color:white; padding:6px 8px; text-align:center; font-size:11px; white-space:nowrap; }
-td { padding:3px 5px; text-align:center; border-bottom:1px solid #f0f0f0; font-size:11px; }
-td.day-lbl { font-weight:bold; color:#333; min-width:24px; }
-td.date-lbl { color:#888; min-width:44px; font-size:10px; }
-tr.weekend-row td { background:#e0e0e0 !important; height:6px; padding:0; border:none; }
-tr.prev-month-row td { background:#fff8e1; }
-tr.after-cutoff-row td { background:#fff3e0; }
-tr.duplicate-row td { background:#ffebee !important; }
-tr:hover:not(.weekend-row) td { background:#f0faf9; }
-select.cell-sel { border:none; background:transparent; font-size:11px; width:78px; cursor:pointer; }
-select.cell-sel:focus { outline:1px solid #00897B; border-radius:3px; }
-select.cell-sel:disabled { opacity:.5; cursor:default; }
-.cell-val { font-size:11px; padding:2px 4px; border-radius:3px; display:inline-block; min-width:60px; }
-.holiday-cell { font-size:10px; font-weight:bold; color:#795548; background:#fffde7; padding:2px 4px; border-radius:3px; display:inline-block; }
-
-/* SUMMARY ROW */
-tr.sum-row td { background:#e8f5e9 !important; font-weight:bold; font-size:10px; padding:4px 5px; border-top:2px solid #00897B; }
-.chip { display:inline-block; padding:1px 5px; border-radius:8px; font-size:10px; font-weight:bold; margin:1px; }
-.chip-v { background:#c8e6c9; color:#2e7d32; }
-.chip-s { background:#ffcdd2; color:#c62828; }
-.chip-h { background:#fff9c4; color:#f57f17; }
-.chip-o { background:#e1bee7; color:#6a1b9a; }
-
-/* LEGEND */
-.legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; font-size:11px; align-items:center; }
-.leg-dot { width:11px; height:11px; border-radius:2px; display:inline-block; margin-left:3px; vertical-align:middle; }
-
-/* SETTINGS */
-.s-section { background:white; border-radius:8px; padding:14px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,.08); }
-.s-section h3 { color:#00897B; margin-bottom:10px; font-size:13px; }
-.worker-row { display:flex; align-items:center; gap:6px; padding:5px 0; border-bottom:1px solid #f0f0f0; }
-.worker-name { flex:1; font-weight:bold; font-size:12px; }
-.w-status { font-size:10px; padding:2px 7px; border-radius:8px; }
-.w-active { background:#c8e6c9; color:#2e7d32; }
-.w-ended { background:#ffcdd2; color:#c62828; }
-.ord-btn { background:#f5f5f5; border:1px solid #ddd; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:11px; }
-.end-btn { background:#fff3e0; border:1px solid #FFB300; color:#E65100; padding:2px 7px; border-radius:4px; cursor:pointer; font-size:11px; }
-.ended-divider { border-top:2px dashed #ccc; margin:8px 0 4px; padding-top:4px; color:#999; font-size:11px; }
-.add-row { display:flex; gap:8px; margin-top:10px; }
-.add-row input { flex:1; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; }
-.add-row button { padding:6px 12px; background:#00897B; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; }
-
-/* TOKEN */
-.tok-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
-.tok-row input { flex:1; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; direction:ltr; }
-.tok-row button { padding:6px 12px; background:#00897B; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; }
-.tok-status { font-size:11px; margin-top:4px; }
-.tok-ok { color:#2e7d32; }
-
-/* HOLIDAYS */
-.hol-form { background:#f9f9f9; border-radius:6px; padding:10px; margin-bottom:10px; }
-.hol-inputs { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; margin-bottom:8px; }
-.hol-inputs label { font-size:11px; color:#666; display:block; margin-bottom:2px; }
-.hol-inputs input[type=text] { padding:5px 7px; border:1px solid #ddd; border-radius:4px; font-size:12px; width:130px; }
-.hol-inputs input[type=date] { padding:5px 7px; border:1px solid #ddd; border-radius:4px; font-size:12px; }
-.hol-inputs button { padding:6px 12px; background:#00897B; color:white; border:none; border-radius:5px; cursor:pointer; font-size:12px; }
-.w-cbs { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.w-cb { display:flex; align-items:center; gap:3px; font-size:11px; }
-.hol-item { display:flex; align-items:center; gap:8px; padding:5px 8px; background:white; border-radius:5px; margin-bottom:3px; border:1px solid #e0e0e0; font-size:11px; }
-.hol-name { font-weight:bold; flex:1; }
-.hol-dates { color:#666; font-size:10px; }
-.hol-workers { color:#888; font-size:10px; }
-.hol-del { background:none; border:none; color:#e53935; cursor:pointer; }
-
-/* ANNUAL */
-.ann-table { border-collapse:collapse; width:100%; margin-bottom:16px; }
-.ann-table th, .ann-table td { border:1px solid #e0e0e0; padding:5px 7px; text-align:center; font-size:11px; }
-.ann-table th { background:#00897B; color:white; }
-.ann-table td.w-col { text-align:right; font-weight:bold; background:#f9f9f9; }
-.ann-table td.tot { background:#e8f5e9; font-weight:bold; }
-.ann-table tr.ended-worker td { background:#fafafa; color:#999; }
-.ann-ended-divider td { border-top:2px dashed #ccc !important; font-style:italic; color:#aaa; font-size:10px; }
-.ann-section h3 { color:#00897B; margin:14px 0 6px; font-size:13px; }
-
-/* SAVE BAR */
-.save-bar { position:fixed; bottom:0; left:0; right:0; background:white; border-top:2px solid #e0e0e0; padding:7px 16px; display:flex; gap:8px; align-items:center; box-shadow:0 -2px 8px rgba(0,0,0,.1); z-index:50; }
-.save-btn { padding:7px 18px; background:#00897B; color:white; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:bold; }
-.save-btn:hover { background:#00796B; }
-.exp-btn { padding:7px 14px; background:white; color:#00897B; border:1px solid #00897B; border-radius:6px; cursor:pointer; font-size:12px; }
-.save-status { font-size:11px; color:#666; flex:1; }
-.save-ok { color:#2e7d32; }
-.save-err { color:#c62828; }
-
-/* MODALS */
-.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; align-items:center; justify-content:center; }
-.modal-overlay.open { display:flex; }
-.modal-box { background:white; border-radius:12px; padding:24px; max-width:380px; width:92%; }
-.modal-box h3 { margin-bottom:8px; font-size:16px; }
-.modal-box p { color:#666; font-size:12px; margin-bottom:14px; }
-.modal-box input { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; font-size:13px; }
-.modal-btns { display:flex; gap:8px; justify-content:flex-end; }
-.modal-btns button { padding:7px 18px; border-radius:6px; cursor:pointer; font-size:13px; }
-.btn-confirm { background:#00897B; color:white; border:none; }
-.btn-cancel { background:white; color:#333; border:1px solid #ddd; }
-.btn-danger { background:#e53935; color:white; border:none; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f5f5;font-size:13px;direction:rtl}
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f4f8}
+.login-box{background:white;border-radius:12px;padding:40px;box-shadow:0 4px 20px rgba(0,0,0,.1);width:360px;text-align:center}
+.login-logo{width:56px;height:56px;background:#00897B;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:bold;color:white;margin:0 auto 16px}
+.login-box h2{color:#333;margin-bottom:8px;font-size:20px}
+.login-box p{color:#666;font-size:12px;margin-bottom:24px}
+.login-box input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right}
+.login-box button{width:100%;padding:10px;background:#00897B;color:white;border:none;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold}
+.login-box button:hover{background:#00796B}
+.login-divider{border-top:1px solid #eee;margin:16px 0}
+.login-import-label{display:block;width:100%;padding:8px;background:white;color:#00897B;border:1px solid #00897B;border-radius:6px;font-size:13px;cursor:pointer;text-align:center}
+.login-import-label:hover{background:#e8f5e9}
+#app{display:none}
+.topbar{background:#00897B;color:white;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-logo{width:30px;height:30px;background:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;color:#00897B}
+.topbar-title{font-size:14px;font-weight:bold}
+.topbar-left{display:flex;align-items:center;gap:8px}
+.user-badge{background:rgba(255,255,255,.2);padding:3px 10px;border-radius:12px;font-size:12px}
+.lock-warning{background:#FF8F00;color:white;padding:3px 10px;border-radius:12px;font-size:11px;display:none}
+.tabs{background:white;border-bottom:2px solid #e0e0e0;display:flex;padding:0 16px}
+.tab{padding:10px 16px;cursor:pointer;border-bottom:3px solid transparent;font-size:13px;color:#666}
+.tab.active{color:#00897B;border-bottom-color:#00897B;font-weight:bold}
+.tab:hover{color:#00897B}
+.tab-content{display:none;padding:12px 16px 70px}
+.tab-content.active{display:block}
+/* MONTH NAV — compact, arrows tight around title */
+.month-nav{background:white;padding:8px 12px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.nav-center{display:flex;align-items:center;gap:4px}
+.nav-btn{background:#e8f5e9;border:none;padding:5px 9px;border-radius:5px;cursor:pointer;font-size:15px;color:#00897B;line-height:1}
+.nav-btn:hover{background:#c8e6c9}
+.month-h2{font-size:15px;color:#333;white-space:nowrap;min-width:130px;text-align:center}
+.jump-sel{padding:4px 6px;border:1px solid #ddd;border-radius:5px;font-size:12px}
+.view-btn{padding:5px 10px;border:1px solid #00897B;border-radius:5px;cursor:pointer;font-size:12px;color:#00897B;background:white}
+.view-btn.on{background:#00897B;color:white}
+.cutoff-bar{background:white;padding:7px 12px;border-radius:8px;display:flex;align-items:center;gap:10px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);flex-wrap:wrap}
+.cutoff-bar label{font-size:12px;color:#666}
+.cutoff-bar input[type=date]{padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px}
+.cutoff-badge{background:#FF8F00;color:white;padding:3px 10px;border-radius:12px;font-size:11px;white-space:nowrap}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);width:100%}
+th{background:#00897B;color:white;padding:6px 8px;text-align:center;font-size:11px;white-space:nowrap}
+td{padding:3px 5px;text-align:center;border-bottom:1px solid #f0f0f0;font-size:11px}
+td.dl{font-weight:bold;color:#333;min-width:24px}
+td.dtl{color:#888;min-width:44px;font-size:10px}
+tr.wkend td{background:#e0e0e0!important;height:6px;padding:0;border:none}
+tr.prev-row td{background:#fff8e1}
+tr.after-cut td{background:#fff3e0}
+tr.dup-row td{background:#ffebee!important}
+tr:hover:not(.wkend) td{background:#f0faf9}
+select.cs{border:none;background:transparent;font-size:11px;width:80px;cursor:pointer}
+select.cs:focus{outline:1px solid #00897B;border-radius:3px}
+select.cs:disabled{opacity:.5;cursor:default}
+.cv{font-size:11px;padding:2px 4px;border-radius:3px;display:inline-block;min-width:60px}
+.hol-cell{font-size:10px;font-weight:bold;color:#795548;background:#fffde7;padding:2px 4px;border-radius:3px;display:inline-block;border:1px solid #f0c040}
+tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;padding:4px 5px;border-top:2px solid #00897B}
+.chip{display:inline-block;padding:1px 5px;border-radius:8px;font-size:10px;font-weight:bold;margin:1px}
+.cv-chip{background:#c8e6c9;color:#2e7d32}.cs-chip{background:#ffcdd2;color:#c62828}
+.ch-chip{background:#fff9c4;color:#f57f17}.co-chip{background:#e1bee7;color:#6a1b9a}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:11px;align-items:center}
+.ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
+.s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
+.w-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #f0f0f0}
+.wname{flex:1;font-weight:bold;font-size:12px}
+.wst{font-size:10px;padding:2px 7px;border-radius:8px}
+.wact{background:#c8e6c9;color:#2e7d32}.wend{background:#ffcdd2;color:#c62828}
+.ord-btn{background:#f5f5f5;border:1px solid #ddd;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:11px}
+.end-btn{background:#fff3e0;border:1px solid #FFB300;color:#E65100;padding:2px 7px;border-radius:4px;cursor:pointer;font-size:11px}
+.ended-sep{border-top:2px dashed #ccc;margin:8px 0 4px;color:#999;font-size:11px;padding-top:4px;text-align:center}
+.add-row{display:flex;gap:8px;margin-top:10px}
+.add-row input{flex:1;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px}
+.add-row button{padding:6px 12px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px}
+.tok-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+.tok-row input{flex:1;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px;direction:ltr}
+.tok-row button{padding:6px 12px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px}
+.tok-ok{color:#2e7d32;font-size:11px}
+.hf{background:#f9f9f9;border-radius:6px;padding:10px;margin-bottom:10px}
+.hi{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px}
+.hi label{font-size:11px;color:#666;display:block;margin-bottom:2px}
+.hi input[type=text]{padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:130px}
+.hi input[type=date]{padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px}
+.hi button{padding:6px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px}
+.wcbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.wcb{display:flex;align-items:center;gap:3px;font-size:11px}
+.hol-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:white;border-radius:5px;margin-bottom:3px;border:1px solid #e0e0e0;font-size:11px}
+.hn{font-weight:bold;flex:1}.hd{color:#666;font-size:10px}.hw{color:#888;font-size:10px}
+.hdel{background:none;border:none;color:#e53935;cursor:pointer}
+.ann-table{border-collapse:collapse;width:100%;margin-bottom:16px}
+.ann-table th,.ann-table td{border:1px solid #e0e0e0;padding:5px 7px;text-align:center;font-size:11px}
+.ann-table th{background:#00897B;color:white}
+.ann-table td.wc{text-align:right;font-weight:bold;background:#f9f9f9}
+.ann-table td.tot{background:#e8f5e9;font-weight:bold}
+.ann-table tr.ew td{background:#fafafa;color:#999}
+.ann-esep td{border-top:2px dashed #ccc!important;font-style:italic;color:#aaa;font-size:10px}
+.ann-h3{color:#00897B;margin:14px 0 6px;font-size:13px}
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:2px solid #e0e0e0;padding:7px 16px;display:flex;gap:8px;align-items:center;box-shadow:0 -2px 8px rgba(0,0,0,.1);z-index:50}
+.save-btn{padding:7px 18px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold}
+.save-btn:hover{background:#00796B}
+.exp-btn{padding:7px 14px;background:white;color:#00897B;border:1px solid #00897B;border-radius:6px;cursor:pointer;font-size:12px}
+.sst{font-size:11px;color:#666;flex:1}
+.sok{color:#2e7d32}.serr{color:#c62828}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.mb{background:white;border-radius:12px;padding:24px;max-width:380px;width:92%}
+.mb h3{margin-bottom:8px;font-size:16px}
+.mb p{color:#666;font-size:12px;margin-bottom:14px}
+.mb input{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-bottom:10px;font-size:13px}
+.mbtns{display:flex;gap:8px;justify-content:flex-end}
+.mbtns button{padding:7px 18px;border-radius:6px;cursor:pointer;font-size:13px}
+.bc{background:#00897B;color:white;border:none}
+.bx{background:white;color:#333;border:1px solid #ddd}
+.bd{background:#e53935;color:white;border:none}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
     <div class="login-logo">ג</div>
@@ -180,12 +140,11 @@ tr.sum-row td { background:#e8f5e9 !important; font-weight:bold; font-size:10px;
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v35</span>
+      <span class="topbar-title">Reports_Workers v36</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -200,21 +159,20 @@ tr.sum-row td { background:#e8f5e9 !important; font-weight:bold; font-size:10px;
     <div class="tab" onclick="switchTab('settings')">הגדרות</div>
   </div>
 
-  <!-- LEAVE -->
   <div class="tab-content active" id="tab-leave">
     <div class="month-nav">
-      <!-- Right side: year jump + nav + month title + nav -->
       <div style="display:flex;align-items:center;gap:6px;">
-        <select class="month-jump" id="yearJump" onchange="jumpYear(this.value)"></select>
-        <button class="view-toggle active" id="editToggle" onclick="toggleView()">עריכה</button>
+        <select class="jump-sel" id="yearJump" onchange="jumpYear(this.value)"></select>
+        <button class="view-btn on" id="editToggle" onclick="toggleView()">עריכה</button>
       </div>
-      <div class="month-title-center">
-        <button class="nav-btn" onclick="prevMonth()">›</button>
-        <select class="month-jump" id="monthJump" onchange="jumpMonth(this.value)"></select>
-        <h2 id="monthTitle"></h2>
-        <button class="nav-btn" onclick="nextMonth()">‹</button>
+      <!-- Arrows TIGHT around title -->
+      <div class="nav-center">
+        <button class="nav-btn" onclick="prevMonth()">&#8250;</button>
+        <select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
+        <span class="month-h2" id="monthTitle"></span>
+        <button class="nav-btn" onclick="nextMonth()">&#8249;</button>
       </div>
-      <div style="width:120px;"></div>
+      <div style="width:100px;"></div>
     </div>
     <div class="cutoff-bar">
       <label>תאריך חיתוך:</label>
@@ -228,22 +186,21 @@ tr.sum-row td { background:#e8f5e9 !important; font-weight:bold; font-size:10px;
       </table>
     </div>
     <div class="legend">
-      <span><span class="leg-dot" style="background:#c8e6c9"></span>חופש</span>
-      <span><span class="leg-dot" style="background:#ffcdd2"></span>מחלה</span>
-      <span><span class="leg-dot" style="background:#fffde7;border:1px solid #ddd"></span>חג</span>
-      <span><span class="leg-dot" style="background:#e1bee7"></span>אחר/אבל</span>
-      <span><span class="leg-dot" style="background:#fff8e1;border:1px solid #ddd"></span>מחודש קודם</span>
-      <span><span class="leg-dot" style="background:#e0e0e0"></span>סוף שבוע</span>
-      <span><span class="leg-dot" style="background:#ffebee"></span>כפילות</span>
+      <span><span class="ld" style="background:#c8e6c9"></span>חופש</span>
+      <span><span class="ld" style="background:#ffcdd2"></span>מחלה</span>
+      <span><span class="ld" style="background:#fffde7;border:1px solid #ddd"></span>חג</span>
+      <span><span class="ld" style="background:#e1bee7"></span>אחר/אבל</span>
+      <span><span class="ld" style="background:#fff8e1;border:1px solid #ddd"></span>מחודש קודם</span>
+      <span><span class="ld" style="background:#e0e0e0"></span>סוף שבוע</span>
+      <span><span class="ld" style="background:#ffebee"></span>כפילות</span>
     </div>
   </div>
 
-  <!-- HOLIDAYS -->
   <div class="tab-content" id="tab-holidays">
-    <div class="s-section">
+    <div class="s-sec">
       <h3>ניהול חגים</h3>
-      <div class="hol-form">
-        <div class="hol-inputs">
+      <div class="hf">
+        <div class="hi">
           <div><label>שם החג</label><input type="text" id="holName" placeholder="פסח, עיד..."></div>
           <div><label>תאריך התחלה</label><input type="date" id="holStart"></div>
           <div><label>תאריך סיום</label><input type="date" id="holEnd"></div>
@@ -255,23 +212,21 @@ tr.sum-row td { background:#e8f5e9 !important; font-weight:bold; font-size:10px;
             <input type="checkbox" id="holAll" onchange="toggleAllCbs(this)"> כל העובדים
           </label>
         </div>
-        <div class="w-cbs" id="holWorkerCbs"></div>
+        <div class="wcbs" id="holWorkerCbs"></div>
       </div>
       <div id="holList"></div>
     </div>
   </div>
 
-  <!-- ANNUAL -->
   <div class="tab-content" id="tab-annual">
-    <div class="s-section">
+    <div class="s-sec">
       <h3>סיכום שנתי</h3>
       <div id="annualContent"></div>
     </div>
   </div>
 
-  <!-- SETTINGS -->
   <div class="tab-content" id="tab-settings">
-    <div class="s-section">
+    <div class="s-sec">
       <h3>עובדים</h3>
       <div id="workerList"></div>
       <div class="add-row">
@@ -279,60 +234,60 @@ tr.sum-row td { background:#e8f5e9 !important; font-weight:bold; font-size:10px;
         <button onclick="addWorker()">הוסף</button>
       </div>
     </div>
-    <div class="s-section">
+    <div class="s-sec">
       <h3>חיבור לגיטהאב</h3>
-      <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב. הנתונים יסונכרנו לכולם.</p>
+      <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
       <div class="tok-row">
         <input type="password" id="tokInput" placeholder="ghp_...">
         <button onclick="saveToken()">שמור</button>
       </div>
-      <div class="tok-status" id="tokStatus"></div>
+      <div id="tokStatus"></div>
     </div>
   </div>
 
   <div class="save-bar">
     <button class="save-btn" onclick="saveData()">שמור</button>
     <button class="exp-btn" onclick="exportExcel()">ייצוא לאקסל</button>
-    <span class="save-status" id="saveStatus"></span>
+    <span class="sst" id="saveStatus"></span>
   </div>
 </div>
 
 <!-- TOKEN MODAL -->
-<div class="modal-overlay" id="tokenModal">
-  <div class="modal-box" style="text-align:center;">
+<div class="mo" id="tokenModal">
+  <div class="mb" style="text-align:center;">
     <div class="login-logo" style="margin:0 auto 12px;width:44px;height:44px;font-size:22px;">ג</div>
     <h3>חיבור לגיטהאב</h3>
-    <p>הכנס טוקן פעם אחת — יישמר בדפדפן זה לתמיד לסנכרון עם כל המחשבים</p>
+    <p>הכנס טוקן פעם אחת — יישמר בדפדפן זה לתמיד</p>
     <input type="password" id="tokModalInput" placeholder="ghp_..." style="direction:ltr;">
-    <div class="modal-btns" style="justify-content:center;gap:10px;">
-      <button class="btn-cancel" onclick="skipToken()">דלג</button>
-      <button class="btn-confirm" onclick="saveTokenModal()">שמור וכנס</button>
+    <div class="mbtns" style="justify-content:center;gap:10px;">
+      <button class="bx" onclick="skipToken()">דלג</button>
+      <button class="bc" onclick="saveTokenModal()">שמור וכנס</button>
     </div>
     <p style="font-size:10px;color:#aaa;margin-top:8px;">ניתן לעדכן בהגדרות בכל עת</p>
   </div>
 </div>
 
 <!-- END WORK MODAL -->
-<div class="modal-overlay" id="endModal">
-  <div class="modal-box">
+<div class="mo" id="endModal">
+  <div class="mb">
     <h3>סיום עבודה</h3>
-    <p id="endModalName" style="font-weight:bold;margin-bottom:12px;"></p>
-    <label style="font-size:12px;color:#666;">מאיזה חודש להסתיר:</label>
+    <p id="endModalName" style="font-weight:bold;margin-bottom:12px;font-size:14px;"></p>
+    <label style="font-size:12px;color:#666;display:block;margin-bottom:6px;">מאיזה חודש להסתיר מהטבלה:</label>
     <input type="month" id="endModalMonth" style="direction:ltr;">
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('endModal')">ביטול</button>
-      <button class="btn-danger" onclick="confirmEnd()">אישור</button>
+    <div class="mbtns">
+      <button class="bx" onclick="closeModal('endModal')">ביטול</button>
+      <button class="bd" onclick="confirmEnd()">אישור</button>
     </div>
   </div>
 </div>
 
 <!-- HOLIDAY CONFIRM MODAL -->
-<div class="modal-overlay" id="holConfirmModal">
-  <div class="modal-box" style="text-align:center;">
+<div class="mo" id="holConfirmModal">
+  <div class="mb" style="text-align:center;">
     <h3 style="color:#00897B;">✓ חג נוסף בהצלחה</h3>
-    <p id="holConfirmMsg" style="font-size:13px;color:#333;"></p>
-    <div class="modal-btns" style="justify-content:center;margin-top:8px;">
-      <button class="btn-confirm" onclick="closeModal('holConfirmModal')">אישור</button>
+    <p id="holConfirmMsg" style="font-size:13px;color:#333;margin-top:8px;"></p>
+    <div class="mbtns" style="justify-content:center;margin-top:12px;">
+      <button class="bc" onclick="closeModal('holConfirmModal')">אישור</button>
     </div>
   </div>
 </div>
@@ -340,532 +295,445 @@ tr.sum-row td { background:#e8f5e9 !important; font-weight:bold; font-size:10px;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ===== CONSTANTS =====
-const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-const DAYS = ['א','ב','ג','ד','ה','ו','ש'];
-const WORK_DAYS = ['א','ב','ג','ד','ה'];
-const VALUES = ['','חופש','חצי חופש','מחלה','חצי מחלה','חג','אבל','אחר'];
-const KNOWN_VALS = new Set(VALUES.filter(Boolean));
-const VAL_COLORS = {'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
-const TOK_KEY = 'rw_gisha_token'; // PERMANENT — never changes
+const MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const DAYS_HE=['א','ב','ג','ד','ה'];
+const ALL_DAYS=['א','ב','ג','ד','ה','ו','ש'];
+const VALUES=['','חופש','חצי חופש','מחלה','חצי מחלה','חג','אבל','אחר'];
+const KNOWN_VALS=new Set(VALUES.filter(Boolean));
+const VAL_BG={'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
+const TOK_KEY='rw_gisha_token'; // PERMANENT
 
 // ===== STATE =====
-let S = {
-  version: 35,
-  currentUser: '',
-  workers: [],
-  months: {},
-  cutoffs: {},
-  holidays: [],
-  year: 2026
-};
-
-let curMonthIdx = new Date().getMonth();
-let editMode = true;
-let endWorkerIdx = null;
+// months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
+// cutoffs[name] = 'YYYY-MM-DD'
+let S={version:36,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],year:2026};
+let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
-window.onload = () => {
+window.onload=()=>{
   // Migrate old token keys
-  ['rw_token','rw_v33_token','rw_v32_token'].forEach(k => {
-    const old = localStorage.getItem(k);
-    if (old && !localStorage.getItem(TOK_KEY)) {
-      localStorage.setItem(TOK_KEY, old);
-    }
+  ['rw_token','rw_gisha_token','rw_v33_token','rw_v32_token'].forEach(k=>{
+    const old=localStorage.getItem(k);
+    if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-
-  // Load saved data
-  const saved = localStorage.getItem('rw_v35_data');
-  if (saved) try { S = JSON.parse(saved); } catch(e) {}
-
+  const saved=localStorage.getItem('rw_v36_data');
+  if(saved) try{S=JSON.parse(saved);}catch(e){}
   buildJumps();
   startPresenceLoop();
 };
 
-function buildJumps() {
-  const mj = document.getElementById('monthJump');
-  MONTHS.forEach((m,i) => mj.innerHTML += `<option value="${i}">${m}</option>`);
-  const yj = document.getElementById('yearJump');
-  for (let y = 2024; y <= 2030; y++) {
-    yj.innerHTML += `<option value="${y}" ${y===S.year?'selected':''}>${y}</option>`;
-  }
+function buildJumps(){
+  const mj=document.getElementById('monthJump');
+  MONTHS.forEach((m,i)=>mj.innerHTML+=`<option value="${i}">${m}</option>`);
+  const yj=document.getElementById('yearJump');
+  for(let y=2024;y<=2030;y++) yj.innerHTML+=`<option value="${y}"${y===S.year?' selected':''}>${y}</option>`;
 }
 
 // ===== LOGIN =====
-function doLogin() {
-  const n = document.getElementById('loginName').value.trim();
-  if (!n) { alert('נא להכניס שם'); return; }
-  S.currentUser = n;
-  startApp();
+function doLogin(){
+  const n=document.getElementById('loginName').value.trim();
+  if(!n){alert('נא להכניס שם');return;}
+  S.currentUser=n; startApp();
 }
 
-function startApp() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('userBadge').textContent = S.currentUser;
+function startApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('userBadge').textContent=S.currentUser;
   renderAll();
   startSyncLoop();
-  if (!getToken()) document.getElementById('tokenModal').classList.add('open');
+  if(!getToken()) document.getElementById('tokenModal').classList.add('open');
 }
 
 // ===== TOKEN =====
-function getToken() { return localStorage.getItem(TOK_KEY) || ''; }
-
-function saveToken() {
-  const t = document.getElementById('tokInput').value.trim();
-  if (!t) return;
-  localStorage.setItem(TOK_KEY, t);
-  document.getElementById('tokStatus').innerHTML = '<span class="tok-ok">✓ טוקן נשמר</span>';
-  document.getElementById('tokInput').value = '';
+function getToken(){return localStorage.getItem(TOK_KEY)||'';}
+function saveToken(){
+  const t=document.getElementById('tokInput').value.trim();
+  if(!t)return;
+  localStorage.setItem(TOK_KEY,t);
+  document.getElementById('tokStatus').innerHTML='<span class="tok-ok">✓ טוקן נשמר</span>';
+  document.getElementById('tokInput').value='';
 }
-
-function saveTokenModal() {
-  const t = document.getElementById('tokModalInput').value.trim();
-  if (!t) { alert('נא להכניס טוקן'); return; }
-  localStorage.setItem(TOK_KEY, t);
-  closeModal('tokenModal');
-  saveData();
+function saveTokenModal(){
+  const t=document.getElementById('tokModalInput').value.trim();
+  if(!t){alert('נא להכניס טוקן');return;}
+  localStorage.setItem(TOK_KEY,t);
+  closeModal('tokenModal'); saveData();
 }
+function skipToken(){closeModal('tokenModal');}
 
-function skipToken() { closeModal('tokenModal'); }
-
-// ===== RENDER ALL =====
-function renderAll() {
-  document.getElementById('monthJump').value = curMonthIdx;
-  document.getElementById('yearJump').value = S.year;
-  updateCutoffUI();
-  renderTable();
-  renderWorkerList();
-  renderHolWorkers();
-  renderHolList();
+// ===== RENDER =====
+function renderAll(){
+  document.getElementById('monthJump').value=curMI;
+  document.getElementById('yearJump').value=S.year;
+  updateCutoffUI(); renderTable(); renderWorkerList(); renderHolWorkers(); renderHolList();
 }
 
 // ===== NAV =====
-function prevMonth() { if (curMonthIdx > 0) { curMonthIdx--; refresh(); } }
-function nextMonth() { if (curMonthIdx < 11) { curMonthIdx++; refresh(); } }
-function jumpMonth(v) { curMonthIdx = parseInt(v); refresh(); }
-function jumpYear(v) { S.year = parseInt(v); refresh(); }
-function refresh() {
-  document.getElementById('monthJump').value = curMonthIdx;
-  document.getElementById('yearJump').value = S.year;
-  updateCutoffUI();
+function prevMonth(){if(curMI>0){curMI--;refresh();}}
+function nextMonth(){if(curMI<11){curMI++;refresh();}}
+function jumpMonth(v){curMI=parseInt(v);refresh();}
+function jumpYear(v){S.year=parseInt(v);refresh();}
+function refresh(){
+  document.getElementById('monthJump').value=curMI;
+  document.getElementById('yearJump').value=S.year;
+  updateCutoffUI(); renderTable();
+}
+function toggleView(){
+  editMode=!editMode;
+  const btn=document.getElementById('editToggle');
+  btn.textContent=editMode?'עריכה':'תצוגה';
+  btn.classList.toggle('on',editMode);
   renderTable();
 }
+function getCurM(){return MONTHS[curMI];}
+function fmtD(d){if(!d)return '';const p=d.split('-');return p[2]+'/'+p[1];}
 
-function toggleView() {
-  editMode = !editMode;
-  const btn = document.getElementById('editToggle');
-  btn.textContent = editMode ? 'עריכה' : 'תצוגה';
-  btn.classList.toggle('active', editMode);
-  renderTable();
+function updateCutoffUI(){
+  const m=getCurM(), c=S.cutoffs[m];
+  const badge=document.getElementById('cutoffBadge');
+  document.getElementById('monthTitle').textContent=m+' '+S.year;
+  document.getElementById('cutoffInput').value=c||'';
+  if(c){badge.style.display='inline-block';badge.textContent='חיתוך: '+fmtD(c);}
+  else badge.style.display='none';
 }
 
-function getCurMonth() { return MONTHS[curMonthIdx]; }
-
-function updateCutoffUI() {
-  const m = getCurMonth();
-  const c = S.cutoffs[m];
-  const badge = document.getElementById('cutoffBadge');
-  const inp = document.getElementById('cutoffInput');
-  document.getElementById('monthTitle').textContent = m + ' ' + S.year;
-  if (c) {
-    badge.style.display = 'inline-block';
-    badge.textContent = 'חיתוך: ' + fmtD(c);
-    inp.value = c;
-  } else {
-    badge.style.display = 'none';
-    inp.value = '';
-  }
-}
-
-function setCutoff() {
-  const m = getCurMonth();
-  const v = document.getElementById('cutoffInput').value;
-  if (v) S.cutoffs[m] = v; else delete S.cutoffs[m];
-  updateCutoffUI();
-  renderTable();
-}
-
-function fmtD(d) {
-  if (!d) return '';
-  const p = d.split('-');
-  return p[2] + '/' + p[1];
+function setCutoff(){
+  const m=getCurM(), v=document.getElementById('cutoffInput').value;
+  if(v) S.cutoffs[m]=v; else delete S.cutoffs[m];
+  updateCutoffUI(); renderTable();
 }
 
 // ===== RENDER TABLE =====
-function renderTable() {
-  const mName = getCurMonth();
-  const cutoff = S.cutoffs[mName];
-  const workers = activeWorkers(mName);
-  const curRows = getRows(mName);
-
-  // Prev month days to show (from prev cutoff onwards)
-  const prevMName = curMonthIdx > 0 ? MONTHS[curMonthIdx - 1] : null;
-  const prevCutoff = prevMName ? S.cutoffs[prevMName] : null;
-  let prevDays = [];
-
-  if (prevCutoff && prevMName) {
-    const prevRows = getRows(prevMName);
-    if (prevRows.length > 0) {
-      // Filter rows from prev month that are >= cutoff date
-      prevDays = prevRows.filter(r => r.date >= prevCutoff);
-    } else {
-      // Build empty rows for prev month >= cutoff
-      const lastOfPrev = new Date(S.year, curMonthIdx, 0); // last day of prev month
-      for (let d = new Date(prevCutoff); d <= lastOfPrev; d.setDate(d.getDate() + 1)) {
-        const dow = d.getDay();
-        if (dow === 5 || dow === 6) continue; // skip weekends
-        const ds = d.toISOString().split('T')[0];
-        prevDays.push({ date: ds, day: DAYS[dow], cells: {} });
-      }
-    }
-  }
+function renderTable(){
+  const mName=getCurM();
+  const cutoff=S.cutoffs[mName];
+  const workers=activeWorkers(mName);
+  const md=S.months[mName]||{prev:[],cur:[]};
+  const prevRows=[...(md.prev||[])].sort((a,b)=>a.date.localeCompare(b.date));
+  const curRows=[...(md.cur||[])].sort((a,b)=>a.date.localeCompare(b.date));
 
   // Build header
-  const head = document.getElementById('tHead');
-  head.innerHTML = '<th>יום</th><th>תאריך</th>';
-  workers.forEach(w => head.innerHTML += `<th>${w.name}</th>`);
-  if (cutoff) head.innerHTML += '<th>סיכום</th>';
+  const head=document.getElementById('tHead');
+  head.innerHTML='<th>יום</th><th>תאריך</th>';
+  workers.forEach(w=>head.innerHTML+=`<th>${w.name}</th>`);
+  if(cutoff) head.innerHTML+='<th>סיכום</th>';
 
-  const body = document.getElementById('tBody');
-  body.innerHTML = '';
-  const colCount = workers.length + 2 + (cutoff ? 1 : 0);
+  const body=document.getElementById('tBody');
+  body.innerHTML='';
+  const cols=workers.length+2+(cutoff?1:0);
 
-  // ---- Prev month rows ----
-  let prevLast = null;
-  prevDays.forEach(row => {
-    if (prevLast && daysDiff(prevLast, row.date) >= 2) {
-      body.appendChild(mkWeekendRow(colCount));
-    }
-    const isDup = curRows.some(r => r.date === row.date &&
-      workers.some(w => r.cells && r.cells[w.name]));
-    const tr = document.createElement('tr');
-    tr.className = isDup ? 'duplicate-row' : 'prev-month-row';
-    tr.innerHTML = `<td class="day-lbl">${row.day}</td><td class="date-lbl">${fmtD(row.date)}</td>`;
-    workers.forEach(w => {
-      const td = document.createElement('td');
-      if (isDup) { td.textContent = '⚠️'; td.title = 'כפילות!'; }
-      else td.innerHTML = editMode ? mkSelect(row.date, w.name, '', true) : '<span class="cell-val">—</span>';
+  // ---- PREV MONTH ROWS ----
+  let prevLast=null;
+  prevRows.forEach(row=>{
+    if(prevLast&&daysDiff(prevLast,row.date)>=2) body.appendChild(wkRow(cols));
+    // Check duplicate: same date has value in cur month
+    const isDup=curRows.some(r=>r.date===row.date&&workers.some(w=>r.cells&&r.cells[w.name]));
+    const tr=document.createElement('tr');
+    tr.className=isDup?'dup-row':'prev-row';
+    tr.innerHTML=`<td class="dl">${row.day}</td><td class="dtl">${fmtD(row.date)}</td>`;
+    workers.forEach(w=>{
+      const td=document.createElement('td');
+      if(isDup){td.textContent='⚠️';td.title='כפילות!';}
+      else td.innerHTML=editMode?mkSel(row.date,w.name,'',true):'<span class="cv">—</span>';
       tr.appendChild(td);
     });
-    if (cutoff) tr.appendChild(Object.assign(document.createElement('td'), {textContent:''}));
+    if(cutoff) tr.appendChild(emTd());
     body.appendChild(tr);
-    prevLast = row.date;
+    prevLast=row.date;
   });
 
-  // ---- Current month rows ----
-  let prevDate = null;
-  curRows.forEach(row => {
-    const gapFrom = prevDate || prevLast;
-    if (gapFrom && daysDiff(gapFrom, row.date) >= 2) {
-      body.appendChild(mkWeekendRow(colCount));
-    }
-    const isAfter = cutoff && row.date > cutoff;
-    const holName = getHolidayName(row.date);
-
-    const tr = document.createElement('tr');
-    if (!isAfter && holName) tr.style.background = '#fffde7';
-    else if (isAfter) tr.className = 'after-cutoff-row';
-
-    tr.innerHTML = `<td class="day-lbl">${row.day}</td><td class="date-lbl">${fmtD(row.date)}</td>`;
-
-    workers.forEach(w => {
-      const val = (row.cells && row.cells[w.name]) || '';
-      const workerHol = getHolidayNameForWorker(row.date, w.name);
-      const td = document.createElement('td');
-
-      if (val && VAL_COLORS[val]) td.style.background = VAL_COLORS[val];
-      else if (workerHol) td.style.background = '#fffde7';
-
-      if (editMode) {
-        if (workerHol && !val) {
-          // Show holiday name + allow override
-          td.innerHTML = `<span class="holiday-cell">${workerHol}</span>`;
-        } else {
-          td.innerHTML = mkSelect(row.date, w.name, val, false);
-        }
+  // ---- CUR MONTH ROWS ----
+  let prevDate=null;
+  curRows.forEach(row=>{
+    const gap=prevDate?daysDiff(prevDate,row.date):(prevLast?daysDiff(prevLast,row.date):0);
+    if(gap>=2) body.appendChild(wkRow(cols));
+    const isAfter=cutoff&&row.date>cutoff;
+    const tr=document.createElement('tr');
+    if(isAfter) tr.className='after-cut';
+    tr.innerHTML=`<td class="dl">${row.day}</td><td class="dtl">${fmtD(row.date)}</td>`;
+    workers.forEach(w=>{
+      const val=(row.cells&&row.cells[w.name])||'';
+      const holName=getHolForWorker(row.date,w.name);
+      const td=document.createElement('td');
+      if(val&&VAL_BG[val]) td.style.background=VAL_BG[val];
+      else if(holName) td.style.background='#fffde7';
+      if(editMode){
+        // If holiday and no manual value, show holiday name
+        if(holName&&!val) td.innerHTML=`<span class="hol-cell">${holName}</span>`;
+        else td.innerHTML=mkSel(row.date,w.name,val,false);
       } else {
-        if (workerHol && !val) td.innerHTML = `<span class="holiday-cell">${workerHol}</span>`;
-        else td.innerHTML = val ? `<span class="cell-val" style="background:${VAL_COLORS[val]||''}">${val}</span>` : '<span class="cell-val">—</span>';
+        if(holName&&!val) td.innerHTML=`<span class="hol-cell">${holName}</span>`;
+        else td.innerHTML=val?`<span class="cv" style="background:${VAL_BG[val]||''}">${val}</span>`:'<span class="cv">—</span>';
       }
       tr.appendChild(td);
     });
-
-    if (cutoff) tr.appendChild(document.createElement('td'));
+    if(cutoff) tr.appendChild(emTd());
     body.appendChild(tr);
-    prevDate = row.date;
+    prevDate=row.date;
   });
 
-  // ---- Summary row ----
-  const sumTr = document.createElement('tr');
-  sumTr.className = 'sum-row';
-  sumTr.innerHTML = `<td colspan="2" style="text-align:right;padding:4px 8px;">סיכום</td>`;
-  if (cutoff) {
-    workers.forEach(w => {
-      const s = calcSum(curRows, w.name);
-      let html = '';
-      if (s.v > 0) html += `<span class="chip chip-v">חופש: ${s.v}</span>`;
-      if (s.s > 0) html += `<span class="chip chip-s">מחלה: ${s.s}</span>`;
-      if (s.h > 0) html += `<span class="chip chip-h">חג: ${s.h}</span>`;
-      if (s.o > 0) html += `<span class="chip chip-o">אחר: ${s.o}</span>`;
-      sumTr.innerHTML += `<td>${html||'—'}</td>`;
+  // ---- SUMMARY ROW ----
+  const sr=document.createElement('tr');
+  sr.className='sum-row';
+  sr.innerHTML='<td colspan="2" style="text-align:right;padding:4px 8px;">סיכום</td>';
+  if(cutoff){
+    workers.forEach(w=>{
+      const s=calcSum(curRows,w.name);
+      let h='';
+      if(s.v>0) h+=`<span class="chip cv-chip">חופש: ${s.v}</span>`;
+      if(s.s>0) h+=`<span class="chip cs-chip">מחלה: ${s.s}</span>`;
+      if(s.h>0) h+=`<span class="chip ch-chip">חג: ${s.h}</span>`;
+      if(s.o>0) h+=`<span class="chip co-chip">אחר: ${s.o}</span>`;
+      sr.innerHTML+=`<td>${h||'—'}</td>`;
     });
-    sumTr.innerHTML += '<td></td>';
+    sr.innerHTML+='<td></td>';
   } else {
-    sumTr.innerHTML += `<td colspan="${workers.length + (cutoff?2:1)}" style="color:#999;text-align:center;">קבע תאריך חיתוך לסיכום</td>`;
+    sr.innerHTML+=`<td colspan="${workers.length+1}" style="color:#999;text-align:center;">קבע תאריך חיתוך לסיכום</td>`;
   }
-  body.appendChild(sumTr);
+  body.appendChild(sr);
 }
 
-function mkWeekendRow(cols) {
-  const tr = document.createElement('tr');
-  tr.className = 'weekend-row';
-  tr.innerHTML = `<td colspan="${cols}"></td>`;
-  return tr;
+function wkRow(cols){const tr=document.createElement('tr');tr.className='wkend';tr.innerHTML=`<td colspan="${cols}"></td>`;return tr;}
+function emTd(){const td=document.createElement('td');return td;}
+
+function mkSel(date,worker,val,disabled){
+  const opts=VALUES.map(v=>`<option value="${v}"${v===val?' selected':''}>${v||'—'}</option>`).join('');
+  const attr=disabled?'disabled':`onchange="setCell('${date}','${worker}',this.value)"`;
+  return `<select class="cs" ${attr}>${opts}</select>`;
 }
 
-function mkSelect(date, worker, val, disabled) {
-  const opts = VALUES.map(v => `<option value="${v}"${v===val?' selected':''}>${v||'—'}</option>`).join('');
-  const attr = disabled ? 'disabled' : `onchange="setCell('${date}','${worker}',this.value)"`;
-  return `<select class="cell-sel" ${attr}>${opts}</select>`;
-}
-
-function setCell(date, worker, val) {
-  const m = getCurMonth();
-  if (!S.months[m]) S.months[m] = [];
-  let row = S.months[m].find(r => r.date === date);
-  if (!row) { row = {date, day:'', cells:{}}; S.months[m].push(row); }
-  if (!row.cells) row.cells = {};
-  row.cells[worker] = val;
+function setCell(date,worker,val){
+  const m=getCurM();
+  if(!S.months[m]) S.months[m]={prev:[],cur:[]};
+  let rows=S.months[m].cur;
+  let row=rows.find(r=>r.date===date);
+  if(!row){row={date,day:'',cells:{}};rows.push(row);}
+  if(!row.cells) row.cells={};
+  row.cells[worker]=val;
   renderTable();
 }
 
-function calcSum(rows, worker) {
-  let v=0, s=0, h=0, o=0;
-  rows.forEach(r => {
-    const val = r.cells && r.cells[worker] || '';
-    if (val==='חופש') v+=1;
-    else if (val==='חצי חופש') v+=0.5;
-    else if (val==='מחלה') s+=1;
-    else if (val==='חצי מחלה') s+=0.5;
-    else if (val==='חג') h+=1;
-    else if (val==='אבל'||val==='אחר') o+=1;
+function calcSum(rows,worker){
+  let v=0,s=0,h=0,o=0;
+  rows.forEach(r=>{
+    const val=r.cells&&r.cells[worker]||'';
+    if(val==='חופש') v+=1; else if(val==='חצי חופש') v+=0.5;
+    else if(val==='מחלה') s+=1; else if(val==='חצי מחלה') s+=0.5;
+    else if(val==='חג') h+=1; else if(val==='אבל'||val==='אחר') o+=1;
   });
-  return {v,s,h,o};
+  return{v,s,h,o};
 }
 
-function getHolidayName(date) {
-  const h = S.holidays.find(h => date >= h.start && date <= h.end && h.workers === 'all');
-  return h ? h.name : null;
-}
-
-function getHolidayNameForWorker(date, workerName) {
-  const h = S.holidays.find(h => {
-    if (date < h.start || date > h.end) return false;
-    if (h.workers === 'all') return true;
-    return Array.isArray(h.workers) && h.workers.includes(workerName);
+function getHolForWorker(date,wname){
+  const h=S.holidays.find(h=>{
+    if(date<h.start||date>h.end) return false;
+    return h.workers==='all'||(Array.isArray(h.workers)&&h.workers.includes(wname));
   });
-  return h ? h.name : null;
+  return h?h.name:null;
 }
 
-function getRows(mName) {
-  return (S.months[mName]||[]).filter(r=>r&&r.date).sort((a,b)=>a.date.localeCompare(b.date));
-}
-
-function activeWorkers(mName) {
-  const mNum = MONTHS.indexOf(mName) + 1;
-  return S.workers.filter(w => {
-    if (!w.active && w.endMonth) {
-      const [ey,em] = w.endMonth.split('-').map(Number);
-      if (S.year > ey || (S.year===ey && mNum >= em)) return false;
+function activeWorkers(mName){
+  const mNum=MONTHS.indexOf(mName)+1;
+  return S.workers.filter(w=>{
+    if(!w.active&&w.endMonth){
+      const[ey,em]=w.endMonth.split('-').map(Number);
+      if(S.year>ey||(S.year===ey&&mNum>=em)) return false;
     }
     return true;
   });
 }
 
-function daysDiff(d1, d2) { return (new Date(d2) - new Date(d1)) / 86400000; }
+function daysDiff(d1,d2){return(new Date(d2)-new Date(d1))/86400000;}
+
+function getRows(mName){
+  const md=S.months[mName]||{prev:[],cur:[]};
+  return(md.cur||[]).filter(r=>r&&r.date).sort((a,b)=>a.date.localeCompare(b.date));
+}
 
 // ===== IMPORT =====
-function importExcel(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array', cellDates:true});
-      let allWorkers = new Set();
-      let detectedYear = 0;
+function importExcel(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true});
+      let allWorkers=new Set(), detectedYear=0;
 
-      wb.SheetNames.forEach(sheetName => {
-        if (!MONTHS.includes(sheetName)) return;
-        const ws = wb.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+      wb.SheetNames.forEach(sheetName=>{
+        if(!MONTHS.includes(sheetName)) return;
+        const ws=wb.Sheets[sheetName];
+        const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
 
-        // Find header row
-        let headerIdx = -1, workerCols = {};
-        for (let ri = 0; ri < rows.length; ri++) {
-          const row = rows[ri];
+        // Find header row: row with 3+ worker names (not known values, not dates)
+        let headerIdx=-1, workerCols={};
+        for(let ri=0;ri<rows.length;ri++){
+          const row=rows[ri];
           let cnt=0, tmp={};
-          for (let ci=2; ci<row.length; ci++) {
-            const v = String(row[ci]||'').trim();
-            if (v && !KNOWN_VALS.has(v) && !/^\d/.test(v) && v.length>=2) { cnt++; tmp[ci]=v; }
-          }
-          if (cnt>=3) { headerIdx=ri; workerCols=tmp; break; }
-        }
-        if (headerIdx===-1) return;
-        Object.values(workerCols).forEach(w => allWorkers.add(w));
-
-        let monthRows = [];
-        for (let ri=headerIdx+1; ri<rows.length; ri++) {
-          const row = rows[ri];
-          const col0 = String(row[0]||'').trim();
-          if (!WORK_DAYS.includes(col0)) continue; // only א-ה
-
-          const col1 = row[1];
-          let dateStr = '';
-          if (col1 instanceof Date) {
-            dateStr = col1.toISOString().split('T')[0];
-          } else if (typeof col1==='number' && col1>40000) {
-            const d = XLSX.SSF.parse_date_code(col1);
-            if (d) dateStr = `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
-          } else if (typeof col1==='string') {
-            const parts = col1.replace(/[^\d/]/g,'').split('/');
-            if (parts.length>=2) {
-              const dd=parts[0], mm=parts[1], yy=parts[2]||S.year;
-              dateStr=`${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+          for(let ci=3;ci<row.length;ci++){
+            const v=row[ci];
+            if(v&&typeof v==='string'&&!KNOWN_VALS.has(v)&&v.length>=2&&!/^\d/.test(v)){
+              cnt++; tmp[ci]=v;
             }
           }
-          if (!dateStr||dateStr.includes('NaN')) continue;
+          if(cnt>=3){headerIdx=ri;workerCols=tmp;break;}
+        }
+        if(headerIdx===-1) return;
+        Object.values(workerCols).forEach(w=>allWorkers.add(w));
 
-          const yr = parseInt(dateStr.split('-')[0]);
-          if (yr>detectedYear) detectedYear=yr;
+        const parseDate=val=>{
+          if(!val) return null;
+          if(val instanceof Date) return val.toISOString().split('T')[0];
+          if(typeof val==='number'&&val>40000){
+            const d=XLSX.SSF.parse_date_code(val);
+            return d?`${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`:null;
+          }
+          return null;
+        };
 
-          const cells = {};
-          Object.entries(workerCols).forEach(([ci,wName]) => {
-            const v = String(row[ci]||'').trim();
-            if (VALUES.includes(v) && v) cells[wName]=v;
+        const parseRow=row=>{
+          const dayName=row[0];
+          if(!dayName||!DAYS_HE.includes(String(dayName))) return null;
+          const dateStr=parseDate(row[1]);
+          if(!dateStr||dateStr.includes('NaN')) return null;
+          const yr=parseInt(dateStr.split('-')[0]);
+          if(yr>detectedYear) detectedYear=yr;
+          const cells={};
+          Object.entries(workerCols).forEach(([ci,wn])=>{
+            const v=row[ci];
+            if(v&&typeof v==='string'&&VALUES.includes(v)) cells[wn]=v;
           });
-          monthRows.push({date:dateStr, day:col0, cells});
+          return{date:dateStr,day:String(dayName),cells};
+        };
+
+        // Rows BEFORE header = prev month days
+        const prevRows=[];
+        for(let ri=0;ri<headerIdx;ri++){
+          const r=parseRow(rows[ri]);
+          if(r) prevRows.push(r);
         }
-        monthRows.sort((a,b)=>a.date.localeCompare(b.date));
-        S.months[sheetName] = monthRows;
+
+        // Rows AFTER header = current month days
+        const curRows=[];
+        for(let ri=headerIdx+1;ri<rows.length;ri++){
+          const r=parseRow(rows[ri]);
+          if(r) curRows.push(r);
+        }
+
+        prevRows.sort((a,b)=>a.date.localeCompare(b.date));
+        curRows.sort((a,b)=>a.date.localeCompare(b.date));
+        S.months[sheetName]={prev:prevRows,cur:curRows};
       });
 
-      allWorkers.forEach(wName => {
-        if (!S.workers.find(w=>w.name===wName)) {
-          S.workers.push({name:wName, active:true, endMonth:null});
-        }
+      allWorkers.forEach(wn=>{
+        if(!S.workers.find(w=>w.name===wn)) S.workers.push({name:wn,active:true,endMonth:null});
       });
-      if (detectedYear>2000) S.year = detectedYear;
-
+      if(detectedYear>2000) S.year=detectedYear;
       saveLocally();
-      S.currentUser = document.getElementById('loginName').value.trim() || 'משתמש';
+      S.currentUser=document.getElementById('loginName').value.trim()||'משתמש';
       startApp();
-    } catch(err) {
-      alert('שגיאה בייבוא: '+err.message);
-      console.error(err);
-    }
+    }catch(err){alert('שגיאה: '+err.message);console.error(err);}
   };
   reader.readAsArrayBuffer(file);
 }
 
 // ===== WORKERS =====
-function renderWorkerList() {
-  const div = document.getElementById('workerList');
-  div.innerHTML = '';
-  const active = S.workers.filter(w=>w.active);
-  const ended = S.workers.filter(w=>!w.active);
-
-  active.forEach((w,_) => {
-    const i = S.workers.indexOf(w);
-    div.appendChild(mkWorkerRow(w, i));
-  });
-
-  if (ended.length > 0) {
-    const sep = document.createElement('div');
-    sep.className = 'ended-divider';
-    sep.textContent = '— עובדים שסיימו —';
+function renderWorkerList(){
+  const div=document.getElementById('workerList');
+  div.innerHTML='';
+  const act=S.workers.filter(w=>w.active);
+  const end=S.workers.filter(w=>!w.active);
+  act.forEach(w=>div.appendChild(mkWRow(w,S.workers.indexOf(w))));
+  if(end.length){
+    const sep=document.createElement('div');
+    sep.className='ended-sep';
+    sep.textContent='— עובדים שסיימו —';
     div.appendChild(sep);
-    ended.forEach(w => {
-      const i = S.workers.indexOf(w);
-      div.appendChild(mkWorkerRow(w, i));
-    });
+    end.forEach(w=>div.appendChild(mkWRow(w,S.workers.indexOf(w))));
   }
 }
 
-function mkWorkerRow(w, i) {
-  const r = document.createElement('div');
-  r.className = 'worker-row';
-  const stTxt = w.active ? 'פעיל' : ('סיים ' + (w.endMonth||''));
-  const stCls = w.active ? 'w-active' : 'w-ended';
-  r.innerHTML = `
-    ${w.active ? `<button class="ord-btn" onclick="moveW(${i},-1)">↑</button><button class="ord-btn" onclick="moveW(${i},1)">↓</button>` : '<span style="width:44px"></span>'}
-    <span class="worker-name">${w.name}</span>
-    <span class="w-status ${stCls}">${stTxt}</span>
-    ${w.active ? `<button class="end-btn" onclick="openEnd(${i})">סיום עבודה</button>` : `<button class="end-btn" onclick="reactivate(${i})">החזר</button>`}
+function mkWRow(w,i){
+  const r=document.createElement('div');
+  r.className='w-row';
+  const stTxt=w.active?'פעיל':('סיים '+fmtMonth(w.endMonth));
+  const stCls=w.active?'wact':'wend';
+  r.innerHTML=`
+    ${w.active?`<button class="ord-btn" onclick="moveW(${i},-1)">↑</button><button class="ord-btn" onclick="moveW(${i},1)">↓</button>`:'<span style="width:44px"></span>'}
+    <span class="wname">${w.name}</span>
+    <span class="wst ${stCls}">${stTxt}</span>
+    ${w.active?`<button class="end-btn" onclick="openEnd(${i})">סיום עבודה</button>`:`<button class="end-btn" onclick="reactivate(${i})">החזר</button>`}
   `;
   return r;
 }
 
-function moveW(i, d) {
+function fmtMonth(m){
+  if(!m) return '';
+  const[y,mo]=m.split('-');
+  return MONTHS[parseInt(mo)-1]+' '+y;
+}
+
+function moveW(i,d){
   const j=i+d;
-  if (j<0||j>=S.workers.length) return;
+  if(j<0||j>=S.workers.length) return;
   [S.workers[i],S.workers[j]]=[S.workers[j],S.workers[i]];
   renderWorkerList(); renderTable();
 }
 
-function addWorker() {
-  const n = document.getElementById('newWorker').value.trim();
-  if (!n) return;
-  if (S.workers.find(w=>w.name===n)) { alert('עובד זה כבר קיים'); return; }
-  S.workers.push({name:n, active:true, endMonth:null});
+function addWorker(){
+  const n=document.getElementById('newWorker').value.trim();
+  if(!n) return;
+  if(S.workers.find(w=>w.name===n)){alert('עובד זה כבר קיים');return;}
+  S.workers.push({name:n,active:true,endMonth:null});
   document.getElementById('newWorker').value='';
   renderWorkerList(); renderHolWorkers(); renderTable();
 }
 
-function openEnd(i) {
-  endWorkerIdx=i;
-  document.getElementById('endModalName').textContent = S.workers[i].name;
-  document.getElementById('endModalMonth').value = S.year+'-'+String(curMonthIdx+1).padStart(2,'0');
+function openEnd(i){
+  endWIdx=i;
+  document.getElementById('endModalName').textContent=S.workers[i].name;
+  document.getElementById('endModalMonth').value=S.year+'-'+String(curMI+1).padStart(2,'0');
   document.getElementById('endModal').classList.add('open');
 }
 
-function confirmEnd() {
-  if (endWorkerIdx===null) return;
-  S.workers[endWorkerIdx].active=false;
-  S.workers[endWorkerIdx].endMonth=document.getElementById('endModalMonth').value;
-  closeModal('endModal'); endWorkerIdx=null;
+function confirmEnd(){
+  if(endWIdx===null) return;
+  S.workers[endWIdx].active=false;
+  S.workers[endWIdx].endMonth=document.getElementById('endModalMonth').value;
+  closeModal('endModal'); endWIdx=null;
   renderWorkerList(); renderTable();
 }
 
-function reactivate(i) { S.workers[i].active=true; S.workers[i].endMonth=null; renderWorkerList(); }
+function reactivate(i){S.workers[i].active=true;S.workers[i].endMonth=null;renderWorkerList();}
 
 // ===== HOLIDAYS =====
-function renderHolWorkers() {
-  const div = document.getElementById('holWorkerCbs');
-  if (!div) return;
+function renderHolWorkers(){
+  const div=document.getElementById('holWorkerCbs');
+  if(!div) return;
   div.innerHTML='';
-  S.workers.filter(w=>w.active).forEach(w => {
+  S.workers.filter(w=>w.active).forEach(w=>{
     const lbl=document.createElement('label');
-    lbl.className='w-cb';
+    lbl.className='wcb';
     lbl.innerHTML=`<input type="checkbox" class="hol-cb" value="${w.name}"> ${w.name}`;
     div.appendChild(lbl);
   });
 }
 
-function toggleAllCbs(cb) { document.querySelectorAll('.hol-cb').forEach(c=>c.checked=cb.checked); }
+function toggleAllCbs(cb){document.querySelectorAll('.hol-cb').forEach(c=>c.checked=cb.checked);}
 
-function addHoliday() {
+function addHoliday(){
   const name=document.getElementById('holName').value.trim();
   const start=document.getElementById('holStart').value;
   const end=document.getElementById('holEnd').value||start;
-  if (!name||!start) { alert('נא למלא שם ותאריך התחלה'); return; }
+  if(!name||!start){alert('נא למלא שם ותאריך התחלה');return;}
   const allCk=document.getElementById('holAll').checked;
   let workers='all';
-  if (!allCk) {
+  if(!allCk){
     workers=Array.from(document.querySelectorAll('.hol-cb:checked')).map(c=>c.value);
-    if (!workers.length) { alert('נא לבחור עובדים'); return; }
+    if(!workers.length){alert('נא לבחור עובדים');return;}
   }
-  S.holidays.push({name, start, end, workers});
+  S.holidays.push({name,start,end,workers});
   const wTxt=workers==='all'?'כל העובדים':workers.join(', ');
   const dTxt=start===end?fmtD(start):fmtD(start)+' עד '+fmtD(end);
   document.getElementById('holConfirmMsg').textContent=`"${name}" — ${dTxt} — ${wTxt}`;
@@ -878,42 +746,46 @@ function addHoliday() {
   renderHolList(); renderTable();
 }
 
-function renderHolList() {
+function renderHolList(){
   const div=document.getElementById('holList');
-  if (!div) return;
-  if (!S.holidays.length) { div.innerHTML='<p style="color:#999;font-size:11px;">אין חגים</p>'; return; }
+  if(!div) return;
+  if(!S.holidays.length){div.innerHTML='<p style="color:#999;font-size:11px;">אין חגים</p>';return;}
   div.innerHTML='';
   S.holidays.forEach((h,i)=>{
     const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
     const dTxt=h.start===h.end?fmtD(h.start):fmtD(h.start)+'–'+fmtD(h.end);
     const el=document.createElement('div');
     el.className='hol-item';
-    el.innerHTML=`<span class="hol-name">${h.name}</span><span class="hol-dates">${dTxt}</span><span class="hol-workers">${wTxt}</span><button class="hol-del" onclick="delHol(${i})">✕</button>`;
+    el.innerHTML=`<span class="hn">${h.name}</span><span class="hd">${dTxt}</span><span class="hw">${wTxt}</span><button class="hdel" onclick="delHol(${i})">✕</button>`;
     div.appendChild(el);
   });
 }
 
-function delHol(i) { S.holidays.splice(i,1); renderHolList(); renderTable(); }
+function delHol(i){S.holidays.splice(i,1);renderHolList();renderTable();}
 
 // ===== ANNUAL =====
-function renderAnnual() {
+function renderAnnual(){
   const div=document.getElementById('annualContent');
-  if (!div) return;
+  if(!div) return;
   const cats=[
-    {label:'ימי חופש', fn:s=>s.v},
-    {label:'ימי מחלה', fn:s=>s.s},
-    {label:'ימי חג/אבל', fn:s=>s.h+s.o}
+    {label:'ימי חופש',fn:s=>s.v},
+    {label:'ימי מחלה',fn:s=>s.s},
+    {label:'ימי חג/אבל',fn:s=>s.h+s.o}
   ];
-  const active=S.workers.filter(w=>w.active);
-  const ended=S.workers.filter(w=>!w.active);
+  const act=S.workers.filter(w=>w.active);
+  const end=S.workers.filter(w=>!w.active);
   let html='';
   cats.forEach(cat=>{
-    html+=`<div class="ann-section"><h3>${cat.label}</h3><div style="overflow-x:auto"><table class="ann-table"><thead><tr><th>עובד</th>`;
+    html+=`<h3 class="ann-h3">${cat.label}</h3><div style="overflow-x:auto"><table class="ann-table"><thead><tr><th>עובד</th>`;
     MONTHS.forEach(m=>html+=`<th>${m.slice(0,3)}</th>`);
     html+=`<th>סה"כ</th></tr></thead><tbody>`;
-    // Active workers
-    active.forEach(w=>{
-      html+=`<tr><td class="w-col">${w.name}</td>`;
+    [...act,...(end.length?[{_sep:true}]:end),...end].forEach(w=>{
+      if(w._sep){
+        html+=`<tr class="ann-esep"><td colspan="${MONTHS.length+2}">עובדים שסיימו</td></tr>`;
+        return;
+      }
+      const cls=w.active?'':'ew';
+      html+=`<tr class="${cls}"><td class="wc">${w.name}</td>`;
       let tot=0;
       MONTHS.forEach(m=>{
         const s=calcSum(getRows(m),w.name);
@@ -922,71 +794,54 @@ function renderAnnual() {
       });
       html+=`<td class="tot">${tot>0?tot:'—'}</td></tr>`;
     });
-    // Divider + ended workers
-    if (ended.length>0) {
-      html+=`<tr class="ann-ended-divider"><td colspan="${MONTHS.length+2}">עובדים שסיימו</td></tr>`;
-      ended.forEach(w=>{
-        html+=`<tr class="ended-worker"><td class="w-col">${w.name}</td>`;
-        let tot=0;
-        MONTHS.forEach(m=>{
-          const s=calcSum(getRows(m),w.name);
-          const v=cat.fn(s); tot+=v;
-          html+=`<td>${v>0?v:'—'}</td>`;
-        });
-        html+=`<td class="tot">${tot>0?tot:'—'}</td></tr>`;
-      });
-    }
-    html+='</tbody></table></div></div>';
+    html+='</tbody></table></div>';
   });
   div.innerHTML=html;
 }
 
 // ===== SYNC =====
-function saveLocally() { localStorage.setItem('rw_v35_data', JSON.stringify(S)); }
+function saveLocally(){localStorage.setItem('rw_v36_data',JSON.stringify(S));}
 
-async function saveToGithub() {
-  const token=getToken();
-  if (!token) return false;
+async function saveToGithub(){
+  const token=getToken(); if(!token) return false;
   const url='https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json';
-  try {
+  try{
     let sha='';
     const gr=await fetch(url,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
-    if (gr.ok) sha=(await gr.json()).sha;
+    if(gr.ok) sha=(await gr.json()).sha;
     const content=btoa(unescape(encodeURIComponent(JSON.stringify(S))));
     const body={message:'update',content};
-    if (sha) body.sha=sha;
+    if(sha) body.sha=sha;
     const pr=await fetch(url,{method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
     return pr.ok;
-  } catch(e) { return false; }
+  }catch(e){return false;}
 }
 
-async function loadFromGithub() {
-  const token=getToken();
-  if (!token) return null;
-  try {
+async function loadFromGithub(){
+  const token=getToken(); if(!token) return null;
+  try{
     const r=await fetch('https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
-    if (!r.ok) return null;
+    if(!r.ok) return null;
     const f=await r.json();
     return JSON.parse(decodeURIComponent(escape(atob(f.content))));
-  } catch(e) { return null; }
+  }catch(e){return null;}
 }
 
-async function saveData() {
+async function saveData(){
   saveLocally();
   const st=document.getElementById('saveStatus');
   st.textContent='שומר...';
   const ok=await saveToGithub();
-  if (ok) st.innerHTML='<span class="save-ok">✓ נשמר ומסונכרן</span>';
-  else st.innerHTML=getToken()?'<span class="save-err">⚠ שגיאה בסנכרון — נשמר מקומית</span>':'<span style="color:#E65100">⚠ נשמר מקומית — הגדר טוקן לסנכרון</span>';
+  st.innerHTML=ok?'<span class="sok">✓ נשמר ומסונכרן</span>':(getToken()?'<span class="serr">⚠ שגיאה — נשמר מקומית</span>':'<span style="color:#E65100">⚠ נשמר מקומית — הגדר טוקן</span>');
 }
 
-function startSyncLoop() {
+function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if (remote&&remote.version===35) {
-      const lStr=JSON.stringify(S), rStr=JSON.stringify(remote);
-      if (rStr!==lStr&&rStr.length>lStr.length) {
-        const u=S.currentUser, c={...S.cutoffs};
+    if(remote&&remote.version===36){
+      const ls=JSON.stringify(S),rs=JSON.stringify(remote);
+      if(rs!==ls&&rs.length>ls.length){
+        const u=S.currentUser,c={...S.cutoffs};
         Object.assign(S,remote);
         S.currentUser=u; Object.assign(S.cutoffs,c);
         saveLocally(); renderAll();
@@ -995,37 +850,36 @@ function startSyncLoop() {
   },30000);
 }
 
-function exportExcel() { alert('ייצוא לאקסל — יתווסף בגרסה הבאה'); }
+function exportExcel(){alert('ייצוא לאקסל — יתווסף בגרסה הבאה');}
 
 // ===== PRESENCE =====
-function startPresenceLoop() {
+function startPresenceLoop(){
   setInterval(()=>{
-    if (S.currentUser) localStorage.setItem('rw_presence',JSON.stringify({user:S.currentUser,ts:Date.now()}));
+    if(S.currentUser) localStorage.setItem('rw_presence',JSON.stringify({user:S.currentUser,ts:Date.now()}));
     const p=localStorage.getItem('rw_presence');
-    if (p) try {
+    if(p) try{
       const obj=JSON.parse(p);
-      const warn=document.getElementById('lockWarn');
-      if (obj.user!==S.currentUser&&Date.now()-obj.ts<30000) {
-        warn.style.display='block'; warn.textContent=obj.user+' עובד/ת כרגע';
-      } else warn.style.display='none';
-    } catch(e){}
+      const w=document.getElementById('lockWarn');
+      if(obj.user!==S.currentUser&&Date.now()-obj.ts<30000){w.style.display='block';w.textContent=obj.user+' עובד/ת כרגע';}
+      else w.style.display='none';
+    }catch(e){}
   },10000);
 }
 
 // ===== TABS =====
-function switchTab(name) {
+function switchTab(name){
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leave','holidays','annual','settings'][i]===name));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  if (name==='annual') renderAnnual();
-  if (name==='holidays') { renderHolWorkers(); renderHolList(); }
-  if (name==='settings') {
+  if(name==='annual') renderAnnual();
+  if(name==='holidays'){renderHolWorkers();renderHolList();}
+  if(name==='settings'){
     renderWorkerList();
     document.getElementById('tokStatus').innerHTML=getToken()?'<span class="tok-ok">✓ טוקן מוגדר</span>':'אין טוקן';
   }
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 </script>
 </body>
 </html>
