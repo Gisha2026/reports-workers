@@ -329,7 +329,7 @@ pb-16 { padding-bottom: 60px; }
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar h1" style="font-size:15px;font-weight:bold;">Reports_Workers v32</span>
+      <span class="topbar h1" style="font-size:15px;font-weight:bold;">Reports_Workers v33</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarning"></span>
@@ -480,7 +480,7 @@ pb-16 { padding-bottom: 60px; }
 <script>
 // ===== STATE =====
 let state = {
-  version: 32,
+  version: 33,
   currentUser: '',
   workers: [],        // [{name, active, endMonth}]
   months: {},         // {'אפריל': [{date:'2026-04-01', day:'א', cells:{workerName: value}}]}
@@ -504,7 +504,7 @@ let endModalWorker = null;
 // ===== INIT =====
 window.onload = () => {
   // Check if saved data exists
-  const saved = localStorage.getItem('rw_v32_data');
+  const saved = localStorage.getItem('rw_v33_data');
   if (saved) {
     try {
       state = JSON.parse(saved);
@@ -540,7 +540,7 @@ function startApp() {
 function saveTokenFromModal() {
   const token = document.getElementById('tokenModalInput').value.trim();
   if (!token) { alert('נא להכניס טוקן'); return; }
-  localStorage.setItem('rw_v32_token', token);
+  localStorage.setItem('rw_v33_token', token);
   document.getElementById('tokenModal').classList.remove('open');
   saveData();
 }
@@ -551,14 +551,14 @@ function skipToken() {
 
 // ===== LOCK / PRESENCE =====
 function setLockPresence() {
-  const key = 'rw_v32_presence';
+  const key = 'rw_v33_presence';
   const presence = { user: state.currentUser, ts: Date.now() };
   localStorage.setItem(key, JSON.stringify(presence));
 }
 
 function checkLockStatus() {
   setInterval(() => {
-    const key = 'rw_v32_presence';
+    const key = 'rw_v33_presence';
     const p = localStorage.getItem(key);
     if (p) {
       try {
@@ -647,10 +647,22 @@ function renderMonthTable() {
   const prevCutoff = prevMonthName ? state.cutoffs[prevMonthName] : null;
   const prevRows = prevMonthName ? getMonthRows(prevMonthName) : [];
 
-  // Determine which days from prev month to show (days >= prevCutoff that are in prev month)
+  // Determine which days from prev month to show (days >= prevCutoff)
   let prevDaysToShow = [];
-  if (prevCutoff && prevRows.length > 0) {
-    prevDaysToShow = prevRows.filter(r => r.date >= prevCutoff && r.date < MONTH_NAMES[currentMonthIdx]);
+  if (prevCutoff) {
+    if (prevRows.length > 0) {
+      prevDaysToShow = prevRows.filter(r => r.date >= prevCutoff);
+    } else {
+      // Build empty rows for prev month days >= cutoff
+      const cutoffDate = new Date(prevCutoff);
+      const endOfPrevMonth = new Date(state.year, currentMonthIdx, 0);
+      for (let d = new Date(cutoffDate); d <= endOfPrevMonth; d.setDate(d.getDate() + 1)) {
+        const dow = d.getDay();
+        if (dow === 5 || dow === 6) continue;
+        const dateStr = d.toISOString().split("T")[0];
+        prevDaysToShow.push({ date: dateStr, day: DAY_NAMES[dow], cells: {} });
+      }
+    }
   }
 
   // Build header
@@ -1112,13 +1124,13 @@ function renderAnnual() {
 function saveToken() {
   const token = document.getElementById('tokenInput').value.trim();
   if (!token) return;
-  localStorage.setItem('rw_v32_token', token);
+  localStorage.setItem('rw_v33_token', token);
   document.getElementById('tokenStatus').innerHTML = '<span class="token-ok">✓ טוקן נשמר בדפדפן זה</span>';
   document.getElementById('tokenInput').value = '';
 }
 
 function getToken() {
-  return localStorage.getItem('rw_v32_token') || '';
+  return localStorage.getItem('rw_v33_token') || '';
 }
 
 async function saveToGithub(data) {
@@ -1175,7 +1187,7 @@ async function loadFromGithub() {
 }
 
 function saveLocally() {
-  localStorage.setItem('rw_v32_data', JSON.stringify(state));
+  localStorage.setItem('rw_v33_data', JSON.stringify(state));
 }
 
 async function saveData() {
@@ -1198,7 +1210,7 @@ async function saveData() {
 function startSyncLoop() {
   setInterval(async () => {
     const remote = await loadFromGithub();
-    if (remote && remote.version === 32) {
+    if (remote && remote.version === 33) {
       // Check if remote is newer (simple check: compare JSON length)
       const localStr = JSON.stringify(state);
       const remoteStr = JSON.stringify(remote);
