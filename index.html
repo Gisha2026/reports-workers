@@ -4,305 +4,162 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reports_Workers | גישה</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='white' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='%2300897B' font-family='Arial' font-weight='bold'>ג</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, sans-serif; background: #f5f5f5; font-size: 13px; direction: rtl; }
 
 /* LOGIN */
-#loginScreen {
-  display: flex; align-items: center; justify-content: center;
-  min-height: 100vh; background: #f0f4f8;
-}
-.login-box {
-  background: white; border-radius: 12px; padding: 40px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 360px; text-align: center;
-}
-.login-logo {
-  width: 60px; height: 60px; background: white; border: 2px solid #00897B;
-  border-radius: 10px; display: flex; align-items: center; justify-content: center;
-  font-size: 32px; font-weight: bold; color: #00897B; margin: 0 auto 16px;
-}
-.login-box h2 { color: #333; margin-bottom: 8px; font-size: 20px; }
-.login-box p { color: #666; font-size: 12px; margin-bottom: 24px; }
-.login-box input {
-  width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
-  font-size: 14px; margin-bottom: 12px; direction: rtl; text-align: right;
-}
-.login-box button {
-  width: 100%; padding: 10px; background: #00897B; color: white;
-  border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: bold;
-}
-.login-box button:hover { background: #00796B; }
-.login-divider { border-top: 1px solid #eee; margin: 16px 0; }
-.login-import-btn {
-  width: 100%; padding: 8px; background: white; color: #00897B;
-  border: 1px solid #00897B; border-radius: 6px; font-size: 13px; cursor: pointer;
-}
-.login-import-btn:hover { background: #e8f5e9; }
+#loginScreen { display:flex; align-items:center; justify-content:center; min-height:100vh; background:#f0f4f8; }
+.login-box { background:white; border-radius:12px; padding:40px; box-shadow:0 4px 20px rgba(0,0,0,0.1); width:360px; text-align:center; }
+.login-logo { width:56px; height:56px; background:#00897B; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:bold; color:white; margin:0 auto 16px; }
+.login-box h2 { color:#333; margin-bottom:8px; font-size:20px; }
+.login-box p { color:#666; font-size:12px; margin-bottom:24px; }
+.login-box input { width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px; margin-bottom:12px; direction:rtl; text-align:right; }
+.login-box button { width:100%; padding:10px; background:#00897B; color:white; border:none; border-radius:6px; font-size:14px; cursor:pointer; font-weight:bold; }
+.login-box button:hover { background:#00796B; }
+.login-divider { border-top:1px solid #eee; margin:16px 0; }
+.login-import-label { display:block; width:100%; padding:8px; background:white; color:#00897B; border:1px solid #00897B; border-radius:6px; font-size:13px; cursor:pointer; text-align:center; }
+.login-import-label:hover { background:#e8f5e9; }
 
-/* MAIN APP */
-#app { display: none; }
+/* APP */
+#app { display:none; }
 
-/* TOP BAR */
-.topbar {
-  background: #00897B; color: white; padding: 8px 16px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-}
-.topbar-right { display: flex; align-items: center; gap: 12px; }
-.topbar-logo {
-  width: 32px; height: 32px; background: white; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: bold; color: #00897B;
-}
-.topbar h1 { font-size: 15px; font-weight: bold; }
-.topbar-left { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-.user-badge {
-  background: rgba(255,255,255,0.2); padding: 4px 10px;
-  border-radius: 12px; font-size: 12px;
-}
-.lock-warning {
-  background: #FF8F00; color: white; padding: 4px 10px;
-  border-radius: 12px; font-size: 11px; display: none;
-}
+/* TOPBAR */
+.topbar { background:#00897B; color:white; padding:8px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.topbar-right { display:flex; align-items:center; gap:10px; }
+.topbar-logo { width:30px; height:30px; background:#00897B; border:2px solid white; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; color:white; }
+.topbar-title { font-size:14px; font-weight:bold; }
+.topbar-left { display:flex; align-items:center; gap:8px; }
+.user-badge { background:rgba(255,255,255,0.2); padding:3px 10px; border-radius:12px; font-size:12px; }
+.lock-warning { background:#FF8F00; color:white; padding:3px 10px; border-radius:12px; font-size:11px; display:none; }
 
 /* TABS */
-.tabs {
-  background: white; border-bottom: 2px solid #e0e0e0;
-  display: flex; padding: 0 16px;
-}
-.tab {
-  padding: 10px 18px; cursor: pointer; border-bottom: 3px solid transparent;
-  font-size: 13px; color: #666; transition: all 0.2s;
-}
-.tab.active { color: #00897B; border-bottom-color: #00897B; font-weight: bold; }
-.tab:hover { color: #00897B; }
+.tabs { background:white; border-bottom:2px solid #e0e0e0; display:flex; padding:0 16px; }
+.tab { padding:10px 16px; cursor:pointer; border-bottom:3px solid transparent; font-size:13px; color:#666; }
+.tab.active { color:#00897B; border-bottom-color:#00897B; font-weight:bold; }
+.tab:hover { color:#00897B; }
 
 /* CONTENT */
-.tab-content { display: none; padding: 16px; }
-.tab-content.active { display: block; }
+.tab-content { display:none; padding:12px 16px 70px; }
+.tab-content.active { display:block; }
 
 /* MONTH NAV */
-.month-nav {
-  background: white; padding: 10px 16px; border-radius: 8px;
-  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-.month-nav h2 { font-size: 16px; color: #333; flex: 1; text-align: center; }
-.nav-btn {
-  background: #e8f5e9; border: none; padding: 6px 12px;
-  border-radius: 6px; cursor: pointer; font-size: 16px; color: #00897B;
-}
-.nav-btn:hover { background: #c8e6c9; }
+.month-nav { background:white; padding:8px 12px; border-radius:8px; display:flex; align-items:center; gap:8px; margin-bottom:10px; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+.month-nav h2 { font-size:15px; color:#333; flex:1; text-align:center; }
+.nav-btn { background:#e8f5e9; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:15px; color:#00897B; line-height:1; }
+.nav-btn:hover { background:#c8e6c9; }
+.month-jump { padding:4px 6px; border:1px solid #ddd; border-radius:5px; font-size:12px; }
+.view-toggle { padding:5px 10px; border:1px solid #00897B; border-radius:5px; cursor:pointer; font-size:12px; color:#00897B; background:white; }
+.view-toggle.active { background:#00897B; color:white; }
 
 /* CUTOFF */
-.cutoff-bar {
-  background: white; padding: 8px 16px; border-radius: 8px;
-  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-.cutoff-bar label { font-size: 12px; color: #666; }
-.cutoff-bar input[type=date] {
-  padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;
-}
-.cutoff-badge {
-  background: #FF8F00; color: white; padding: 3px 10px;
-  border-radius: 12px; font-size: 11px;
-}
+.cutoff-bar { background:white; padding:7px 12px; border-radius:8px; display:flex; align-items:center; gap:10px; margin-bottom:10px; box-shadow:0 1px 4px rgba(0,0,0,0.08); flex-wrap:wrap; }
+.cutoff-bar label { font-size:12px; color:#666; }
+.cutoff-bar input[type=date] { padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; }
+.cutoff-badge { background:#FF8F00; color:white; padding:3px 10px; border-radius:12px; font-size:11px; white-space:nowrap; }
 
 /* TABLE */
-.table-wrap { overflow-x: auto; }
-table {
-  border-collapse: collapse; background: white;
-  border-radius: 8px; overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08); width: 100%;
-}
-th {
-  background: #00897B; color: white; padding: 7px 10px;
-  text-align: center; font-size: 12px; white-space: nowrap;
-}
-td {
-  padding: 4px 6px; text-align: center; border-bottom: 1px solid #f0f0f0;
-  font-size: 12px;
-}
-td.day-label { font-weight: bold; color: #333; min-width: 30px; }
-td.date-label { color: #888; min-width: 50px; font-size: 11px; }
-tr.weekend-row td {
-  background: #e0e0e0 !important; height: 8px; padding: 0;
-}
-tr.prev-month td { background: #fff8e1; }
-tr.after-cutoff td { background: #fff3e0; }
-tr.duplicate td { background: #ffebee !important; }
-tr:hover:not(.weekend-row) td { background: #f5fffe; }
+.table-wrap { overflow-x:auto; }
+table { border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.08); width:100%; }
+th { background:#00897B; color:white; padding:6px 8px; text-align:center; font-size:11px; white-space:nowrap; position:sticky; top:0; }
+td { padding:3px 5px; text-align:center; border-bottom:1px solid #f0f0f0; font-size:11px; }
+td.day-lbl { font-weight:bold; color:#333; min-width:24px; }
+td.date-lbl { color:#888; min-width:44px; font-size:10px; }
+tr.weekend-row td { background:#e0e0e0 !important; height:6px; padding:0; border:none; }
+tr.prev-month-row td { background:#fff8e1; }
+tr.after-cutoff-row td { background:#fff3e0; }
+tr.holiday-row td { background:#fffde7 !important; }
+tr.duplicate-row td { background:#ffebee !important; }
+tr:hover:not(.weekend-row) td { background:#f0faf9; }
 
-select.cell-select {
-  border: none; background: transparent; font-size: 11px;
-  width: 80px; cursor: pointer; text-align: center;
-}
-select.cell-select:focus { outline: 1px solid #00897B; border-radius: 3px; }
+select.cell-sel { border:none; background:transparent; font-size:11px; width:78px; cursor:pointer; }
+select.cell-sel:focus { outline:1px solid #00897B; border-radius:3px; }
+select.cell-sel:disabled { opacity:0.5; cursor:default; }
+
+/* VIEW MODE (read-only) */
+.cell-val { font-size:11px; padding:2px 4px; border-radius:3px; display:inline-block; min-width:60px; }
 
 /* SUMMARY ROW */
-tr.summary-row td {
-  background: #e8f5e9 !important; font-weight: bold; font-size: 11px;
-  padding: 5px 6px;
-}
-.sum-chip {
-  display: inline-block; padding: 2px 6px; border-radius: 10px;
-  font-size: 10px; font-weight: bold; margin: 1px;
-}
-.sum-vacation { background: #c8e6c9; color: #2e7d32; }
-.sum-sick { background: #ffcdd2; color: #c62828; }
-.sum-holiday { background: #fff9c4; color: #f57f17; }
-.sum-other { background: #e1bee7; color: #6a1b9a; }
+tr.sum-row td { background:#e8f5e9 !important; font-weight:bold; font-size:10px; padding:4px 5px; border-top:2px solid #00897B; }
+.chip { display:inline-block; padding:1px 5px; border-radius:8px; font-size:10px; font-weight:bold; margin:1px; }
+.chip-v { background:#c8e6c9; color:#2e7d32; }
+.chip-s { background:#ffcdd2; color:#c62828; }
+.chip-h { background:#fff9c4; color:#f57f17; }
+.chip-o { background:#e1bee7; color:#6a1b9a; }
+
+/* WORKER SUM COL */
+td.wsum { background:#f1f8f6 !important; font-size:10px; padding:2px 4px; border-right:1px solid #c8e6c9; min-width:80px; }
 
 /* LEGEND */
-.legend {
-  display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;
-  font-size: 11px; align-items: center;
-}
-.legend-item { display: flex; align-items: center; gap: 4px; }
-.legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+.legend { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; font-size:11px; align-items:center; }
+.leg-dot { width:11px; height:11px; border-radius:2px; display:inline-block; margin-left:3px; }
 
 /* SETTINGS */
-.settings-section {
-  background: white; border-radius: 8px; padding: 16px;
-  margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-.settings-section h3 { color: #00897B; margin-bottom: 12px; font-size: 14px; }
-.worker-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 0; border-bottom: 1px solid #f0f0f0;
-}
-.worker-name { flex: 1; font-weight: bold; }
-.worker-status {
-  font-size: 11px; padding: 2px 8px; border-radius: 10px;
-}
-.worker-status.active { background: #c8e6c9; color: #2e7d32; }
-.worker-status.ended { background: #ffcdd2; color: #c62828; }
-.order-btn {
-  background: #f5f5f5; border: 1px solid #ddd; padding: 3px 7px;
-  border-radius: 4px; cursor: pointer; font-size: 12px;
-}
-.order-btn:hover { background: #e0e0e0; }
-.end-btn {
-  background: #fff3e0; border: 1px solid #FFB300; color: #E65100;
-  padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;
-}
-.end-btn:hover { background: #ffe0b2; }
-.add-worker-row {
-  display: flex; gap: 8px; margin-top: 12px;
-}
-.add-worker-row input {
-  flex: 1; padding: 7px 10px; border: 1px solid #ddd;
-  border-radius: 6px; font-size: 13px;
-}
-.add-worker-row button {
-  padding: 7px 14px; background: #00897B; color: white;
-  border: none; border-radius: 6px; cursor: pointer; font-size: 13px;
-}
+.s-section { background:white; border-radius:8px; padding:14px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+.s-section h3 { color:#00897B; margin-bottom:10px; font-size:13px; }
+.worker-row { display:flex; align-items:center; gap:6px; padding:5px 0; border-bottom:1px solid #f0f0f0; }
+.worker-name { flex:1; font-weight:bold; font-size:12px; }
+.w-status { font-size:10px; padding:2px 7px; border-radius:8px; }
+.w-active { background:#c8e6c9; color:#2e7d32; }
+.w-ended { background:#ffcdd2; color:#c62828; }
+.ord-btn { background:#f5f5f5; border:1px solid #ddd; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:11px; }
+.end-btn { background:#fff3e0; border:1px solid #FFB300; color:#E65100; padding:2px 7px; border-radius:4px; cursor:pointer; font-size:11px; }
+.add-row { display:flex; gap:8px; margin-top:10px; }
+.add-row input { flex:1; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; }
+.add-row button { padding:6px 12px; background:#00897B; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; }
 
 /* TOKEN */
-.token-section { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
-.token-section input {
-  flex: 1; padding: 7px 10px; border: 1px solid #ddd;
-  border-radius: 6px; font-size: 12px; direction: ltr;
-}
-.token-section button {
-  padding: 7px 14px; background: #00897B; color: white;
-  border: none; border-radius: 6px; cursor: pointer; font-size: 12px;
-}
-.token-status { font-size: 11px; color: #666; margin-top: 4px; }
-.token-ok { color: #2e7d32; }
-.token-err { color: #c62828; }
+.tok-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
+.tok-row input { flex:1; padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; direction:ltr; }
+.tok-row button { padding:6px 12px; background:#00897B; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; }
+.tok-status { font-size:11px; margin-top:4px; }
+.tok-ok { color:#2e7d32; }
 
 /* HOLIDAYS */
-.holiday-form {
-  background: #f9f9f9; border-radius: 6px; padding: 12px; margin-bottom: 12px;
-}
-.holiday-form h4 { color: #555; margin-bottom: 8px; font-size: 13px; }
-.holiday-inputs { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
-.holiday-inputs label { font-size: 11px; color: #666; display: block; margin-bottom: 3px; }
-.holiday-inputs input[type=text] {
-  padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; width: 140px;
-}
-.holiday-inputs input[type=date] {
-  padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;
-}
-.holiday-inputs button {
-  padding: 7px 14px; background: #00897B; color: white;
-  border: none; border-radius: 6px; cursor: pointer; font-size: 12px;
-}
-.worker-checkboxes {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;
-}
-.worker-checkbox { display: flex; align-items: center; gap: 4px; font-size: 12px; }
-.holiday-list { margin-top: 8px; }
-.holiday-item {
-  display: flex; align-items: center; gap: 8px; padding: 6px 8px;
-  background: white; border-radius: 6px; margin-bottom: 4px;
-  border: 1px solid #e0e0e0; font-size: 12px;
-}
-.holiday-item .hol-name { font-weight: bold; flex: 1; }
-.holiday-item .hol-dates { color: #666; font-size: 11px; }
-.holiday-item .hol-workers { color: #888; font-size: 10px; }
-.holiday-del { background: none; border: none; color: #e53935; cursor: pointer; font-size: 14px; }
+.hol-form { background:#f9f9f9; border-radius:6px; padding:10px; margin-bottom:10px; }
+.hol-inputs { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; margin-bottom:8px; }
+.hol-inputs label { font-size:11px; color:#666; display:block; margin-bottom:2px; }
+.hol-inputs input[type=text] { padding:5px 7px; border:1px solid #ddd; border-radius:4px; font-size:12px; width:130px; }
+.hol-inputs input[type=date] { padding:5px 7px; border:1px solid #ddd; border-radius:4px; font-size:12px; }
+.hol-inputs button { padding:6px 12px; background:#00897B; color:white; border:none; border-radius:5px; cursor:pointer; font-size:12px; }
+.w-cbs { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.w-cb { display:flex; align-items:center; gap:3px; font-size:11px; }
+.hol-item { display:flex; align-items:center; gap:8px; padding:5px 8px; background:white; border-radius:5px; margin-bottom:3px; border:1px solid #e0e0e0; font-size:11px; }
+.hol-name { font-weight:bold; flex:1; }
+.hol-dates { color:#666; font-size:10px; }
+.hol-workers { color:#888; font-size:10px; }
+.hol-del { background:none; border:none; color:#e53935; cursor:pointer; }
 
-/* ANNUAL SUMMARY */
-.annual-table-wrap { overflow-x: auto; margin-bottom: 20px; }
-.annual-table { border-collapse: collapse; width: 100%; }
-.annual-table th, .annual-table td {
-  border: 1px solid #e0e0e0; padding: 6px 8px;
-  text-align: center; font-size: 12px;
-}
-.annual-table th { background: #00897B; color: white; }
-.annual-table td.worker-col { text-align: right; font-weight: bold; background: #f9f9f9; }
-.annual-table td.total-col { background: #e8f5e9; font-weight: bold; }
-.annual-section h3 { color: #00897B; margin: 16px 0 8px; font-size: 14px; }
+/* ANNUAL */
+.ann-table { border-collapse:collapse; width:100%; margin-bottom:16px; }
+.ann-table th, .ann-table td { border:1px solid #e0e0e0; padding:5px 7px; text-align:center; font-size:11px; }
+.ann-table th { background:#00897B; color:white; }
+.ann-table td.w-col { text-align:right; font-weight:bold; background:#f9f9f9; }
+.ann-table td.tot { background:#e8f5e9; font-weight:bold; }
+.ann-section h3 { color:#00897B; margin:14px 0 6px; font-size:13px; }
 
 /* SAVE BAR */
-.save-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: white; border-top: 2px solid #e0e0e0;
-  padding: 8px 16px; display: flex; gap: 8px; align-items: center;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-}
-.save-btn {
-  padding: 8px 20px; background: #00897B; color: white;
-  border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold;
-}
-.save-btn:hover { background: #00796B; }
-.export-btn {
-  padding: 8px 16px; background: white; color: #00897B;
-  border: 1px solid #00897B; border-radius: 6px; cursor: pointer; font-size: 13px;
-}
-.save-status { font-size: 12px; color: #666; flex: 1; }
-.save-ok { color: #2e7d32; }
-.save-err { color: #c62828; }
+.save-bar { position:fixed; bottom:0; left:0; right:0; background:white; border-top:2px solid #e0e0e0; padding:7px 16px; display:flex; gap:8px; align-items:center; box-shadow:0 -2px 8px rgba(0,0,0,0.1); z-index:50; }
+.save-btn { padding:7px 18px; background:#00897B; color:white; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:bold; }
+.save-btn:hover { background:#00796B; }
+.exp-btn { padding:7px 14px; background:white; color:#00897B; border:1px solid #00897B; border-radius:6px; cursor:pointer; font-size:12px; }
+.save-status { font-size:11px; color:#666; flex:1; }
+.save-ok { color:#2e7d32; }
+.save-err { color:#c62828; }
 
-/* MODAL */
-.modal-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.5); z-index: 200;
-  align-items: center; justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal-box {
-  background: white; border-radius: 12px; padding: 24px;
-  max-width: 360px; width: 90%; text-align: center;
-}
-.modal-box h3 { margin-bottom: 8px; }
-.modal-box p { color: #666; font-size: 13px; margin-bottom: 16px; }
-.modal-box input[type=month] {
-  padding: 8px; border: 1px solid #ddd; border-radius: 6px;
-  font-size: 14px; margin-bottom: 12px; width: 100%;
-}
-.modal-btns { display: flex; gap: 8px; justify-content: center; }
-.modal-btns button { padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-.modal-confirm { background: #e53935; color: white; border: none; }
-.modal-cancel { background: white; color: #333; border: 1px solid #ddd; }
-
-pb-16 { padding-bottom: 60px; }
+/* MODALS */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal-box { background:white; border-radius:12px; padding:24px; max-width:380px; width:92%; }
+.modal-box h3 { margin-bottom:8px; font-size:16px; }
+.modal-box p { color:#666; font-size:12px; margin-bottom:14px; }
+.modal-box input { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; font-size:13px; }
+.modal-btns { display:flex; gap:8px; justify-content:flex-end; }
+.modal-btns button { padding:7px 18px; border-radius:6px; cursor:pointer; font-size:13px; }
+.btn-confirm { background:#00897B; color:white; border:none; }
+.btn-cancel { background:white; color:#333; border:1px solid #ddd; }
+.btn-danger { background:#e53935; color:white; border:none; }
 </style>
 </head>
 <body>
@@ -313,26 +170,26 @@ pb-16 { padding-bottom: 60px; }
     <div class="login-logo">ג</div>
     <h2>Reports_Workers</h2>
     <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <input type="text" id="loginName" placeholder="הכנס את שמך" />
+    <input type="text" id="loginName" placeholder="הכנס את שמך">
     <button onclick="doLogin()">כניסה</button>
     <div class="login-divider"></div>
     <p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
-    <label class="login-import-btn" style="display:block;text-align:center;padding:8px;cursor:pointer;">
+    <label class="login-import-label">
       ייבוא מקובץ אקסל
-      <input type="file" id="importFileInput" accept=".xlsx" style="display:none" onchange="importFromExcel(this)">
+      <input type="file" id="importFile" accept=".xlsx" style="display:none" onchange="importExcel(this)">
     </label>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app" style="padding-bottom:60px;">
+<div id="app">
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar h1" style="font-size:15px;font-weight:bold;">Reports_Workers v33</span>
+      <span class="topbar-title">Reports_Workers v34</span>
     </div>
     <div class="topbar-left">
-      <span class="lock-warning" id="lockWarning"></span>
+      <span class="lock-warning" id="lockWarn"></span>
       <span class="user-badge" id="userBadge"></span>
     </div>
   </div>
@@ -344,272 +201,254 @@ pb-16 { padding-bottom: 60px; }
     <div class="tab" onclick="switchTab('settings')">הגדרות</div>
   </div>
 
-  <!-- LEAVE TAB -->
+  <!-- LEAVE -->
   <div class="tab-content active" id="tab-leave">
     <div class="month-nav">
-      <button class="nav-btn" onclick="prevMonth()">&#8250;</button>
+      <button class="nav-btn" onclick="prevMonth()">›</button>
+      <select class="month-jump" id="monthJump" onchange="jumpToMonth(this.value)"></select>
       <h2 id="monthTitle"></h2>
-      <button class="nav-btn" onclick="nextMonth()">&#8249;</button>
+      <select class="month-jump" id="yearJump" onchange="jumpToYear(this.value)"></select>
+      <button class="nav-btn" onclick="nextMonth()">‹</button>
+      <button class="view-toggle active" id="editToggle" onclick="toggleView()">עריכה</button>
     </div>
     <div class="cutoff-bar">
       <label>תאריך חיתוך:</label>
       <input type="date" id="cutoffInput" onchange="setCutoff()">
       <span class="cutoff-badge" id="cutoffBadge" style="display:none"></span>
-      <span id="cutoffMsg" style="font-size:11px;color:#E65100;"></span>
     </div>
     <div class="table-wrap">
-      <table id="leaveTable">
-        <thead><tr id="tableHeader"></tr></thead>
-        <tbody id="tableBody"></tbody>
+      <table id="mainTable">
+        <thead><tr id="tHead"></tr></thead>
+        <tbody id="tBody"></tbody>
       </table>
     </div>
     <div class="legend">
-      <span class="legend-item"><span class="legend-dot" style="background:#c8e6c9"></span>חופש</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#ffcdd2"></span>מחלה</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#fff9c4"></span>חג</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#e1bee7"></span>אחר/אבל</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#fff8e1"></span>מחודש קודם</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#e0e0e0"></span>סוף שבוע</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#ffebee"></span>כפילות</span>
+      <span><span class="leg-dot" style="background:#c8e6c9"></span>חופש</span>
+      <span><span class="leg-dot" style="background:#ffcdd2"></span>מחלה</span>
+      <span><span class="leg-dot" style="background:#fffde7;border:1px solid #f0c040"></span>חג</span>
+      <span><span class="leg-dot" style="background:#e1bee7"></span>אחר/אבל</span>
+      <span><span class="leg-dot" style="background:#fff8e1"></span>מחודש קודם</span>
+      <span><span class="leg-dot" style="background:#e0e0e0"></span>סוף שבוע</span>
+      <span><span class="leg-dot" style="background:#ffebee"></span>כפילות</span>
     </div>
   </div>
 
-  <!-- HOLIDAYS TAB -->
+  <!-- HOLIDAYS -->
   <div class="tab-content" id="tab-holidays">
-    <div class="settings-section">
+    <div class="s-section">
       <h3>ניהול חגים</h3>
-      <div class="holiday-form">
-        <h4>הוסף חג</h4>
-        <div class="holiday-inputs">
-          <div>
-            <label>שם החג</label>
-            <input type="text" id="holName" placeholder="למשל: פסח">
-          </div>
-          <div>
-            <label>תאריך התחלה</label>
-            <input type="date" id="holStart">
-          </div>
-          <div>
-            <label>תאריך סיום</label>
-            <input type="date" id="holEnd">
-          </div>
+      <div class="hol-form">
+        <div class="hol-inputs">
+          <div><label>שם החג</label><input type="text" id="holName" placeholder="פסח, עיד..."></div>
+          <div><label>תאריך התחלה</label><input type="date" id="holStart"></div>
+          <div><label>תאריך סיום</label><input type="date" id="holEnd"></div>
           <button onclick="addHoliday()">הוסף</button>
         </div>
-        <div style="margin-top:10px;">
-          <label style="font-size:12px;color:#666;display:block;margin-bottom:6px;">חל על עובדים:</label>
-          <div style="margin-bottom:6px;">
-            <label style="font-size:12px;cursor:pointer;">
-              <input type="checkbox" id="holAllWorkers" onchange="toggleAllWorkers(this)"> כל העובדים
-            </label>
-          </div>
-          <div class="worker-checkboxes" id="holWorkerList"></div>
+        <div>
+          <label style="font-size:11px;color:#666;">חל על:</label>
+          <label style="font-size:11px;margin-right:8px;cursor:pointer;">
+            <input type="checkbox" id="holAll" onchange="toggleAllCbs(this)"> כל העובדים
+          </label>
         </div>
+        <div class="w-cbs" id="holWorkerCbs"></div>
       </div>
-      <div class="holiday-list" id="holidayList"></div>
+      <div id="holList"></div>
     </div>
   </div>
 
-  <!-- ANNUAL TAB -->
-  <div class="tab-content annual-section" id="tab-annual">
-    <div class="settings-section">
+  <!-- ANNUAL -->
+  <div class="tab-content ann-section" id="tab-annual">
+    <div class="s-section">
       <h3>סיכום שנתי</h3>
       <div id="annualContent"></div>
     </div>
   </div>
 
-  <!-- SETTINGS TAB -->
+  <!-- SETTINGS -->
   <div class="tab-content" id="tab-settings">
-    <div class="settings-section">
+    <div class="s-section">
       <h3>עובדים</h3>
       <div id="workerList"></div>
-      <div class="add-worker-row">
-        <input type="text" id="newWorkerName" placeholder="שם עובד חדש">
-        <button onclick="addWorker()">הוסף עובד</button>
+      <div class="add-row">
+        <input type="text" id="newWorker" placeholder="שם עובד חדש">
+        <button onclick="addWorker()">הוסף</button>
       </div>
     </div>
-    <div class="settings-section">
-      <h3>חיבור לגיטהאב (שמירה מסונכרנת)</h3>
-      <p style="font-size:12px;color:#666;margin-bottom:8px;">
-        הזן את הטוקן פעם אחת — יישמר בדפדפן זה בלבד. הנתונים יסונכרנו לכל המחשבים.
-      </p>
-      <div class="token-section">
-        <input type="password" id="tokenInput" placeholder="ghp_...">
-        <button onclick="saveToken()">שמור טוקן</button>
+    <div class="s-section">
+      <h3>חיבור לגיטהאב</h3>
+      <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב. הנתונים יסונכרנו לכולם.</p>
+      <div class="tok-row">
+        <input type="password" id="tokInput" placeholder="ghp_...">
+        <button onclick="saveToken()">שמור</button>
       </div>
-      <div class="token-status" id="tokenStatus"></div>
+      <div class="tok-status" id="tokStatus"></div>
     </div>
   </div>
 
   <div class="save-bar">
     <button class="save-btn" onclick="saveData()">שמור</button>
-    <button class="export-btn" onclick="exportExcel()">ייצוא לאקסל</button>
+    <button class="exp-btn" onclick="exportExcel()">ייצוא לאקסל</button>
     <span class="save-status" id="saveStatus"></span>
   </div>
 </div>
 
-<!-- MODAL for token -->
+<!-- TOKEN MODAL -->
 <div class="modal-overlay" id="tokenModal">
-  <div class="modal-box">
-    <div class="login-logo" style="margin:0 auto 12px;">ג</div>
+  <div class="modal-box" style="text-align:center;">
+    <div class="login-logo" style="margin:0 auto 12px;width:44px;height:44px;font-size:22px;">ג</div>
     <h3>חיבור לגיטהאב</h3>
-    <p>הכנס את הטוקן פעם אחת — יישמר בדפדפן זה לתמיד</p>
-    <input type="password" id="tokenModalInput" placeholder="ghp_..." style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;margin-bottom:8px;direction:ltr;font-size:13px;">
-    <div class="modal-btns">
-      <button class="modal-cancel" onclick="skipToken()">דלג</button>
-      <button class="modal-confirm" style="background:#00897B;" onclick="saveTokenFromModal()">שמור וכנס</button>
+    <p>הכנס טוקן פעם אחת — יישמר בדפדפן זה לתמיד לסנכרון עם כל המחשבים</p>
+    <input type="password" id="tokModalInput" placeholder="ghp_..." style="direction:ltr;">
+    <div class="modal-btns" style="justify-content:center;gap:10px;">
+      <button class="btn-cancel" onclick="skipToken()">דלג</button>
+      <button class="btn-confirm" onclick="saveTokenModal()">שמור וכנס</button>
     </div>
     <p style="font-size:10px;color:#aaa;margin-top:8px;">ניתן לעדכן בהגדרות בכל עת</p>
   </div>
 </div>
 
-<!-- MODAL for end-of-work -->
+<!-- END WORK MODAL -->
 <div class="modal-overlay" id="endModal">
   <div class="modal-box">
     <h3>סיום עבודה</h3>
-    <p id="endModalWorkerName"></p>
-    <label style="font-size:12px;color:#666;">מאיזה חודש להסתיר עובד זה:</label>
-    <input type="month" id="endModalMonth">
+    <p id="endModalName"></p>
+    <label style="font-size:12px;color:#666;">מאיזה חודש להסתיר:</label>
+    <input type="month" id="endModalMonth" style="direction:ltr;">
     <div class="modal-btns">
-      <button class="modal-cancel" onclick="closeEndModal()">ביטול</button>
-      <button class="modal-confirm" onclick="confirmEndWork()">אישור</button>
+      <button class="btn-cancel" onclick="closeModal('endModal')">ביטול</button>
+      <button class="btn-danger" onclick="confirmEnd()">אישור</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOLIDAY CONFIRM MODAL -->
+<div class="modal-overlay" id="holConfirmModal">
+  <div class="modal-box" style="text-align:center;">
+    <h3>✓ חג נוסף</h3>
+    <p id="holConfirmMsg"></p>
+    <div class="modal-btns" style="justify-content:center;">
+      <button class="btn-confirm" onclick="closeModal('holConfirmModal')">אישור</button>
     </div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+// ===== CONSTANTS =====
+const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const DAYS = ['א','ב','ג','ד','ה','ו','ש']; // Sun=0
+const VALUES = ['','חופש','חצי חופש','מחלה','חצי מחלה','חג','אבל','אחר'];
+const KNOWN_VALS = new Set(VALUES.filter(Boolean));
+const VAL_COLORS = {'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
+const TOK_KEY = 'rw_token'; // Fixed key — never changes between versions
+
 // ===== STATE =====
-let state = {
-  version: 33,
+let S = {
+  version: 34,
   currentUser: '',
-  workers: [],        // [{name, active, endMonth}]
-  months: {},         // {'אפריל': [{date:'2026-04-01', day:'א', cells:{workerName: value}}]}
-  cutoffs: {},        // {'אפריל': '2026-04-25'}
-  holidays: [],       // [{name, start, end, workers:[] or 'all'}]
+  workers: [],   // {name, active, endMonth}
+  months: {},    // {monthName: [{date, day, cells:{workerName:val}}]}
+  cutoffs: {},   // {monthName: 'YYYY-MM-DD'}
+  holidays: [],  // {name, start, end, workers:'all'|[]}
   year: 2026
 };
 
-const MONTH_NAMES = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-const DAY_NAMES = ['א','ב','ג','ד','ה','ו','ש']; // Sun=0
-const VALUES = ['', 'חופש', 'חצי חופש', 'מחלה', 'חצי מחלה', 'חג', 'אבל', 'אחר'];
-const VALUE_COLORS = {
-  'חופש': '#c8e6c9', 'חצי חופש': '#e8f5e9',
-  'מחלה': '#ffcdd2', 'חצי מחלה': '#fce4ec',
-  'חג': '#fff9c4', 'אבל': '#e1bee7', 'אחר': '#e1bee7'
-};
+let curMonthIdx = new Date().getMonth();
+let editMode = true;
+let endWorkerIdx = null;
 
-let currentMonthIdx = new Date().getMonth();
-let endModalWorker = null;
-
-// ===== INIT =====
+// ===== BOOT =====
 window.onload = () => {
-  // Check if saved data exists
-  const saved = localStorage.getItem('rw_v33_data');
-  if (saved) {
-    try {
-      state = JSON.parse(saved);
-      // Show login to get username
-    } catch(e) {}
-  }
-  checkLockStatus();
+  const saved = localStorage.getItem('rw_v34_data');
+  if (saved) try { S = JSON.parse(saved); } catch(e) {}
+  buildJumps();
+  startPresenceLoop();
 };
+
+function buildJumps() {
+  const mj = document.getElementById('monthJump');
+  MONTHS.forEach((m, i) => mj.innerHTML += `<option value="${i}">${m}</option>`);
+  const yj = document.getElementById('yearJump');
+  for (let y = 2024; y <= 2030; y++) yj.innerHTML += `<option value="${y}" ${y===S.year?'selected':''}>${y}</option>`;
+}
 
 // ===== LOGIN =====
 function doLogin() {
-  const name = document.getElementById('loginName').value.trim();
-  if (!name) { alert('נא להכניס שם'); return; }
-  state.currentUser = name;
+  const n = document.getElementById('loginName').value.trim();
+  if (!n) { alert('נא להכניס שם'); return; }
+  S.currentUser = n;
   startApp();
 }
 
 function startApp() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  document.getElementById('userBadge').textContent = state.currentUser;
-
-  renderApp();
-  setLockPresence();
+  document.getElementById('userBadge').textContent = S.currentUser;
+  renderAll();
   startSyncLoop();
-
-  // Show token popup if no token saved
-  if (!getToken()) {
-    document.getElementById('tokenModal').classList.add('open');
-  }
+  if (!getToken()) document.getElementById('tokenModal').classList.add('open');
 }
 
-function saveTokenFromModal() {
-  const token = document.getElementById('tokenModalInput').value.trim();
-  if (!token) { alert('נא להכניס טוקן'); return; }
-  localStorage.setItem('rw_v33_token', token);
-  document.getElementById('tokenModal').classList.remove('open');
+// ===== TOKEN =====
+function getToken() { return localStorage.getItem(TOK_KEY) || ''; }
+function saveToken() {
+  const t = document.getElementById('tokInput').value.trim();
+  if (!t) return;
+  localStorage.setItem(TOK_KEY, t);
+  document.getElementById('tokStatus').innerHTML = '<span class="tok-ok">✓ טוקן נשמר</span>';
+  document.getElementById('tokInput').value = '';
+}
+function saveTokenModal() {
+  const t = document.getElementById('tokModalInput').value.trim();
+  if (!t) { alert('נא להכניס טוקן'); return; }
+  localStorage.setItem(TOK_KEY, t);
+  closeModal('tokenModal');
   saveData();
 }
+function skipToken() { closeModal('tokenModal'); }
 
-function skipToken() {
-  document.getElementById('tokenModal').classList.remove('open');
-}
-
-// ===== LOCK / PRESENCE =====
-function setLockPresence() {
-  const key = 'rw_v33_presence';
-  const presence = { user: state.currentUser, ts: Date.now() };
-  localStorage.setItem(key, JSON.stringify(presence));
-}
-
-function checkLockStatus() {
-  setInterval(() => {
-    const key = 'rw_v33_presence';
-    const p = localStorage.getItem(key);
-    if (p) {
-      try {
-        const pObj = JSON.parse(p);
-        if (pObj.user !== state.currentUser && Date.now() - pObj.ts < 30000) {
-          document.getElementById('lockWarning').style.display = 'block';
-          document.getElementById('lockWarning').textContent = pObj.user + ' עובד/ת כרגע';
-        } else {
-          document.getElementById('lockWarning').style.display = 'none';
-        }
-      } catch(e) {}
-    }
-    if (state.currentUser) setLockPresence();
-  }, 10000);
-}
-
-// ===== RENDER =====
-function renderApp() {
-  renderMonthTable();
+// ===== RENDER ALL =====
+function renderAll() {
+  renderTable();
   renderWorkerList();
-  renderHolidayWorkers();
-  renderHolidayList();
+  renderHolWorkers();
+  renderHolList();
   renderAnnual();
-  updateCutoffDisplay();
+  updateCutoffUI();
+  document.getElementById('monthJump').value = curMonthIdx;
+  document.getElementById('yearJump').value = S.year;
 }
 
-function getCurrentMonth() {
-  return MONTH_NAMES[currentMonthIdx];
+// ===== NAV =====
+function prevMonth() { if (curMonthIdx > 0) curMonthIdx--; renderTable(); updateCutoffUI(); syncJumps(); }
+function nextMonth() { if (curMonthIdx < 11) curMonthIdx++; renderTable(); updateCutoffUI(); syncJumps(); }
+function jumpToMonth(v) { curMonthIdx = parseInt(v); renderTable(); updateCutoffUI(); }
+function jumpToYear(v) { S.year = parseInt(v); renderTable(); updateCutoffUI(); }
+function syncJumps() {
+  document.getElementById('monthJump').value = curMonthIdx;
+  document.getElementById('yearJump').value = S.year;
 }
 
-function prevMonth() {
-  if (currentMonthIdx > 0) currentMonthIdx--;
-  renderMonthTable();
-  updateCutoffDisplay();
+function toggleView() {
+  editMode = !editMode;
+  const btn = document.getElementById('editToggle');
+  btn.textContent = editMode ? 'עריכה' : 'תצוגה';
+  btn.classList.toggle('active', editMode);
+  renderTable();
 }
 
-function nextMonth() {
-  if (currentMonthIdx < 11) currentMonthIdx++;
-  renderMonthTable();
-  updateCutoffDisplay();
-}
+function getCurMonthName() { return MONTHS[curMonthIdx]; }
 
-function updateCutoffDisplay() {
-  const monthName = getCurrentMonth();
-  const cutoff = state.cutoffs[monthName];
+function updateCutoffUI() {
+  const m = getCurMonthName();
+  const c = S.cutoffs[m];
   const badge = document.getElementById('cutoffBadge');
   const inp = document.getElementById('cutoffInput');
-  if (cutoff) {
+  document.getElementById('monthTitle').textContent = m + ' ' + S.year;
+  if (c) {
     badge.style.display = 'inline-block';
-    badge.textContent = 'חיתוך: ' + formatDateHe(cutoff);
-    inp.value = cutoff;
+    badge.textContent = 'חיתוך: ' + fmtDate(c);
+    inp.value = c;
   } else {
     badge.style.display = 'none';
     inp.value = '';
@@ -617,325 +456,293 @@ function updateCutoffDisplay() {
 }
 
 function setCutoff() {
-  const monthName = getCurrentMonth();
-  const val = document.getElementById('cutoffInput').value;
-  if (val) {
-    state.cutoffs[monthName] = val;
-  } else {
-    delete state.cutoffs[monthName];
-  }
-  updateCutoffDisplay();
-  renderMonthTable();
+  const m = getCurMonthName();
+  const v = document.getElementById('cutoffInput').value;
+  if (v) S.cutoffs[m] = v; else delete S.cutoffs[m];
+  updateCutoffUI();
+  renderTable();
 }
 
-function formatDateHe(dateStr) {
-  if (!dateStr) return '';
-  const parts = dateStr.split('-');
-  return parts[2] + '/' + parts[1];
+function fmtDate(d) {
+  if (!d) return '';
+  const p = d.split('-');
+  return p[2] + '/' + p[1];
 }
 
-function renderMonthTable() {
-  const monthName = getCurrentMonth();
-  document.getElementById('monthTitle').textContent = monthName + ' ' + state.year;
+// ===== RENDER TABLE =====
+function renderTable() {
+  const mName = getCurMonthName();
+  const curRows = getRows(mName);
+  const cutoff = S.cutoffs[mName];
+  const workers = activeWorkers(mName);
 
-  const rows = getMonthRows(monthName);
-  const activeWorkers = getActiveWorkers(monthName);
-  const cutoff = state.cutoffs[monthName];
-
-  // Get previous month's cutoff days
-  const prevMonthName = currentMonthIdx > 0 ? MONTH_NAMES[currentMonthIdx - 1] : null;
-  const prevCutoff = prevMonthName ? state.cutoffs[prevMonthName] : null;
-  const prevRows = prevMonthName ? getMonthRows(prevMonthName) : [];
-
-  // Determine which days from prev month to show (days >= prevCutoff)
-  let prevDaysToShow = [];
-  if (prevCutoff) {
+  // Previous month's days to show
+  const prevMName = curMonthIdx > 0 ? MONTHS[curMonthIdx - 1] : null;
+  const prevCutoff = prevMName ? S.cutoffs[prevMName] : null;
+  let prevDays = [];
+  if (prevCutoff && prevMName) {
+    const prevRows = getRows(prevMName);
     if (prevRows.length > 0) {
-      prevDaysToShow = prevRows.filter(r => r.date >= prevCutoff);
+      prevDays = prevRows.filter(r => r.date >= prevCutoff);
     } else {
-      // Build empty rows for prev month days >= cutoff
-      const cutoffDate = new Date(prevCutoff);
-      const endOfPrevMonth = new Date(state.year, currentMonthIdx, 0);
-      for (let d = new Date(cutoffDate); d <= endOfPrevMonth; d.setDate(d.getDate() + 1)) {
+      // Build empty rows for prev month >= cutoff
+      const cd = new Date(prevCutoff);
+      const lastDay = new Date(S.year, curMonthIdx, 0);
+      for (let d = new Date(cd); d <= lastDay; d.setDate(d.getDate() + 1)) {
         const dow = d.getDay();
         if (dow === 5 || dow === 6) continue;
-        const dateStr = d.toISOString().split("T")[0];
-        prevDaysToShow.push({ date: dateStr, day: DAY_NAMES[dow], cells: {} });
+        prevDays.push({ date: d.toISOString().split('T')[0], day: DAYS[dow], cells: {} });
       }
     }
   }
 
   // Build header
-  const header = document.getElementById('tableHeader');
-  header.innerHTML = '<th>יום</th><th>תאריך</th>';
-  activeWorkers.forEach(w => {
-    header.innerHTML += `<th>${w.name}</th>`;
-  });
+  const head = document.getElementById('tHead');
+  head.innerHTML = '<th>יום</th><th>תאריך</th>';
+  workers.forEach(w => head.innerHTML += `<th>${w.name}</th>`);
+  if (cutoff) head.innerHTML += '<th style="min-width:90px">סיכום</th>';
 
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
+  const body = document.getElementById('tBody');
+  body.innerHTML = '';
 
-  // Show prev month's cutoff days first (empty)
-  prevDaysToShow.forEach(row => {
+  // Prev month rows
+  let prevLast = null;
+  prevDays.forEach((row, i) => {
+    // Weekend separator
+    if (prevLast !== null && daysDiff(prevLast, row.date) >= 2) {
+      body.appendChild(weekendRow(workers.length + (cutoff ? 1 : 0)));
+    }
+    const isDup = curRows.some(r => r.date === row.date && workers.some(w => r.cells && r.cells[w.name]));
     const tr = document.createElement('tr');
-    tr.className = 'prev-month';
-    tr.innerHTML = `<td class="day-label">${row.day}</td><td class="date-label">${formatDateHe(row.date)}</td>`;
-    activeWorkers.forEach(w => {
-      // Check for duplicate: if this date is also in current month with a value
-      const currentMonthRows = rows.filter(r => r.date === row.date);
-      const isDuplicate = currentMonthRows.length > 0 && currentMonthRows[0].cells && currentMonthRows[0].cells[w.name];
-      const cell = document.createElement('td');
-      if (isDuplicate) {
-        cell.style.background = '#ffebee';
-        cell.title = 'כפילות!';
-        cell.textContent = '⚠️';
+    tr.className = isDup ? 'duplicate-row' : 'prev-month-row';
+    tr.innerHTML = `<td class="day-lbl">${row.day}</td><td class="date-lbl">${fmtDate(row.date)}</td>`;
+    workers.forEach(w => {
+      const td = document.createElement('td');
+      if (isDup) {
+        td.textContent = '⚠️';
+        td.title = 'כפילות!';
       } else {
-        // Show as empty (grayed out)
-        cell.innerHTML = makeSelect(row.date, w.name, '', true);
+        td.innerHTML = editMode
+          ? makeSelect(row.date, w.name, '', true)
+          : '<span class="cell-val">—</span>';
       }
-      tr.appendChild(cell);
+      tr.appendChild(td);
     });
-    tbody.appendChild(tr);
+    if (cutoff) tr.innerHTML += '<td></td>';
+    body.appendChild(tr);
+    prevLast = row.date;
   });
 
-  // Show current month rows
-  let prevDay = null;
-  rows.forEach((row, i) => {
-    // Insert weekend separator if needed
-    if (prevDay !== null) {
-      const gap = daysBetween(prevDay, row.date);
-      if (gap >= 2) {
-        // Weekend row
-        const wtr = document.createElement('tr');
-        wtr.className = 'weekend-row';
-        const colspan = activeWorkers.length + 2;
-        wtr.innerHTML = `<td colspan="${colspan}"></td>`;
-        tbody.appendChild(wtr);
-      }
+  // Current month rows
+  let prevDate = null;
+  curRows.forEach(row => {
+    // Weekend separator between prev days and cur month
+    if (prevDate === null && prevLast !== null && daysDiff(prevLast, row.date) >= 2) {
+      body.appendChild(weekendRow(workers.length + (cutoff ? 1 : 0)));
+    } else if (prevDate !== null && daysDiff(prevDate, row.date) >= 2) {
+      body.appendChild(weekendRow(workers.length + (cutoff ? 1 : 0)));
     }
 
+    const isAfter = cutoff && row.date > cutoff;
+    const isHoliday = isHolidayDate(row.date, workers);
+
     const tr = document.createElement('tr');
-    const isAfterCutoff = cutoff && row.date > cutoff;
-    if (isAfterCutoff) tr.className = 'after-cutoff';
+    if (isHoliday) tr.className = 'holiday-row';
+    else if (isAfter) tr.className = 'after-cutoff-row';
 
-    tr.innerHTML = `<td class="day-label">${row.day}</td><td class="date-label">${formatDateHe(row.date)}</td>`;
-
-    activeWorkers.forEach(w => {
+    tr.innerHTML = `<td class="day-lbl">${row.day}</td><td class="date-lbl">${fmtDate(row.date)}</td>`;
+    workers.forEach(w => {
       const val = (row.cells && row.cells[w.name]) || '';
-      const cell = document.createElement('td');
-      if (val) cell.style.background = VALUE_COLORS[val] || '';
-      cell.innerHTML = makeSelect(row.date, w.name, val, false);
-      tr.appendChild(cell);
+      const td = document.createElement('td');
+      if (val && VAL_COLORS[val]) td.style.background = VAL_COLORS[val];
+      else if (isHoliday) td.style.background = '#fffde7';
+      if (editMode) {
+        td.innerHTML = makeSelect(row.date, w.name, val, false);
+      } else {
+        td.innerHTML = val ? `<span class="cell-val" style="background:${VAL_COLORS[val]||''}">${val}</span>` : '<span class="cell-val">—</span>';
+      }
+      tr.appendChild(td);
     });
 
-    tbody.appendChild(tr);
-    prevDay = row.date;
+    // Summary cell per row (worker totals shown in summary row, not per row)
+    if (cutoff) tr.innerHTML += '<td></td>';
+
+    body.appendChild(tr);
+    prevDate = row.date;
   });
 
-  // Summary row (only if cutoff is set)
+  // Summary row
+  const sumTr = document.createElement('tr');
+  sumTr.className = 'sum-row';
+  sumTr.innerHTML = `<td colspan="2" style="text-align:right;padding:4px 8px;">סיכום</td>`;
+
   if (cutoff) {
-    const sumRow = document.createElement('tr');
-    sumRow.className = 'summary-row';
-    sumRow.innerHTML = `<td colspan="2" style="text-align:right;font-size:11px;">סיכום</td>`;
-    activeWorkers.forEach(w => {
-      const sums = calcSummary(rows, w.name);
+    workers.forEach(w => {
+      const s = calcSum(curRows, w.name, false); // don't count holidays
       let html = '';
-      if (sums.vacation > 0) html += `<span class="sum-chip sum-vacation">חופש: ${sums.vacation}</span>`;
-      if (sums.sick > 0) html += `<span class="sum-chip sum-sick">מחלה: ${sums.sick}</span>`;
-      if (sums.holiday > 0) html += `<span class="sum-chip sum-holiday">חג: ${sums.holiday}</span>`;
-      if (sums.other > 0) html += `<span class="sum-chip sum-other">אחר: ${sums.other}</span>`;
-      sumRow.innerHTML += `<td>${html || '—'}</td>`;
+      if (s.v > 0) html += `<span class="chip chip-v">חופש: ${s.v}</span>`;
+      if (s.s > 0) html += `<span class="chip chip-s">מחלה: ${s.s}</span>`;
+      if (s.h > 0) html += `<span class="chip chip-h">חג: ${s.h}</span>`;
+      if (s.o > 0) html += `<span class="chip chip-o">אחר: ${s.o}</span>`;
+      sumTr.innerHTML += `<td>${html || '—'}</td>`;
     });
-    tbody.appendChild(sumRow);
+    sumTr.innerHTML += '<td></td>';
   } else {
-    const sumRow = document.createElement('tr');
-    sumRow.className = 'summary-row';
-    const colspan = activeWorkers.length + 2;
-    sumRow.innerHTML = `<td colspan="${colspan}" style="text-align:center;color:#999;">קבע חיתוך לסיכום</td>`;
-    tbody.appendChild(sumRow);
+    const span = workers.length + (cutoff ? 2 : 1);
+    sumTr.innerHTML += `<td colspan="${span}" style="color:#999;text-align:center;">קבע תאריך חיתוך לסיכום</td>`;
   }
+  body.appendChild(sumTr);
 }
 
-function makeSelect(date, workerName, value, disabled) {
-  const opts = VALUES.map(v =>
-    `<option value="${v}" ${v === value ? 'selected' : ''}>${v || '—'}</option>`
-  ).join('');
-  const dis = disabled ? 'disabled style="opacity:0.4"' : `onchange="setCellValue('${date}','${workerName}',this.value)"`;
-  return `<select class="cell-select" ${dis}>${opts}</select>`;
+function weekendRow(cols) {
+  const tr = document.createElement('tr');
+  tr.className = 'weekend-row';
+  tr.innerHTML = `<td colspan="${cols + 2}"></td>`;
+  return tr;
 }
 
-function setCellValue(date, workerName, value) {
-  const monthName = getCurrentMonth();
-  if (!state.months[monthName]) state.months[monthName] = [];
-  let row = state.months[monthName].find(r => r.date === date);
-  if (!row) {
-    row = { date, day: '', cells: {} };
-    state.months[monthName].push(row);
-  }
+function makeSelect(date, worker, val, disabled) {
+  const opts = VALUES.map(v => `<option value="${v}"${v===val?' selected':''}>${v||'—'}</option>`).join('');
+  const attr = disabled ? 'disabled' : `onchange="setCell('${date}','${worker}',this.value)"`;
+  return `<select class="cell-sel" ${attr}>${opts}</select>`;
+}
+
+function setCell(date, worker, val) {
+  const m = getCurMonthName();
+  if (!S.months[m]) S.months[m] = [];
+  let row = S.months[m].find(r => r.date === date);
+  if (!row) { row = { date, day: '', cells: {} }; S.months[m].push(row); }
   if (!row.cells) row.cells = {};
-  row.cells[workerName] = value;
-  // Re-render summary only
-  renderMonthTable();
+  row.cells[worker] = val;
+  renderTable();
 }
 
-function calcSummary(rows, workerName) {
-  let vacation = 0, sick = 0, holiday = 0, other = 0;
+function calcSum(rows, worker, countHolidays) {
+  let v = 0, s = 0, h = 0, o = 0;
   rows.forEach(r => {
     if (!r.cells) return;
-    const v = r.cells[workerName] || '';
-    if (v === 'חופש') vacation += 1;
-    else if (v === 'חצי חופש') vacation += 0.5;
-    else if (v === 'מחלה') sick += 1;
-    else if (v === 'חצי מחלה') sick += 0.5;
-    else if (v === 'חג') holiday += 1;
-    else if (v === 'אבל' || v === 'אחר') other += 1;
+    const val = r.cells[worker] || '';
+    if (val === 'חופש') v += 1;
+    else if (val === 'חצי חופש') v += 0.5;
+    else if (val === 'מחלה') s += 1;
+    else if (val === 'חצי מחלה') s += 0.5;
+    else if (val === 'חג') h += 1;
+    else if (val === 'אבל' || val === 'אחר') o += 1;
   });
-  return { vacation, sick, holiday, other };
+  return { v, s, h, o };
 }
 
-function getMonthRows(monthName) {
-  return (state.months[monthName] || []).filter(r => r && r.date);
+function isHolidayDate(date, workers) {
+  return S.holidays.some(hol => {
+    if (date < hol.start || date > hol.end) return false;
+    if (hol.workers === 'all') return true;
+    return false; // per-worker holidays handled in cell
+  });
 }
 
-function getActiveWorkers(monthName) {
-  const monthNum = MONTH_NAMES.indexOf(monthName) + 1;
-  return state.workers.filter(w => {
+function getRows(mName) {
+  return (S.months[mName] || []).filter(r => r && r.date).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function activeWorkers(mName) {
+  const mNum = MONTHS.indexOf(mName) + 1;
+  return S.workers.filter(w => {
     if (!w.active && w.endMonth) {
       const [ey, em] = w.endMonth.split('-').map(Number);
-      const my = state.year;
-      if (my > ey || (my === ey && monthNum >= em)) return false;
+      if (S.year > ey || (S.year === ey && mNum >= em)) return false;
     }
     return true;
   });
 }
 
-function daysBetween(d1, d2) {
-  return (new Date(d2) - new Date(d1)) / 86400000;
-}
+function daysDiff(d1, d2) { return (new Date(d2) - new Date(d1)) / 86400000; }
 
-// ===== IMPORT FROM EXCEL =====
-function importFromExcel(input) {
+// ===== IMPORT =====
+function importExcel(input) {
   const file = input.files[0];
   if (!file) return;
-
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = e => {
     try {
-      const data = new Uint8Array(e.target.result);
-      const wb = XLSX.read(data, { type: 'array', cellDates: true });
-
-      const knownValues = new Set(['חופש','חצי חופש','מחלה','חצי מחלה','חג','אבל','אחר','חופש ','מחלה ']);
-
+      const wb = XLSX.read(new Uint8Array(e.target.result), { type:'array', cellDates:true });
       let allWorkers = new Set();
-      let newMonths = {};
+      let detectedYear = 0;
 
       wb.SheetNames.forEach(sheetName => {
-        if (!MONTH_NAMES.includes(sheetName)) return;
-
+        if (!MONTHS.includes(sheetName)) return;
         const ws = wb.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
 
-        // Find header row: contains many non-empty strings that are NOT known values and NOT dates
-        let headerRowIdx = -1;
+        // Find header row: row with 3+ non-empty, non-date, non-known-value strings starting col 2
+        let headerIdx = -1;
         let workerCols = {};
-
         for (let ri = 0; ri < rows.length; ri++) {
           const row = rows[ri];
-          let workerCount = 0;
-          let tempWorkers = {};
+          let cnt = 0; let tmp = {};
           for (let ci = 2; ci < row.length; ci++) {
-            const val = String(row[ci] || '').trim();
-            if (val && !knownValues.has(val) && !/^\d/.test(val) && val.length > 1) {
-              workerCount++;
-              tempWorkers[ci] = val;
+            const v = String(row[ci] || '').trim();
+            if (v && !KNOWN_VALS.has(v) && !/^\d/.test(v) && v.length >= 2 && v !== 'undefined') {
+              cnt++; tmp[ci] = v;
             }
           }
-          if (workerCount >= 3) {
-            headerRowIdx = ri;
-            workerCols = tempWorkers;
-            break;
-          }
+          if (cnt >= 3) { headerIdx = ri; workerCols = tmp; break; }
         }
+        if (headerIdx === -1) return;
 
-        if (headerRowIdx === -1) return;
-
-        // Add workers
         Object.values(workerCols).forEach(w => allWorkers.add(w));
-
-        // Parse data rows
         let monthRows = [];
-        for (let ri = headerRowIdx + 1; ri < rows.length; ri++) {
+
+        for (let ri = headerIdx + 1; ri < rows.length; ri++) {
           const row = rows[ri];
           const col0 = String(row[0] || '').trim();
+          // Must be a Hebrew day name (א-ה only, not ו or ש)
+          if (!['א','ב','ג','ד','ה'].includes(col0)) continue;
+
           const col1 = row[1];
-
-          // col0 should be day name (א,ב,ג,ד,ה)
-          if (!DAY_NAMES.includes(col0)) continue;
-
-          // col1 should be a date
           let dateStr = '';
           if (col1 instanceof Date) {
             dateStr = col1.toISOString().split('T')[0];
-          } else if (typeof col1 === 'number') {
+          } else if (typeof col1 === 'number' && col1 > 40000) {
             const d = XLSX.SSF.parse_date_code(col1);
             if (d) dateStr = `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
-          } else if (typeof col1 === 'string' && col1.includes('/')) {
-            const parts = col1.split('/');
+          } else if (typeof col1 === 'string') {
+            const parts = col1.replace(/[^\d/]/g,'').split('/');
             if (parts.length >= 2) {
-              const y = parts[2] ? parseInt(parts[2]) : state.year;
-              dateStr = `${y}-${String(parts[1]).padStart(2,'0')}-${String(parts[0]).padStart(2,'0')}`;
+              const dd = parts[0], mm = parts[1], yy = parts[2] || S.year;
+              dateStr = `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
             }
           }
+          if (!dateStr || dateStr === 'NaN-NaN-NaN') continue;
 
-          if (!dateStr) continue;
+          const yr = parseInt(dateStr.split('-')[0]);
+          if (yr > detectedYear) detectedYear = yr;
 
           const cells = {};
           Object.entries(workerCols).forEach(([ci, wName]) => {
-            const v = String(rows[ri][ci] || '').trim();
-            if (v && knownValues.has(v)) cells[wName] = v;
-            else if (v && VALUES.includes(v)) cells[wName] = v;
+            const v = String(row[ci] || '').trim();
+            if (VALUES.includes(v) && v !== '') cells[wName] = v;
           });
 
           monthRows.push({ date: dateStr, day: col0, cells });
         }
 
-        // Sort by date
         monthRows.sort((a, b) => a.date.localeCompare(b.date));
-        newMonths[sheetName] = monthRows;
+        S.months[sheetName] = monthRows;
       });
 
-      // Merge workers
+      // Add new workers at end
       allWorkers.forEach(wName => {
-        if (!state.workers.find(w => w.name === wName)) {
-          state.workers.push({ name: wName, active: true, endMonth: null });
+        if (!S.workers.find(w => w.name === wName)) {
+          S.workers.push({ name: wName, active: true, endMonth: null });
         }
       });
 
-      // Merge months
-      Object.entries(newMonths).forEach(([m, rows]) => {
-        state.months[m] = rows;
-      });
-
-      // Detect year
-      const firstMonthRows = newMonths[Object.keys(newMonths)[0]] || [];
-      if (firstMonthRows.length > 0) {
-        const y = parseInt(firstMonthRows[0].date.split('-')[0]);
-        if (y > 2000) state.year = y;
-      }
-
-      // Save and start
+      if (detectedYear > 2000) S.year = detectedYear;
       saveLocally();
-      if (state.currentUser) {
-        startApp();
-      } else {
-        const name = document.getElementById('loginName').value.trim();
-        if (name) { state.currentUser = name; startApp(); }
-        else {
-          state.currentUser = 'משתמש';
-          startApp();
-        }
-      }
 
+      const name = document.getElementById('loginName').value.trim() || 'משתמש';
+      S.currentUser = name;
+      startApp();
     } catch(err) {
       alert('שגיאה בייבוא: ' + err.message);
       console.error(err);
@@ -948,85 +755,72 @@ function importFromExcel(input) {
 function renderWorkerList() {
   const div = document.getElementById('workerList');
   div.innerHTML = '';
-  state.workers.forEach((w, i) => {
-    const row = document.createElement('div');
-    row.className = 'worker-row';
-    const statusTxt = w.active ? 'פעיל' : ('סיים ' + (w.endMonth || ''));
-    const statusCls = w.active ? 'active' : 'ended';
-    row.innerHTML = `
-      <button class="order-btn" onclick="moveWorker(${i},-1)">↑</button>
-      <button class="order-btn" onclick="moveWorker(${i},1)">↓</button>
+  S.workers.forEach((w, i) => {
+    const r = document.createElement('div');
+    r.className = 'worker-row';
+    const stTxt = w.active ? 'פעיל' : ('סיים ' + (w.endMonth || ''));
+    const stCls = w.active ? 'w-active' : 'w-ended';
+    r.innerHTML = `
+      <button class="ord-btn" onclick="moveW(${i},-1)">↑</button>
+      <button class="ord-btn" onclick="moveW(${i},1)">↓</button>
       <span class="worker-name">${w.name}</span>
-      <span class="worker-status ${statusCls}">${statusTxt}</span>
-      ${w.active ? `<button class="end-btn" onclick="openEndModal(${i})">סיום עבודה</button>` : `<button class="end-btn" onclick="reactivateWorker(${i})">החזר</button>`}
+      <span class="w-status ${stCls}">${stTxt}</span>
+      ${w.active
+        ? `<button class="end-btn" onclick="openEnd(${i})">סיום עבודה</button>`
+        : `<button class="end-btn" onclick="reactivate(${i})">החזר</button>`}
     `;
-    div.appendChild(row);
+    div.appendChild(r);
   });
 }
 
-function moveWorker(idx, dir) {
-  const newIdx = idx + dir;
-  if (newIdx < 0 || newIdx >= state.workers.length) return;
-  const tmp = state.workers[idx];
-  state.workers[idx] = state.workers[newIdx];
-  state.workers[newIdx] = tmp;
-  renderWorkerList();
-  renderMonthTable();
+function moveW(i, d) {
+  const j = i + d;
+  if (j < 0 || j >= S.workers.length) return;
+  [S.workers[i], S.workers[j]] = [S.workers[j], S.workers[i]];
+  renderWorkerList(); renderTable();
 }
 
 function addWorker() {
-  const name = document.getElementById('newWorkerName').value.trim();
-  if (!name) return;
-  if (state.workers.find(w => w.name === name)) { alert('עובד כזה כבר קיים'); return; }
-  state.workers.push({ name, active: true, endMonth: null });
-  document.getElementById('newWorkerName').value = '';
-  renderWorkerList();
-  renderHolidayWorkers();
+  const n = document.getElementById('newWorker').value.trim();
+  if (!n) return;
+  if (S.workers.find(w => w.name === n)) { alert('עובד זה כבר קיים'); return; }
+  S.workers.push({ name: n, active: true, endMonth: null });
+  document.getElementById('newWorker').value = '';
+  renderWorkerList(); renderHolWorkers(); renderTable();
 }
 
-function openEndModal(idx) {
-  endModalWorker = idx;
-  document.getElementById('endModalWorkerName').textContent = 'עובד: ' + state.workers[idx].name;
-  document.getElementById('endModalMonth').value = state.year + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+function openEnd(i) {
+  endWorkerIdx = i;
+  document.getElementById('endModalName').textContent = S.workers[i].name;
+  document.getElementById('endModalMonth').value = S.year + '-' + String(curMonthIdx + 1).padStart(2,'0');
   document.getElementById('endModal').classList.add('open');
 }
 
-function closeEndModal() {
-  document.getElementById('endModal').classList.remove('open');
-  endModalWorker = null;
+function confirmEnd() {
+  if (endWorkerIdx === null) return;
+  S.workers[endWorkerIdx].active = false;
+  S.workers[endWorkerIdx].endMonth = document.getElementById('endModalMonth').value;
+  closeModal('endModal'); endWorkerIdx = null;
+  renderWorkerList(); renderTable();
 }
 
-function confirmEndWork() {
-  if (endModalWorker === null) return;
-  const month = document.getElementById('endModalMonth').value;
-  state.workers[endModalWorker].active = false;
-  state.workers[endModalWorker].endMonth = month;
-  closeEndModal();
-  renderWorkerList();
-  renderMonthTable();
-}
-
-function reactivateWorker(idx) {
-  state.workers[idx].active = true;
-  state.workers[idx].endMonth = null;
-  renderWorkerList();
-}
+function reactivate(i) { S.workers[i].active = true; S.workers[i].endMonth = null; renderWorkerList(); }
 
 // ===== HOLIDAYS =====
-function renderHolidayWorkers() {
-  const div = document.getElementById('holWorkerList');
+function renderHolWorkers() {
+  const div = document.getElementById('holWorkerCbs');
   if (!div) return;
   div.innerHTML = '';
-  state.workers.filter(w => w.active).forEach(w => {
+  S.workers.filter(w => w.active).forEach(w => {
     const lbl = document.createElement('label');
-    lbl.className = 'worker-checkbox';
-    lbl.innerHTML = `<input type="checkbox" class="hol-worker-cb" value="${w.name}"> ${w.name}`;
+    lbl.className = 'w-cb';
+    lbl.innerHTML = `<input type="checkbox" class="hol-cb" value="${w.name}"> ${w.name}`;
     div.appendChild(lbl);
   });
 }
 
-function toggleAllWorkers(cb) {
-  document.querySelectorAll('.hol-worker-cb').forEach(c => c.checked = cb.checked);
+function toggleAllCbs(cb) {
+  document.querySelectorAll('.hol-cb').forEach(c => c.checked = cb.checked);
 }
 
 function addHoliday() {
@@ -1035,218 +829,171 @@ function addHoliday() {
   const end = document.getElementById('holEnd').value || start;
   if (!name || !start) { alert('נא למלא שם ותאריך התחלה'); return; }
 
-  const allChecked = document.getElementById('holAllWorkers').checked;
+  const allCk = document.getElementById('holAll').checked;
   let workers = 'all';
-  if (!allChecked) {
-    workers = Array.from(document.querySelectorAll('.hol-worker-cb:checked')).map(c => c.value);
-    if (workers.length === 0) { alert('נא לבחור עובדים'); return; }
+  if (!allCk) {
+    workers = Array.from(document.querySelectorAll('.hol-cb:checked')).map(c => c.value);
+    if (!workers.length) { alert('נא לבחור עובדים'); return; }
   }
 
-  state.holidays.push({ name, start, end, workers });
+  S.holidays.push({ name, start, end, workers });
+
+  // Show confirmation
+  const wTxt = workers === 'all' ? 'כל העובדים' : workers.join(', ');
+  const dTxt = start === end ? fmtDate(start) : fmtDate(start) + ' עד ' + fmtDate(end);
+  document.getElementById('holConfirmMsg').textContent = `"${name}" — ${dTxt} — ${wTxt}`;
+  document.getElementById('holConfirmModal').classList.add('open');
+
+  // Reset form
   document.getElementById('holName').value = '';
   document.getElementById('holStart').value = '';
   document.getElementById('holEnd').value = '';
-  document.getElementById('holAllWorkers').checked = false;
-  document.querySelectorAll('.hol-worker-cb').forEach(c => c.checked = false);
-  renderHolidayList();
+  document.getElementById('holAll').checked = false;
+  document.querySelectorAll('.hol-cb').forEach(c => c.checked = false);
+  renderHolList(); renderTable();
 }
 
-function renderHolidayList() {
-  const div = document.getElementById('holidayList');
+function renderHolList() {
+  const div = document.getElementById('holList');
   if (!div) return;
+  if (!S.holidays.length) { div.innerHTML = '<p style="color:#999;font-size:11px;">אין חגים</p>'; return; }
   div.innerHTML = '';
-  if (state.holidays.length === 0) {
-    div.innerHTML = '<p style="color:#999;font-size:12px;">אין חגים מוגדרים</p>';
-    return;
-  }
-  state.holidays.forEach((h, i) => {
-    const item = document.createElement('div');
-    item.className = 'holiday-item';
-    const workersTxt = h.workers === 'all' ? 'כל העובדים' : h.workers.join(', ');
-    const datesTxt = h.start === h.end ? formatDateHe(h.start) : formatDateHe(h.start) + ' — ' + formatDateHe(h.end);
-    item.innerHTML = `
-      <span class="hol-name">${h.name}</span>
-      <span class="hol-dates">${datesTxt}</span>
-      <span class="hol-workers">${workersTxt}</span>
-      <button class="holiday-del" onclick="deleteHoliday(${i})">✕</button>
-    `;
-    div.appendChild(item);
+  S.holidays.forEach((h, i) => {
+    const wTxt = h.workers === 'all' ? 'כל העובדים' : h.workers.join(', ');
+    const dTxt = h.start === h.end ? fmtDate(h.start) : fmtDate(h.start) + '–' + fmtDate(h.end);
+    const el = document.createElement('div');
+    el.className = 'hol-item';
+    el.innerHTML = `<span class="hol-name">${h.name}</span><span class="hol-dates">${dTxt}</span><span class="hol-workers">${wTxt}</span><button class="hol-del" onclick="delHol(${i})">✕</button>`;
+    div.appendChild(el);
   });
 }
 
-function deleteHoliday(i) {
-  state.holidays.splice(i, 1);
-  renderHolidayList();
-}
+function delHol(i) { S.holidays.splice(i, 1); renderHolList(); renderTable(); }
 
-// ===== ANNUAL SUMMARY =====
+// ===== ANNUAL =====
 function renderAnnual() {
   const div = document.getElementById('annualContent');
   if (!div) return;
-
-  const categories = [
-    { key: 'vacation', label: 'ימי חופש', vals: ['חופש', 'חצי חופש'] },
-    { key: 'sick', label: 'ימי מחלה', vals: ['מחלה', 'חצי מחלה'] },
-    { key: 'holiday', label: 'ימי חג/אבל', vals: ['חג', 'אבל', 'אחר'] }
+  const cats = [
+    { label:'ימי חופש', fn: s => s.v },
+    { label:'ימי מחלה', fn: s => s.s },
+    { label:'ימי חג/אבל', fn: s => s.h + s.o }
   ];
-
+  const workers = S.workers.filter(w => w.active);
   let html = '';
-  categories.forEach(cat => {
-    html += `<h3>${cat.label}</h3><div class="annual-table-wrap"><table class="annual-table"><thead><tr><th>עובד</th>`;
-    MONTH_NAMES.forEach(m => html += `<th>${m}</th>`);
+  cats.forEach(cat => {
+    html += `<div class="ann-section"><h3>${cat.label}</h3><div style="overflow-x:auto"><table class="ann-table"><thead><tr><th>עובד</th>`;
+    MONTHS.forEach(m => html += `<th style="min-width:38px">${m.slice(0,3)}</th>`);
     html += `<th>סה"כ</th></tr></thead><tbody>`;
-
-    state.workers.filter(w => w.active).forEach(w => {
-      html += `<tr><td class="worker-col">${w.name}</td>`;
-      let total = 0;
-      MONTH_NAMES.forEach(m => {
-        const rows = getMonthRows(m);
-        let sum = 0;
-        rows.forEach(r => {
-          const v = r.cells && r.cells[w.name] || '';
-          if (cat.vals.includes(v)) {
-            sum += (v.includes('חצי') ? 0.5 : 1);
-          }
-        });
-        total += sum;
-        html += `<td>${sum > 0 ? sum : '—'}</td>`;
+    workers.forEach(w => {
+      html += `<tr><td class="w-col">${w.name}</td>`;
+      let tot = 0;
+      MONTHS.forEach(m => {
+        const s = calcSum(getRows(m), w.name, true);
+        const v = cat.fn(s);
+        tot += v;
+        html += `<td>${v > 0 ? v : '—'}</td>`;
       });
-      html += `<td class="total-col">${total > 0 ? total : '—'}</td></tr>`;
+      html += `<td class="tot">${tot > 0 ? tot : '—'}</td></tr>`;
     });
-
-    html += '</tbody></table></div>';
+    html += '</tbody></table></div></div>';
   });
-
   div.innerHTML = html;
 }
 
-// ===== TOKEN & SYNC =====
-function saveToken() {
-  const token = document.getElementById('tokenInput').value.trim();
-  if (!token) return;
-  localStorage.setItem('rw_v33_token', token);
-  document.getElementById('tokenStatus').innerHTML = '<span class="token-ok">✓ טוקן נשמר בדפדפן זה</span>';
-  document.getElementById('tokenInput').value = '';
-}
+// ===== SYNC =====
+function saveLocally() { localStorage.setItem('rw_v34_data', JSON.stringify(S)); }
 
-function getToken() {
-  return localStorage.getItem('rw_v33_token') || '';
-}
-
-async function saveToGithub(data) {
+async function saveToGithub() {
   const token = getToken();
   if (!token) return false;
-
   const url = 'https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json';
   try {
-    // Get current SHA
     let sha = '';
-    const getResp = await fetch(url, {
-      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (getResp.ok) {
-      const existing = await getResp.json();
-      sha = existing.sha;
-    }
-
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-    const body = { message: 'update data', content };
+    const gr = await fetch(url, { headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' } });
+    if (gr.ok) sha = (await gr.json()).sha;
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+    const body = { message: 'update', content };
     if (sha) body.sha = sha;
-
-    const putResp = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Authorization': 'token ' + token,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
-    return putResp.ok;
-  } catch(e) {
-    return false;
-  }
+    const pr = await fetch(url, { method:'PUT', headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' }, body: JSON.stringify(body) });
+    return pr.ok;
+  } catch(e) { return false; }
 }
 
 async function loadFromGithub() {
   const token = getToken();
   if (!token) return null;
-
-  const url = 'https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json';
   try {
-    const resp = await fetch(url, {
-      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (!resp.ok) return null;
-    const file = await resp.json();
-    const decoded = decodeURIComponent(escape(atob(file.content)));
-    return JSON.parse(decoded);
-  } catch(e) {
-    return null;
-  }
-}
-
-function saveLocally() {
-  localStorage.setItem('rw_v33_data', JSON.stringify(state));
+    const r = await fetch('https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json', { headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' } });
+    if (!r.ok) return null;
+    const f = await r.json();
+    return JSON.parse(decodeURIComponent(escape(atob(f.content))));
+  } catch(e) { return null; }
 }
 
 async function saveData() {
   saveLocally();
-  const status = document.getElementById('saveStatus');
-  status.textContent = 'שומר...';
-  const ok = await saveToGithub(state);
-  if (ok) {
-    status.innerHTML = '<span class="save-ok">✓ נשמר בהצלחה — מסונכרן</span>';
-  } else {
-    const token = getToken();
-    if (!token) {
-      status.innerHTML = '<span style="color:#E65100">⚠ נשמר מקומית בלבד — הגדר טוקן בהגדרות לסנכרון</span>';
-    } else {
-      status.innerHTML = '<span class="save-err">⚠ שגיאה בסנכרון — נשמר מקומית</span>';
-    }
-  }
+  const st = document.getElementById('saveStatus');
+  st.textContent = 'שומר...';
+  const ok = await saveToGithub();
+  if (ok) st.innerHTML = '<span class="save-ok">✓ נשמר ומסונכרן</span>';
+  else st.innerHTML = getToken() ? '<span class="save-err">⚠ שגיאה בסנכרון — נשמר מקומית</span>' : '<span style="color:#E65100">⚠ נשמר מקומית — הגדר טוקן לסנכרון</span>';
 }
 
 function startSyncLoop() {
   setInterval(async () => {
     const remote = await loadFromGithub();
-    if (remote && remote.version === 33) {
-      // Check if remote is newer (simple check: compare JSON length)
-      const localStr = JSON.stringify(state);
-      const remoteStr = JSON.stringify(remote);
-      if (remoteStr !== localStr && remoteStr.length > localStr.length) {
-        const user = state.currentUser;
-        const cutoffs = state.cutoffs;
-        Object.assign(state, remote);
-        state.currentUser = user;
-        state.cutoffs = { ...remote.cutoffs, ...cutoffs };
+    if (remote && remote.version === 34) {
+      const lStr = JSON.stringify(S);
+      const rStr = JSON.stringify(remote);
+      if (rStr !== lStr && rStr.length > lStr.length) {
+        const u = S.currentUser, c = {...S.cutoffs};
+        Object.assign(S, remote);
+        S.currentUser = u;
+        Object.assign(S.cutoffs, c);
         saveLocally();
-        renderApp();
+        renderAll();
       }
     }
   }, 30000);
 }
 
-// ===== EXPORT =====
-function exportExcel() {
-  alert('ייצוא לאקסל — תכונה זו תתווסף בגרסה הבאה');
+// ===== PRESENCE =====
+function startPresenceLoop() {
+  setInterval(() => {
+    if (S.currentUser) localStorage.setItem('rw_presence', JSON.stringify({ user: S.currentUser, ts: Date.now() }));
+    const p = localStorage.getItem('rw_presence');
+    if (p) {
+      try {
+        const obj = JSON.parse(p);
+        const warn = document.getElementById('lockWarn');
+        if (obj.user !== S.currentUser && Date.now() - obj.ts < 30000) {
+          warn.style.display = 'block';
+          warn.textContent = obj.user + ' עובד/ת כרגע';
+        } else { warn.style.display = 'none'; }
+      } catch(e) {}
+    }
+  }, 10000);
 }
+
+// ===== EXPORT =====
+function exportExcel() { alert('ייצוא לאקסל — יתווסף בגרסה הבאה'); }
 
 // ===== TABS =====
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', ['leave','holidays','annual','settings'][i] === name);
-  });
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['leave','holidays','annual','settings'][i] === name));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'annual') renderAnnual();
-  if (name === 'holidays') renderHolidayWorkers();
+  if (name === 'holidays') { renderHolWorkers(); renderHolList(); }
   if (name === 'settings') {
-    const tok = getToken();
-    document.getElementById('tokenStatus').innerHTML = tok ?
-      '<span class="token-ok">✓ טוקן מוגדר</span>' : 'אין טוקן — נתונים נשמרים מקומית בלבד';
+    renderWorkerList();
+    document.getElementById('tokStatus').innerHTML = getToken() ? '<span class="tok-ok">✓ טוקן מוגדר</span>' : 'אין טוקן';
   }
 }
+
+// ===== MODAL =====
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 </script>
 </body>
 </html>
