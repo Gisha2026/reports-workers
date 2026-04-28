@@ -173,7 +173,7 @@ tr.sumrow td:first-child{font-weight:700;font-size:10px;color:var(--teal);}
 
 <div class="topbar">
   <div class="logo-icon">ג</div>
-  <div class="logo">Reports_Workers <span>v30</span></div>
+  <div class="logo">Reports_Workers <span>v31</span></div>
   <div class="topbar-nav">
     <button class="nav-btn active" id="tab-leave" onclick="switchTab('leave')">חופש ומחלה</button>
     <button class="nav-btn" id="tab-holidays" onclick="switchTab('holidays')">חגים</button>
@@ -331,7 +331,7 @@ var VFCLS={'חופש':'fv','מחלה':'fs','חצי חופש':'fhv','חצי מח�
 var SCOL={'v':'var(--v-bg)','s':'var(--s-bg)','hv':'var(--hv-bg)','hs':'var(--hs-bg)','h':'var(--h-bg)','a':'var(--a-bg)','o':'var(--o-bg)'};
 var STCOL={'v':'var(--v-text)','s':'var(--s-text)','hv':'var(--hv-text)','hs':'var(--hs-text)','h':'var(--h-text)','a':'var(--a-text)','o':'var(--o-text)'};
 
-var STORE='rw_v30',LOCK='rw_lock_v30';
+var STORE='rw_v31',LOCK='rw_lock_v31';
 var GH_OWNER='Gisha2026';
 var GH_REPO='reports-workers';
 var GH_FILE='data.json';
@@ -1083,9 +1083,9 @@ function importFromXlsx(input){
           }
           if(!date||isNaN(date.getTime())) continue;
 
-          // Skip Fri(5) and Sat(6)
-          var dow=date.getDay();
-          if(dow===5||dow===6) continue;
+          // Skip Fri(ו) and Sat(ש) based on day letter, NOT getDay()
+          var dayLetter=String(dayCell.v||'').trim();
+          if(dayLetter==='ו'||dayLetter==='ש') continue;
 
           // Detect year
           if(!yearFound){
