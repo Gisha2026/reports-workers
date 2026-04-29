@@ -53,8 +53,8 @@ td{padding:3px 5px;text-align:center;border-bottom:1px solid #f0f0f0;font-size:1
 td.dl{font-weight:bold;color:#333;min-width:24px}
 td.dtl{color:#888;min-width:44px;font-size:10px}
 tr.wkend td{background:#e0e0e0!important;height:6px;padding:0;border:none}
-tr.prev-row td{background:#fff3cd}
-tr.prev-row td.dl,tr.prev-row td.dtl{background:#ffe082}
+tr.prev-row td{background:#ffe082!important}
+tr.prev-row:hover td{background:#ffd54f!important}
 tr.after-cut td{background:#fff3e0}
 tr.dup-row td{background:#ffebee!important}
 tr:hover:not(.wkend) td{background:#f0faf9}
@@ -71,8 +71,8 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #f0f0f0}
-.wname{flex:1;font-weight:bold;font-size:12px}
+.w-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #f0f0f0;justify-content:flex-end;direction:rtl}
+.wname{font-weight:bold;font-size:12px;margin-left:auto}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px}
 .wact{background:#c8e6c9;color:#2e7d32}.wend{background:#ffcdd2;color:#c62828}
 .ord-btn{background:#f5f5f5;border:1px solid #ddd;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:11px}
@@ -145,7 +145,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v38</span>
+      <span class="topbar-title">Reports_Workers v39</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -202,16 +202,16 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
     <div class="s-sec">
       <h3>ניהול חגים</h3>
       <div class="hf">
-        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:8px;">
-          <div><label style="font-size:11px;color:#666;display:block;margin-bottom:2px;">שם החג</label><input type="text" id="holName" placeholder="פסח, עיד..." style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:120px;"></div>
-          <div><label style="font-size:11px;color:#666;display:block;margin-bottom:2px;">תאריך התחלה</label><input type="date" id="holStart" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;"></div>
-          <div><label style="font-size:11px;color:#666;display:block;margin-bottom:2px;">תאריך סיום</label><input type="date" id="holEnd" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;"></div>
-          <div style="display:flex;align-items:center;gap:6px;padding-bottom:2px;">
-            <label style="font-size:11px;cursor:pointer;white-space:nowrap;"><input type="checkbox" id="holAll" onchange="toggleAllCbs(this)"> כל העובדים</label>
-          </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:8px;direction:rtl;justify-content:flex-end;">
           <button onclick="addHoliday()" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;align-self:flex-end;">הוסף</button>
+          <div><label style="font-size:11px;color:#666;display:block;margin-bottom:2px;">תאריך סיום</label><input type="date" id="holEnd" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;"></div>
+          <div><label style="font-size:11px;color:#666;display:block;margin-bottom:2px;">תאריך התחלה</label><input type="date" id="holStart" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;"></div>
+          <div><label style="font-size:11px;color:#666;display:block;margin-bottom:2px;">שם החג</label><input type="text" id="holName" placeholder="פסח, עיד..." style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:120px;"></div>
         </div>
-        <div class="wcbs" id="holWorkerCbs"></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;direction:rtl;justify-content:flex-end;">
+          <label style="font-size:11px;cursor:pointer;white-space:nowrap;"><input type="checkbox" id="holAll" onchange="toggleAllCbs(this)"> כל העובדים</label>
+        </div>
+        <div class="wcbs" id="holWorkerCbs" style="justify-content:flex-end;"></div>
       </div>
       <div id="holList"></div>
     </div>
@@ -237,8 +237,10 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
         <button onclick="saveEmailFixed()" style="margin-top:6px;padding:5px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">שמור שורות קבועות</button>
       </div>
       <div style="border-top:1px solid #eee;padding-top:12px;">
-        <p style="font-size:11px;color:#666;margin-bottom:10px;">המייל ייפתח באאוטלוק עם הטבלה החודשית המלאה. הוסף נמענים ידנית ולחץ שלח.</p>
+        <p style="font-size:11px;color:#666;margin-bottom:10px;">המייל ייפתח באאוטלוק עם הטקסט מוכן. העתק את הטבלה שתופיע למטה והדבק למייל.</p>
         <button onclick="sendEmail()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;">פתח מייל באאוטלוק</button>
+        <p id="emailCopyNote" style="display:none;font-size:11px;color:#e65100;margin-top:8px;font-weight:bold;">אאוטלוק נפתח עם הטקסט. העתק את הטבלה למטה (Ctrl+A ואז Ctrl+C) והדבק במייל.</p>
+        <div id="emailPreview" style="display:none;margin-top:12px;overflow-x:auto;border:1px solid #ddd;border-radius:6px;padding:8px;background:white;"></div>
       </div>
     </div>
   </div>
@@ -324,7 +326,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:38,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:39,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -334,7 +336,7 @@ window.onload=()=>{
     const old=localStorage.getItem(k);
     if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-  const saved=localStorage.getItem('rw_v38_data');
+  const saved=localStorage.getItem('rw_v39_data');
   if(saved) try{S=JSON.parse(saved);}catch(e){}
   buildJumps();
   startPresenceLoop();
@@ -828,7 +830,7 @@ function renderAnnual(){
 }
 
 // ===== SYNC =====
-function saveLocally(){localStorage.setItem('rw_v38_data',JSON.stringify(S));}
+function saveLocally(){localStorage.setItem('rw_v39_data',JSON.stringify(S));}
 
 async function saveToGithub(){
   const token=getToken(); if(!token) return false;
@@ -866,7 +868,7 @@ async function saveData(){
 function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if(remote&&remote.version===38){
+    if(remote&&remote.version===39){
       const ls=JSON.stringify(S),rs=JSON.stringify(remote);
       if(rs!==ls&&rs.length>ls.length){
         const u=S.currentUser,c={...S.cutoffs};
@@ -937,35 +939,57 @@ function sendEmail(){
   const curRows=[...(md.cur||[])].sort((a,b)=>a.date.localeCompare(b.date));
   const allRows=[...prevRows,...curRows];
 
-  // Build plain text table for email body
-  let tableText='';
-  const header='תאריך\tיום\t'+workers.map(w=>w.name).join('\t');
-  tableText+=header+'\n';
+  // Build HTML table
+  const colBg={'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
+  let tbl='<table dir="rtl" border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;font-family:Arial;font-size:12px;direction:rtl;">';
+  tbl+='<tr style="background:#00897B;color:white;">';
+  tbl+='<th>יום</th><th>תאריך</th>';
+  workers.forEach(w=>tbl+=`<th>${w.name}</th>`);
+  tbl+='</tr>';
+
   allRows.forEach(row=>{
-    const line=fmtD(row.date)+'\t'+row.day+'\t'+workers.map(w=>(row.cells&&row.cells[w.name])||'—').join('\t');
-    tableText+=line+'\n';
+    const isPrev=prevRows.some(r=>r.date===row.date);
+    const rowBg=isPrev?'background:#ffe082;':'';
+    tbl+=`<tr style="${rowBg}">`;
+    tbl+=`<td style="text-align:center;">${row.day}</td>`;
+    tbl+=`<td style="text-align:center;">${fmtD(row.date)}</td>`;
+    workers.forEach(w=>{
+      const val=(row.cells&&row.cells[w.name])||'';
+      const bg=val&&colBg[val]?`background:${colBg[val]};`:'';
+      tbl+=`<td style="text-align:center;${bg}">${val||'—'}</td>`;
+    });
+    tbl+='</tr>';
   });
-  // Summary line
-  const sumLine='סיכום\t\t'+workers.map(w=>{
+
+  // Summary row
+  tbl+='<tr style="background:#e8f5e9;font-weight:bold;">';
+  tbl+='<td colspan="2" style="text-align:right;">סיכום</td>';
+  workers.forEach(w=>{
     const s=calcSum(curRows,w.name);
     const parts=[];
-    if(s.v>0) parts.push('חופש:'+s.v);
-    if(s.s>0) parts.push('מחלה:'+s.s);
-    if(s.h>0) parts.push('חג:'+s.h);
-    return parts.join(' ')||'—';
-  }).join('\t');
-  tableText+=sumLine+'\n';
+    if(s.v>0) parts.push(`חופש: ${s.v}`);
+    if(s.s>0) parts.push(`מחלה: ${s.s}`);
+    if(s.h>0) parts.push(`חג: ${s.h}`);
+    if(s.o>0) parts.push(`אחר: ${s.o}`);
+    tbl+=`<td style="font-size:11px;">${parts.join('<br>')||'—'}</td>`;
+  });
+  tbl+='</tr></table>';
 
+  const bodyText=(opening?opening+'\n\n':'')+fixed+'\n\n';
   const subject=encodeURIComponent(`דיווח חופש ומחלה — ${mName} ${S.year}`);
-  const body=encodeURIComponent(
-    (opening?opening+'\n\n':'')+
-    (fixed?fixed+'\n\n':'')+
-    tableText
-  );
+  const body=encodeURIComponent(bodyText);
+  // Open mailto - table copied separately as HTML tables don't work in mailto body
+  // Show table in popup for copying
+  const preview=document.getElementById('emailPreview');
+  if(preview){
+    preview.innerHTML=tbl;
+    preview.style.display='block';
+    document.getElementById('emailCopyNote').style.display='block';
+  }
   window.location.href=`mailto:?subject=${subject}&body=${body}`;
 }
 
-
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 </script>
 </body>
 </html>
