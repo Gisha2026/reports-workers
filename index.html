@@ -59,6 +59,7 @@ tr.after-cut td{background:#fff3e0}
 tr.dup-row td{background:#ffebee!important}
 tr:hover:not(.wkend) td{background:#f0faf9}
 select.cs{border:none;background:transparent;font-size:11px;width:80px;cursor:pointer}
+select.cs.val-colored{background:var(--cell-bg)!important;border-radius:3px;padding:1px 2px;}
 select.cs:focus{outline:1px solid #00897B;border-radius:3px}
 select.cs:disabled{opacity:.5;cursor:default}
 .cv{font-size:11px;padding:2px 4px;border-radius:3px;display:inline-block;min-width:60px}
@@ -90,15 +91,16 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .hi label{font-size:11px;color:#666;display:block;margin-bottom:2px}
 .hi input[type=text]{padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:130px}
 .hi input[type=date]{padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px}
+.he-date-wrap{display:flex;align-items:center;gap:6px;direction:rtl}.he-date-btn{padding:5px 8px;border:1px solid #ddd;border-radius:4px;background:white;font-size:12px;min-width:96px;text-align:center;cursor:pointer;color:#333}.he-date-btn:hover{background:#f5f5f5}.he-date-native{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
 .hi button{padding:6px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px}
 .wcbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .wcb{display:flex;align-items:center;gap:3px;font-size:11px}
-.hol-item{display:flex;align-items:center;gap:12px;padding:7px 12px;background:white;border-radius:5px;margin-bottom:4px;border:1px solid #e0e0e0;font-size:12px;direction:rtl;}
-.hn{font-weight:bold;color:#333;width:90px;flex-shrink:0}
-.hd{color:#555;font-size:11px;width:150px;flex-shrink:0}
-.hw{color:#888;font-size:11px;flex:1}
-.hdel{background:none;border:none;color:#e53935;cursor:pointer;font-size:16px;padding:0;flex-shrink:0}
-#holList{direction:rtl;}
+.hol-item{display:grid;grid-template-columns:90px 150px 1fr 32px;gap:12px;align-items:center;padding:7px 12px;background:white;border-radius:5px;margin-bottom:4px;border:1px solid #e0e0e0;font-size:12px;direction:rtl;text-align:right;}
+.hn{font-weight:bold;color:#333;text-align:right}
+.hd{color:#555;font-size:11px;text-align:right}
+.hw{color:#888;font-size:11px;text-align:right}
+.hdel{background:none;border:none;color:#e53935;cursor:pointer;font-size:16px;padding:0;text-align:center}
+#holList{direction:rtl;text-align:right;}
 .ann-table{border-collapse:collapse;width:100%;margin-bottom:16px}
 .ann-table th,.ann-table td{border:1px solid #e0e0e0;padding:5px 7px;text-align:center;font-size:11px}
 .ann-table th{background:#00897B;color:white}
@@ -148,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v48</span>
+      <span class="topbar-title">Reports_Workers v48CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -212,16 +214,16 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
           </div>
           <div>
             <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך התחלה</label>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <input type="date" id="holStart" onchange="showIsraeliDate('holStart','holStartTxt')" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;">
-              <span id="holStartTxt" style="font-size:12px;color:#333;font-weight:bold;min-width:80px;"></span>
+            <div class="he-date-wrap">
+              <button type="button" class="he-date-btn" id="holStartTxt" onclick="openHiddenDate('holStart')">בחר תאריך</button>
+              <input type="date" id="holStart" class="he-date-native" onchange="showIsraeliDate('holStart','holStartTxt')">
             </div>
           </div>
           <div>
             <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך סיום</label>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <input type="date" id="holEnd" onchange="showIsraeliDate('holEnd','holEndTxt');checkHolDates()" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;">
-              <span id="holEndTxt" style="font-size:12px;color:#333;font-weight:bold;min-width:80px;"></span>
+            <div class="he-date-wrap">
+              <button type="button" class="he-date-btn" id="holEndTxt" onclick="openHiddenDate('holEnd')">בחר תאריך</button>
+              <input type="date" id="holEnd" class="he-date-native" onchange="showIsraeliDate('holEnd','holEndTxt');checkHolDates()">
             </div>
           </div>
           <div style="display:flex;align-items:flex-end;padding-bottom:6px;">
@@ -349,7 +351,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:48,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"48CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -359,7 +361,7 @@ window.onload=()=>{
     const old=localStorage.getItem(k);
     if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-  const saved=localStorage.getItem('rw_v48_data');
+  const saved=localStorage.getItem('rw_v48CH_data');
   if(saved) try{S=JSON.parse(saved);}catch(e){}
   buildJumps();
   startPresenceLoop();
@@ -492,7 +494,8 @@ function renderTable(){
       }
       if(editMode){
         const sel=document.createElement('select');
-        sel.className='cs';
+        sel.className='cs'+(val?' val-colored':'');
+        if(val&&VAL_BG[val]) sel.style.setProperty('--cell-bg',VAL_BG[val]);
         sel.style.background='transparent';
         VALUES.forEach(v=>{
           const opt=document.createElement('option');
@@ -569,7 +572,9 @@ function emTd(){const td=document.createElement('td');return td;}
 function mkSel(date,worker,val,disabled,rowType){
   const opts=VALUES.map(v=>`<option value="${v}"${v===val?' selected':''}>${v||'—'}</option>`).join('');
   const attr=disabled?'disabled':`onchange="setCell('${date}','${worker}',this.value,'${rowType||'cur'}')"`;
-  return `<select class="cs" ${attr}>${opts}</select>`;
+  const cls='cs'+(val?' val-colored':'');
+  const sty=(val&&VAL_BG[val])?` style="--cell-bg:${VAL_BG[val]};background:${VAL_BG[val]}!important"`:'';
+  return `<select class="${cls}"${sty} ${attr}>${opts}</select>`;
 }
 
 function setCell(date,worker,val,rowType){
@@ -807,15 +812,21 @@ function checkHolDates(){
   if(start&&end&&end<start){
     alert('תאריך הסיום חייב להיות שווה או מאוחר מתאריך ההתחלה');
     document.getElementById('holEnd').value='';
-    document.getElementById('holEndDisp').textContent='';
+    document.getElementById('holEndTxt').textContent='בחר תאריך';
   }
 }
 
 
+function openHiddenDate(inputId){
+  const el=document.getElementById(inputId);
+  if(!el) return;
+  if(typeof el.showPicker==='function') el.showPicker();
+  else el.click();
+}
 function showIsraeliDate(inputId, spanId){
   const val=document.getElementById(inputId).value;
   const el=document.getElementById(spanId);
-  if(el) el.textContent=val?fmtDFull(val):'';
+  if(el) el.textContent=val?fmtDFull(val):'בחר תאריך';
 }
 
 function addHoliday(){
@@ -838,8 +849,8 @@ function addHoliday(){
   document.getElementById('holName').value='';
   document.getElementById('holStart').value='';
   document.getElementById('holEnd').value='';
-  document.getElementById('holStartTxt').textContent='';
-  document.getElementById('holEndTxt').textContent='';
+  document.getElementById('holStartTxt').textContent='בחר תאריך';
+  document.getElementById('holEndTxt').textContent='בחר תאריך';
   document.getElementById('holAll').checked=false;
   document.querySelectorAll('.hol-cb').forEach(c=>c.checked=false);
   renderHolList(); renderTable();
@@ -899,7 +910,7 @@ function renderAnnual(){
 }
 
 // ===== SYNC =====
-function saveLocally(){localStorage.setItem('rw_v48_data',JSON.stringify(S));}
+function saveLocally(){localStorage.setItem('rw_v48CH_data',JSON.stringify(S));}
 
 async function saveToGithub(){
   const token=getToken(); if(!token) return false;
@@ -937,7 +948,7 @@ async function saveData(){
 function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if(remote&&remote.version===48){
+    if(remote&&remote.version==='48CH'){
       const ls=JSON.stringify(S),rs=JSON.stringify(remote);
       if(rs!==ls&&rs.length>ls.length){
         const u=S.currentUser,c={...S.cutoffs};
