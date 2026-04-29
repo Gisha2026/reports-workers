@@ -144,7 +144,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v36</span>
+      <span class="topbar-title">Reports_Workers v37</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -167,10 +167,10 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
       </div>
       <!-- Arrows TIGHT around title -->
       <div class="nav-center">
-        <button class="nav-btn" onclick="prevMonth()">&#8250;</button>
+        <button class="nav-btn" onclick="nextMonth()" title="חודש הבא">&#8249;</button>
         <select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
         <span class="month-h2" id="monthTitle"></span>
-        <button class="nav-btn" onclick="nextMonth()">&#8249;</button>
+        <button class="nav-btn" onclick="prevMonth()" title="חודש קודם">&#8250;</button>
       </div>
       <div style="width:100px;"></div>
     </div>
@@ -306,7 +306,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:36,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],year:2026};
+let S={version:37,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -316,7 +316,7 @@ window.onload=()=>{
     const old=localStorage.getItem(k);
     if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-  const saved=localStorage.getItem('rw_v36_data');
+  const saved=localStorage.getItem('rw_v37_data');
   if(saved) try{S=JSON.parse(saved);}catch(e){}
   buildJumps();
   startPresenceLoop();
@@ -342,7 +342,8 @@ function startApp(){
   document.getElementById('userBadge').textContent=S.currentUser;
   renderAll();
   startSyncLoop();
-  if(!getToken()) document.getElementById('tokenModal').classList.add('open');
+  // Only show token modal if no token AND user hasn't dismissed it before
+  if(!getToken()&&!localStorage.getItem('rw_tok_skipped')) document.getElementById('tokenModal').classList.add('open');
 }
 
 // ===== TOKEN =====
@@ -360,7 +361,7 @@ function saveTokenModal(){
   localStorage.setItem(TOK_KEY,t);
   closeModal('tokenModal'); saveData();
 }
-function skipToken(){closeModal('tokenModal');}
+function skipToken(){localStorage.setItem('rw_tok_skipped','1');closeModal('tokenModal');}
 
 // ===== RENDER =====
 function renderAll(){
@@ -566,14 +567,14 @@ function importExcel(input){
         const ws=wb.Sheets[sheetName];
         const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
 
-        // Find header row: row with 3+ worker names (not known values, not dates)
+        // Find header row: row with 3+ worker names (not known values, not dates, not day letters)
         let headerIdx=-1, workerCols={};
         for(let ri=0;ri<rows.length;ri++){
           const row=rows[ri];
           let cnt=0, tmp={};
           for(let ci=3;ci<row.length;ci++){
             const v=row[ci];
-            if(v&&typeof v==='string'&&!KNOWN_VALS.has(v)&&v.length>=2&&!/^\d/.test(v)){
+            if(v&&typeof v==='string'&&!KNOWN_VALS.has(v)&&v.length>=2&&!/^\d/.test(v)&&!ALL_DAYS.includes(v)){
               cnt++; tmp[ci]=v;
             }
           }
@@ -800,7 +801,7 @@ function renderAnnual(){
 }
 
 // ===== SYNC =====
-function saveLocally(){localStorage.setItem('rw_v36_data',JSON.stringify(S));}
+function saveLocally(){localStorage.setItem('rw_v37_data',JSON.stringify(S));}
 
 async function saveToGithub(){
   const token=getToken(); if(!token) return false;
@@ -838,7 +839,7 @@ async function saveData(){
 function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if(remote&&remote.version===36){
+    if(remote&&remote.version===37){
       const ls=JSON.stringify(S),rs=JSON.stringify(remote);
       if(rs!==ls&&rs.length>ls.length){
         const u=S.currentUser,c={...S.cutoffs};
