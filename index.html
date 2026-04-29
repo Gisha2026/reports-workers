@@ -53,8 +53,9 @@ td{padding:3px 5px;text-align:center;border-bottom:1px solid #f0f0f0;font-size:1
 td.dl{font-weight:bold;color:#333;min-width:24px}
 td.dtl{color:#888;min-width:44px;font-size:10px}
 tr.wkend td{background:#e0e0e0!important;height:6px;padding:0;border:none}
-tr.prev-row td{background:#ffe082!important}
-tr.prev-row:hover td{background:#ffd54f!important}
+tr.prev-row td{background:#ffe082}
+tr.prev-row td.has-val{background:inherit}
+tr.prev-row:hover td{filter:brightness(0.97)}
 tr.after-cut td{background:#fff3e0}
 tr.dup-row td{background:#ffebee!important}
 tr:hover:not(.wkend) td{background:#f0faf9}
@@ -93,9 +94,9 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .hi button{padding:6px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px}
 .wcbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .wcb{display:flex;align-items:center;gap:3px;font-size:11px}
-.hol-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:white;border-radius:5px;margin-bottom:3px;border:1px solid #e0e0e0;font-size:11px}
-.hn{font-weight:bold;flex:1}.hd{color:#666;font-size:10px}.hw{color:#888;font-size:10px}
-.hdel{background:none;border:none;color:#e53935;cursor:pointer}
+.hol-item{display:grid;grid-template-columns:100px 1fr 180px 30px;align-items:center;gap:8px;padding:6px 10px;background:white;border-radius:5px;margin-bottom:3px;border:1px solid #e0e0e0;font-size:11px;direction:rtl;}
+.hn{font-weight:bold;text-align:right}.hd{color:#666;font-size:11px;text-align:right}.hw{color:#888;font-size:11px;text-align:right}
+.hdel{background:none;border:none;color:#e53935;cursor:pointer;font-size:14px;text-align:center}
 .ann-table{border-collapse:collapse;width:100%;margin-bottom:16px}
 .ann-table th,.ann-table td{border:1px solid #e0e0e0;padding:5px 7px;text-align:center;font-size:11px}
 .ann-table th{background:#00897B;color:white}
@@ -145,7 +146,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v41</span>
+      <span class="topbar-title">Reports_Workers v42</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -249,7 +250,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
       </div>
       <div style="border-top:1px solid #eee;padding-top:12px;">
         <p style="font-size:11px;color:#666;margin-bottom:10px;">המייל ייפתח באאוטלוק עם הטקסט מוכן. העתק את הטבלה שתופיע למטה והדבק למייל.</p>
-        <button onclick="sendEmail()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;">העתק ופתח מייל</button>
+        <button onclick="sendEmail()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;">הורד מייל מוכן</button>
         <p id="emailCopyNote" style="display:none;font-size:11px;color:#2e7d32;margin-top:8px;font-weight:bold;">אאוטלוק נפתח עם הטקסט. העתק את הטבלה למטה (Ctrl+A ואז Ctrl+C) והדבק במייל.</p>
         <div id="emailPreview" style="display:none;margin-top:12px;overflow-x:auto;border:1px solid #ddd;border-radius:6px;padding:8px;background:white;"></div>
       </div>
@@ -337,7 +338,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:41,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:42,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -347,7 +348,7 @@ window.onload=()=>{
     const old=localStorage.getItem(k);
     if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-  const saved=localStorage.getItem('rw_v41_data');
+  const saved=localStorage.getItem('rw_v42_data');
   if(saved) try{S=JSON.parse(saved);}catch(e){}
   buildJumps();
   startPresenceLoop();
@@ -471,11 +472,15 @@ function renderTable(){
       const val=(row.cells&&row.cells[w.name])||'';
       const td=document.createElement('td');
       const isDupCell=curRows.some(r=>r.date===row.date&&r.cells&&r.cells[w.name]);
+      if(val){
+        td.className='has-val';
+        td.style.background=VAL_BG[val]||'#fff';
+      }
       if(isDupCell) td.style.background='#ffebee';
       if(editMode){
         td.innerHTML=mkSel(row.date,w.name,val,false,'prev');
       } else {
-        td.innerHTML=val?`<span class="cv" style="background:${VAL_BG[val]||''}">${val}</span>`:'<span class="cv">—</span>';
+        td.innerHTML=val?`<span class="cv">${val}</span>`:'<span class="cv">—</span>';
       }
       tr.appendChild(td);
     });
@@ -846,7 +851,7 @@ function renderAnnual(){
 }
 
 // ===== SYNC =====
-function saveLocally(){localStorage.setItem('rw_v41_data',JSON.stringify(S));}
+function saveLocally(){localStorage.setItem('rw_v42_data',JSON.stringify(S));}
 
 async function saveToGithub(){
   const token=getToken(); if(!token) return false;
@@ -884,7 +889,7 @@ async function saveData(){
 function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if(remote&&remote.version===41){
+    if(remote&&remote.version===42){
       const ls=JSON.stringify(S),rs=JSON.stringify(remote);
       if(rs!==ls&&rs.length>ls.length){
         const u=S.currentUser,c={...S.cutoffs};
@@ -957,7 +962,7 @@ function sendEmail(){
 
   // Build HTML table
   const colBg={'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
-  let tbl='<table dir="rtl" border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;font-family:Arial;font-size:12px;direction:rtl;text-align:center;">';
+  let tbl='<table dir="rtl" border="1" cellpadding="5" cellspacing="0" style="border-collapse:collapse;font-family:Arial;font-size:12px;direction:rtl;text-align:center;">';
   tbl+='<tr style="background:#00897B;color:white;">';
   tbl+='<th style="padding:6px 8px;">יום</th><th style="padding:6px 8px;">תאריך</th>';
   workers.forEach(w=>tbl+=`<th style="padding:6px 8px;">${w.name}</th>`);
@@ -965,13 +970,13 @@ function sendEmail(){
 
   allRows.forEach(row=>{
     const isPrev=prevRows.some(r=>r.date===row.date);
-    const rowBg=isPrev?'background:#ffe082;':'';
-    tbl+=`<tr style="${rowBg}">`;
-    tbl+=`<td>${row.day}</td><td>${fmtD(row.date)}</td>`;
+    tbl+=`<tr>`;
+    tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${row.day}</td>`;
+    tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${fmtD(row.date)}</td>`;
     workers.forEach(w=>{
       const val=(row.cells&&row.cells[w.name])||'';
-      const bg=val&&colBg[val]?`background:${colBg[val]};`:'';
-      tbl+=`<td style="${bg}">${val||'—'}</td>`;
+      const bg=val&&colBg[val]?colBg[val]:(isPrev?'#ffe082':'white');
+      tbl+=`<td style="background:${bg};">${val||'—'}</td>`;
     });
     tbl+='</tr>';
   });
@@ -990,26 +995,31 @@ function sendEmail(){
   });
   tbl+='</tr></table>';
 
-  // Build full HTML for clipboard (RTL)
-  const openingLines=(opening?opening.split('\n').map(l=>`<p style="margin:6px 0;direction:rtl;text-align:right;">${l}</p>`).join(''):'');
-  const fixedLines=fixed?fixed.split('\n').map(l=>`<p style="margin:6px 0;direction:rtl;text-align:right;">${l}</p>`).join(''):'';
-  const fullHtml=`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"></head><body style="font-family:Arial;font-size:13px;direction:rtl;text-align:right;margin:20px;">
+  // Build HTML body
+  const openingLines=opening?opening.split('\n').map(l=>`<p style="margin:4px 0;">${l}</p>`).join(''):'';
+  const fixedLines=fixed?fixed.split('\n').map(l=>`<p style="margin:4px 0;">${l}</p>`).join(''):'';
+  const htmlBody=`<div dir="rtl" style="font-family:Arial;font-size:13px;direction:rtl;text-align:right;">
 ${openingLines}
-${fixedLines}
-<br>
+<br>${fixedLines}<br>
 ${tbl}
-</body></html>`;
+</div>`;
 
-  // Open in new window — select all and copy into Outlook
-  const win=window.open('','_blank','width=900,height=700');
-  win.document.write(fullHtml);
-  win.document.close();
-  win.focus();
-  // Auto select all for easy copy
-  win.onload=()=>{win.document.execCommand('selectAll');};
+  // Build EML file
+  const subject=`דיווח חופש ומחלה — ${mName} ${S.year}`;
+  const boundary='----=_NextPart_'+Date.now();
+  const eml=`MIME-Version: 1.0\r\nContent-Type: multipart/alternative;\r\n\tboundary="${boundary}"\r\nSubject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=\r\nX-Unsent: 1\r\n\r\n------=${boundary}\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n${htmlBody}\r\n\r\n------=${boundary}--`;
+
+  const blob=new Blob([eml],{type:'message/rfc822'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`דיווח_${mName}_${S.year}.eml`;
+  a.click();
+  URL.revokeObjectURL(url);
   document.getElementById('emailCopyNote').style.display='block';
-  document.getElementById('emailCopyNote').textContent='✓ נפתח חלון עם המייל. לחץ Ctrl+A, Ctrl+C — ואז פתח מייל חדש באאוטלוק והדבק Ctrl+V.';
+  document.getElementById('emailCopyNote').textContent='✓ הקובץ הורד. לחץ עליו פעמיים ואאוטלוק יפתח עם המייל המלא.';
 }
+
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 </script>
