@@ -93,9 +93,9 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .hi button{padding:6px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px}
 .wcbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .wcb{display:flex;align-items:center;gap:3px;font-size:11px}
-.hol-item{display:grid;grid-template-columns:110px 160px 1fr 28px;align-items:center;gap:10px;padding:7px 12px;background:white;border-radius:5px;margin-bottom:4px;border:1px solid #e0e0e0;font-size:12px;direction:rtl;text-align:right;}
-.hn{font-weight:bold;color:#333;text-align:right}.hd{color:#555;font-size:11px;text-align:right}.hw{color:#888;font-size:11px;text-align:right}
-.hdel{background:none;border:none;color:#e53935;cursor:pointer;font-size:16px;text-align:center;padding:0}
+.hol-item{display:flex;align-items:center;gap:12px;padding:7px 12px;background:white;border-radius:5px;margin-bottom:4px;border:1px solid #e0e0e0;font-size:12px;direction:rtl;justify-content:flex-start;}
+.hn{font-weight:bold;color:#333;min-width:80px}.hd{color:#555;font-size:11px;min-width:140px}.hw{color:#888;font-size:11px;flex:1}
+.hdel{background:none;border:none;color:#e53935;cursor:pointer;font-size:16px;padding:0;margin-right:auto}
 #holList{direction:rtl;}
 .ann-table{border-collapse:collapse;width:100%;margin-bottom:16px}
 .ann-table th,.ann-table td{border:1px solid #e0e0e0;padding:5px 7px;text-align:center;font-size:11px}
@@ -146,7 +146,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v46</span>
+      <span class="topbar-title">Reports_Workers v47</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -210,16 +210,22 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
           </div>
           <div>
             <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך התחלה</label>
-            <div style="display:flex;align-items:center;gap:4px;">
-              <input type="date" id="holStart" onchange="updateHolDisplay('holStart','holStartDisp')" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:130px;">
-              <span id="holStartDisp" style="font-size:11px;color:#333;direction:ltr;"></span>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <input type="number" id="holStartD" min="1" max="31" placeholder="יי" style="padding:4px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:42px;text-align:center;">
+              <span style="color:#666;">/</span>
+              <input type="number" id="holStartM" min="1" max="12" placeholder="חח" style="padding:4px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:42px;text-align:center;">
+              <span style="color:#666;">/</span>
+              <input type="number" id="holStartY" placeholder="שנה" style="padding:4px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:58px;text-align:center;">
             </div>
           </div>
           <div>
             <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך סיום</label>
-            <div style="display:flex;align-items:center;gap:4px;">
-              <input type="date" id="holEnd" onchange="checkHolDates();updateHolDisplay('holEnd','holEndDisp')" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:130px;">
-              <span id="holEndDisp" style="font-size:11px;color:#333;direction:ltr;"></span>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <input type="number" id="holEndD" min="1" max="31" placeholder="יי" style="padding:4px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:42px;text-align:center;">
+              <span style="color:#666;">/</span>
+              <input type="number" id="holEndM" min="1" max="12" placeholder="חח" style="padding:4px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:42px;text-align:center;">
+              <span style="color:#666;">/</span>
+              <input type="number" id="holEndY" placeholder="שנה" style="padding:4px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:58px;text-align:center;">
             </div>
           </div>
           <div style="display:flex;align-items:flex-end;padding-bottom:6px;">
@@ -347,7 +353,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:46,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:47,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -357,7 +363,7 @@ window.onload=()=>{
     const old=localStorage.getItem(k);
     if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-  const saved=localStorage.getItem('rw_v46_data');
+  const saved=localStorage.getItem('rw_v47_data');
   if(saved) try{S=JSON.parse(saved);}catch(e){}
   buildJumps();
   startPresenceLoop();
@@ -482,9 +488,9 @@ function renderTable(){
       const td=document.createElement('td');
       const isDupCell=curRows.some(r=>r.date===row.date&&r.cells&&r.cells[w.name]);
       if(isDupCell){
-        td.style.background='#ffebee';
+        td.setAttribute('style','background:#ffebee!important');
       } else if(val&&VAL_BG[val]){
-        td.style.background=VAL_BG[val];
+        td.setAttribute('style',`background:${VAL_BG[val]}!important`);
       } else {
         td.className='prev-empty';
       }
@@ -802,9 +808,15 @@ function checkHolDates(){
 
 function addHoliday(){
   const name=document.getElementById('holName').value.trim();
-  const start=document.getElementById('holStart').value;
-  const end=document.getElementById('holEnd').value||start;
-  if(!name||!start){alert('נא למלא שם ותאריך התחלה');return;}
+  const sd=document.getElementById('holStartD').value;
+  const sm=document.getElementById('holStartM').value;
+  const sy=document.getElementById('holStartY').value||S.year;
+  const ed=document.getElementById('holEndD').value||sd;
+  const em2=document.getElementById('holEndM').value||sm;
+  const ey=document.getElementById('holEndY').value||sy;
+  if(!name||!sd||!sm){alert('נא למלא שם ותאריך התחלה');return;}
+  const start=`${sy}-${String(sm).padStart(2,'0')}-${String(sd).padStart(2,'0')}`;
+  const end=`${ey}-${String(em2).padStart(2,'0')}-${String(ed).padStart(2,'0')}`;
   if(end<start){alert('תאריך הסיום חייב להיות שווה או מאוחר מתאריך ההתחלה');return;}
   const allCk=document.getElementById('holAll').checked;
   let workers='all';
@@ -814,12 +826,12 @@ function addHoliday(){
   }
   S.holidays.push({name,start,end,workers});
   const wTxt=workers==='all'?'כל העובדים':workers.join(', ');
-  const dTxt=start===end?fmtD(start):fmtD(start)+' עד '+fmtD(end);
+  const dTxt=start===end?fmtDFull(start):fmtDFull(start)+' עד '+fmtDFull(end);
   document.getElementById('holConfirmMsg').textContent=`"${name}" — ${dTxt} — ${wTxt}`;
   document.getElementById('holConfirmModal').classList.add('open');
-  document.getElementById('holName').value='';
-  document.getElementById('holStart').value='';
-  document.getElementById('holEnd').value='';
+  ['holName','holStartD','holStartM','holStartY','holEndD','holEndM','holEndY'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
   document.getElementById('holAll').checked=false;
   document.querySelectorAll('.hol-cb').forEach(c=>c.checked=false);
   renderHolList(); renderTable();
@@ -879,7 +891,7 @@ function renderAnnual(){
 }
 
 // ===== SYNC =====
-function saveLocally(){localStorage.setItem('rw_v46_data',JSON.stringify(S));}
+function saveLocally(){localStorage.setItem('rw_v47_data',JSON.stringify(S));}
 
 async function saveToGithub(){
   const token=getToken(); if(!token) return false;
@@ -917,7 +929,7 @@ async function saveData(){
 function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if(remote&&remote.version===46){
+    if(remote&&remote.version===47){
       const ls=JSON.stringify(S),rs=JSON.stringify(remote);
       if(rs!==ls&&rs.length>ls.length){
         const u=S.currentUser,c={...S.cutoffs};
