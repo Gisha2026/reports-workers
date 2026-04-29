@@ -54,7 +54,7 @@ td.dl{font-weight:bold;color:#333;min-width:24px}
 td.dtl{color:#888;min-width:44px;font-size:10px}
 tr.wkend td{background:#e0e0e0!important;height:6px;padding:0;border:none}
 tr.prev-row td{background:#ffe082}
-tr.prev-row td.has-val{background:inherit}
+tr.prev-row td.has-val{background:var(--val-bg,#ffe082)!important}
 tr.prev-row:hover td{filter:brightness(0.97)}
 tr.after-cut td{background:#fff3e0}
 tr.dup-row td{background:#ffebee!important}
@@ -94,9 +94,9 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .hi button{padding:6px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px}
 .wcbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .wcb{display:flex;align-items:center;gap:3px;font-size:11px}
-.hol-item{display:grid;grid-template-columns:100px 1fr 180px 30px;align-items:center;gap:8px;padding:6px 10px;background:white;border-radius:5px;margin-bottom:3px;border:1px solid #e0e0e0;font-size:11px;direction:rtl;}
-.hn{font-weight:bold;text-align:right}.hd{color:#666;font-size:11px;text-align:right}.hw{color:#888;font-size:11px;text-align:right}
-.hdel{background:none;border:none;color:#e53935;cursor:pointer;font-size:14px;text-align:center}
+.hol-item{display:grid;grid-template-columns:110px 160px 1fr 28px;align-items:center;gap:10px;padding:7px 12px;background:white;border-radius:5px;margin-bottom:4px;border:1px solid #e0e0e0;font-size:12px;direction:rtl;}
+.hn{font-weight:bold;color:#333}.hd{color:#555;font-size:11px}.hw{color:#888;font-size:11px}
+.hdel{background:none;border:none;color:#e53935;cursor:pointer;font-size:16px;text-align:center;padding:0}
 .ann-table{border-collapse:collapse;width:100%;margin-bottom:16px}
 .ann-table th,.ann-table td{border:1px solid #e0e0e0;padding:5px 7px;text-align:center;font-size:11px}
 .ann-table th{background:#00897B;color:white}
@@ -146,7 +146,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v42</span>
+      <span class="topbar-title">Reports_Workers v43</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -210,11 +210,17 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
           </div>
           <div>
             <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך התחלה</label>
-            <input type="date" id="holStart" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;box-sizing:border-box;">
+            <div style="display:flex;align-items:center;gap:4px;">
+              <input type="date" id="holStart" onchange="updateHolDisplay('holStart','holStartDisp')" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:130px;">
+              <span id="holStartDisp" style="font-size:11px;color:#333;direction:ltr;"></span>
+            </div>
           </div>
           <div>
             <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך סיום</label>
-            <input type="date" id="holEnd" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;box-sizing:border-box;">
+            <div style="display:flex;align-items:center;gap:4px;">
+              <input type="date" id="holEnd" onchange="checkHolDates();updateHolDisplay('holEnd','holEndDisp')" style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:130px;">
+              <span id="holEndDisp" style="font-size:11px;color:#333;direction:ltr;"></span>
+            </div>
           </div>
           <div style="display:flex;align-items:flex-end;padding-bottom:6px;">
             <label style="font-size:11px;cursor:pointer;white-space:nowrap;"><input type="checkbox" id="holAll" onchange="toggleAllCbs(this)"> כל העובדים</label>
@@ -338,7 +344,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:42,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:43,currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -348,7 +354,7 @@ window.onload=()=>{
     const old=localStorage.getItem(k);
     if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-  const saved=localStorage.getItem('rw_v42_data');
+  const saved=localStorage.getItem('rw_v43_data');
   if(saved) try{S=JSON.parse(saved);}catch(e){}
   buildJumps();
   startPresenceLoop();
@@ -474,9 +480,9 @@ function renderTable(){
       const isDupCell=curRows.some(r=>r.date===row.date&&r.cells&&r.cells[w.name]);
       if(val){
         td.className='has-val';
-        td.style.background=VAL_BG[val]||'#fff';
+        td.style.setProperty('background',VAL_BG[val]||'#fff','important');
       }
-      if(isDupCell) td.style.background='#ffebee';
+      if(isDupCell) td.style.setProperty('background','#ffebee','important');
       if(editMode){
         td.innerHTML=mkSel(row.date,w.name,val,false,'prev');
       } else {
@@ -772,7 +778,23 @@ function renderHolWorkers(){
 
 function toggleAllCbs(cb){document.querySelectorAll('.hol-cb').forEach(c=>c.checked=cb.checked);}
 
-function addHoliday(){
+function updateHolDisplay(inputId,dispId){
+  const val=document.getElementById(inputId).value;
+  const el=document.getElementById(dispId);
+  if(el) el.textContent=val?fmtDFull(val):'';
+}
+
+function checkHolDates(){
+  const start=document.getElementById('holStart').value;
+  const end=document.getElementById('holEnd').value;
+  if(start&&end&&end<start){
+    alert('תאריך הסיום חייב להיות שווה או מאוחר מתאריך ההתחלה');
+    document.getElementById('holEnd').value='';
+    document.getElementById('holEndDisp').textContent='';
+  }
+}
+
+
   const name=document.getElementById('holName').value.trim();
   const start=document.getElementById('holStart').value;
   const end=document.getElementById('holEnd').value||start;
@@ -851,7 +873,7 @@ function renderAnnual(){
 }
 
 // ===== SYNC =====
-function saveLocally(){localStorage.setItem('rw_v42_data',JSON.stringify(S));}
+function saveLocally(){localStorage.setItem('rw_v43_data',JSON.stringify(S));}
 
 async function saveToGithub(){
   const token=getToken(); if(!token) return false;
@@ -889,7 +911,7 @@ async function saveData(){
 function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if(remote&&remote.version===42){
+    if(remote&&remote.version===43){
       const ls=JSON.stringify(S),rs=JSON.stringify(remote);
       if(rs!==ls&&rs.length>ls.length){
         const u=S.currentUser,c={...S.cutoffs};
@@ -1007,7 +1029,8 @@ ${tbl}
   // Build EML file
   const subject=`דיווח חופש ומחלה — ${mName} ${S.year}`;
   const boundary='----=_NextPart_'+Date.now();
-  const eml=`MIME-Version: 1.0\r\nContent-Type: multipart/alternative;\r\n\tboundary="${boundary}"\r\nSubject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=\r\nX-Unsent: 1\r\n\r\n------=${boundary}\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n${htmlBody}\r\n\r\n------=${boundary}--`;
+  const htmlBase64=btoa(unescape(encodeURIComponent(htmlBody)));
+  const eml=`MIME-Version: 1.0\r\nContent-Type: multipart/alternative;\r\n\tboundary="${boundary}"\r\nSubject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=\r\nX-Unsent: 1\r\n\r\n--${boundary}\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${htmlBase64}\r\n\r\n--${boundary}--`;
 
   const blob=new Blob([eml],{type:'message/rfc822'});
   const url=URL.createObjectURL(blob);
