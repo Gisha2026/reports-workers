@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v59</span>
+      <span class="topbar-title">Reports_Workers v60</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -730,6 +730,9 @@ function importExcel(input){
           if(!dateStr||dateStr.includes('NaN')) return null;
           const computedDay=getDayName(dateStr);
           if(computedDay==='ו'||computedDay==='ש') return null;
+          // בדוק שעמודה A היא יום שבוע בעברית OR ריקה (לא כותרת)
+          const colA=row[0];
+          if(colA&&typeof colA==='string'&&!['א','ב','ג','ד','ה','ו','ש'].includes(colA)) return null;
           const yr=parseInt(dateStr.split('-')[0]);
           if(yr>detectedYear) detectedYear=yr;
           const cells={};
