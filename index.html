@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v53</span>
+      <span class="topbar-title">Reports_Workers v54</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -475,7 +475,7 @@ function renderTable(){
   console.log(`renderTable: חודש=${mName}, חיתוך=${cutoff}, חיתוך_קודם=${prevCutoff}`);
 
   // prevRows: שיטה 9 - השוואה עם trim ו-localeCompare
-  // שיטה 10 - סינון ששי ושבת
+  // סינון prevRows: רק אם יש חיתוך לחודש הקודם, רק מתאריך החיתוך ואילך
   let allPrevRows=[...(md.prev||[])].sort((a,b)=>String(a.date).trim().localeCompare(String(b.date).trim()));
   const prevRows=prevCutoff
     ?allPrevRows.filter(r=>{
@@ -483,32 +483,67 @@ function renderTable(){
         const dayN=getDayName(d);
         return d>=prevCutoff&&dayN!=='ו'&&dayN!=='ש';
       })
-    :allPrevRows.filter(r=>{
-        const d=String(r.date).trim().substring(0,10);
-        const dayN=getDayName(d);
-        return dayN!=='ו'&&dayN!=='ש';
-      });
+    :[];
   const curRows=[...(md.cur||[])].filter(r=>{
     const dayN=getDayName(String(r.date).trim().substring(0,10));
     return dayN!=='ו'&&dayN!=='ש';
   }).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
 
-  // Build duplicate lookup map with multiple methods for reliability
+  // כל הנתונים של החודש הקודם — prev + cur
+  const prevMonthAllRows=prevMName?[
+    ...((S.months[prevMName]||{}).prev||[]),
+    ...((S.months[prevMName]||{}).cur||[])
+  ]:[];
+
+  // Build duplicate lookup map
+  // כפילות = אותו תאריך + אותו עובד מופיע ב-prevRows של החודש הנוכחי
+  // וגם בכל נתוני החודש הקודם
   const dupKeys=new Set();
+
   prevRows.forEach(pr=>{
-    // שיטה 7: נרמול עם trim
     const pDate=String(pr.date).trim().substring(0,10);
+    if(!pr.cells) return;
+
+    // בדיקה מול כל נתוני החודש הקודם
+    prevMonthAllRows.forEach(mr=>{
+      const mDate=String(mr.date).trim().substring(0,10);
+      if(pDate===mDate&&mr.cells){
+        workers.forEach(w=>{
+          const inPrev=!!(pr.cells[w.name]);
+          const inPrevMonth=!!(mr.cells[w.name]);
+          if(inPrev&&inPrevMonth){
+            dupKeys.add(`${pDate}|${w.name}`);
+            console.log(`כפילות prev-prev: ${w.name} ב-${pDate}`);
+          }
+        });
+      }
+    });
+
+    // בדיקה מול curRows של החודש הנוכחי
     curRows.forEach(cr=>{
       const cDate=String(cr.date).trim().substring(0,10);
-      if(pDate===cDate&&pr.cells&&cr.cells){
+      if(pDate===cDate&&cr.cells){
         workers.forEach(w=>{
-          // שיטה 6: בדיקה דו-כיוונית
-          const inPrev=!!(pr.cells[w.name]||pr.cells[w.name.trim()]);
-          const inCur=!!(cr.cells[w.name]||cr.cells[w.name.trim()]);
-          if(inPrev&&inCur){
+          if(pr.cells[w.name]&&cr.cells[w.name]){
             dupKeys.add(`${pDate}|${w.name}`);
-            // שיטה 8: לוג לקונסול
-            console.log(`כפילות: ${w.name} ב-${pDate}`);
+            console.log(`כפילות prev-cur: ${w.name} ב-${pDate}`);
+          }
+        });
+      }
+    });
+  });
+
+  // בדיקה גם: curRows של החודש הנוכחי מול כל נתוני החודש הקודם
+  curRows.forEach(cr=>{
+    const cDate=String(cr.date).trim().substring(0,10);
+    if(!cr.cells) return;
+    prevMonthAllRows.forEach(mr=>{
+      const mDate=String(mr.date).trim().substring(0,10);
+      if(cDate===mDate&&mr.cells){
+        workers.forEach(w=>{
+          if(cr.cells[w.name]&&mr.cells[w.name]){
+            dupKeys.add(`${cDate}|${w.name}`);
+            console.log(`כפילות cur-prev: ${w.name} ב-${cDate}`);
           }
         });
       }
