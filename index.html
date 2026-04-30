@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v61</span>
+      <span class="topbar-title">Reports_Workers v61CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -345,8 +345,11 @@ const DAYS_HE=['א','ב','ג','ד','ה'];
 const DAY_MAP=['א','ב','ג','ד','ה','ו','ש']; // 0=ראשון ... 6=שבת
 
 function getDayName(dateStr){
-  // dateStr = YYYY-MM-DD
-  const d=new Date(dateStr+'T12:00:00');
+  // dateStr = YYYY-MM-DD. Use numeric constructor to avoid timezone/date-string offset bugs.
+  if(!dateStr) return '';
+  const parts=String(dateStr).substring(0,10).split('-').map(Number);
+  if(parts.length!==3||!parts[0]||!parts[1]||!parts[2]) return '';
+  const d=new Date(parts[0],parts[1]-1,parts[2]);
   return DAY_MAP[d.getDay()];
 }
 const ALL_DAYS=['א','ב','ג','ד','ה','ו','ש'];
@@ -358,7 +361,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"48CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"61CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -466,30 +469,20 @@ function renderTable(){
   const workers=activeWorkers(mName);
   const md=S.months[mName]||{prev:[],cur:[]};
 
-  // Get previous month cutoff to filter prevRows correctly
-  const mIdx=MONTHS.indexOf(mName);
-  const prevMName=mIdx>0?MONTHS[mIdx-1]:null;
-  const prevCutoff=prevMName&&S.cutoffs[prevMName]?String(S.cutoffs[prevMName]).trim().substring(0,10):null;
+  // Cutoff belongs to the displayed payroll month.
+  // Example: April payroll with cutoff 2026-03-25 must show/calculate starting exactly 25/03.
+  console.log(`renderTable: חודש=${mName}, חיתוך=${cutoff}`);
 
-  // שיטה 8: לוג לאבחון
-  console.log(`renderTable: חודש=${mName}, חיתוך=${cutoff}, חיתוך_קודם=${prevCutoff}`);
-
-  // prevRows: שיטה 9 - השוואה עם trim ו-localeCompare
-  // שיטה 10 - סינון ששי ושבת
   let allPrevRows=[...(md.prev||[])].sort((a,b)=>String(a.date).trim().localeCompare(String(b.date).trim()));
-  const prevRows=prevCutoff
-    ?allPrevRows.filter(r=>{
-        const d=String(r.date).trim().substring(0,10);
-        const dayN=getDayName(d);
-        return d>=prevCutoff&&dayN!=='ו'&&dayN!=='ש';
-      })
-    :allPrevRows.filter(r=>{
-        const d=String(r.date).trim().substring(0,10);
-        const dayN=getDayName(d);
-        return dayN!=='ו'&&dayN!=='ש';
-      });
+  const prevRows=allPrevRows.filter(r=>{
+    const d=String(r.date).trim().substring(0,10);
+    const dayN=getDayName(d);
+    if(dayN==='ו'||dayN==='ש') return false;
+    return cutoff ? d>=cutoff : true;
+  });
   const curRows=[...(md.cur||[])].filter(r=>{
-    const dayN=getDayName(String(r.date).trim().substring(0,10));
+    const d=String(r.date).trim().substring(0,10);
+    const dayN=getDayName(d);
     return dayN!=='ו'&&dayN!=='ש';
   }).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
 
@@ -610,7 +603,7 @@ function renderTable(){
   sr.innerHTML='<td colspan="2" style="text-align:right;padding:4px 8px;">סיכום</td>';
   if(cutoff){
     workers.forEach(w=>{
-      const s=calcSum(curRows,w.name);
+      const s=calcSum([...prevRows,...curRows],w.name);
       let h='';
       if(s.v>0) h+=`<span class="chip cv-chip">חופש: ${s.v}</span>`;
       if(s.s>0) h+=`<span class="chip cs-chip">מחלה: ${s.s}</span>`;
@@ -730,9 +723,7 @@ function importExcel(input){
           if(!dateStr||dateStr.includes('NaN')) return null;
           const computedDay=getDayName(dateStr);
           if(computedDay==='ו'||computedDay==='ש') return null;
-          // בדוק שעמודה A היא יום שבוע בעברית OR ריקה (לא כותרת)
-          const colA=row[0];
-          if(colA&&typeof colA==='string'&&!['א','ב','ג','ד','ה','ו','ש'].includes(colA)) return null;
+          // Day name is computed from the date, not trusted from Excel text.
           const yr=parseInt(dateStr.split('-')[0]);
           if(yr>detectedYear) detectedYear=yr;
           const cells={};
@@ -1023,7 +1014,7 @@ async function saveData(){
 function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if(remote&&remote.version==='48CH'){
+    if(remote&&remote.version==='61CH'){
       const ls=JSON.stringify(S),rs=JSON.stringify(remote);
       if(rs!==ls&&rs.length>ls.length){
         const u=S.currentUser,c={...S.cutoffs};
