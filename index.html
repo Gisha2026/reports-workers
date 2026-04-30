@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v49</span>
+      <span class="topbar-title">Reports_Workers v50</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -361,7 +361,7 @@ window.onload=()=>{
     const old=localStorage.getItem(k);
     if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-  const saved=localStorage.getItem('rw_v49_data');
+  const saved=localStorage.getItem('rw_gisha_data');
   if(saved) try{S=JSON.parse(saved);}catch(e){}
   buildJumps();
   startPresenceLoop();
@@ -474,19 +474,17 @@ function renderTable(){
   let prevLast=null;
   prevRows.forEach(row=>{
     if(prevLast&&daysDiff(prevLast,row.date)>=2) body.appendChild(wkRow(cols));
-    // Check duplicate: same date has value in cur month
-    const dupWorkers=workers.filter(w=>curRows.some(r=>r.date===row.date&&r.cells&&r.cells[w.name]));
-    const isDup=dupWorkers.length>0;
     const tr=document.createElement('tr');
     tr.className='prev-row';
-    if(isDup) tr.style.outline='2px solid #e53935';
     tr.innerHTML=`<td class="dl prev-empty">${row.day}</td><td class="dtl prev-empty">${fmtD(row.date)}</td>`;
     workers.forEach(w=>{
       const val=(row.cells&&row.cells[w.name])||'';
       const td=document.createElement('td');
-      const isDupCell=curRows.some(r=>r.date===row.date&&r.cells&&r.cells[w.name]);
+      // כפילות: אותו תאריך + אותו עובד יש ערך גם בחודש הנוכחי
+      const isDupCell=val&&curRows.some(r=>r.date===row.date&&r.cells&&r.cells[w.name]);
       if(isDupCell){
-        td.setAttribute('style','background:#ffebee!important');
+        td.setAttribute('style','background:#ff5252!important');
+        td.title='כפילות — נרשם גם בחודש הבא';
       } else if(val&&VAL_BG[val]){
         td.setAttribute('style',`background:${VAL_BG[val]}!important`);
       } else {
@@ -494,8 +492,7 @@ function renderTable(){
       }
       if(editMode){
         const sel=document.createElement('select');
-        sel.className='cs'+(val?' val-colored':'');
-        if(val&&VAL_BG[val]) sel.style.setProperty('--cell-bg',VAL_BG[val]);
+        sel.className='cs';
         sel.style.background='transparent';
         VALUES.forEach(v=>{
           const opt=document.createElement('option');
@@ -528,10 +525,17 @@ function renderTable(){
       const val=(row.cells&&row.cells[w.name])||'';
       const holName=getHolForWorker(row.date,w.name);
       const td=document.createElement('td');
-      if(val&&VAL_BG[val]) td.style.background=VAL_BG[val];
-      else if(holName) td.style.background='#fffde7';
+      // כפילות: אותו תאריך + אותו עובד יש ערך גם בחודש הקודם (prevRows)
+      const isDupInPrev=val&&prevRows.some(r=>r.date===row.date&&r.cells&&r.cells[w.name]);
+      if(isDupInPrev){
+        td.setAttribute('style','background:#ff5252!important');
+        td.title='כפילות — נרשם גם בחודש הקודם';
+      } else if(val&&VAL_BG[val]){
+        td.style.background=VAL_BG[val];
+      } else if(holName){
+        td.style.background='#fffde7';
+      }
       if(editMode){
-        // If holiday and no manual value, show holiday name
         if(holName&&!val) td.innerHTML=`<span class="hol-cell">${holName}</span>`;
         else td.innerHTML=mkSel(row.date,w.name,val,false,'cur');
       } else {
@@ -910,7 +914,7 @@ function renderAnnual(){
 }
 
 // ===== SYNC =====
-function saveLocally(){localStorage.setItem('rw_v49_data',JSON.stringify(S));}
+function saveLocally(){localStorage.setItem('rw_gisha_data',JSON.stringify(S));}
 
 async function saveToGithub(){
   const token=getToken(); if(!token) return false;
