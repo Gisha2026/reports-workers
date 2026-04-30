@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v58</span>
+      <span class="topbar-title">Reports_Workers v59</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -486,47 +486,29 @@ function renderTable(){
     :allPrevRows.filter(r=>{
         const d=String(r.date).trim().substring(0,10);
         const dayN=getDayName(d);
-        // ללא חיתוך — הצג רק ימים מהחודש הקודם הישיר
-        const rowMonth=parseInt(d.split('-')[1]);
-        const curMonth=MONTHS.indexOf(mName)+1;
-        const expectedPrevMonth=curMonth===1?12:curMonth-1;
-        return rowMonth===expectedPrevMonth&&dayN!=='ו'&&dayN!=='ש';
+        return dayN!=='ו'&&dayN!=='ש';
       });
   const curRows=[...(md.cur||[])].filter(r=>{
     const dayN=getDayName(String(r.date).trim().substring(0,10));
     return dayN!=='ו'&&dayN!=='ש';
   }).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
 
-  // כל נתוני החודש הקודם — prev + cur
-  const prevMonthData=[
-    ...((S.months[prevMName]||{}).prev||[]),
-    ...((S.months[prevMName]||{}).cur||[])
-  ];
-
-  // בניית מפת כפילויות
+  // Build duplicate lookup map with multiple methods for reliability
   const dupKeys=new Set();
-
-  // בדוק prevRows של החודש הנוכחי מול כל נתוני החודש הקודם
   prevRows.forEach(pr=>{
+    // שיטה 7: נרמול עם trim
     const pDate=String(pr.date).trim().substring(0,10);
-    if(!pr.cells) return;
-    prevMonthData.forEach(mr=>{
-      const mDate=String(mr.date).trim().substring(0,10);
-      if(pDate===mDate&&mr.cells){
-        workers.forEach(w=>{
-          if(pr.cells[w.name]&&mr.cells[w.name]){
-            dupKeys.add(`${pDate}|${w.name}`);
-          }
-        });
-      }
-    });
-    // גם מול curRows של החודש הנוכחי
     curRows.forEach(cr=>{
       const cDate=String(cr.date).trim().substring(0,10);
-      if(pDate===cDate&&cr.cells){
+      if(pDate===cDate&&pr.cells&&cr.cells){
         workers.forEach(w=>{
-          if(pr.cells[w.name]&&cr.cells[w.name]){
+          // שיטה 6: בדיקה דו-כיוונית
+          const inPrev=!!(pr.cells[w.name]||pr.cells[w.name.trim()]);
+          const inCur=!!(cr.cells[w.name]||cr.cells[w.name.trim()]);
+          if(inPrev&&inCur){
             dupKeys.add(`${pDate}|${w.name}`);
+            // שיטה 8: לוג לקונסול
+            console.log(`כפילות: ${w.name} ב-${pDate}`);
           }
         });
       }
@@ -746,11 +728,8 @@ function importExcel(input){
         const parseRow=row=>{
           const dateStr=parseDate(row[1]);
           if(!dateStr||dateStr.includes('NaN')) return null;
-          // חשב יום מהתאריך — לא מהאקסל
           const computedDay=getDayName(dateStr);
-          // דלג על ששי ושבת
           if(computedDay==='ו'||computedDay==='ש') return null;
-          // דלג על שורות שעמודה A ריקה לחלוטין ואין תאריך תקין
           const yr=parseInt(dateStr.split('-')[0]);
           if(yr>detectedYear) detectedYear=yr;
           const cells={};
