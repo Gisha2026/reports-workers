@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v60</span>
+      <span class="topbar-title">Reports_Workers v61</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -769,6 +769,12 @@ function importExcel(input){
       saveLocally();
       S.currentUser=document.getElementById('loginName').value.trim()||'משתמש';
       startApp();
+      // שמירה אוטומטית לגיטהאב אחרי ייבוא
+      saveData().then(()=>{
+        console.log('ייבוא נשמר לגיטהאב בהצלחה');
+      }).catch(e=>{
+        console.warn('שמירה לגיטהאב נכשלה — נשמר מקומית בלבד', e);
+      });
     }catch(err){alert('שגיאה: '+err.message);console.error(err);}
   };
   reader.readAsArrayBuffer(file);
