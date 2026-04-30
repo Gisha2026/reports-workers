@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v61CH3</span>
+      <span class="topbar-title">Reports_Workers v62</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -393,7 +393,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"61CH3",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v62",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -631,6 +631,9 @@ function setCell(date,worker,val,rowType){
   if(!row){row={date,day:'',cells:{}};arr.push(row);}
   if(!row.cells) row.cells={};
   if(val) row.cells[worker]=val; else delete row.cells[worker];
+  saveLocally();
+  clearTimeout(window._autoSaveTimer);
+  window._autoSaveTimer=setTimeout(()=>saveData(),1000);
   renderTable();
 }
 
