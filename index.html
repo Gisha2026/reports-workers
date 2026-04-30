@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v61CH2</span>
+      <span class="topbar-title">Reports_Workers v61CH3</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -393,7 +393,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"61CH2",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"61CH3",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -511,16 +511,30 @@ function renderTable(){
 
   const prevByDate=new Map(rawPrev.map(r=>[String(r.date).trim().substring(0,10),r]));
   const curByDate=new Map(rawCur.map(r=>[String(r.date).trim().substring(0,10),r]));
+
+  // Duplicate detection must compare the same employee+date across adjacent month sheets.
+  // Example: May view includes 30/04 in md.prev. If 30/04 is also filled in April md.cur,
+  // that cell must be red. Conversely, April view should also mark 30/04 if May md.prev has it.
+  const prevMonthName = curMI>0 ? MONTHS[curMI-1] : null;
+  const nextMonthName = curMI<11 ? MONTHS[curMI+1] : null;
+  const prevMonthCurByDate = new Map(
+    prevMonthName ? [...(((S.months[prevMonthName]||{}).cur)||[])].filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10),r]) : []
+  );
+  const nextMonthPrevByDate = new Map(
+    nextMonthName ? [...(((S.months[nextMonthName]||{}).prev)||[])].filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10),r]) : []
+  );
+  const cellVal=(row,w)=>row&&row.cells?(row.cells[w.name]||row.cells[String(w.name).trim()]||''):'';
   const dupKeys=new Set();
   dates.forEach(d=>{
-    const pr=prevByDate.get(d), cr=curByDate.get(d);
-    if(pr&&cr&&pr.cells&&cr.cells){
-      workers.forEach(w=>{
-        const pv=pr.cells[w.name]||pr.cells[String(w.name).trim()];
-        const cv=cr.cells[w.name]||cr.cells[String(w.name).trim()];
-        if(pv&&cv) dupKeys.add(d+'|'+w.name);
-      });
-    }
+    workers.forEach(w=>{
+      const sameSheetPrev=cellVal(prevByDate.get(d),w);
+      const sameSheetCur=cellVal(curByDate.get(d),w);
+      const prevMonthCur=cellVal(prevMonthCurByDate.get(d),w);
+      const nextMonthPrev=cellVal(nextMonthPrevByDate.get(d),w);
+      if((sameSheetPrev&&sameSheetCur) || (sameSheetPrev&&prevMonthCur) || (sameSheetCur&&nextMonthPrev)){
+        dupKeys.add(d+'|'+w.name);
+      }
+    });
   });
 
   const head=document.getElementById('tHead');
