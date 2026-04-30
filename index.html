@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v61CH1</span>
+      <span class="topbar-title">Reports_Workers v61CH2</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -344,13 +344,45 @@ const MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יונ
 const DAYS_HE=['א','ב','ג','ד','ה'];
 const DAY_MAP=['א','ב','ג','ד','ה','ו','ש']; // 0=ראשון ... 6=שבת
 
+function parseYMD(dateStr){
+  const m=String(dateStr||'').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return null;
+  return {y:Number(m[1]),m:Number(m[2]),d:Number(m[3])};
+}
+function localDate(dateStr){
+  const p=parseYMD(dateStr);
+  return p?new Date(p.y,p.m-1,p.d,12,0,0,0):null;
+}
+function ymd(dt){
+  return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+}
+function addDays(dateStr,n){
+  const d=localDate(dateStr);
+  d.setDate(d.getDate()+n);
+  return ymd(d);
+}
+function lastDayOfMonth(year,monthIndex){
+  return ymd(new Date(year,monthIndex+1,0,12,0,0,0));
+}
 function getDayName(dateStr){
-  // dateStr = YYYY-MM-DD. Use numeric constructor to avoid timezone/date-string offset bugs.
-  if(!dateStr) return '';
-  const parts=String(dateStr).substring(0,10).split('-').map(Number);
-  if(parts.length!==3||!parts[0]||!parts[1]||!parts[2]) return '';
-  const d=new Date(parts[0],parts[1]-1,parts[2]);
-  return DAY_MAP[d.getDay()];
+  const d=localDate(dateStr);
+  return d?DAY_MAP[d.getDay()]:'';
+}
+function isWorkday(dateStr){
+  const dn=getDayName(dateStr);
+  return dn && dn!=='ו' && dn!=='ש';
+}
+function dateMonthIndex(dateStr){
+  const p=parseYMD(dateStr);
+  return p?p.m-1:null;
+}
+function makeWorkdayRange(start,end){
+  const out=[];
+  if(!start||!end) return out;
+  for(let d=start; d<=end; d=addDays(d,1)){
+    if(isWorkday(d)) out.push(d);
+  }
+  return out;
 }
 const ALL_DAYS=['א','ב','ג','ד','ה','ו','ש'];
 const VALUES=['','חופש','חצי חופש','מחלה','חצי מחלה','חג','אבל','אחר'];
@@ -361,7 +393,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"61CH1",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"61CH2",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -464,61 +496,31 @@ function setCutoff(){
 // ===== RENDER TABLE =====
 function renderTable(){
   const mName=getCurM();
-  const mIdx=MONTHS.indexOf(mName);
-  const cutoff=S.cutoffs[mName]?String(S.cutoffs[mName]).substring(0,10):null;
+  const cutoff=S.cutoffs[mName]?String(S.cutoffs[mName]).trim().substring(0,10):null;
   const workers=activeWorkers(mName);
   const md=S.months[mName]||{prev:[],cur:[]};
+  const rawPrev=[...(md.prev||[])].filter(r=>r&&r.date).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  const rawCur=[...(md.cur||[])].filter(r=>r&&r.date).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
 
-  const rawPrev=[...(md.prev||[])].sort((a,b)=>String(a.date).localeCompare(String(b.date)));
-  const rawCur=[...(md.cur||[])].sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  // Build complete payroll range. If cutoff is set for the displayed month,
+  // the view starts exactly at that date, even when it belongs to the previous month.
+  const monthStart=S.year+'-'+String(curMI+1).padStart(2,'0')+'-01';
+  const startDate=cutoff||monthStart;
+  const endDate=lastDayOfMonth(S.year,curMI);
+  const dates=makeWorkdayRange(startDate,endDate);
 
-  function rowMap(rows){
-    const map={};
-    rows.forEach(r=>{ if(r&&r.date) map[String(r.date).substring(0,10)]=r; });
-    return map;
-  }
-  const prevMap=rowMap(rawPrev), curMap=rowMap(rawCur);
-
-  function makeDisplayRows(){
-    if(!cutoff){
-      const p=rawPrev.filter(r=>{const d=String(r.date).substring(0,10); const dn=getDayName(d); return dn!=='ו'&&dn!=='ש';}).map(r=>Object.assign({__part:'prev'},r));
-      const c=rawCur.filter(r=>{const d=String(r.date).substring(0,10); const dn=getDayName(d); return dn!=='ו'&&dn!=='ש';}).map(r=>Object.assign({__part:'cur'},r));
-      return {prevRows:p,curRows:c,allRows:[...p,...c]};
-    }
-
-    const start=toLocalDate(cutoff);
-    const end=new Date(S.year,mIdx+1,0); // last day of displayed month
-    const prevRows=[], curRows=[];
-    for(let d=new Date(start.getFullYear(),start.getMonth(),start.getDate()); d<=end; d.setDate(d.getDate()+1)){
-      const iso=isoLocal(d);
-      const dn=getDayName(iso);
-      if(dn==='ו'||dn==='ש') continue;
-      const isPrev=d.getFullYear()<S.year || (d.getFullYear()===S.year && d.getMonth()<mIdx);
-      const base=(isPrev?prevMap[iso]:curMap[iso]) || {date:iso,day:dn,cells:{}};
-      const row={date:iso,day:dn,cells:Object.assign({},base.cells||{}),__part:isPrev?'prev':'cur'};
-      if(isPrev) prevRows.push(row); else curRows.push(row);
-    }
-    return {prevRows,curRows,allRows:[...prevRows,...curRows]};
-  }
-
-  const built=makeDisplayRows();
-  const prevRows=built.prevRows;
-  const curRows=built.curRows;
-  const allRows=built.allRows;
-
+  const prevByDate=new Map(rawPrev.map(r=>[String(r.date).trim().substring(0,10),r]));
+  const curByDate=new Map(rawCur.map(r=>[String(r.date).trim().substring(0,10),r]));
   const dupKeys=new Set();
-  rawPrev.forEach(pr=>{
-    const pDate=String(pr.date).trim().substring(0,10);
-    rawCur.forEach(cr=>{
-      const cDate=String(cr.date).trim().substring(0,10);
-      if(pDate===cDate&&pr.cells&&cr.cells){
-        workers.forEach(w=>{
-          const inPrev=!!(pr.cells[w.name]||pr.cells[w.name.trim()]);
-          const inCur=!!(cr.cells[w.name]||cr.cells[w.name.trim()]);
-          if(inPrev&&inCur) dupKeys.add(`${pDate}|${w.name}`);
-        });
-      }
-    });
+  dates.forEach(d=>{
+    const pr=prevByDate.get(d), cr=curByDate.get(d);
+    if(pr&&cr&&pr.cells&&cr.cells){
+      workers.forEach(w=>{
+        const pv=pr.cells[w.name]||pr.cells[String(w.name).trim()];
+        const cv=cr.cells[w.name]||cr.cells[String(w.name).trim()];
+        if(pv&&cv) dupKeys.add(d+'|'+w.name);
+      });
+    }
   });
 
   const head=document.getElementById('tHead');
@@ -529,32 +531,41 @@ function renderTable(){
   const body=document.getElementById('tBody');
   body.innerHTML='';
   const cols=workers.length+2+(cutoff?1:0);
-
+  const displayRows=[];
   let prevDate=null;
-  allRows.forEach(row=>{
-    if(prevDate&&daysDiff(prevDate,row.date)>=2) body.appendChild(wkRow(cols));
-    const isPrev=row.__part==='prev';
+
+  dates.forEach(d=>{
+    if(prevDate&&daysDiff(prevDate,d)>=2) body.appendChild(wkRow(cols));
+    const isPrevMonth=dateMonthIndex(d)!==curMI;
+    const pr=prevByDate.get(d);
+    const cr=curByDate.get(d);
     const tr=document.createElement('tr');
-    if(isPrev) tr.className='prev-row';
-    tr.innerHTML=`<td class="dl${isPrev?' prev-empty':''}">${getDayName(row.date)}</td><td class="dtl${isPrev?' prev-empty':''}">${fmtD(row.date)}</td>`;
+    if(isPrevMonth) tr.className='prev-row';
+    tr.innerHTML=`<td class="dl${isPrevMonth?' prev-empty':''}">${getDayName(d)}</td><td class="dtl${isPrevMonth?' prev-empty':''}">${fmtD(d)}</td>`;
+
+    const combinedCells={};
     workers.forEach(w=>{
-      const val=(row.cells&&row.cells[w.name])||'';
-      const holName=getHolForWorker(row.date,w.name);
+      const pv=pr&&pr.cells?(pr.cells[w.name]||pr.cells[String(w.name).trim()]||''):'';
+      const cv=cr&&cr.cells?(cr.cells[w.name]||cr.cells[String(w.name).trim()]||''):'';
+      const val=cv||pv||'';
+      if(val) combinedCells[w.name]=val;
+      const holName=getHolForWorker(d,w.name);
       const td=document.createElement('td');
-      const isDup=dupKeys.has(`${String(row.date).substring(0,10)}|${w.name}`)&&val;
+      const isDup=dupKeys.has(d+'|'+w.name)&&val;
       if(isDup){
         td.setAttribute('style','background:#ff5252!important');
-        td.title=isPrev?'כפילות — נרשם גם בחודש הבא':'כפילות — נרשם גם בחודש הקודם';
+        td.title='כפילות — נרשם בשני מקומות';
       } else if(val&&VAL_BG[val]){
         td.setAttribute('style',`background:${VAL_BG[val]}!important`);
       } else if(holName){
         td.style.background='#fffde7';
-      } else if(isPrev){
+      } else if(isPrevMonth){
         td.className='prev-empty';
       }
+      const rowType=isPrevMonth?'prev':'cur';
       if(editMode){
         if(holName&&!val) td.innerHTML=`<span class="hol-cell">${holName}</span>`;
-        else td.innerHTML=mkSel(row.date,w.name,val,false,row.__part);
+        else td.innerHTML=mkSel(d,w.name,val,false,rowType);
       } else {
         if(holName&&!val) td.innerHTML=`<span class="hol-cell">${holName}</span>`;
         else td.innerHTML=val?`<span class="cv" style="background:${VAL_BG[val]||''}">${val}</span>`:'<span class="cv">—</span>';
@@ -563,7 +574,8 @@ function renderTable(){
     });
     if(cutoff) tr.appendChild(emTd());
     body.appendChild(tr);
-    prevDate=row.date;
+    displayRows.push({date:d,day:getDayName(d),cells:combinedCells});
+    prevDate=d;
   });
 
   const sr=document.createElement('tr');
@@ -571,7 +583,7 @@ function renderTable(){
   sr.innerHTML='<td colspan="2" style="text-align:right;padding:4px 8px;">סיכום</td>';
   if(cutoff){
     workers.forEach(w=>{
-      const s=calcSum(allRows,w.name);
+      const s=calcSum(displayRows,w.name);
       let h='';
       if(s.v>0) h+=`<span class="chip cv-chip">חופש: ${s.v}</span>`;
       if(s.s>0) h+=`<span class="chip cs-chip">מחלה: ${s.s}</span>`;
@@ -585,6 +597,7 @@ function renderTable(){
   }
   body.appendChild(sr);
 }
+
 function wkRow(cols){const tr=document.createElement('tr');tr.className='wkend';tr.innerHTML=`<td colspan="${cols}"></td>`;return tr;}
 function emTd(){const td=document.createElement('td');return td;}
 
@@ -637,14 +650,7 @@ function activeWorkers(mName){
   });
 }
 
-function toLocalDate(dateStr){
-  const p=String(dateStr).substring(0,10).split('-').map(Number);
-  return new Date(p[0],p[1]-1,p[2]);
-}
-function isoLocal(d){
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-function daysDiff(d1,d2){return(toLocalDate(d2)-toLocalDate(d1))/86400000;}
+function daysDiff(d1,d2){return(localDate(d2)-localDate(d1))/86400000;}
 
 function getRows(mName){
   const md=S.months[mName]||{prev:[],cur:[]};
@@ -684,7 +690,7 @@ function importExcel(input){
 
         const parseDate=val=>{
           if(!val) return null;
-          if(val instanceof Date) return val.getFullYear()+'-'+String(val.getMonth()+1).padStart(2,'0')+'-'+String(val.getDate()).padStart(2,'0');
+          if(val instanceof Date) return val.toISOString().split('T')[0];
           if(typeof val==='number'&&val>40000){
             const d=XLSX.SSF.parse_date_code(val);
             return d?`${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`:null;
@@ -697,7 +703,9 @@ function importExcel(input){
           if(!dateStr||dateStr.includes('NaN')) return null;
           const computedDay=getDayName(dateStr);
           if(computedDay==='ו'||computedDay==='ש') return null;
-          // Day name is computed from the date, not trusted from Excel text.
+          // בדוק שעמודה A היא יום שבוע בעברית OR ריקה (לא כותרת)
+          const colA=row[0];
+          if(colA&&typeof colA==='string'&&!['א','ב','ג','ד','ה','ו','ש'].includes(colA)) return null;
           const yr=parseInt(dateStr.split('-')[0]);
           if(yr>detectedYear) detectedYear=yr;
           const cells={};
@@ -988,7 +996,7 @@ async function saveData(){
 function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
-    if(remote&&remote.version==='61CH1'){
+    if(remote&&remote.version==='61CH2'){
       const ls=JSON.stringify(S),rs=JSON.stringify(remote);
       if(rs!==ls&&rs.length>ls.length){
         const u=S.currentUser,c={...S.cutoffs};
