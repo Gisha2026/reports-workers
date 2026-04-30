@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v57</span>
+      <span class="topbar-title">Reports_Workers v58</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -744,14 +744,13 @@ function importExcel(input){
         };
 
         const parseRow=row=>{
-          const dayName=row[0];
-          if(!dayName||!DAYS_HE.includes(String(dayName))) return null;
           const dateStr=parseDate(row[1]);
           if(!dateStr||dateStr.includes('NaN')) return null;
-          // חשב את יום השבוע מהתאריך — לא מהאקסל
+          // חשב יום מהתאריך — לא מהאקסל
           const computedDay=getDayName(dateStr);
           // דלג על ששי ושבת
           if(computedDay==='ו'||computedDay==='ש') return null;
+          // דלג על שורות שעמודה A ריקה לחלוטין ואין תאריך תקין
           const yr=parseInt(dateStr.split('-')[0]);
           if(yr>detectedYear) detectedYear=yr;
           const cells={};
