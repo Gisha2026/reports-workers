@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v76CH2</span>
+      <span class="topbar-title">Reports_Workers v77CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1243,14 +1243,22 @@ const TS_MAP = {
   'חג':'Holiday', 'אחר':'Other', 'אבל':'Other'
 };
 
-function generateTimesheet(){
+async function generateTimesheet(){
   const monthName = document.getElementById('ts-month').value;
   const file = document.getElementById('ts-file').files[0];
   const status = document.getElementById('ts-status');
 
   if(!monthName){ status.textContent='יש לבחור חודש.'; return; }
   if(!file){ status.textContent='יש להעלות קובץ Timesheet.'; return; }
-  if(!pyReady){ status.textContent='המנוע עדיין בטעינה, נסה שוב בעוד כמה שניות.'; return; }
+  if(!pyReady){
+    status.textContent='ממתין למנוע ההפקה...';
+    status.style.color='#333';
+    const started=Date.now();
+    while(!pyReady && Date.now()-started<120000){
+      await new Promise(r=>setTimeout(r,500));
+    }
+    if(!pyReady){ status.style.color='red'; status.textContent='מנוע ההפקה לא נטען. רענן ונסה שוב.'; return; }
+  }
 
   const monthNum = MONTH_TO_NUM[monthName];
   if(!monthNum){ status.textContent='חודש לא מוכר.'; return; }
@@ -1398,15 +1406,6 @@ from openpyxl import load_workbook
 
 LABELS = {'Vacation': 0, 'Sick': 0, 'Holiday': 0, 'Other': 0}
 
-# עובדים עם טאב צבעוני/מיוחד לא אמורים להידרס בבדיקות. משאירים אותם כפי שהם.
-# אם בעתיד תרצה לעדכן גם אותם, אפשר להסיר את הבדיקה לפי צבע הטאב.
-def is_protected_sheet(ws):
-    try:
-        color = ws.sheet_properties.tabColor
-        return color is not None and getattr(color, 'rgb', None) not in (None, '00000000', 'FFFFFFFF')
-    except Exception:
-        return False
-
 def cell_date_ymd(v):
     if isinstance(v, datetime.datetime):
         return v.date()
@@ -1447,14 +1446,12 @@ def run(wb_b64, writes_json, month_num_str, year_str):
     writes=json.loads(writes_json)
     wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
 
-    # כתיבה יומית — רק לטאבים רגילים, לא לטאבים צבעוניים/מיוחדים.
+    # כתיבה יומית לכל טאב של עובד — כולל טאבים צבעוניים/אדומים.
     for w in writes:
         sn=w['sheet']
         if sn not in wb.sheetnames:
             continue
         ws=wb[sn]
-        if is_protected_sheet(ws):
-            continue
         r=w['row']+1
         c=w['col']+1
         cell=ws.cell(r,c)
@@ -1464,8 +1461,6 @@ def run(wb_b64, writes_json, month_num_str, year_str):
     # סיכומי חודש — דינמי לפי שורות התאריכים והתוויות בפועל בכל טאב.
     for sn in wb.sheetnames:
         ws=wb[sn]
-        if is_protected_sheet(ws):
-            continue
         date_rows = find_month_date_rows(ws, month_num, year)
         if not date_rows:
             continue
@@ -1510,8 +1505,10 @@ result
       const a = document.createElement('a');
       a.href = url;
       a.download = `Timesheet_${monthName}_${S.year}.xlsx`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 3000);
 
       status.style.color = '#1a7a4a';
       status.textContent = 'הקובץ הורד בהצלחה!';
