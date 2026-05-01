@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v74</span>
+      <span class="topbar-title">Reports_Workers v74CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -444,7 +444,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v62",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"74CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -1279,18 +1279,69 @@ function generateTimesheet(){
       }
       b64 = btoa(b64);
 
-      // בניית רשימת שינויים
       const writes = [];
+
+      function excelCellDateToYMD(cell){
+        if(!cell || cell.v == null) return null;
+        if(cell.v instanceof Date){
+          return ymd(new Date(cell.v.getFullYear(), cell.v.getMonth(), cell.v.getDate(), 12, 0, 0, 0));
+        }
+        if(typeof cell.v === 'number'){
+          const p = XLSX.SSF.parse_date_code(cell.v);
+          if(p) return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;
+        }
+        const txt = String(cell.v || cell.w || '').trim();
+        const iso = txt.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if(iso) return `${iso[1]}-${String(Number(iso[2])).padStart(2,'0')}-${String(Number(iso[3])).padStart(2,'0')}`;
+        const il = txt.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})$/);
+        if(il){
+          const yy = Number(il[3]) < 100 ? 2000 + Number(il[3]) : Number(il[3]);
+          return `${yy}-${String(Number(il[2])).padStart(2,'0')}-${String(Number(il[1])).padStart(2,'0')}`;
+        }
+        return null;
+      }
+
+      function normalizeYMDValue(v){
+        if(!v) return null;
+        if(v instanceof Date) return ymd(new Date(v.getFullYear(), v.getMonth(), v.getDate(), 12, 0, 0, 0));
+        const txt = String(v).trim();
+        const iso = txt.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if(iso) return `${iso[1]}-${String(Number(iso[2])).padStart(2,'0')}-${String(Number(iso[3])).padStart(2,'0')}`;
+        const il = txt.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})$/);
+        if(il){
+          const yy = Number(il[3]) < 100 ? 2000 + Number(il[3]) : Number(il[3]);
+          return `${yy}-${String(Number(il[2])).padStart(2,'0')}-${String(Number(il[1])).padStart(2,'0')}`;
+        }
+        return null;
+      }
+
+      function holidayApplies(h, workerName){
+        if(!h) return false;
+        if(h.workers === 'all') return true;
+        if(Array.isArray(h.workers)) return h.workers.map(x => String(x).trim()).includes(workerName);
+        return false;
+      }
+
+      function isHolidayFor(dateStr, workerName){
+        return (S.holidays || []).some(h => {
+          if(!holidayApplies(h, workerName)) return false;
+          const start = normalizeYMDValue(h.start);
+          const end = normalizeYMDValue(h.end || h.start);
+          if(!start || !end) return false;
+          return dateStr >= start && dateStr <= end;
+        });
+      }
 
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, {type:'array', cellDates:true});
 
       wb.SheetNames.forEach(sheetName => {
         const workerName = sheetName.trim();
-        const worker = S.workers.find(w => w.name === workerName);
+        const worker = S.workers.find(w => String(w.name).trim() === workerName);
         if(!worker) return;
 
         const ws = wb.Sheets[sheetName];
+        if(!ws || !ws['!ref']) return;
         const range = XLSX.utils.decode_range(ws['!ref']);
 
         let dailyHours = 8.4;
@@ -1300,45 +1351,32 @@ function generateTimesheet(){
 
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
-          if(!cellA || !cellA.v || !(cellA.v instanceof Date)) continue;
+          const dateStr = excelCellDateToYMD(cellA);
+          if(!dateStr) continue;
 
-          const d = cellA.v;
-          if(d.getFullYear() !== 2026 || d.getMonth()+1 !== monthNum) continue;
+          const p = parseYMD(dateStr);
+          if(!p || p.y !== S.year || p.m !== monthNum) continue;
 
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
-          const dateStr = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).toISOString().substring(0,10);
-          const dayData = dateMap[dateStr];
-          const val = dayData ? (dayData[workerName] || null) : null;
+          const dayData = dateMap[dateStr] || {};
+          const val = dayData[workerName] || null;
+          const holiday = isHolidayFor(dateStr, workerName);
 
-          // חג מהאפליקציה גובר על כל ערך אחר
-          const holidays = S.holidays || [];
-          const isHoliday = holidays.some(h=>{
-            const hStart = String(h.start||'').substring(0,10);
-            const hEnd = String(h.end||h.start||'').substring(0,10);
-            const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(workerName));
-            if(!workerMatch) return false;
-            if(!hStart) return false;
-            return dateStr >= hStart && dateStr <= hEnd;
-          });
-
-          if(isHoliday){
+          if(holiday){
             writes.push({sheet: sheetName, row: r, col: 19, value: 'Holiday'});
             writes.push({sheet: sheetName, row: r, col: 20, value: null});
           } else if(val && TS_MAP[val]){
-            // כתיבת T
             writes.push({sheet: sheetName, row: r, col: 19, value: TS_MAP[val]});
             if(val === 'חצי חופש' || val === 'חצי מחלה'){
-              // U = מחצית שעות
               writes.push({sheet: sheetName, row: r, col: 20, value: dailyHours/2});
             } else {
-              // U = ריק
               writes.push({sheet: sheetName, row: r, col: 20, value: null});
             }
           } else {
-            // יום רגיל - נקה T בלבד
             writes.push({sheet: sheetName, row: r, col: 19, value: null});
+            writes.push({sheet: sheetName, row: r, col: 20, value: dailyHours});
           }
         }
       });
@@ -1369,9 +1407,13 @@ def run(wb_b64, writes_json, month_num_str):
             cell.value=None
         else:
             cell.value=val
-    # חישוב סיכומים לכל גיליון
+    # חישוב סיכומי החודש הפעיל לכל גיליון: Vacation/Sick/Holiday/Other בעמודה R
     if month_num in MONTH_ROWS:
         row_start, row_end = MONTH_ROWS[month_num]
+        vac_row = row_end + 4
+        sick_row = row_end + 6
+        hol_row = row_end + 8
+        other_row = row_end + 10
         for sn in wb.sheetnames:
             ws=wb[sn]
             vac=sick=hol=other=0
@@ -1383,10 +1425,10 @@ def run(wb_b64, writes_json, month_num_str):
                 elif t_val=='Half sick': sick+=0.5
                 elif t_val=='Holiday': hol+=1
                 elif t_val=='Other': other+=1
-            ws.cell(531,18).value=vac if vac>0 else 0
-            ws.cell(533,18).value=sick if sick>0 else 0
-            ws.cell(535,18).value=hol if hol>0 else 0
-            ws.cell(537,18).value=other if other>0 else 0
+            ws.cell(vac_row,18).value=vac
+            ws.cell(sick_row,18).value=sick
+            ws.cell(hol_row,18).value=hol
+            ws.cell(other_row,18).value=other
     out=io.BytesIO()
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
