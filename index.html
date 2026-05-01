@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v65</span>
+      <span class="topbar-title">Reports_Workers v66</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -622,6 +622,18 @@ function renderTable(){
     prevDate=d;
   });
 
+  const sr=document.createElement('tr');
+  sr.className='sum-row';
+  sr.innerHTML='<td colspan="2" style="text-align:right;padding:4px 8px;">סיכום</td>';
+  workers.forEach(w=>{
+    const s=calcSum(displayRows,w.name);
+    let h='';
+    if(s.v>0) h+=`<span class="chip cv-chip">חופש: ${s.v}</span>`;
+    if(s.s>0) h+=`<span class="chip cs-chip">מחלה: ${s.s}</span>`;
+    if(s.h>0) h+=`<span class="chip ch-chip">חג: ${s.h}</span>`;
+    if(s.o>0) h+=`<span class="chip co-chip">אחר: ${s.o}</span>`;
+    sr.innerHTML+=`<td>${h||'—'}</td>`;
+  });
   body.appendChild(sr);
 }
 
