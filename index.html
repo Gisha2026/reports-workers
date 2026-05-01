@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v79</span>
+      <span class="topbar-title">Reports_Workers v80</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1316,7 +1316,8 @@ function generateTimesheet(){
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
-          const dateStr = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).toISOString().substring(0,10);
+          // חישוב dateStr לפי זמן מקומי - מונע בעיות timezone
+          const dateStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
           const dayData = dateMap[dateStr];
           const val = dayData ? (dayData[workerName] || null) : null;
 
