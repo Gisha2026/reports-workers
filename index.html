@@ -46,9 +46,9 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;font-size:13px;direction:rt
 .cutoff-bar label{font-size:12px;color:#666}
 .cutoff-bar input[type=date]{padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px}
 .cutoff-badge{background:#FF8F00;color:white;padding:3px 10px;border-radius:12px;font-size:11px;white-space:nowrap}
-.table-wrap{overflow-x:auto}
+.table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 180px)}
 table{border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);width:100%}
-th{background:#00897B;color:white;padding:6px 8px;text-align:center;font-size:11px;white-space:nowrap}
+th{background:#00897B;color:white;padding:6px 8px;text-align:center;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:2}
 td{padding:3px 5px;text-align:center;border-bottom:1px solid #f0f0f0;font-size:11px}
 td.dl{font-weight:bold;color:#333;min-width:24px}
 td.dtl{color:#888;min-width:44px;font-size:10px}
@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v63</span>
+      <span class="topbar-title">Reports_Workers v65</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -162,6 +162,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
     <div class="tab active" onclick="switchTab('leave')">חופש ומחלה</div>
     <div class="tab" onclick="switchTab('holidays')">חגים</div>
     <div class="tab" onclick="switchTab('annual')">סיכום שנתי</div>
+    <div class="tab" onclick="switchTab('timesheet')">Timesheet</div>
     <div class="tab" onclick="switchTab('email')">מייל</div>
     <div class="tab" onclick="switchTab('settings')">הגדרות</div>
   </div>
@@ -287,6 +288,36 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
         <button onclick="saveToken()">שמור</button>
       </div>
       <div id="tokStatus"></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-timesheet">
+    <div class="s-sec">
+      <h3>הפקת Timesheet</h3>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש:</label>
+        <select id="ts-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
+          <option value="">-- בחר חודש --</option>
+          <option value="ינואר">ינואר</option>
+          <option value="פברואר">פברואר</option>
+          <option value="מרץ">מרץ</option>
+          <option value="אפריל">אפריל</option>
+          <option value="מאי">מאי</option>
+          <option value="יוני">יוני</option>
+          <option value="יולי">יולי</option>
+          <option value="אוגוסט">אוגוסט</option>
+          <option value="ספטמבר">ספטמבר</option>
+          <option value="אוקטובר">אוקטובר</option>
+          <option value="נובמבר">נובמבר</option>
+          <option value="דצמבר">דצמבר</option>
+        </select>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ Timesheet:</label>
+        <input type="file" id="ts-file" accept=".xlsx" style="font-size:13px;">
+      </div>
+      <button onclick="generateTimesheet()" style="background:#1a7a4a;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">הפק Timesheet</button>
+      <div id="ts-status" style="margin-top:12px;font-size:13px;"></div>
     </div>
   </div>
 
@@ -540,7 +571,6 @@ function renderTable(){
   const head=document.getElementById('tHead');
   head.innerHTML='<th>יום</th><th>תאריך</th>';
   workers.forEach(w=>head.innerHTML+=`<th>${w.name}</th>`);
-  if(cutoff) head.innerHTML+='<th>סיכום</th>';
 
   const body=document.getElementById('tBody');
   body.innerHTML='';
@@ -592,23 +622,6 @@ function renderTable(){
     prevDate=d;
   });
 
-  const sr=document.createElement('tr');
-  sr.className='sum-row';
-  sr.innerHTML='<td colspan="2" style="text-align:right;padding:4px 8px;">סיכום</td>';
-  if(cutoff){
-    workers.forEach(w=>{
-      const s=calcSum(displayRows,w.name);
-      let h='';
-      if(s.v>0) h+=`<span class="chip cv-chip">חופש: ${s.v}</span>`;
-      if(s.s>0) h+=`<span class="chip cs-chip">מחלה: ${s.s}</span>`;
-      if(s.h>0) h+=`<span class="chip ch-chip">חג: ${s.h}</span>`;
-      if(s.o>0) h+=`<span class="chip co-chip">אחר: ${s.o}</span>`;
-      sr.innerHTML+=`<td>${h||'—'}</td>`;
-    });
-    sr.innerHTML+='<td></td>';
-  } else {
-    sr.innerHTML+=`<td colspan="${workers.length+1}" style="color:#999;text-align:center;">קבע תאריך חיתוך לסיכום</td>`;
-  }
   body.appendChild(sr);
 }
 
@@ -789,7 +802,7 @@ function renderWorkerList(){
 function mkWRow(w,i){
   const r=document.createElement('div');
   r.className='w-row';
-  const stTxt=w.active?'פעיל':('סיים '+fmtMonth(w.endMonth));
+  const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
   const stCls=w.active?'wact':'wend';
   const arrows=w.active?`<span><button class="ord-btn" onclick="moveW(${i},-1)">↑</button><button class="ord-btn" onclick="moveW(${i},1)">↓</button></span>`:'<span></span>';
   const btn=w.active
@@ -839,9 +852,10 @@ function confirmEnd(){
   S.workers[endWIdx].endMonth=document.getElementById('endModalMonth').value;
   closeModal('endModal'); endWIdx=null;
   renderWorkerList(); renderTable();
+  saveData();
 }
 
-function reactivate(i){S.workers[i].active=true;S.workers[i].endMonth=null;renderWorkerList();}
+function reactivate(i){S.workers[i].active=true;S.workers[i].endMonth=null;renderWorkerList();saveData();}
 
 // ===== HOLIDAYS =====
 function renderHolWorkers(){
@@ -1043,7 +1057,7 @@ function startPresenceLoop(){
 
 // ===== TABS =====
 function switchTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leave','holidays','annual','email','settings'][i]===name));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leave','holidays','annual','timesheet','email','settings'][i]===name));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   if(name==='annual') renderAnnual();
@@ -1157,6 +1171,128 @@ ${tbl}
   document.getElementById('emailCopyNote').textContent='✓ הקובץ הורד. לחץ עליו פעמיים ואאוטלוק יפתח עם המייל המלא.';
 }
 
+
+
+// ===== TIMESHEET =====
+const MONTH_TO_NUM = {
+  'ינואר':1,'פברואר':2,'מרץ':3,'אפריל':4,'מאי':5,'יוני':6,
+  'יולי':7,'אוגוסט':8,'ספטמבר':9,'אוקטובר':10,'נובמבר':11,'דצמבר':12
+};
+
+const TS_MAP = {
+  'חופש':'Vacation', 'חצי חופש':'Half vacation',
+  'מחלה':'Sick', 'חצי מחלה':'Half sick',
+  'חג':'Holiday', 'אחר':'Other', 'אבל':'Other'
+};
+
+function generateTimesheet(){
+  const monthName = document.getElementById('ts-month').value;
+  const file = document.getElementById('ts-file').files[0];
+  const status = document.getElementById('ts-status');
+
+  if(!monthName){ status.textContent='יש לבחור חודש.'; return; }
+  if(!file){ status.textContent='יש להעלות קובץ Timesheet.'; return; }
+
+  const monthNum = MONTH_TO_NUM[monthName];
+  if(!monthNum){ status.textContent='חודש לא מוכר.'; return; }
+
+  // קריאת נתוני החודש מהאפליקציה
+  const monthData = S.months[monthName] || {prev:[], cur:[]};
+  const allRows = [...(monthData.prev||[]), ...(monthData.cur||[])];
+
+  // בניית מפה: תאריך -> {עובד: ערך}
+  const dateMap = {};
+  allRows.forEach(row => {
+    if(!row || !row.date || !row.cells) return;
+    const d = String(row.date).substring(0,10);
+    dateMap[d] = row.cells;
+  });
+
+  status.textContent = 'קורא קובץ...';
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array', cellDates:true});
+
+      wb.SheetNames.forEach(sheetName => {
+        // מציאת שם עובד תואם
+        const workerName = sheetName.trim();
+        const worker = S.workers.find(w => w.name === workerName);
+        if(!worker) return;
+
+        const ws = wb.Sheets[sheetName];
+        const range = XLSX.utils.decode_range(ws['!ref']);
+
+        // שעות יומיות לעובד
+        let dailyHours = 8.4;
+        if(workerName === 'דווה') dailyHours = 8;
+        else if(workerName === 'אלי') dailyHours = 2;
+
+        // עיבוד כל שורה בגיליון
+        for(let r = range.s.r; r <= range.e.r; r++){
+          const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
+          if(!cellA || !cellA.v || !(cellA.v instanceof Date)) continue;
+
+          const d = cellA.v;
+          if(d.getFullYear() !== 2026 || d.getMonth()+1 !== monthNum) continue;
+
+          // בדיקת סוף שבוע
+          const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
+          if(cellC && cellC.v === 'Weekend') continue;
+
+          // תאריך כ-string
+          const dateStr = d.toISOString().substring(0,10);
+
+          // מציאת ערך עבור עובד זה בתאריך זה
+          const dayData = dateMap[dateStr];
+          const val = dayData ? (dayData[workerName] || null) : null;
+
+          const cellT = XLSX.utils.encode_cell({r, c:19});
+          const cellU = XLSX.utils.encode_cell({r, c:20});
+
+          if(val && TS_MAP[val]){
+            // יש ערך - כתוב בT ועדכן U
+            ws[cellT] = {v: TS_MAP[val], t:'s'};
+            if(val === 'חצי חופש' || val === 'חצי מחלה'){
+              ws[cellU] = {v: dailyHours/2, t:'n'};
+            } else {
+              // מחק U (ריק)
+              delete ws[cellU];
+            }
+          } else {
+            // יום עבודה רגיל - נקה T, שמור נוסחה בU
+            delete ws[cellT];
+            // שמור את הנוסחה המקורית אם הייתה
+            const origU = ws[cellU];
+            if(!origU || origU.t !== 'n'){
+              ws[cellU] = {f: `SUM(D${r+1}:T${r+1})`, t:'n'};
+            }
+          }
+        }
+      });
+
+      // שמירה והורדה
+      const outData = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+      const blob = new Blob([outData], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Timesheet_${monthName}_2026.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      status.style.color = '#1a7a4a';
+      status.textContent = 'הקובץ הורד בהצלחה!';
+    } catch(err){
+      status.style.color = 'red';
+      status.textContent = 'שגיאה: ' + err.message;
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 </script>
