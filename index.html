@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v73</span>
+      <span class="topbar-title">Reports_Workers v74</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1313,10 +1313,14 @@ function generateTimesheet(){
           const val = dayData ? (dayData[workerName] || null) : null;
 
           // חג מהאפליקציה גובר על כל ערך אחר
-          const isHoliday = S.holidays && S.holidays.some(h=>{
+          const holidays = S.holidays || [];
+          const isHoliday = holidays.some(h=>{
+            const hStart = String(h.start||'').substring(0,10);
+            const hEnd = String(h.end||h.start||'').substring(0,10);
             const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(workerName));
             if(!workerMatch) return false;
-            return dateStr >= String(h.start).substring(0,10) && dateStr <= String(h.end).substring(0,10);
+            if(!hStart) return false;
+            return dateStr >= hStart && dateStr <= hEnd;
           });
 
           if(isHoliday){
