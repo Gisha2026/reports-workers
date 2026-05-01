@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v75CH</span>
+      <span class="topbar-title">Reports_Workers v76CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -444,7 +444,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"75CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"76CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -1260,7 +1260,8 @@ function generateTimesheet(){
   const dateMap = {};
   allRows.forEach(row => {
     if(!row || !row.date || !row.cells) return;
-    const d = String(row.date).substring(0,10);
+    const d = normalizeYMDValue(row.date);
+    if(!d) return;
     dateMap[d] = row.cells;
   });
 
@@ -1271,7 +1272,6 @@ function generateTimesheet(){
   reader.onload = async function(e){
     try{
       const bytes = new Uint8Array(e.target.result);
-      // המרה ל-base64 ללא spread operator (מונע stack overflow בקבצים גדולים)
       let b64 = '';
       const chunkSize = 8192;
       for(let i=0; i<bytes.length; i+=chunkSize){
@@ -1290,29 +1290,7 @@ function generateTimesheet(){
           const p = XLSX.SSF.parse_date_code(cell.v);
           if(p) return `${p.y}-${String(p.m).padStart(2,'0')}-${String(p.d).padStart(2,'0')}`;
         }
-        const txt = String(cell.v || cell.w || '').trim();
-        const iso = txt.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-        if(iso) return `${iso[1]}-${String(Number(iso[2])).padStart(2,'0')}-${String(Number(iso[3])).padStart(2,'0')}`;
-        const il = txt.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})$/);
-        if(il){
-          const yy = Number(il[3]) < 100 ? 2000 + Number(il[3]) : Number(il[3]);
-          return `${yy}-${String(Number(il[2])).padStart(2,'0')}-${String(Number(il[1])).padStart(2,'0')}`;
-        }
-        return null;
-      }
-
-      function normalizeYMDValue(v){
-        if(!v) return null;
-        if(v instanceof Date) return ymd(new Date(v.getFullYear(), v.getMonth(), v.getDate(), 12, 0, 0, 0));
-        const txt = String(v).trim();
-        const iso = txt.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-        if(iso) return `${iso[1]}-${String(Number(iso[2])).padStart(2,'0')}-${String(Number(iso[3])).padStart(2,'0')}`;
-        const il = txt.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})$/);
-        if(il){
-          const yy = Number(il[3]) < 100 ? 2000 + Number(il[3]) : Number(il[3]);
-          return `${yy}-${String(Number(il[2])).padStart(2,'0')}-${String(Number(il[1])).padStart(2,'0')}`;
-        }
-        return null;
+        return normalizeYMDValue(cell.v || cell.w);
       }
 
       function holidayApplies(h, workerName){
@@ -1323,13 +1301,33 @@ function generateTimesheet(){
       }
 
       function isHolidayFor(dateStr, workerName){
+        const d = normalizeYMDValue(dateStr);
+        if(!d) return false;
         return (S.holidays || []).some(h => {
           if(!holidayApplies(h, workerName)) return false;
           const start = normalizeYMDValue(h.start);
           const end = normalizeYMDValue(h.end || h.start);
           if(!start || !end) return false;
-          return dateStr >= start && dateStr <= end;
+          return d >= start && d <= end;
         });
+      }
+
+      function getCellValueForWorker(cells, workerName){
+        if(!cells) return null;
+        if(cells[workerName]) return cells[workerName];
+        const wn = String(workerName).trim();
+        for(const k of Object.keys(cells)){
+          if(String(k).trim() === wn) return cells[k];
+        }
+        return null;
+      }
+
+      function isWeekendYMD(dateStr){
+        const p = parseYMD(dateStr);
+        if(!p) return false;
+        const d = new Date(p.y, p.m-1, p.d, 12, 0, 0, 0);
+        const day = d.getDay();
+        return day === 5 || day === 6;
       }
 
       const data = new Uint8Array(e.target.result);
@@ -1361,26 +1359,23 @@ function generateTimesheet(){
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
           const dayData = dateMap[dateStr] || {};
-          const val = dayData[workerName] || null;
-          const holiday = isHolidayFor(dateStr, workerName);
+          const val = getCellValueForWorker(dayData, workerName);
+          const holiday = isHolidayFor(dateStr, workerName) || val === 'חג';
 
           function clearWorkedHoursAndDonors(){
-            // C = Hours Worked. D:S = donor/project hours. U = Total Hours.
-            // Full absence/holiday must not leave any visible work hours from formulas/cached values.
-            writes.push({sheet: sheetName, row: r, col: 2, value: null});
-            for(let cc=3; cc<=18; cc++) writes.push({sheet: sheetName, row: r, col: cc, value: null});
-            writes.push({sheet: sheetName, row: r, col: 20, value: null});
+            writes.push({sheet: sheetName, row: r, col: 2, value: null});       // C
+            for(let cc=3; cc<=18; cc++) writes.push({sheet: sheetName, row: r, col: cc, value: null}); // D:S
+            writes.push({sheet: sheetName, row: r, col: 20, value: null});      // U
           }
 
           function setWorkedHours(hours){
-            // Write the actual Hours Worked column. Existing donor formulas remain untouched.
             writes.push({sheet: sheetName, row: r, col: 2, value: hours});
+            writes.push({sheet: sheetName, row: r, col: 20, value: null});
           }
 
-          // Holiday always wins over any manual Sick/Vacation value.
-          if(holiday || val === 'חג'){
+          if(holiday){
             clearWorkedHoursAndDonors();
-            writes.push({sheet: sheetName, row: r, col: 19, value: 'Holiday'});
+            writes.push({sheet: sheetName, row: r, col: 19, value: 'Holiday'}); // T
           } else if(val && TS_MAP[val]){
             writes.push({sheet: sheetName, row: r, col: 19, value: TS_MAP[val]});
             if(val === 'חצי חופש' || val === 'חצי מחלה'){
@@ -1397,66 +1392,115 @@ function generateTimesheet(){
 
       status.textContent = 'כותב נתונים עם Python...';
 
-      // הרצת Python עם openpyxl
       const PY = `
-import io,base64,json
+import io,base64,json,datetime
 from openpyxl import load_workbook
 
-MONTH_ROWS={1:(8,38),2:(53,80),3:(96,126),4:(141,170),5:(185,215),6:(230,259),7:(274,304),8:(319,349),9:(364,393),10:(408,438),11:(453,482),12:(497,527)}
+LABELS = {'Vacation': 0, 'Sick': 0, 'Holiday': 0, 'Other': 0}
 
-def run(wb_b64, writes_json, month_num_str):
+# עובדים עם טאב צבעוני/מיוחד לא אמורים להידרס בבדיקות. משאירים אותם כפי שהם.
+# אם בעתיד תרצה לעדכן גם אותם, אפשר להסיר את הבדיקה לפי צבע הטאב.
+def is_protected_sheet(ws):
+    try:
+        color = ws.sheet_properties.tabColor
+        return color is not None and getattr(color, 'rgb', None) not in (None, '00000000', 'FFFFFFFF')
+    except Exception:
+        return False
+
+def cell_date_ymd(v):
+    if isinstance(v, datetime.datetime):
+        return v.date()
+    if isinstance(v, datetime.date):
+        return v
+    return None
+
+def find_month_date_rows(ws, month_num, year):
+    rows=[]
+    for r in range(1, ws.max_row+1):
+        d = cell_date_ymd(ws.cell(r,1).value)
+        if d and d.year == year and d.month == month_num:
+            cval = ws.cell(r,3).value
+            if isinstance(cval, str) and cval.strip().lower() == 'weekend':
+                continue
+            rows.append(r)
+    return rows
+
+def find_summary_value_cells(ws, last_date_row):
+    # מחפש את שורות הסיכום של אותו חודש לפי התוויות עצמן, לא לפי מספרי שורות קבועים.
+    out={}
+    if not last_date_row:
+        return out
+    for r in range(last_date_row+1, min(ws.max_row, last_date_row+20)+1):
+        for c in range(1, min(ws.max_column, 30)+1):
+            val = ws.cell(r,c).value
+            if val in ('Vacation','Sick','Holiday','Other'):
+                out[val] = (r, c+1)
+    return out
+
+def clear_summary_area(ws, cells):
+    for label, (r,c) in cells.items():
+        ws.cell(r,c).value = None
+
+def run(wb_b64, writes_json, month_num_str, year_str):
     month_num=int(month_num_str)
+    year=int(year_str)
     writes=json.loads(writes_json)
     wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
+
+    # כתיבה יומית — רק לטאבים רגילים, לא לטאבים צבעוניים/מיוחדים.
     for w in writes:
         sn=w['sheet']
         if sn not in wb.sheetnames:
             continue
         ws=wb[sn]
+        if is_protected_sheet(ws):
+            continue
         r=w['row']+1
         c=w['col']+1
         cell=ws.cell(r,c)
         val=w['value']
-        if val is None:
-            cell.value=None
-        else:
-            cell.value=val
-    # חישוב סיכומי החודש הפעיל לכל גיליון: Vacation/Sick/Holiday/Other בעמודה R
-    if month_num in MONTH_ROWS:
-        row_start, row_end = MONTH_ROWS[month_num]
-        vac_row = row_end + 4
-        sick_row = row_end + 6
-        hol_row = row_end + 8
-        other_row = row_end + 10
-        for sn in wb.sheetnames:
-            ws=wb[sn]
-            vac=sick=hol=other=0
-            for r in range(row_start, row_end+1):
-                t_val=ws.cell(r+1,20).value
-                if t_val=='Vacation': vac+=1
-                elif t_val=='Half vacation': vac+=0.5
-                elif t_val=='Sick': sick+=1
-                elif t_val=='Half sick': sick+=0.5
-                elif t_val=='Holiday': hol+=1
-                elif t_val=='Other': other+=1
-            ws.cell(vac_row,18).value=vac
-            ws.cell(sick_row,18).value=sick
-            ws.cell(hol_row,18).value=hol
-            ws.cell(other_row,18).value=other
+        cell.value = None if val is None else val
+
+    # סיכומי חודש — דינמי לפי שורות התאריכים והתוויות בפועל בכל טאב.
+    for sn in wb.sheetnames:
+        ws=wb[sn]
+        if is_protected_sheet(ws):
+            continue
+        date_rows = find_month_date_rows(ws, month_num, year)
+        if not date_rows:
+            continue
+        summary_cells = find_summary_value_cells(ws, max(date_rows))
+        if not summary_cells:
+            continue
+        counts = dict(LABELS)
+        for r in date_rows:
+            t_val = ws.cell(r,20).value
+            if t_val == 'Vacation': counts['Vacation'] += 1
+            elif t_val == 'Half vacation': counts['Vacation'] += 0.5
+            elif t_val == 'Sick': counts['Sick'] += 1
+            elif t_val == 'Half sick': counts['Sick'] += 0.5
+            elif t_val == 'Holiday': counts['Holiday'] += 1
+            elif t_val == 'Other': counts['Other'] += 1
+        clear_summary_area(ws, summary_cells)
+        for label, value in counts.items():
+            if label in summary_cells:
+                r,c = summary_cells[label]
+                ws.cell(r,c).value = value
+
     out=io.BytesIO()
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
 
-result=run(wb_b64, writes_json, month_num)
+result=run(wb_b64, writes_json, month_num, year)
 result
 `;
 
       pyodide.globals.set('wb_b64', b64);
       pyodide.globals.set('writes_json', JSON.stringify(writes));
       pyodide.globals.set('month_num', String(monthNum));
+      pyodide.globals.set('year', String(S.year));
       const resultB64 = await pyodide.runPythonAsync(PY);
 
-      // המרה חזרה לקובץ
       const binStr = atob(resultB64);
       const outBytes = new Uint8Array(binStr.length);
       for(let i=0;i<binStr.length;i++) outBytes[i]=binStr.charCodeAt(i);
@@ -1465,7 +1509,7 @@ result
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Timesheet_${monthName}_2026.xlsx`;
+      a.download = `Timesheet_${monthName}_${S.year}.xlsx`;
       a.click();
       URL.revokeObjectURL(url);
 
@@ -1479,7 +1523,6 @@ result
   };
   reader.readAsArrayBuffer(file);
 }
-
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 </script>
