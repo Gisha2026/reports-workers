@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v70</span>
+      <span class="topbar-title">Reports_Workers v71</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1245,7 +1245,13 @@ function generateTimesheet(){
   reader.onload = async function(e){
     try{
       const bytes = new Uint8Array(e.target.result);
-      const b64 = btoa(String.fromCharCode(...bytes));
+      // המרה ל-base64 ללא spread operator (מונע stack overflow בקבצים גדולים)
+      let b64 = '';
+      const chunkSize = 8192;
+      for(let i=0; i<bytes.length; i+=chunkSize){
+        b64 += String.fromCharCode.apply(null, bytes.subarray(i, i+chunkSize));
+      }
+      b64 = btoa(b64);
 
       // בניית רשימת שינויים
       const writes = [];
