@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v68</span>
+      <span class="topbar-title">Reports_Workers v69</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -300,6 +300,15 @@ async function initPyodide(){
       </div>
     </div>
     <div class="s-sec">
+      <h3>מפתח Claude API</h3>
+      <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן מפתח API פעם אחת — יישמר לתמיד.</p>
+      <div class="tok-row">
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+        <button onclick="saveApiKey()">שמור</button>
+      </div>
+      <div id="apiKeyStatus" style="font-size:12px;margin-top:4px;color:#1a7a4a;"></div>
+    </div>
+    <div class="s-sec">
       <h3>חיבור לגיטהאב</h3>
       <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
       <div class="tok-row">
@@ -335,7 +344,6 @@ async function initPyodide(){
         <label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ Timesheet:</label>
         <input type="file" id="ts-file" accept=".xlsx" style="font-size:13px;">
       </div>
-      <button onclick="initPyodide()" style="background:#555;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:13px;cursor:pointer;margin-left:8px;">טען מנוע Python</button>
       <button onclick="generateTimesheet()" style="background:#1a7a4a;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">הפק Timesheet</button>
       <div id="ts-status" style="margin-top:12px;font-size:13px;"></div>
     </div>
@@ -1221,21 +1229,19 @@ function generateTimesheet(){
   const monthName = document.getElementById('ts-month').value;
   const file = document.getElementById('ts-file').files[0];
   const status = document.getElementById('ts-status');
+  const apiKey = getApiKey();
 
-  if(!monthName){ status.textContent='יש לבחור חודש.'; return; }
-  if(!file){ status.textContent='יש להעלות קובץ Timesheet.'; return; }
-  if(!pyReady){ status.textContent='יש ללחוץ תחילה על "טען מנוע Python".'; return; }
+  if(!monthName){ status.textContent='יש לבחור חודש.'; status.style.color='red'; return; }
+  if(!file){ status.textContent='יש להעלות קובץ Timesheet.'; status.style.color='red'; return; }
+  if(!apiKey){ status.textContent='יש להזין מפתח Claude API בהגדרות.'; status.style.color='red'; return; }
 
   const monthNum = MONTH_TO_NUM[monthName];
-  if(!monthNum){ status.textContent='חודש לא מוכר.'; return; }
-
   const monthData = S.months[monthName] || {prev:[], cur:[]};
   const allRows = [...(monthData.prev||[]), ...(monthData.cur||[])];
   const dateMap = {};
   allRows.forEach(row => {
     if(!row || !row.date || !row.cells) return;
-    const d = String(row.date).substring(0,10);
-    dateMap[d] = row.cells;
+    dateMap[String(row.date).substring(0,10)] = row.cells;
   });
 
   status.textContent = 'קורא קובץ...';
@@ -1244,19 +1250,20 @@ function generateTimesheet(){
   const reader = new FileReader();
   reader.onload = async function(e){
     try{
+      // המרה ל-base64
       const bytes = new Uint8Array(e.target.result);
-      const b64 = btoa(String.fromCharCode(...bytes));
+      let bin='';
+      bytes.forEach(b=>bin+=String.fromCharCode(b));
+      const b64 = btoa(bin);
 
       // בניית רשימת שינויים
       const writes = [];
-
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, {type:'array', cellDates:true});
 
       wb.SheetNames.forEach(sheetName => {
         const workerName = sheetName.trim();
-        const worker = S.workers.find(w => w.name === workerName);
-        if(!worker) return;
+        if(!S.workers.find(w => w.name === workerName)) return;
 
         const ws = wb.Sheets[sheetName];
         const range = XLSX.utils.decode_range(ws['!ref']);
@@ -1269,10 +1276,8 @@ function generateTimesheet(){
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
           if(!cellA || !cellA.v || !(cellA.v instanceof Date)) continue;
-
           const d = cellA.v;
           if(d.getFullYear() !== 2026 || d.getMonth()+1 !== monthNum) continue;
-
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
@@ -1281,56 +1286,100 @@ function generateTimesheet(){
           const val = dayData ? (dayData[workerName] || null) : null;
 
           if(val && TS_MAP[val]){
-            // כתיבת T
             writes.push({sheet: sheetName, row: r, col: 19, value: TS_MAP[val]});
             if(val === 'חצי חופש' || val === 'חצי מחלה'){
-              // U = מחצית שעות
               writes.push({sheet: sheetName, row: r, col: 20, value: dailyHours/2});
             } else {
-              // U = ריק
               writes.push({sheet: sheetName, row: r, col: 20, value: null});
             }
           } else {
-            // יום רגיל - נקה T בלבד
             writes.push({sheet: sheetName, row: r, col: 19, value: null});
           }
         }
       });
 
-      status.textContent = 'כותב נתונים עם Python...';
+      status.textContent = 'שולח ל-Claude API...';
 
-      // הרצת Python עם openpyxl
-      const PY = `
-import io,base64,json
+      const prompt = `You are a Python code executor. Run this exact Python code and return ONLY the base64 output string, nothing else.
+
+\`\`\`python
+import io, base64, json
 from openpyxl import load_workbook
 
-def run(wb_b64, writes_json):
-    writes=json.loads(writes_json)
-    wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
-    for w in writes:
-        sn=w['sheet']
-        if sn not in wb.sheetnames:
-            continue
-        ws=wb[sn]
-        r=w['row']+1
-        c=w['col']+1
-        cell=ws.cell(r,c)
-        val=w['value']
-        if val is None:
-            cell.value=None
-        else:
-            cell.value=val
-    out=io.BytesIO()
-    wb.save(out)
-    return base64.b64encode(out.getvalue()).decode()
+wb_b64 = "${b64.substring(0,50)}..."  # truncated for prompt
+writes_json = '${JSON.stringify(writes).replace(/'/g,"\'")}' 
 
-result=run(wb_b64, writes_json)
-result
-`;
+# Full b64 provided in system
+wb = load_workbook(io.BytesIO(base64.b64decode(FULL_WB_B64)))
+writes = json.loads(writes_json)
+for w in writes:
+    sn = w['sheet']
+    if sn not in wb.sheetnames:
+        continue
+    ws = wb[sn]
+    cell = ws.cell(w['row']+1, w['col']+1)
+    cell.value = w['value']
+out = io.BytesIO()
+wb.save(out)
+print(base64.b64encode(out.getvalue()).decode())
+\`\`\``;
 
-      pyodide.globals.set('wb_b64', b64);
-      pyodide.globals.set('writes_json', JSON.stringify(writes));
-      const resultB64 = await pyodide.runPythonAsync(PY);
+      // שליחה ל-Claude API עם הקובץ כ-document
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 4096,
+          system: `You are a Python executor. The user will give you a base64 Excel file and a list of writes. Execute Python code using openpyxl to apply the writes and return ONLY the base64 encoded result file. No explanation.`,
+          messages: [{
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: `Apply these cell writes to the Excel file and return ONLY the base64 encoded modified file.
+
+Writes (JSON): ${JSON.stringify(writes)}
+
+Python code to run:
+\`\`\`python
+import io, base64, json
+from openpyxl import load_workbook
+
+wb_b64 = """${b64}"""
+writes = ${JSON.stringify(writes)}
+
+wb = load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
+for w in writes:
+    sn = w['sheet']
+    if sn not in wb.sheetnames:
+        continue
+    ws = wb[sn]
+    cell = ws.cell(w['row']+1, w['col']+1)
+    cell.value = w['value']
+out = io.BytesIO()
+wb.save(out)
+print(base64.b64encode(out.getvalue()).decode())
+\`\`\`
+
+Return ONLY the base64 string output.`
+              }
+            ]
+          }]
+        })
+      });
+
+      if(!response.ok){
+        const err = await response.json();
+        throw new Error(err.error?.message || 'שגיאת API');
+      }
+
+      const result = await response.json();
+      const resultB64 = result.content[0].text.trim().replace(/\n/g,'');
 
       // המרה חזרה לקובץ
       const binStr = atob(resultB64);
@@ -1356,6 +1405,26 @@ result
   reader.readAsArrayBuffer(file);
 }
 
+
+function saveApiKey(){
+  const k=document.getElementById('apiKeyInput').value.trim();
+  if(!k){return;}
+  localStorage.setItem('rw_api_key',k);
+  document.getElementById('apiKeyInput').value='';
+  document.getElementById('apiKeyStatus').textContent='✓ מפתח API מוגדר';
+}
+
+function getApiKey(){
+  return localStorage.getItem('rw_api_key')||'';
+}
+
+// בדיקת API key בטעינה
+(function(){
+  if(getApiKey()) {
+    const el=document.getElementById('apiKeyStatus');
+    if(el) el.textContent='✓ מפתח API מוגדר';
+  }
+})();
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 </script>
