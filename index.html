@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v71</span>
+      <span class="topbar-title">Reports_Workers v72</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -988,6 +988,32 @@ function delHol(i){S.holidays.splice(i,1);renderHolList();renderTable();}
 function renderAnnual(){
   const div=document.getElementById('annualContent');
   if(!div) return;
+
+  // טבלת סיכום מצטבר מתחילת השנה
+  const allWorkers=[...S.workers.filter(w=>w.active),...S.workers.filter(w=>!w.active)];
+  let sumHtml='<h3 class="ann-h3">סיכום מצטבר מתחילת השנה</h3>';
+  sumHtml+='<div style="overflow-x:auto"><table class="ann-table"><thead><tr>';
+  sumHtml+='<th>עובד</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר</th></tr></thead><tbody>';
+  let sepAdded=false;
+  allWorkers.forEach(w=>{
+    if(!w.active&&!sepAdded){
+      sumHtml+=`<tr class="ann-esep"><td colspan="5">עובדים שסיימו</td></tr>`;
+      sepAdded=true;
+    }
+    let tv=0,ts=0,th=0,to=0;
+    MONTHS.forEach(m=>{
+      const s=calcSum(getRows(m),w.name);
+      tv+=s.v+(s.hv||0)*0.5;
+      ts+=s.s+(s.hs||0)*0.5;
+      th+=s.h;
+      to+=s.o;
+    });
+    const cls=w.active?'':'ew';
+    const fmt=v=>v>0?(Number.isInteger(v)?v:v.toFixed(1)):'—';
+    sumHtml+=`<tr class="${cls}"><td class="wc">${w.name}</td><td>${fmt(tv)}</td><td>${fmt(ts)}</td><td>${fmt(th)}</td><td>${fmt(to)}</td></tr>`;
+  });
+  sumHtml+='</tbody></table></div>';
+
   const cats=[
     {label:'ימי חופש',fn:s=>s.v},
     {label:'ימי מחלה',fn:s=>s.s},
@@ -995,7 +1021,7 @@ function renderAnnual(){
   ];
   const act=S.workers.filter(w=>w.active);
   const end=S.workers.filter(w=>!w.active);
-  let html='';
+  let html=sumHtml;
   cats.forEach(cat=>{
     html+=`<h3 class="ann-h3">${cat.label}</h3><div style="overflow-x:auto"><table class="ann-table"><thead><tr><th>עובד</th>`;
     MONTHS.forEach(m=>html+=`<th>${m.slice(0,3)}</th>`);
@@ -1286,7 +1312,16 @@ function generateTimesheet(){
           const dayData = dateMap[dateStr];
           const val = dayData ? (dayData[workerName] || null) : null;
 
-          if(val && TS_MAP[val]){
+          // חג מהאפליקציה גובר על כל ערך אחר
+          const isHoliday = S.holidays && S.holidays.some(h=>{
+            if(!h.workers || !h.workers.includes(workerName)) return false;
+            return dateStr >= String(h.start).substring(0,10) && dateStr <= String(h.end).substring(0,10);
+          });
+
+          if(isHoliday){
+            writes.push({sheet: sheetName, row: r, col: 19, value: 'Holiday'});
+            writes.push({sheet: sheetName, row: r, col: 20, value: null});
+          } else if(val && TS_MAP[val]){
             // כתיבת T
             writes.push({sheet: sheetName, row: r, col: 19, value: TS_MAP[val]});
             if(val === 'חצי חופש' || val === 'חצי מחלה'){
@@ -1310,7 +1345,10 @@ function generateTimesheet(){
 import io,base64,json
 from openpyxl import load_workbook
 
-def run(wb_b64, writes_json):
+MONTH_ROWS={1:(8,38),2:(53,80),3:(96,126),4:(141,170),5:(185,215),6:(230,259),7:(274,304),8:(319,349),9:(364,393),10:(408,438),11:(453,482),12:(497,527)}
+
+def run(wb_b64, writes_json, month_num_str):
+    month_num=int(month_num_str)
     writes=json.loads(writes_json)
     wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
     for w in writes:
@@ -1326,16 +1364,35 @@ def run(wb_b64, writes_json):
             cell.value=None
         else:
             cell.value=val
+    # חישוב סיכומים לכל גיליון
+    if month_num in MONTH_ROWS:
+        row_start, row_end = MONTH_ROWS[month_num]
+        for sn in wb.sheetnames:
+            ws=wb[sn]
+            vac=sick=hol=other=0
+            for r in range(row_start, row_end+1):
+                t_val=ws.cell(r+1,20).value
+                if t_val=='Vacation': vac+=1
+                elif t_val=='Half vacation': vac+=0.5
+                elif t_val=='Sick': sick+=1
+                elif t_val=='Half sick': sick+=0.5
+                elif t_val=='Holiday': hol+=1
+                elif t_val=='Other': other+=1
+            ws.cell(531,18).value=vac if vac>0 else 0
+            ws.cell(533,18).value=sick if sick>0 else 0
+            ws.cell(535,18).value=hol if hol>0 else 0
+            ws.cell(537,18).value=other if other>0 else 0
     out=io.BytesIO()
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
 
-result=run(wb_b64, writes_json)
+result=run(wb_b64, writes_json, month_num)
 result
 `;
 
       pyodide.globals.set('wb_b64', b64);
       pyodide.globals.set('writes_json', JSON.stringify(writes));
+      pyodide.globals.set('month_num', String(monthNum));
       const resultB64 = await pyodide.runPythonAsync(PY);
 
       // המרה חזרה לקובץ
