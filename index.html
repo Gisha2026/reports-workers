@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v74CH</span>
+      <span class="topbar-title">Reports_Workers v75CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -444,7 +444,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"74CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"75CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -1364,19 +1364,33 @@ function generateTimesheet(){
           const val = dayData[workerName] || null;
           const holiday = isHolidayFor(dateStr, workerName);
 
-          if(holiday){
-            writes.push({sheet: sheetName, row: r, col: 19, value: 'Holiday'});
+          function clearWorkedHoursAndDonors(){
+            // C = Hours Worked. D:S = donor/project hours. U = Total Hours.
+            // Full absence/holiday must not leave any visible work hours from formulas/cached values.
+            writes.push({sheet: sheetName, row: r, col: 2, value: null});
+            for(let cc=3; cc<=18; cc++) writes.push({sheet: sheetName, row: r, col: cc, value: null});
             writes.push({sheet: sheetName, row: r, col: 20, value: null});
+          }
+
+          function setWorkedHours(hours){
+            // Write the actual Hours Worked column. Existing donor formulas remain untouched.
+            writes.push({sheet: sheetName, row: r, col: 2, value: hours});
+          }
+
+          // Holiday always wins over any manual Sick/Vacation value.
+          if(holiday || val === 'חג'){
+            clearWorkedHoursAndDonors();
+            writes.push({sheet: sheetName, row: r, col: 19, value: 'Holiday'});
           } else if(val && TS_MAP[val]){
             writes.push({sheet: sheetName, row: r, col: 19, value: TS_MAP[val]});
             if(val === 'חצי חופש' || val === 'חצי מחלה'){
-              writes.push({sheet: sheetName, row: r, col: 20, value: dailyHours/2});
+              setWorkedHours(dailyHours/2);
             } else {
-              writes.push({sheet: sheetName, row: r, col: 20, value: null});
+              clearWorkedHoursAndDonors();
             }
           } else {
+            setWorkedHours(dailyHours);
             writes.push({sheet: sheetName, row: r, col: 19, value: null});
-            writes.push({sheet: sheetName, row: r, col: 20, value: dailyHours});
           }
         }
       });
