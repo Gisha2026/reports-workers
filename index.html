@@ -150,7 +150,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v66</span>
+      <span class="topbar-title">Reports_Workers v67</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1208,11 +1208,9 @@ function generateTimesheet(){
   const monthNum = MONTH_TO_NUM[monthName];
   if(!monthNum){ status.textContent='חודש לא מוכר.'; return; }
 
-  // קריאת נתוני החודש מהאפליקציה
   const monthData = S.months[monthName] || {prev:[], cur:[]};
   const allRows = [...(monthData.prev||[]), ...(monthData.cur||[])];
 
-  // בניית מפה: תאריך -> {עובד: ערך}
   const dateMap = {};
   allRows.forEach(row => {
     if(!row || !row.date || !row.cells) return;
@@ -1226,10 +1224,10 @@ function generateTimesheet(){
   reader.onload = function(e){
     try{
       const data = new Uint8Array(e.target.result);
-      const wb = XLSX.read(data, {type:'array', cellDates:true});
+      // קריאה עם שמירת עיצוב מלא
+      const wb = XLSX.read(data, {type:'array', cellDates:true, cellStyles:true, cellNF:true});
 
       wb.SheetNames.forEach(sheetName => {
-        // מציאת שם עובד תואם
         const workerName = sheetName.trim();
         const worker = S.workers.find(w => w.name === workerName);
         if(!worker) return;
@@ -1240,9 +1238,9 @@ function generateTimesheet(){
         // שעות יומיות לעובד
         let dailyHours = 8.4;
         if(workerName === 'דווה') dailyHours = 8;
+        else if(workerName === 'אדם') dailyHours = 4.2;
         else if(workerName === 'אלי') dailyHours = 2;
 
-        // עיבוד כל שורה בגיליון
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
           if(!cellA || !cellA.v || !(cellA.v instanceof Date)) continue;
@@ -1250,43 +1248,52 @@ function generateTimesheet(){
           const d = cellA.v;
           if(d.getFullYear() !== 2026 || d.getMonth()+1 !== monthNum) continue;
 
-          // בדיקת סוף שבוע
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
-          if(cellC && cellC.v === 'Weekend') continue;
+          if(cellC && (cellC.v === 'Weekend' || String(cellC.v).toLowerCase() === 'weekend')) continue;
 
-          // תאריך כ-string
-          const dateStr = d.toISOString().substring(0,10);
+          // תאריך UTC
+          const dateStr = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).toISOString().substring(0,10);
 
-          // מציאת ערך עבור עובד זה בתאריך זה
           const dayData = dateMap[dateStr];
           const val = dayData ? (dayData[workerName] || null) : null;
 
-          const cellT = XLSX.utils.encode_cell({r, c:19});
-          const cellU = XLSX.utils.encode_cell({r, c:20});
+          const addrT = XLSX.utils.encode_cell({r, c:19});
+          const addrU = XLSX.utils.encode_cell({r, c:20});
+
+          // שמירת עיצוב קיים
+          const existingT = ws[addrT];
+          const existingU = ws[addrU];
+          const styleT = existingT ? existingT.s : undefined;
+          const styleU = existingU ? existingU.s : undefined;
 
           if(val && TS_MAP[val]){
-            // יש ערך - כתוב בT ועדכן U
-            ws[cellT] = {v: TS_MAP[val], t:'s'};
+            // כתיבת ערך בT
+            ws[addrT] = {v: TS_MAP[val], t:'s'};
+            if(styleT) ws[addrT].s = styleT;
+
             if(val === 'חצי חופש' || val === 'חצי מחלה'){
-              ws[cellU] = {v: dailyHours/2, t:'n'};
+              ws[addrU] = {v: dailyHours/2, t:'n'};
+              if(styleU) ws[addrU].s = styleU;
             } else {
-              // מחק U (ריק)
-              delete ws[cellU];
+              // ריק - מחיקה
+              if(ws[addrU]) {
+                ws[addrU] = {v:'', t:'s'};
+                if(styleU) ws[addrU].s = styleU;
+              }
             }
           } else {
-            // יום עבודה רגיל - נקה T, שמור נוסחה בU
-            delete ws[cellT];
-            // שמור את הנוסחה המקורית אם הייתה
-            const origU = ws[cellU];
-            if(!origU || origU.t !== 'n'){
-              ws[cellU] = {f: `SUM(D${r+1}:T${r+1})`, t:'n'};
+            // יום עבודה רגיל - ניקוי T בלבד, שמירת U כמו שהוא
+            if(ws[addrT]){
+              ws[addrT] = {v:'', t:'s'};
+              if(styleT) ws[addrT].s = styleT;
             }
+            // U נשאר כמו שהוא - לא נוגעים
           }
         }
       });
 
-      // שמירה והורדה
-      const outData = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+      // שמירה עם שמירת עיצוב
+      const outData = XLSX.write(wb, {bookType:'xlsx', type:'array', cellStyles:true});
       const blob = new Blob([outData], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
