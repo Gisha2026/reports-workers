@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v80</span>
+      <span class="topbar-title">Reports_Workers v81CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1264,14 +1264,6 @@ function generateTimesheet(){
     dateMap[d] = row.cells;
   });
 
-  // העתקת החגים עם וידוא פורמט
-  const holidayList = (S.holidays||[]).map(h=>({
-    start: String(h.start||'').substring(0,10),
-    end: String(h.end||h.start||'').substring(0,10),
-    workers: h.workers
-  })).filter(h=>h.start.length===10);
-  console.log('חגים:', JSON.stringify(holidayList));
-
   status.textContent = 'קורא קובץ...';
   status.style.color = '#333';
 
@@ -1287,8 +1279,9 @@ function generateTimesheet(){
       }
       b64 = btoa(b64);
 
-      // בניית רשימת שינויים
+      // בניית רשימת שינויים וסיכומי חודש מתוך מקור האמת של האפליקציה בלבד
       const writes = [];
+      const summaryBySheet = {};
 
       const data = new Uint8Array(e.target.result);
       const wb = XLSX.read(data, {type:'array', cellDates:true});
@@ -1319,30 +1312,32 @@ function generateTimesheet(){
           // חישוב dateStr לפי זמן מקומי - מונע בעיות timezone
           const dateStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
           const dayData = dateMap[dateStr];
-          const val = dayData ? (dayData[workerName] || null) : null;
+          const rawVal = dayData ? (dayData[workerName] || dayData[String(workerName).trim()] || null) : null;
+          const val = rawVal ? String(rawVal).trim() : null;
 
-          // חג מהאפליקציה גובר על כל ערך אחר
-          const isHoliday = holidayList.some(h=>{
-            const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(workerName));
-            if(!workerMatch) return false;
-            return dateStr >= h.start && dateStr <= h.end;
-          });
+          if(!summaryBySheet[sheetName]){
+            summaryBySheet[sheetName] = {vac:0, sick:0, hol:0, other:0};
+          }
 
-          if(isHoliday){
-            writes.push({sheet: sheetName, row: r, col: 19, value: 'Holiday'});
-            writes.push({sheet: sheetName, row: r, col: 20, value: null});
-          } else if(val && TS_MAP[val]){
-            // כתיבת T
+          // מקור האמת היחיד: הערך הסופי שמופיע בטבלת האפליקציה.
+          // לא מחשבים חגים מחדש מתוך S.holidays ולא יוצרים מקור אמת נוסף.
+          if(val && TS_MAP[val]){
             writes.push({sheet: sheetName, row: r, col: 19, value: TS_MAP[val]});
+
             if(val === 'חצי חופש' || val === 'חצי מחלה'){
-              // U = מחצית שעות
               writes.push({sheet: sheetName, row: r, col: 20, value: dailyHours/2});
             } else {
-              // U = ריק
               writes.push({sheet: sheetName, row: r, col: 20, value: null});
             }
+
+            if(val === 'חופש') summaryBySheet[sheetName].vac += 1;
+            else if(val === 'חצי חופש') summaryBySheet[sheetName].vac += 0.5;
+            else if(val === 'מחלה') summaryBySheet[sheetName].sick += 1;
+            else if(val === 'חצי מחלה') summaryBySheet[sheetName].sick += 0.5;
+            else if(val === 'חג') summaryBySheet[sheetName].hol += 1;
+            else if(val === 'אחר' || val === 'אבל') summaryBySheet[sheetName].other += 1;
           } else {
-            // יום רגיל - נקה T בלבד
+            // יום רגיל: מנקים רק את T. לא נוגעים ב-U כדי לשמור נוסחאות/שעות קיימות.
             writes.push({sheet: sheetName, row: r, col: 19, value: null});
           }
         }
@@ -1357,9 +1352,10 @@ from openpyxl import load_workbook
 
 MONTH_ROWS={1:(8,38),2:(53,80),3:(96,126),4:(141,170),5:(185,215),6:(230,259),7:(274,304),8:(319,349),9:(364,393),10:(408,438),11:(453,482),12:(497,527)}
 
-def run(wb_b64, writes_json, month_num_str):
+def run(wb_b64, writes_json, month_num_str, summary_json):
     month_num=int(month_num_str)
     writes=json.loads(writes_json)
+    summary_by_sheet=json.loads(summary_json)
     wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
     for w in writes:
         sn=w['sheet']
@@ -1374,35 +1370,32 @@ def run(wb_b64, writes_json, month_num_str):
             cell.value=None
         else:
             cell.value=val
-    # חישוב סיכומים לכל גיליון
-    if month_num in MONTH_ROWS:
-        row_start, row_end = MONTH_ROWS[month_num]
-        for sn in wb.sheetnames:
-            ws=wb[sn]
-            vac=sick=hol=other=0
-            for r in range(row_start, row_end+1):
-                t_val=ws.cell(r+1,20).value
-                if t_val=='Vacation': vac+=1
-                elif t_val=='Half vacation': vac+=0.5
-                elif t_val=='Sick': sick+=1
-                elif t_val=='Half sick': sick+=0.5
-                elif t_val=='Holiday': hol+=1
-                elif t_val=='Other': other+=1
-            ws.cell(531,18).value=vac if vac>0 else 0
-            ws.cell(533,18).value=sick if sick>0 else 0
-            ws.cell(535,18).value=hol if hol>0 else 0
-            ws.cell(537,18).value=other if other>0 else 0
+    # כתיבת סיכומים חודשיים מאותו מקור אמת שממנו נכתבו הימים.
+    # אין ספירה מחדש מתוך עמודה T ואין שימוש ברשימת חגים נפרדת.
+    for sn, summary in summary_by_sheet.items():
+        if sn not in wb.sheetnames:
+            continue
+        ws=wb[sn]
+        vac=summary.get('vac',0) or 0
+        sick=summary.get('sick',0) or 0
+        hol=summary.get('hol',0) or 0
+        other=summary.get('other',0) or 0
+        ws.cell(531,18).value=vac if vac>0 else 0
+        ws.cell(533,18).value=sick if sick>0 else 0
+        ws.cell(535,18).value=hol if hol>0 else 0
+        ws.cell(537,18).value=other if other>0 else 0
     out=io.BytesIO()
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
 
-result=run(wb_b64, writes_json, month_num)
+result=run(wb_b64, writes_json, month_num, summary_json)
 result
 `;
 
       pyodide.globals.set('wb_b64', b64);
       pyodide.globals.set('writes_json', JSON.stringify(writes));
       pyodide.globals.set('month_num', String(monthNum));
+      pyodide.globals.set('summary_json', JSON.stringify(summaryBySheet));
       const resultB64 = await pyodide.runPythonAsync(PY);
 
       // המרה חזרה לקובץ
