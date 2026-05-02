@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers | גישה</title>
+<title>Reports_Workers 82CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v81CH</span>
+      <span class="topbar-title">Reports_Workers 82CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1255,6 +1255,12 @@ function generateTimesheet(){
   const monthNum = MONTH_TO_NUM[monthName];
   if(!monthNum){ status.textContent='חודש לא מוכר.'; return; }
 
+  const MONTH_EN = {
+    1:'January',2:'February',3:'March',4:'April',5:'May',6:'June',
+    7:'July',8:'August',9:'September',10:'October',11:'November',12:'December'
+  };
+  const monthEn = MONTH_EN[monthNum];
+
   const monthData = S.months[monthName] || {prev:[], cur:[]};
   const allRows = [...(monthData.prev||[]), ...(monthData.cur||[])];
   const dateMap = {};
@@ -1271,7 +1277,6 @@ function generateTimesheet(){
   reader.onload = async function(e){
     try{
       const bytes = new Uint8Array(e.target.result);
-      // המרה ל-base64 ללא spread operator (מונע stack overflow בקבצים גדולים)
       let b64 = '';
       const chunkSize = 8192;
       for(let i=0; i<bytes.length; i+=chunkSize){
@@ -1279,7 +1284,6 @@ function generateTimesheet(){
       }
       b64 = btoa(b64);
 
-      // בניית רשימת שינויים וסיכומי חודש מתוך מקור האמת של האפליקציה בלבד
       const writes = [];
       const summaryBySheet = {};
 
@@ -1287,17 +1291,17 @@ function generateTimesheet(){
       const wb = XLSX.read(data, {type:'array', cellDates:true});
 
       wb.SheetNames.forEach(sheetName => {
-        const workerName = sheetName.trim();
-        const worker = S.workers.find(w => w.name === workerName);
+        const cleanSheetName = sheetName.trim();
+
+        // כלל 82CH: כל טאב שיש בו מספר בשם הוא טאב מיוחד — לא כותבים אליו בכלל.
+        if(/\d/.test(cleanSheetName)) return;
+
+        const worker = S.workers.find(w => String(w.name||'').trim() === cleanSheetName);
         if(!worker) return;
 
         const ws = wb.Sheets[sheetName];
         const range = XLSX.utils.decode_range(ws['!ref']);
-
-        let dailyHours = 8.4;
-        if(workerName === 'דווה') dailyHours = 8;
-        else if(workerName === 'אדם') dailyHours = 4.2;
-        else if(workerName === 'אלי') dailyHours = 2;
+        const totals = {Vacation:0, Sick:0, Holiday:0, Other:0};
 
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
@@ -1309,96 +1313,102 @@ function generateTimesheet(){
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
-          // חישוב dateStr לפי זמן מקומי - מונע בעיות timezone
+          // יום קבוע לא-עבודה מזוהה לפי כך שאין נוסחה/ערך בעמודה U. לא נוגעים בו ולא סופרים אותו.
+          const cellU = ws[XLSX.utils.encode_cell({r, c:20})];
+          if(!cellU || (cellU.v == null && !cellU.f)) continue;
+
           const dateStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
           const dayData = dateMap[dateStr];
-          const rawVal = dayData ? (dayData[workerName] || dayData[String(workerName).trim()] || null) : null;
-          const val = rawVal ? String(rawVal).trim() : null;
+          const val = dayData ? (dayData[cleanSheetName] || null) : null;
 
-          if(!summaryBySheet[sheetName]){
-            summaryBySheet[sheetName] = {vac:0, sick:0, hol:0, other:0};
-          }
+          let out = null;
+          if(val && TS_MAP[val]) out = TS_MAP[val];
 
-          // מקור האמת היחיד: הערך הסופי שמופיע בטבלת האפליקציה.
-          // לא מחשבים חגים מחדש מתוך S.holidays ולא יוצרים מקור אמת נוסף.
-          if(val && TS_MAP[val]){
-            writes.push({sheet: sheetName, row: r, col: 19, value: TS_MAP[val]});
+          // 82CH: נוגעים רק בעמודה T. לא נוגעים בעמודה U בשום מצב.
+          writes.push({sheet: sheetName, row: r, col: 19, value: out});
 
-            if(val === 'חצי חופש' || val === 'חצי מחלה'){
-              writes.push({sheet: sheetName, row: r, col: 20, value: dailyHours/2});
-            } else {
-              writes.push({sheet: sheetName, row: r, col: 20, value: null});
-            }
-
-            if(val === 'חופש') summaryBySheet[sheetName].vac += 1;
-            else if(val === 'חצי חופש') summaryBySheet[sheetName].vac += 0.5;
-            else if(val === 'מחלה') summaryBySheet[sheetName].sick += 1;
-            else if(val === 'חצי מחלה') summaryBySheet[sheetName].sick += 0.5;
-            else if(val === 'חג') summaryBySheet[sheetName].hol += 1;
-            else if(val === 'אחר' || val === 'אבל') summaryBySheet[sheetName].other += 1;
-          } else {
-            // יום רגיל: מנקים רק את T. לא נוגעים ב-U כדי לשמור נוסחאות/שעות קיימות.
-            writes.push({sheet: sheetName, row: r, col: 19, value: null});
-          }
+          if(out === 'Vacation') totals.Vacation += 1;
+          else if(out === 'Half vacation') totals.Vacation += 0.5;
+          else if(out === 'Sick') totals.Sick += 1;
+          else if(out === 'Half sick') totals.Sick += 0.5;
+          else if(out === 'Holiday') totals.Holiday += 1;
+          else if(out === 'Other') totals.Other += 1;
         }
+        summaryBySheet[sheetName] = totals;
       });
 
       status.textContent = 'כותב נתונים עם Python...';
 
-      // הרצת Python עם openpyxl
       const PY = `
-import io,base64,json
+import io,base64,json,re
 from openpyxl import load_workbook
 
-MONTH_ROWS={1:(8,38),2:(53,80),3:(96,126),4:(141,170),5:(185,215),6:(230,259),7:(274,304),8:(319,349),9:(364,393),10:(408,438),11:(453,482),12:(497,527)}
+SUMMARY_LABELS = {'Vacation','Sick','Holiday','Other'}
 
-def run(wb_b64, writes_json, month_num_str, summary_json):
-    month_num=int(month_num_str)
+def _norm(v):
+    return str(v).strip() if v is not None else ''
+
+def _find_month_row(ws, month_en):
+    for row in ws.iter_rows():
+        for cell in row:
+            if _norm(cell.value) == month_en:
+                return cell.row
+    return None
+
+def _write_summary_near_month(ws, month_en, totals):
+    month_row = _find_month_row(ws, month_en)
+    if not month_row:
+        return
+    start = max(1, month_row - 8)
+    end = min(ws.max_row, month_row + 10)
+    for row in range(start, end + 1):
+        for col in range(1, ws.max_column + 1):
+            label = _norm(ws.cell(row, col).value)
+            if label in SUMMARY_LABELS:
+                ws.cell(row, col + 1).value = totals.get(label, 0)
+
+def run(wb_b64, writes_json, summary_json, month_en):
     writes=json.loads(writes_json)
-    summary_by_sheet=json.loads(summary_json)
+    summary=json.loads(summary_json)
     wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
+
+    # כתיבה יומית: רק עמודה T לפי רשימת writes. לא נוגעים ב-U.
     for w in writes:
         sn=w['sheet']
         if sn not in wb.sheetnames:
             continue
+        if re.search(r'\d', sn.strip()):
+            continue
         ws=wb[sn]
         r=w['row']+1
         c=w['col']+1
-        cell=ws.cell(r,c)
-        val=w['value']
-        if val is None:
-            cell.value=None
-        else:
-            cell.value=val
-    # כתיבת סיכומים חודשיים מאותו מקור אמת שממנו נכתבו הימים.
-    # אין ספירה מחדש מתוך עמודה T ואין שימוש ברשימת חגים נפרדת.
-    for sn, summary in summary_by_sheet.items():
+        if c != 20:
+            continue
+        ws.cell(r,c).value = w.get('value', None)
+
+    # סיכומים: רק Vacation/Sick/Holiday/Other, ליד התווית, באזור החודש.
+    # לא נוגעים ב-Hours או Days.
+    for sn, totals in summary.items():
         if sn not in wb.sheetnames:
             continue
-        ws=wb[sn]
-        vac=summary.get('vac',0) or 0
-        sick=summary.get('sick',0) or 0
-        hol=summary.get('hol',0) or 0
-        other=summary.get('other',0) or 0
-        ws.cell(531,18).value=vac if vac>0 else 0
-        ws.cell(533,18).value=sick if sick>0 else 0
-        ws.cell(535,18).value=hol if hol>0 else 0
-        ws.cell(537,18).value=other if other>0 else 0
+        if re.search(r'\d', sn.strip()):
+            continue
+        _write_summary_near_month(wb[sn], month_en, totals)
+
     out=io.BytesIO()
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
 
-result=run(wb_b64, writes_json, month_num, summary_json)
+result=run(wb_b64, writes_json, summary_json, month_en)
 result
 `;
 
       pyodide.globals.set('wb_b64', b64);
       pyodide.globals.set('writes_json', JSON.stringify(writes));
-      pyodide.globals.set('month_num', String(monthNum));
       pyodide.globals.set('summary_json', JSON.stringify(summaryBySheet));
+      pyodide.globals.set('month_en', monthEn);
       const resultB64 = await pyodide.runPythonAsync(PY);
 
-      // המרה חזרה לקובץ
       const binStr = atob(resultB64);
       const outBytes = new Uint8Array(binStr.length);
       for(let i=0;i<binStr.length;i++) outBytes[i]=binStr.charCodeAt(i);
