@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v83CH</span>
+      <span class="topbar-title">Reports_Workers v84CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1263,14 +1263,28 @@ function _tsAddSummary(sum, out){
 }
 
 function _tsSheetShouldSkip(sheetName){
-  // כל טאב שיש בו מספר בשם הוא טאב מיוחד/פרויקט/עובד שסיים — לא כותבים אליו בכלל.
+  // טאב עם מספר בשם הוא בדרך כלל טאב תורם/פרויקט ייחודי שנשען על הטאב הראשי.
+  // בשלב זה לא כותבים אליו ישירות כדי לא לשבור נוסחאות/מבנה.
   return /\d/.test(String(sheetName||'').trim());
 }
 
-function _tsHasWorkFormulaOrValue(cellU){
-  // יום עבודה רגיל בקובץ מכיל נוסחה בעמודה U. יום לא-עבודה קבוע / שורת סוף שבוע לא.
-  // לא כותבים ל-U, רק משתמשים בזה כדי לדעת אם היום כשיר לכתיבה ולסיכום.
-  return !!(cellU && (cellU.f || cellU.v !== undefined || cellU.w));
+function _tsCellText(cell){
+  if(!cell) return '';
+  if(cell.v !== undefined && cell.v !== null) return String(cell.v).trim();
+  if(cell.w !== undefined && cell.w !== null) return String(cell.w).trim();
+  return '';
+}
+
+function _tsIsEligibleTimesheetRow(ws, r){
+  // החלטה אם שורת תאריך כשירה לכתיבת T נעשית בלי להשתמש בעמודה U.
+  // סוף שבוע מזוהה לפי עמודה B/‏C של התבנית.
+  const cellB = ws[XLSX.utils.encode_cell({r, c:1})];
+  const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
+  const b = _tsCellText(cellB).toLowerCase();
+  const c = _tsCellText(cellC).toLowerCase();
+  if(b === 'friday' || b === 'saturday') return false;
+  if(c === 'weekend') return false;
+  return true;
 }
 
 function generateTimesheet(){
@@ -1336,22 +1350,12 @@ function generateTimesheet(){
           const d = cellA.v;
           if(d.getFullYear() !== S.year || d.getMonth()+1 !== monthNum) continue;
 
-          const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
-          if(cellC && String(cellC.v||cellC.w||'').trim().toLowerCase() === 'weekend') continue;
-
-          const cellU = ws[XLSX.utils.encode_cell({r, c:20})];
-          if(!_tsHasWorkFormulaOrValue(cellU)) continue;
+          if(!_tsIsEligibleTimesheetRow(ws, r)) continue;
 
           const dateStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
           const dayData = dateMap[dateStr] || {};
           const rawVal = dayData[cleanSheetName] || dayData[sheetName] || null;
-          let out = _tsStatusToExcel(rawVal);
-
-          // אם אין ערך ידני בתא, אבל במסך האפליקציה היום מוצג כחג מתוך טאב החגים — זה עדיין חלק ממקור האמת המוצג לעובד.
-          // גם כאן סופרים/כותבים חג רק ביום עבודה כשיר, כי ימים לא-עבודה כבר דולגו לפי U.
-          if(!out && typeof getHolForWorker === 'function' && getHolForWorker(dateStr, cleanSheetName)){
-            out = 'Holiday';
-          }
+          const out = _tsStatusToExcel(rawVal);
 
           writes.push({sheet: sheetName, row: r, col: 19, value: out});
           expectedRows.push({row: r+1, value: out});
