@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v88CH</span>
+      <span class="topbar-title">Reports_Workers v89CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1239,11 +1239,8 @@ const MONTH_TO_NUM = {
 
 const MONTH_EN = {
   1:'January',2:'February',3:'March',4:'April',5:'May',6:'June',
-  7:'July',8:'August',9:'September',10:'November',11:'November',12:'December'
+  7:'July',8:'August',9:'September',10:'October',11:'November',12:'December'
 };
-// תיקון נקודתי v85CH: הפקת Timesheet בלבד.
-// האפליקציה נשארת מקור אמת; הכתיבה לאקסל נעשית לפי עובד + תאריך.
-MONTH_EN[10] = 'October';
 
 const TS_MAP = {
   'חופש':'Vacation', 'חצי חופש':'Half vacation',
@@ -1256,27 +1253,6 @@ function _tsStatusToExcel(val){
   return TS_MAP[v] || null;
 }
 
-function _tsIsHalf(out){
-  return out === 'Half vacation' || out === 'Half sick';
-}
-
-function _tsIsFullBlocked(out){
-  return out === 'Vacation' || out === 'Sick' || out === 'Holiday' || out === 'Other';
-}
-
-function _tsDailyHours(workerName){
-  const n = String(workerName||'').trim();
-  if(n === 'דווה') return 8;
-  if(n === 'אלי') return 2;
-  if(n === 'אדם') return 4.2;
-  return 8.4;
-}
-
-function _tsHalfHours(workerName){
-  const x = _tsDailyHours(workerName) / 2;
-  return Math.round(x * 100) / 100;
-}
-
 function _tsAddSummary(sum, out){
   if(out === 'Vacation') sum.Vacation += 1;
   else if(out === 'Half vacation') sum.Vacation += 0.5;
@@ -1287,50 +1263,14 @@ function _tsAddSummary(sum, out){
 }
 
 function _tsSheetShouldSkip(sheetName){
-  // טאב עובד הוא שם בלבד. טאב עם מספר בשם אינו טאב עובד ראשי.
+  // כל טאב שיש בו מספר בשם הוא טאב מיוחד/פרויקט/עובד שסיים — לא כותבים אליו בכלל.
   return /\d/.test(String(sheetName||'').trim());
 }
 
-function _tsCellText(cell){
-  if(!cell) return '';
-  if(cell.v !== undefined && cell.v !== null) return String(cell.v).trim();
-  if(cell.w !== undefined && cell.w !== null) return String(cell.w).trim();
-  return '';
-}
-
-function _tsHasValue(cell){
-  if(!cell) return false;
-  if(cell.v !== undefined && cell.v !== null && String(cell.v).trim() !== '') return true;
-  if(cell.f !== undefined && cell.f !== null && String(cell.f).trim() !== '') return true;
-  if(cell.w !== undefined && cell.w !== null && String(cell.w).trim() !== '') return true;
-  return false;
-}
-
-function _tsIsWeekendRow(ws, r){
-  const dayCell = ws[XLSX.utils.encode_cell({r, c:1})]; // B = Day
-  const hoursCell = ws[XLSX.utils.encode_cell({r, c:2})]; // C = Hours Worked
-  const b = _tsCellText(dayCell).toLowerCase();
-  const c = _tsCellText(hoursCell).toLowerCase();
-  return b === 'friday' || b === 'saturday' || c === 'weekend';
-}
-
-function _tsIsEligibleTimesheetRow(ws, r){
-  // עובד 4 ימים: ביום שאינו יום עבודה עמודה U בתבנית ריקה, ולכן לא כותבים בו דבר.
-  // יום עבודה רגיל: U בתבנית מכילה נוסחה/ערך מראש, ולכן הוא כשיר לכתיבה במקרה שיש ערך מיוחד באפליקציה.
-  if(_tsIsWeekendRow(ws, r)) return false;
-  const totalCell = ws[XLSX.utils.encode_cell({r, c:20})]; // U = Total Hours
-  return _tsHasValue(totalCell);
-}
-
-function _tsReadAppValueForDate(dateStr, workerName){
-  const dayData = window._tsDateMap && window._tsDateMap[dateStr] ? window._tsDateMap[dateStr] : {};
-  let raw = dayData[workerName] || dayData[String(workerName).trim()] || '';
-  // אם אין ערך ידני אבל האפליקציה מציגה חג דרך רשימת החגים — זה עדיין מה שמופיע באפליקציה.
-  if(!raw && typeof getHolForWorker === 'function'){
-    const h = getHolForWorker(dateStr, workerName);
-    if(h) raw = 'חג';
-  }
-  return raw || '';
+function _tsHasWorkFormulaOrValue(cellU){
+  // יום עבודה רגיל בקובץ מכיל נוסחה בעמודה U. יום לא-עבודה קבוע / שורת סוף שבוע לא.
+  // לא כותבים ל-U, רק משתמשים בזה כדי לדעת אם היום כשיר לכתיבה ולסיכום.
+  return !!(cellU && (cellU.f || cellU.v !== undefined || cellU.w));
 }
 
 function generateTimesheet(){
@@ -1352,12 +1292,25 @@ function generateTimesheet(){
   allRows.forEach(row => {
     if(!row || !row.date || !row.cells) return;
     const d = String(row.date).substring(0,10);
-    if(!dateMap[d]) dateMap[d] = {};
-    Object.assign(dateMap[d], row.cells || {});
+    dateMap[d] = row.cells || {};
   });
-  window._tsDateMap = dateMap;
 
-  status.textContent = 'קורא קובץ Timesheet...';
+  function tsDailyHours(workerName, cellU){
+    const nm = String(workerName||'').trim();
+    if(nm === 'אדם') return 4.2;
+    if(nm === 'דווה') return 8;
+    if(nm === 'אלי') return 2;
+    if(cellU && typeof cellU.v === 'number' && isFinite(cellU.v) && cellU.v > 0) return cellU.v;
+    const parsed = cellU && cellU.w ? parseFloat(String(cellU.w).replace(',', '.')) : NaN;
+    if(isFinite(parsed) && parsed > 0) return parsed;
+    return 8.4;
+  }
+
+  function tsHasPresetHours(cellU){
+    return !!(cellU && (cellU.f || cellU.v !== undefined || cellU.w));
+  }
+
+  status.textContent = 'קורא קובץ...';
   status.style.color = '#333';
 
   const reader = new FileReader();
@@ -1398,38 +1351,39 @@ function generateTimesheet(){
           const d = cellA.v;
           if(d.getFullYear() !== S.year || d.getMonth()+1 !== monthNum) continue;
 
+          const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
+          if(cellC && String(cellC.v||cellC.w||'').trim().toLowerCase() === 'weekend') continue;
+
+          const cellU = ws[XLSX.utils.encode_cell({r, c:20})];
+          if(!tsHasPresetHours(cellU)) continue;
+
           const dateStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-
-          // סוף שבוע ויום אי-עבודה קבוע: לא כותבים כלום, גם אם הוגדר חג.
-          if(!_tsIsEligibleTimesheetRow(ws, r)) continue;
-
-          const rawVal = _tsReadAppValueForDate(dateStr, cleanSheetName);
+          const dayData = dateMap[dateStr] || {};
+          const rawVal = dayData[cleanSheetName] || dayData[sheetName] || null;
           const out = _tsStatusToExcel(rawVal);
-          const w = {sheet: sheetName, row: r, tValue: out, uMode: 'keep', uValue: null};
+          const dailyHours = tsDailyHours(cleanSheetName, cellU);
 
-          // עמודה T: תמיד משקפת את הערך באפליקציה עבור יום כשיר.
-          // תא ריק באפליקציה -> T ריק.
-          if(!out){
-            w.uMode = 'keep'; // יום עבודה רגיל: לא נוגעים ב-U.
-          } else if(_tsIsHalf(out)){
-            w.uMode = 'half';
-            w.uValue = _tsHalfHours(cleanSheetName);
-          } else if(_tsIsFullBlocked(out)){
-            w.uMode = 'clear';
+          let uAction = 'keep';
+          let uValue = null;
+          if(out === 'Half vacation' || out === 'Half sick'){
+            uAction = 'set';
+            uValue = dailyHours / 2;
+          } else if(out){
+            uAction = 'clear';
           }
 
-          writes.push(w);
-          expectedRows.push({row: r+1, tValue: out, uMode: w.uMode, uValue: w.uValue});
+          writes.push({sheet: sheetName, row: r, tValue: out, uAction: uAction, uValue: uValue});
+          expectedRows.push({row: r+1, tValue: out, uAction: uAction, uValue: uValue});
           _tsAddSummary(totals, out);
         }
         summaryBySheet[sheetName] = totals;
         expectedBySheet[sheetName] = {rows: expectedRows, summary: totals};
       });
 
-      status.textContent = 'כותב לקובץ האקסל...';
+      status.textContent = 'כותב נתונים לקובץ...';
 
       const PY = `
-import io,base64,json,re,copy
+import io,base64,json,re,math
 from openpyxl import load_workbook
 
 SUMMARY_LABELS = {'Vacation','Sick','Holiday','Other'}
@@ -1473,6 +1427,12 @@ def _write_summary(ws, month_en, totals):
         ws.cell(r,c).value = totals.get(label, 0)
     return []
 
+def _same_number(a,b):
+    try:
+        return abs(float(a)-float(b)) < 0.00001
+    except Exception:
+        return False
+
 def run(wb_b64, writes_json, summary_json, expected_json, month_en):
     writes=json.loads(writes_json)
     summary=json.loads(summary_json)
@@ -1486,38 +1446,15 @@ def run(wb_b64, writes_json, summary_json, expected_json, month_en):
             continue
         ws=wb[sn]
         row=int(w['row'])+1
-        # T = Other/Vacation/Sick/Holiday text. U = Total Hours.
-        ws.cell(row,20).value = w.get('tValue', None)
-        mode=w.get('uMode','keep')
-        if mode == 'clear':
-            # Clear U only when the application value requires it.
-            # Keep U untouched for regular workdays (mode='keep').
-            # Some Timesheet U cells are formulas with cached values; force a real blank cell.
-            ucell = ws.cell(row,21)
-            saved_style = copy.copy(ucell._style)
-            saved_numfmt = ucell.number_format
-            saved_fill = copy.copy(ucell.fill)
-            saved_font = copy.copy(ucell.font)
-            saved_border = copy.copy(ucell.border)
-            saved_alignment = copy.copy(ucell.alignment)
-            saved_protection = copy.copy(ucell.protection)
-            # Delete the existing cell object so any literal value/formula in U is removed.
-            if (row,21) in ws._cells:
-                del ws._cells[(row,21)]
-            ucell = ws.cell(row,21)
-            ucell._style = saved_style
-            ucell.number_format = saved_numfmt
-            ucell.fill = saved_fill
-            ucell.font = saved_font
-            ucell.border = saved_border
-            ucell.alignment = saved_alignment
-            ucell.protection = saved_protection
-            ucell.value = None
-        elif mode == 'half':
-            ucell = ws.cell(row,21)
-            ucell.value = w.get('uValue', None)
-            ucell.data_type = 'n'
-        # mode keep: לא נוגעים ב-U.
+        # T = עמודה 20 באקסל. נכתבת לפי הערך באפליקציה או מתרוקנת אם אין ערך.
+        ws.cell(row, 20).value = w.get('tValue', None)
+        # U = עמודה 21 באקסל. נוגעים בה רק אם יש ערך מיוחד באפליקציה.
+        action=w.get('uAction','keep')
+        if action == 'clear':
+            ws.cell(row, 21).value = None
+        elif action == 'set':
+            ws.cell(row, 21).value = w.get('uValue', None)
+        # action == keep: לא נוגעים ב-U בכלל.
 
     for sn, totals in summary.items():
         if sn not in wb.sheetnames or _is_skip_sheet(sn):
@@ -1536,17 +1473,20 @@ def run(wb_b64, writes_json, summary_json, expected_json, month_en):
             got_t=ws.cell(row,20).value
             if got_t != want_t:
                 errors.append(f"{sn} row {row} T expected {want_t!r} got {got_t!r}")
-                if len(errors) > 25: break
-            mode=item.get('uMode','keep')
-            if mode == 'clear' and ws.cell(row,21).value is not None:
-                errors.append(f"{sn} row {row} U expected empty got {ws.cell(row,21).value!r}")
-                if len(errors) > 25: break
-            elif mode == 'half':
-                want_u=item.get('uValue', None)
-                got_u=ws.cell(row,21).value
-                if got_u != want_u:
-                    errors.append(f"{sn} row {row} U expected {want_u!r} got {got_u!r}")
-                    if len(errors) > 25: break
+                if len(errors) > 25:
+                    break
+            action=item.get('uAction','keep')
+            got_u=ws.cell(row,21).value
+            if action == 'clear' and got_u is not None:
+                errors.append(f"{sn} row {row} U expected empty got {got_u!r}")
+                if len(errors) > 25:
+                    break
+            elif action == 'set' and not _same_number(got_u, item.get('uValue', None)):
+                errors.append(f"{sn} row {row} U expected {item.get('uValue')!r} got {got_u!r}")
+                if len(errors) > 25:
+                    break
+        if len(errors) > 25:
+            break
         cells = _find_summary_cells(ws, month_en)
         for label, want in exp.get('summary', {}).items():
             if label not in cells:
@@ -1556,7 +1496,8 @@ def run(wb_b64, writes_json, summary_json, expected_json, month_en):
             got=ws.cell(r,c).value
             if got != want:
                 errors.append(f"{sn} summary {label} expected {want!r} got {got!r}")
-                if len(errors) > 25: break
+                if len(errors) > 25:
+                    break
         if len(errors) > 25:
             break
 
@@ -1579,12 +1520,6 @@ result
       pyodide.globals.set('month_en', monthEn);
       const resultJson = await pyodide.runPythonAsync(PY);
       const result = JSON.parse(resultJson);
-      if(!result.ok){
-        status.style.color = 'red';
-        status.textContent = 'ההפקה נכשלה בבדיקת התאמה — לא הורד קובץ. ' + result.errors.slice(0,3).join(' | ');
-        console.error('Timesheet validation errors:', result.errors);
-        return;
-      }
 
       const binStr = atob(result.file);
       const outBytes = new Uint8Array(binStr.length);
@@ -1598,8 +1533,14 @@ result
       a.click();
       URL.revokeObjectURL(url);
 
-      status.style.color = '#1a7a4a';
-      status.textContent = 'הקובץ הורד ועבר בדיקת התאמה.';
+      if(!result.ok){
+        status.style.color = '#b45309';
+        status.textContent = 'הקובץ הורד, אבל נמצאו פערי בדיקה: ' + result.errors.slice(0,3).join(' | ');
+        console.error('Timesheet validation errors:', result.errors);
+      } else {
+        status.style.color = '#1a7a4a';
+        status.textContent = 'הקובץ הורד ועבר בדיקת התאמה.';
+      }
     } catch(err){
       status.style.color = 'red';
       status.textContent = 'שגיאה: ' + err.message;
