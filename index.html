@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v89CH</span>
+      <span class="topbar-title">Reports_Workers v90CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1448,13 +1448,19 @@ def run(wb_b64, writes_json, summary_json, expected_json, month_en):
         row=int(w['row'])+1
         # T = עמודה 20 באקסל. נכתבת לפי הערך באפליקציה או מתרוקנת אם אין ערך.
         ws.cell(row, 20).value = w.get('tValue', None)
-        # U = עמודה 21 באקסל. נוגעים בה רק אם יש ערך מיוחד באפליקציה.
-        action=w.get('uAction','keep')
-        if action == 'clear':
-            ws.cell(row, 21).value = None
-        elif action == 'set':
-            ws.cell(row, 21).value = w.get('uValue', None)
-        # action == keep: לא נוגעים ב-U בכלל.
+        # U = עמודה 21 באקסל. לא מסתמכים על uAction בלבד.
+        # הפעולה נגזרת ישירות מ-T כדי שלא יישאר מצב שבו T הוא Sick/Vacation/Holiday/Other ו-U מקבלת חצי שעות.
+        t = w.get('tValue', None)
+        ucell = ws.cell(row, 21)
+        if t in ('Vacation','Sick','Holiday','Other'):
+            # יום מלא שאינו יום עבודה: U חייב להיות ריק.
+            ucell.value = None
+        elif t in ('Half vacation','Half sick'):
+            # חצי יום: U מקבלת חצי שעות יומיות.
+            ucell.value = w.get('uValue', None)
+        else:
+            # אין ערך באפליקציה: לא נוגעים ב-U בכלל; נשארת נוסחת/ערך התבנית.
+            pass
 
     for sn, totals in summary.items():
         if sn not in wb.sheetnames or _is_skip_sheet(sn):
@@ -1475,13 +1481,13 @@ def run(wb_b64, writes_json, summary_json, expected_json, month_en):
                 errors.append(f"{sn} row {row} T expected {want_t!r} got {got_t!r}")
                 if len(errors) > 25:
                     break
-            action=item.get('uAction','keep')
+            tcheck=item.get('tValue', None)
             got_u=ws.cell(row,21).value
-            if action == 'clear' and got_u is not None:
+            if tcheck in ('Vacation','Sick','Holiday','Other') and got_u is not None:
                 errors.append(f"{sn} row {row} U expected empty got {got_u!r}")
                 if len(errors) > 25:
                     break
-            elif action == 'set' and not _same_number(got_u, item.get('uValue', None)):
+            elif tcheck in ('Half vacation','Half sick') and not _same_number(got_u, item.get('uValue', None)):
                 errors.append(f"{sn} row {row} U expected {item.get('uValue')!r} got {got_u!r}")
                 if len(errors) > 25:
                     break
