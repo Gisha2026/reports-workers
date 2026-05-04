@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v94</span>
+      <span class="topbar-title">Reports_Workers v95</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1328,15 +1328,16 @@ function generateTimesheet(){
 
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
-          if(!cellA || !cellA.v || !(cellA.v instanceof Date)) continue;
+          if(!cellA || !cellA.w) continue;
 
-          const d = cellA.v;
-          if(d.getUTCFullYear() !== 2026 || d.getUTCMonth()+1 !== monthNum) continue;
+          // קריאת תאריך מהטקסט המוצג בתא - DD/MM/YYYY
+          const raw = cellA.w;
+          const parts = raw.split('/');
+          if(parts.length !== 3) continue;
+          const dateStr = parts[2] + '-' + parts[1].padStart(2,'0') + '-' + parts[0].padStart(2,'0');
 
-          // שלב 4: תאריך לפי UTC (SheetJS מחזיר UTC midnight)
-          const dateStr = d.getUTCFullYear() + '-' +
-            String(d.getUTCMonth()+1).padStart(2,'0') + '-' +
-            String(d.getUTCDate()).padStart(2,'0');
+          // בדיקת חודש ושנה
+          if(!dateStr.startsWith('2026-' + String(monthNum).padStart(2,'0'))) continue;
 
           // בדיקת סוף שבוע
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
