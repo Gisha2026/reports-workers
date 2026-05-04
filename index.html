@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v92</span>
+      <span class="topbar-title">Reports_Workers v93</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1333,10 +1333,12 @@ function generateTimesheet(){
           const d = cellA.v;
           if(d.getFullYear() !== 2026 || d.getMonth()+1 !== monthNum) continue;
 
-          // שלב 4: תאריך כ-string לפי UTC (SheetJS מחזיר UTC midnight)
-          const dateStr = d.getUTCFullYear() + '-' +
-            String(d.getUTCMonth()+1).padStart(2,'0') + '-' +
-            String(d.getUTCDate()).padStart(2,'0');
+          // שלב 4: תאריך כ-string לפי שעון מקומי
+          // row.date באפליקציה נשמר ב-local, h.start נשמר ב-local
+          // לכן dateStr חייב להיות local
+          const dateStr = d.getFullYear() + '-' +
+            String(d.getMonth()+1).padStart(2,'0') + '-' +
+            String(d.getDate()).padStart(2,'0');
 
           // בדיקת סוף שבוע
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
