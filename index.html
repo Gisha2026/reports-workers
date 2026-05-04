@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v87CH</span>
+      <span class="topbar-title">Reports_Workers v88CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1429,7 +1429,7 @@ function generateTimesheet(){
       status.textContent = 'כותב לקובץ האקסל...';
 
       const PY = `
-import io,base64,json,re
+import io,base64,json,re,copy
 from openpyxl import load_workbook
 
 SUMMARY_LABELS = {'Vacation','Sick','Holiday','Other'}
@@ -1494,13 +1494,14 @@ def run(wb_b64, writes_json, summary_json, expected_json, month_en):
             # Keep U untouched for regular workdays (mode='keep').
             # Some Timesheet U cells are formulas with cached values; force a real blank cell.
             ucell = ws.cell(row,21)
-            saved_style = ucell._style
+            saved_style = copy.copy(ucell._style)
             saved_numfmt = ucell.number_format
-            saved_fill = ucell.fill
-            saved_font = ucell.font
-            saved_border = ucell.border
-            saved_alignment = ucell.alignment
-            saved_protection = ucell.protection
+            saved_fill = copy.copy(ucell.fill)
+            saved_font = copy.copy(ucell.font)
+            saved_border = copy.copy(ucell.border)
+            saved_alignment = copy.copy(ucell.alignment)
+            saved_protection = copy.copy(ucell.protection)
+            # Delete the existing cell object so any literal value/formula in U is removed.
             if (row,21) in ws._cells:
                 del ws._cells[(row,21)]
             ucell = ws.cell(row,21)
