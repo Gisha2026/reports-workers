@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v86CH</span>
+      <span class="topbar-title">Reports_Workers v87CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1492,10 +1492,26 @@ def run(wb_b64, writes_json, summary_json, expected_json, month_en):
         if mode == 'clear':
             # Clear U only when the application value requires it.
             # Keep U untouched for regular workdays (mode='keep').
+            # Some Timesheet U cells are formulas with cached values; force a real blank cell.
             ucell = ws.cell(row,21)
+            saved_style = ucell._style
+            saved_numfmt = ucell.number_format
+            saved_fill = ucell.fill
+            saved_font = ucell.font
+            saved_border = ucell.border
+            saved_alignment = ucell.alignment
+            saved_protection = ucell.protection
+            if (row,21) in ws._cells:
+                del ws._cells[(row,21)]
+            ucell = ws.cell(row,21)
+            ucell._style = saved_style
+            ucell.number_format = saved_numfmt
+            ucell.fill = saved_fill
+            ucell.font = saved_font
+            ucell.border = saved_border
+            ucell.alignment = saved_alignment
+            ucell.protection = saved_protection
             ucell.value = None
-            ucell._value = None
-            ucell.data_type = 'n'
         elif mode == 'half':
             ucell = ws.cell(row,21)
             ucell.value = w.get('uValue', None)
