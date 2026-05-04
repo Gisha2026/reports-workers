@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v96</span>
+      <span class="topbar-title">Reports_Workers v97</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1267,6 +1267,30 @@ function generateTimesheet(){
     dateMap[d] = row.cells;
   });
 
+  // הוספת ימי חג ל-dateMap מ-S.holidays
+  // כך שכל תאריך חג יכיל 'חג' עבור כל עובד רלוונטי
+  (S.holidays||[]).forEach(h => {
+    const hStart = String(h.start||'').substring(0,10);
+    const hEnd = String(h.end||h.start||'').substring(0,10);
+    if(!hStart) return;
+    // עוברים על כל ימי החג
+    let cur = new Date(hStart + 'T12:00:00');
+    const end = new Date(hEnd + 'T12:00:00');
+    while(cur <= end){
+      const d = cur.toISOString().substring(0,10);
+      if(!dateMap[d]) dateMap[d] = {};
+      // מוסיפים 'חג' לכל עובד רלוונטי
+      S.workers.forEach(w => {
+        const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(w.name));
+        if(workerMatch){
+          // חג גובר על כל ערך אחר
+          dateMap[d][w.name] = 'חג';
+        }
+      });
+      cur.setDate(cur.getDate() + 1);
+    }
+  });
+
   // שורת סיכום מהאפליקציה לכל עובד
   const summaryMap = {};
   S.workers.forEach(w => {
@@ -1340,18 +1364,9 @@ function generateTimesheet(){
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
-          // בדיקת חג מהאפליקציה - חג גובר על כל ערך אחר
-          const holidayList = (S.holidays||[]);
-          const isHoliday = holidayList.some(h=>{
-            const hStart = String(h.start||'').substring(0,10);
-            const hEnd = String(h.end||h.start||'').substring(0,10);
-            const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(workerName));
-            return workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd;
-          });
-
-          // שלב 2: קריאת הערך מהאפליקציה
+          // שלב 2: קריאת הערך מהאפליקציה (כולל חגים שכבר ב-dateMap)
           const dayData = dateMap[dateStr];
-          const appVal = isHoliday ? 'חג' : (dayData ? (dayData[workerName] || null) : null);
+          const appVal = dayData ? (dayData[workerName] || null) : null;
 
           // שלב 5: כתיבה ל-T
           const tVal = appVal ? (T_MAP[appVal] || null) : null;
