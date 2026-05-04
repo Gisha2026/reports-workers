@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v85CH</span>
+      <span class="topbar-title">Reports_Workers v86CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1490,9 +1490,16 @@ def run(wb_b64, writes_json, summary_json, expected_json, month_en):
         ws.cell(row,20).value = w.get('tValue', None)
         mode=w.get('uMode','keep')
         if mode == 'clear':
-            ws.cell(row,21).value = None
+            # Clear U only when the application value requires it.
+            # Keep U untouched for regular workdays (mode='keep').
+            ucell = ws.cell(row,21)
+            ucell.value = None
+            ucell._value = None
+            ucell.data_type = 'n'
         elif mode == 'half':
-            ws.cell(row,21).value = w.get('uValue', None)
+            ucell = ws.cell(row,21)
+            ucell.value = w.get('uValue', None)
+            ucell.data_type = 'n'
         # mode keep: לא נוגעים ב-U.
 
     for sn, totals in summary.items():
