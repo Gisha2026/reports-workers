@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v97</span>
+      <span class="topbar-title">Reports_Workers v98</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1263,7 +1263,9 @@ function generateTimesheet(){
   const dateMap = {};
   allRows.forEach(row => {
     if(!row || !row.date || !row.cells) return;
-    const d = String(row.date).substring(0,10);
+    // row.date הוא Date object - חילוץ תאריך UTC
+    const dt = new Date(row.date);
+    const d = dt.toISOString().substring(0,10);
     dateMap[d] = row.cells;
   });
 
@@ -1274,8 +1276,8 @@ function generateTimesheet(){
     const hEnd = String(h.end||h.start||'').substring(0,10);
     if(!hStart) return;
     // עוברים על כל ימי החג
-    let cur = new Date(hStart + 'T12:00:00');
-    const end = new Date(hEnd + 'T12:00:00');
+    let cur = new Date(hStart + 'T00:00:00Z');
+    const end = new Date(hEnd + 'T00:00:00Z');
     while(cur <= end){
       const d = cur.toISOString().substring(0,10);
       if(!dateMap[d]) dateMap[d] = {};
