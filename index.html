@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v90</span>
+      <span class="topbar-title">Reports_Workers v91</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1342,9 +1342,18 @@ function generateTimesheet(){
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
+          // בדיקת חג מהאפליקציה - חג גובר על כל ערך אחר
+          const holidayList = (S.holidays||[]);
+          const isHoliday = holidayList.some(h=>{
+            const hStart = String(h.start||'').substring(0,10);
+            const hEnd = String(h.end||h.start||'').substring(0,10);
+            const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(workerName));
+            return workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd;
+          });
+
           // שלב 2: קריאת הערך מהאפליקציה
           const dayData = dateMap[dateStr];
-          const appVal = dayData ? (dayData[workerName] || null) : null;
+          const appVal = isHoliday ? 'חג' : (dayData ? (dayData[workerName] || null) : null);
 
           // שלב 5: כתיבה ל-T
           const tVal = appVal ? (T_MAP[appVal] || null) : null;
