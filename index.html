@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v107</span>
+      <span class="topbar-title">Reports_Workers v108</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1344,7 +1344,20 @@ function generateTimesheet(){
       const writes = [];
 
       // בדיקת התאמת שמות — לפני הכתיבה
-      const appWorkerNames = S.workers.map(w => normName(w.name));
+      // סינון עובדים פעילים בלבד — שלא סיימו עבודה לפני תחילת החודש
+      const monthStart = new Date(2026, monthNum - 1, 1);
+      const activeWorkers = S.workers.filter(w => {
+        if(!w.active) return false;
+        if(w.endMonth){
+          // endMonth הוא שם חודש — בדיקה שהעובד לא סיים לפני החודש הנוכחי
+          const endMonthNum = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני',
+                               'יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']
+                               .indexOf(w.endMonth) + 1;
+          if(endMonthNum > 0 && endMonthNum < monthNum) return false;
+        }
+        return true;
+      });
+      const appWorkerNames = activeWorkers.map(w => normName(w.name));
       const xlsTabNames = wb.SheetNames
         .map(s => normName(s))
         .filter(s => !/\d/.test(s) && s.length > 0);
@@ -1370,7 +1383,7 @@ function generateTimesheet(){
         // דלג על טאבים עם מספר בשם
         if(/\d/.test(workerName)) return;
         // דלג על עובדים שלא באפליקציה
-        if(!S.workers.find(w => normName(w.name) === workerName)) return;
+        if(!activeWorkers.find(w => normName(w.name) === workerName)) return;
 
         const ws = wb.Sheets[sheetName];
         const range = XLSX.utils.decode_range(ws['!ref']);
