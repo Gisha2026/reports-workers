@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v102</span>
+      <span class="topbar-title">Reports_Workers v103</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1381,6 +1381,10 @@ function generateTimesheet(){
             const hStart = String(h.start||'').substring(0,10);
             const hEnd = String(h.end||h.start||'').substring(0,10);
             const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(workerName));
+            // לוג לאבחון - רק עבור דווה ו-01/04 ו-21/04
+            if(workerName === 'דווה' && (dateStr === '2026-04-01' || dateStr === '2026-04-21')){
+              console.log('בדיקת חג:', {dateStr, hStart, hEnd, workerMatch, match: workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd});
+            }
             if(workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd){
               appVal = 'חג';
               break;
