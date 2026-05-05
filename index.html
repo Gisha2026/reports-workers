@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v110</span>
+      <span class="topbar-title">Reports_Workers v111</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1377,6 +1377,22 @@ function generateTimesheet(){
         return;
       }
 
+      // מחיקת עמודת T של החודש בכל הטאבים - לפני כל כתיבה
+      wb.SheetNames.forEach(function(sn){
+        const ws2 = wb.Sheets[sn];
+        if(!ws2 || !ws2['!ref']) return;
+        const rng2 = XLSX.utils.decode_range(ws2['!ref']);
+        for(let r2 = rng2.s.r; r2 <= rng2.e.r; r2++){
+          const cA = ws2[XLSX.utils.encode_cell({r:r2, c:0})];
+          if(!cA || typeof cA.v !== 'number') continue;
+          const p2 = XLSX.SSF.parse_date_code(cA.v);
+          if(!p2) continue;
+          const ds2 = p2.y+'-'+String(p2.m).padStart(2,'0')+'-'+String(p2.d).padStart(2,'0');
+          if(!ds2.startsWith('2026-'+String(monthNum).padStart(2,'0'))) continue;
+          writes.push({sheet:sn, row:r2, col:19, value:''});
+        }
+      });
+
       wb.SheetNames.forEach(sheetName => {
         // שלב 3: מאתרים טאב ששמו בדיוק שם העובד — בלי מספרים
         const workerName = normName(sheetName);
@@ -1510,9 +1526,8 @@ def run(wb_b64, writes_json):
             continue
         cell = ws.cell(w['row']+1, col+1)
         val = w['value']
-        # מחיקה מוחלטת של ערך קיים
+        # מחיקת נוסחה קיימת ואז כתיבת ערך חדש
         cell.value = None
-        cell.data_type = 'n'
         if val is not None and val != '':
             cell.value = val
     out = io.BytesIO()
