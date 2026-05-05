@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v111</span>
+      <span class="topbar-title">Reports_Workers v112</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1526,8 +1526,11 @@ def run(wb_b64, writes_json):
             continue
         cell = ws.cell(w['row']+1, col+1)
         val = w['value']
-        # מחיקת נוסחה קיימת ואז כתיבת ערך חדש
+        # מחיקה מוחלטת
         cell.value = None
+        cell.data_type = 'n'
+        if hasattr(cell, '_value'):
+            cell._value = None
         if val is not None and val != '':
             cell.value = val
     out = io.BytesIO()
