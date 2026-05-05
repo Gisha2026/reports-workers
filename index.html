@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v106</span>
+      <span class="topbar-title">Reports_Workers v107</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1255,6 +1255,9 @@ function generateTimesheet(){
   const monthNum = MONTH_TO_NUM[monthName];
   if(!monthNum){ status.textContent='חודש לא מוכר.'; status.style.color='red'; return; }
 
+  // פונקציית נירמול שמות - מסירה רווחים מיותרים משני הצדדים ופנימיים
+  const normName = n => String(n||'').trim().replace(/\s+/g,' ');
+
   // שלב 1+2: קריאת נתוני החודש מהאפליקציה
   const monthData = S.months[monthName] || {prev:[], cur:[]};
   const allRows = [...(monthData.prev||[]), ...(monthData.cur||[])];
@@ -1286,7 +1289,7 @@ function generateTimesheet(){
         const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(w.name));
         if(workerMatch){
           // חג גובר על כל ערך אחר
-          dateMap[d][w.name] = 'חג';
+          dateMap[d][normName(w.name)] = 'חג';
         }
       });
       cur.setDate(cur.getDate() + 1);
@@ -1297,7 +1300,7 @@ function generateTimesheet(){
   const summaryMap = {};
   S.workers.forEach(w => {
     const s = calcSum(allRows, w.name);
-    summaryMap[w.name] = {v: s.v, s: s.s, h: s.h, o: s.o};
+    summaryMap[normName(w.name)] = {v: s.v, s: s.s, h: s.h, o: s.o};
   });
 
   // מיפוי ערכים
@@ -1340,13 +1343,34 @@ function generateTimesheet(){
 
       const writes = [];
 
+      // בדיקת התאמת שמות — לפני הכתיבה
+      const appWorkerNames = S.workers.map(w => normName(w.name));
+      const xlsTabNames = wb.SheetNames
+        .map(s => normName(s))
+        .filter(s => !/\d/.test(s) && s.length > 0);
+
+      const appWithoutTab = appWorkerNames.filter(n => !xlsTabNames.includes(n));
+      const tabWithoutApp = xlsTabNames.filter(n => !appWorkerNames.includes(n));
+
+      if(appWithoutTab.length > 0 || tabWithoutApp.length > 0){
+        let msg = '⚠️ אי-התאמת שמות — הקובץ לא יופק עד לתיקון:\n\n';
+        if(appWithoutTab.length > 0)
+          msg += 'עובדים באפליקציה ללא טאב באקסל:\n' + appWithoutTab.join(', ') + '\n\n';
+        if(tabWithoutApp.length > 0)
+          msg += 'טאבים באקסל ללא עובד באפליקציה:\n' + tabWithoutApp.join(', ');
+        status.textContent = '⚠️ אי-התאמת שמות — תקן ונסה שוב.';
+        status.style.color = 'red';
+        alert(msg);
+        return;
+      }
+
       wb.SheetNames.forEach(sheetName => {
         // שלב 3: מאתרים טאב ששמו בדיוק שם העובד — בלי מספרים
-        const workerName = sheetName.trim();
+        const workerName = normName(sheetName);
         // דלג על טאבים עם מספר בשם
         if(/\d/.test(workerName)) return;
         // דלג על עובדים שלא באפליקציה
-        if(!S.workers.find(w => w.name === workerName)) return;
+        if(!S.workers.find(w => normName(w.name) === workerName)) return;
 
         const ws = wb.Sheets[sheetName];
         const range = XLSX.utils.decode_range(ws['!ref']);
@@ -1380,7 +1404,7 @@ function generateTimesheet(){
             const h = holidays[hi];
             const hStart = String(h.start||'').substring(0,10);
             const hEnd = String(h.end||h.start||'').substring(0,10);
-            const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(workerName));
+            const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.some(wn => normName(wn) === workerName));
             // לוג לאבחון - רק עבור דווה ו-01/04 ו-21/04
             if(workerName === 'דווה' && (dateStr === '2026-04-01' || dateStr === '2026-04-21')){
               console.log('בדיקת חג:', {dateStr, hStart, hEnd, workerMatch, match: workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd});
@@ -1394,7 +1418,7 @@ function generateTimesheet(){
           // אם לא חג - קריאה מהאפליקציה
           if(!appVal){
             const dayData = dateMap[dateStr];
-            appVal = dayData ? (dayData[workerName] || null) : null;
+            appVal = dayData ? (dayData[workerName] || dayData[Object.keys(dayData).find(k=>normName(k)===workerName)||''] || null) : null;
           }
 
           // שלב 5: כתיבה ל-T
@@ -1413,13 +1437,29 @@ function generateTimesheet(){
           // אם אין ערך — לא נוגעים ב-U
         }
 
-        // שלב 7: סיכומים חודשיים מהאפליקציה
+        // שלב 7: סיכומים חודשיים - מציאת שורות דינמית לפי שם החודש
         const sum = summaryMap[workerName];
         if(sum){
-          writes.push({sheet: sheetName, row: 530, col: 17, value: sum.v});
-          writes.push({sheet: sheetName, row: 532, col: 17, value: sum.s});
-          writes.push({sheet: sheetName, row: 534, col: 17, value: sum.h});
-          writes.push({sheet: sheetName, row: 536, col: 17, value: sum.o});
+          const monthNamesEN = ['January','February','March','April','May','June',
+                                'July','August','September','October','November','December'];
+          const monthNameEN = monthNamesEN[monthNum - 1];
+          let summaryRow = -1;
+          for(let sr = 0; sr <= range.e.r; sr++){
+            const cellA = ws[XLSX.utils.encode_cell({r: sr, c: 0})];
+            if(cellA && cellA.v === monthNameEN){
+              const cellQ = ws[XLSX.utils.encode_cell({r: sr-1, c: 16})];
+              if(cellQ && cellQ.v === 'Vacation'){
+                summaryRow = sr - 1;
+                break;
+              }
+            }
+          }
+          if(summaryRow >= 0){
+            writes.push({sheet: sheetName, row: summaryRow,   col: 17, value: sum.v});
+            writes.push({sheet: sheetName, row: summaryRow+2, col: 17, value: sum.s});
+            writes.push({sheet: sheetName, row: summaryRow+4, col: 17, value: sum.h});
+            writes.push({sheet: sheetName, row: summaryRow+6, col: 17, value: sum.o});
+          }
         }
       });
 
