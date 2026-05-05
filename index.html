@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v105</span>
+      <span class="topbar-title">Reports_Workers v106</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1336,7 +1336,7 @@ function generateTimesheet(){
       // בניית רשימת writes: רק T ו-U
       // שלב 3: קריאת האקסל לזיהוי שורות
       const data = new Uint8Array(e.target.result);
-      const wb = XLSX.read(data, {type:'array', cellDates:true});
+      const wb = XLSX.read(data, {type:'array'});
 
       const writes = [];
 
@@ -1399,8 +1399,10 @@ function generateTimesheet(){
 
           // שלב 5: כתיבה ל-T
           const tVal = appVal ? (T_MAP[appVal] || null) : null;
-          // כותב תמיד - גם אם ריק (כדי למחוק ערך קיים)
-          writes.push({sheet: sheetName, row: r, col: 19, value: tVal !== null ? tVal : ''});
+          // כותב ל-T רק אם יש ערך — לא נוגעים בימי עבודה רגילים
+          if(tVal !== null){
+            writes.push({sheet: sheetName, row: r, col: 19, value: tVal});
+          }
 
           // שלב 6: התאמת U - רק אם יש ערך מיוחד
           if(tVal === 'Vacation' || tVal === 'Sick' || tVal === 'Holiday' || tVal === 'Other'){
