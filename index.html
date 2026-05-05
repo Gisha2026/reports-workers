@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v104</span>
+      <span class="topbar-title">Reports_Workers v105</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1435,13 +1435,15 @@ def run(wb_b64, writes_json):
         if sn not in wb.sheetnames:
             continue
         ws = wb[sn]
-        cell = ws.cell(w['row']+1, w['col']+1)
+        col = w['col']
+        # בטיחות: נוגעים רק בעמודות T (19) ו-U (20) ובסיכומים (17)
+        if col not in [17, 19, 20]:
+            continue
+        cell = ws.cell(w['row']+1, col+1)
         val = w['value']
-        if val is None:
-            cell.value = None
-            if hasattr(cell, '_value'):
-                cell._value = None
-        else:
+        # מחיקת נוסחה קיימת ואז כתיבת ערך חדש
+        cell.value = None
+        if val is not None and val != '':
             cell.value = val
     out = io.BytesIO()
     wb.save(out)
