@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v103</span>
+      <span class="topbar-title">Reports_Workers v104</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1399,7 +1399,8 @@ function generateTimesheet(){
 
           // שלב 5: כתיבה ל-T
           const tVal = appVal ? (T_MAP[appVal] || null) : null;
-          writes.push({sheet: sheetName, row: r, col: 19, value: tVal});
+          // כותב תמיד - גם אם ריק (כדי למחוק ערך קיים)
+          writes.push({sheet: sheetName, row: r, col: 19, value: tVal !== null ? tVal : ''});
 
           // שלב 6: התאמת U - רק אם יש ערך מיוחד
           if(tVal === 'Vacation' || tVal === 'Sick' || tVal === 'Holiday' || tVal === 'Other'){
@@ -1436,7 +1437,12 @@ def run(wb_b64, writes_json):
         ws = wb[sn]
         cell = ws.cell(w['row']+1, w['col']+1)
         val = w['value']
-        cell.value = val
+        if val is None:
+            cell.value = None
+            if hasattr(cell, '_value'):
+                cell._value = None
+        else:
+            cell.value = val
     out = io.BytesIO()
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
