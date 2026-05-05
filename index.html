@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v108</span>
+      <span class="topbar-title">Reports_Workers v109</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1388,6 +1388,20 @@ function generateTimesheet(){
         const ws = wb.Sheets[sheetName];
         const range = XLSX.utils.decode_range(ws['!ref']);
         const dailyHours = DAILY_HOURS[workerName] || DEFAULT_HOURS;
+
+        // מחיקת כל ערכי T של החודש לפני הכתיבה
+        for(let r = range.s.r; r <= range.e.r; r++){
+          const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
+          if(!cellA || cellA.v === undefined || cellA.v === null) continue;
+          let ds;
+          if(typeof cellA.v === 'number'){
+            const p = XLSX.SSF.parse_date_code(cellA.v);
+            if(!p) continue;
+            ds = p.y + '-' + String(p.m).padStart(2,'0') + '-' + String(p.d).padStart(2,'0');
+          } else continue;
+          if(!ds.startsWith('2026-' + String(monthNum).padStart(2,'0'))) continue;
+          writes.push({sheet: sheetName, row: r, col: 19, value: ''});
+        }
 
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
