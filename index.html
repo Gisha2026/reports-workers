@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v100</span>
+      <span class="topbar-title">Reports_Workers v101</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1354,10 +1354,17 @@ function generateTimesheet(){
 
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
-          if(!cellA || !cellA.v || !(cellA.v instanceof Date)) continue;
+          if(!cellA || cellA.v === undefined || cellA.v === null) continue;
 
-          // חילוץ תאריך UTC מה-Date object
-          const dateStr = cellA.v.toISOString().substring(0,10);
+          // קריאת תאריך מה-serial number ישירות - ללא timezone
+          let dateStr;
+          if(typeof cellA.v === 'number'){
+            const parsed = XLSX.SSF.parse_date_code(cellA.v);
+            if(!parsed) continue;
+            dateStr = parsed.y + '-' + String(parsed.m).padStart(2,'0') + '-' + String(parsed.d).padStart(2,'0');
+          } else if(cellA.v instanceof Date){
+            dateStr = cellA.v.toISOString().substring(0,10);
+          } else continue;
 
           // בדיקת חודש ושנה
           if(!dateStr.startsWith('2026-' + String(monthNum).padStart(2,'0'))) continue;
