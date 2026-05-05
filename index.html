@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v101</span>
+      <span class="topbar-title">Reports_Workers v102</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1373,9 +1373,25 @@ function generateTimesheet(){
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
-          // שלב 2: קריאת הערך מהאפליקציה (כולל חגים שכבר ב-dateMap)
-          const dayData = dateMap[dateStr];
-          const appVal = dayData ? (dayData[workerName] || null) : null;
+          // בדיקת חג ישירות מ-S.holidays בתוך הלולאה
+          let appVal = null;
+          const holidays = S.holidays;
+          for(let hi = 0; hi < holidays.length; hi++){
+            const h = holidays[hi];
+            const hStart = String(h.start||'').substring(0,10);
+            const hEnd = String(h.end||h.start||'').substring(0,10);
+            const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(workerName));
+            if(workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd){
+              appVal = 'חג';
+              break;
+            }
+          }
+
+          // אם לא חג - קריאה מהאפליקציה
+          if(!appVal){
+            const dayData = dateMap[dateStr];
+            appVal = dayData ? (dayData[workerName] || null) : null;
+          }
 
           // שלב 5: כתיבה ל-T
           const tVal = appVal ? (T_MAP[appVal] || null) : null;
