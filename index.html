@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v117</span>
+      <span class="topbar-title">Reports_Workers v118</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1441,9 +1441,10 @@ function generateTimesheet(){
               if(wm&&hS&&ds>=hS&&ds<=hE){isHoliday=true;break;}
             }
             if(isHoliday) continue;
-            // בדיקת T ריק
-            const cellT = ws[XLSX.utils.encode_cell({r, c:19})];
-            if(!cellT || !cellT.v) emptyRows.push(r);
+            // בדיקת T ריק — לפי הקובץ המקורי בלבד (לפני כתיבה)
+          const cellT = ws[XLSX.utils.encode_cell({r, c:19})];
+          const alreadyWritten = writes.some(w => w.sheet===sheetName && w.row===r && w.col===19);
+          if((!cellT || !cellT.v) && !alreadyWritten) emptyRows.push(r);
           }
 
           // כתיבת ערכי החיתוך לשורות הפנויות הראשונות
