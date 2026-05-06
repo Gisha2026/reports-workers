@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v127</span>
+      <span class="topbar-title">Reports_Workers v128</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1300,7 +1300,29 @@ function generateTimesheet(){
   const summaryMap = {};
   S.workers.forEach(w => {
     const s = calcSum(allRows, w.name);
-    summaryMap[normName(w.name)] = {v: s.v, s: s.s, h: s.h, o: s.o};
+    // ספירת ימי חג מ-S.holidays עבור החודש הנוכחי
+    let holCount = 0;
+    S.holidays.forEach(h => {
+      const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.some(wn => normName(wn) === normName(w.name)));
+      if (!workerMatch) return;
+      const hStart = String(h.start || '').substring(0, 10);
+      const hEnd = String(h.end || h.start || '').substring(0, 10);
+      if (!hStart) return;
+      const monthStr = '2026-' + String(monthNum).padStart(2, '0');
+      // עוברים יום-יום על טווח החג וסופרים ימים בחודש הנוכחי
+      let cur = new Date(hStart + 'T12:00:00');
+      const endD = new Date(hEnd + 'T12:00:00');
+      while (cur <= endD) {
+        const ds = cur.toISOString().substring(0, 10);
+        if (ds.startsWith(monthStr)) {
+          // בודקים שזה לא שבת/שישי
+          const dow = cur.getDay(); // 0=ראשון ... 5=שישי, 6=שבת
+          if (dow !== 5 && dow !== 6) holCount++;
+        }
+        cur.setDate(cur.getDate() + 1);
+      }
+    });
+    summaryMap[normName(w.name)] = {v: s.v, s: s.s, h: s.h + holCount, o: s.o};
   });
 
   // מיפוי ערכים
