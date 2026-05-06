@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v114</span>
+      <span class="topbar-title">Reports_Workers v115</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1399,7 +1399,10 @@ function generateTimesheet(){
             if(!p) continue;
             ds = p.y + '-' + String(p.m).padStart(2,'0') + '-' + String(p.d).padStart(2,'0');
           } else continue;
-          if(!ds.startsWith('2026-' + String(monthNum).padStart(2,'0'))) continue;
+          const dsMonth = '2026-' + String(monthNum).padStart(2,'0');
+          const inCurMonth2 = ds.startsWith(dsMonth);
+          const inDateMap2 = dateMap.hasOwnProperty(ds);
+          if(!inCurMonth2 && !inDateMap2) continue;
           writes.push({sheet: sheetName, row: r, col: 19, value: ''});
         }
 
@@ -1417,8 +1420,11 @@ function generateTimesheet(){
             dateStr = cellA.v.toISOString().substring(0,10);
           } else continue;
 
-          // בדיקת חודש ושנה
-          if(!dateStr.startsWith('2026-' + String(monthNum).padStart(2,'0'))) continue;
+          // בדיקת חודש ושנה — מאפשרים גם תאריכי חודש קודם שנמצאים ב-dateMap (ימי חיתוך)
+          const monthStr = '2026-' + String(monthNum).padStart(2,'0');
+          const inCurrentMonth = dateStr.startsWith(monthStr);
+          const inDateMap = dateMap.hasOwnProperty(dateStr);
+          if(!inCurrentMonth && !inDateMap) continue;
 
           // בדיקת סוף שבוע
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
@@ -1496,21 +1502,9 @@ function generateTimesheet(){
 import io, base64, json
 from openpyxl import load_workbook
 
-def run(wb_b64, writes_json, month_num):
-    import datetime
+def run(wb_b64, writes_json):
     writes = json.loads(writes_json)
     wb = load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
-    for sn in wb.sheetnames:
-        ws = wb[sn]
-        for row in ws.iter_rows():
-            if not row[0].value:
-                continue
-            if not isinstance(row[0].value, (datetime.datetime, datetime.date)):
-                continue
-            if row[0].value.month != month_num:
-                continue
-            if len(row) > 19:
-                row[19].value = None
     for w in writes:
         sn = w['sheet']
         if sn not in wb.sheetnames:
@@ -1530,13 +1524,12 @@ def run(wb_b64, writes_json, month_num):
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
 
-result = run(wb_b64, writes_json, month_num)
+result = run(wb_b64, writes_json)
 result
 `;
 
       pyodide.globals.set('wb_b64', b64);
       pyodide.globals.set('writes_json', JSON.stringify(writes));
-      pyodide.globals.set('month_num', monthNum);
       const resultB64 = await pyodide.runPythonAsync(PY);
 
       const binStr = atob(resultB64);
