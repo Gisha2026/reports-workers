@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v128</span>
+      <span class="topbar-title">Reports_Workers v129</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -436,7 +436,7 @@ function makeWorkdayRange(start,end){
   return out;
 }
 const ALL_DAYS=['א','ב','ג','ד','ה','ו','ש'];
-const VALUES=['','חופש','חצי חופש','מחלה','חצי מחלה','חג','אבל','אחר'];
+const VALUES=['','חופש','חצי חופש','מחלה','חצי מחלה','אבל','אחר'];
 const KNOWN_VALS=new Set(VALUES.filter(Boolean));
 const VAL_BG={'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
 const TOK_KEY='rw_gisha_token'; // PERMANENT
@@ -1322,7 +1322,9 @@ function generateTimesheet(){
         cur.setDate(cur.getDate() + 1);
       }
     });
-    summaryMap[normName(w.name)] = {v: s.v, s: s.s, h: s.h + holCount, o: s.o};
+    const finalH = s.h + holCount;
+    console.log('summaryMap:', normName(w.name), '| h מטבלה:', s.h, '| holCount:', holCount, '| סה"כ:', finalH);
+    summaryMap[normName(w.name)] = {v: s.v, s: s.s, h: finalH, o: s.o};
   });
 
   // מיפוי ערכים
