@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v126</span>
+      <span class="topbar-title">Reports_Workers v120</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1389,6 +1389,41 @@ function generateTimesheet(){
         const range = XLSX.utils.decode_range(ws['!ref']);
         const dailyHours = DAILY_HOURS[workerName] || DEFAULT_HOURS;
 
+        // איסוף שורות פנויות מהקובץ המקורי לפני כל כתיבה
+        const originalEmptyRows = [];
+        {
+          const prevWithVals = (monthData.prev||[]).filter(pr => {
+            if(!pr||!pr.date||!pr.cells) return false;
+            const val = pr.cells[workerName] || pr.cells[Object.keys(pr.cells).find(k=>normName(k)===workerName)||''];
+            return val && val !== 'חג';
+          });
+          if(prevWithVals.length > 0){
+            for(let r = range.s.r; r <= range.e.r; r++){
+              const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
+              if(!cellA || typeof cellA.v !== 'number') continue;
+              const p = XLSX.SSF.parse_date_code(cellA.v);
+              if(!p) continue;
+              const ds = p.y+'-'+String(p.m).padStart(2,'0')+'-'+String(p.d).padStart(2,'0');
+              if(!ds.startsWith('2026-'+String(monthNum).padStart(2,'0'))) continue;
+              const cellC2 = ws[XLSX.utils.encode_cell({r, c:2})];
+              if(cellC2 && String(cellC2.v).toLowerCase()==='weekend') continue;
+              let isHol = false;
+              for(let hi=0;hi<S.holidays.length;hi++){
+                const h=S.holidays[hi];
+                const hS=String(h.start||'').substring(0,10);
+                const hE=String(h.end||h.start||'').substring(0,10);
+                const wm=h.workers==='all'||(Array.isArray(h.workers)&&h.workers.some(wn=>normName(wn)===workerName));
+                if(wm&&hS&&ds>=hS&&ds<=hE){isHol=true;break;}
+              }
+              if(isHol) continue;
+              const cellT0 = ws[XLSX.utils.encode_cell({r, c:19})];
+              // גם לא לכלול ימים שיש להם ערך ב-dateMap (כבר נספרים לחודש הנוכחי)
+              const hasAppVal = dateMap[ds] && (dateMap[ds][workerName] || dateMap[ds][Object.keys(dateMap[ds]).find(k=>normName(k)===workerName)||'']);
+              if((!cellT0 || !cellT0.v) && !hasAppVal) originalEmptyRows.push(r);
+            }
+          }
+        }
+
         // מחיקת כל ערכי T של החודש לפני הכתיבה
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
@@ -1399,9 +1434,36 @@ function generateTimesheet(){
             if(!p) continue;
             ds = p.y + '-' + String(p.m).padStart(2,'0') + '-' + String(p.d).padStart(2,'0');
           } else continue;
-          if(!ds.startsWith('2026-' + String(monthNum).padStart(2,'0'))) continue;
+          const dsMonth = '2026-' + String(monthNum).padStart(2,'0');
+          const inCurMonth2 = ds.startsWith(dsMonth);
+          const inPrevRows2 = (monthData.prev||[]).some(pr => {
+            if(!pr||!pr.date) return false;
+            const prd = new Date(pr.date).toISOString().substring(0,10);
+            return prd === ds;
+          });
+          if(!inCurMonth2 && !inPrevRows2) continue;
           writes.push({sheet: sheetName, row: r, col: 19, value: ''});
         }
+
+        // כתיבת ימי חיתוך לשורות הפנויות שנאספו מהקובץ המקורי
+        const prevWithValues = (monthData.prev||[]).filter(pr => {
+          if(!pr||!pr.date||!pr.cells) return false;
+          const val = pr.cells[workerName] || pr.cells[Object.keys(pr.cells).find(k=>normName(k)===workerName)||''];
+          return val && val !== 'חג';
+        });
+        prevWithValues.forEach((pr, idx) => {
+          if(idx >= originalEmptyRows.length) return;
+          const val = pr.cells[workerName] || pr.cells[Object.keys(pr.cells).find(k=>normName(k)===workerName)||''];
+          const tVal = T_MAP[val] || null;
+          if(!tVal) return;
+          const targetRow = originalEmptyRows[idx];
+          writes.push({sheet: sheetName, row: targetRow, col: 19, value: tVal});
+          if(tVal==='Vacation'||tVal==='Sick'||tVal==='Other'){
+            writes.push({sheet: sheetName, row: targetRow, col: 20, value: null});
+          } else if(tVal==='Half vacation'||tVal==='Half sick'){
+            writes.push({sheet: sheetName, row: targetRow, col: 20, value: dailyHours/2});
+          }
+        });
 
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
@@ -1417,8 +1479,15 @@ function generateTimesheet(){
             dateStr = cellA.v.toISOString().substring(0,10);
           } else continue;
 
-          // בדיקת חודש ושנה
-          if(!dateStr.startsWith('2026-' + String(monthNum).padStart(2,'0'))) continue;
+          // בדיקת חודש ושנה — מאפשרים גם תאריכי חיתוך מהחודש הקודם שב-dateMap
+          const monthStr = '2026-' + String(monthNum).padStart(2,'0');
+          const inCurrentMonth = dateStr.startsWith(monthStr);
+          const inPrevRows = (monthData.prev||[]).some(r => {
+            if(!r||!r.date) return false;
+            const rd = new Date(r.date).toISOString().substring(0,10);
+            return rd === dateStr;
+          });
+          if(!inCurrentMonth && !inPrevRows) continue;
 
           // בדיקת סוף שבוע
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
@@ -1437,7 +1506,7 @@ function generateTimesheet(){
               console.log('בדיקת חג:', {dateStr, hStart, hEnd, workerMatch, match: workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd});
             }
             if(workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd){
-              appVal = h.name || 'Holiday';
+              appVal = 'חג';
               break;
             }
           }
