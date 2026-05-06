@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v137</span>
+      <span class="topbar-title">Reports_Workers v138</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1137,7 +1137,218 @@ function startSyncLoop(){
   },30000);
 }
 
-function exportExcel(){alert('ייצוא לאקסל — יתווסף בגרסה הבאה');}
+function exportExcel(){
+  if(!pyReady){alert('המנוע עדיין בטעינה, נסה שוב בעוד כמה שניות.');return;}
+
+  const MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const DAY_NAMES=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const SHORT_DAYS=['א','ב','ג','ד','ה','ו','ש'];
+
+  // בניית מבנה הנתונים לפייתון
+  const workers = S.workers.filter(w=>w.active!==false);
+  const workerNames = workers.map(w=>w.name);
+
+  // מיפוי חגים לפי תאריך
+  const holidayMap = {};
+  (S.holidays||[]).forEach(h=>{
+    const hStart = String(h.start||'').substring(0,10);
+    const hEnd = String(h.end||h.start||'').substring(0,10);
+    if(!hStart) return;
+    let cur = new Date(hStart+'T12:00:00');
+    const end = new Date(hEnd+'T12:00:00');
+    while(cur<=end){
+      const ds = cur.toISOString().substring(0,10);
+      if(!holidayMap[ds]) holidayMap[ds]={};
+      workers.forEach(w=>{
+        const match = h.workers==='all'||(Array.isArray(h.workers)&&h.workers.includes(w.name));
+        if(match) holidayMap[ds][w.name]=h.name||'חג';
+      });
+      cur.setDate(cur.getDate()+1);
+    }
+  });
+
+  // בניית נתוני כל חודש
+  const monthsData = [];
+  MONTHS.forEach((mName, mi)=>{
+    const md = S.months[mName]||{prev:[],cur:[]};
+    const allRows = [...(md.prev||[]),...(md.cur||[])];
+    if(allRows.length===0 && !(md.prev&&md.prev.length)) return;
+
+    // בניית map תאריך->ערכים
+    const dateMap = {};
+    allRows.forEach(r=>{
+      if(!r||!r.date) return;
+      const dt = new Date(r.date);
+      const ds = dt.toISOString().substring(0,10);
+      dateMap[ds] = r.cells||{};
+    });
+
+    // הוספת חגים ל-dateMap
+    Object.keys(holidayMap).forEach(ds=>{
+      if(!dateMap[ds]) dateMap[ds]={};
+      Object.keys(holidayMap[ds]).forEach(wn=>{
+        if(!dateMap[ds][wn]) dateMap[ds][wn]=holidayMap[ds][wn];
+      });
+    });
+
+    // ימי חיתוך (prev)
+    const cutoffDates = [];
+    (md.prev||[]).forEach(r=>{
+      if(!r||!r.date) return;
+      const dt = new Date(r.date);
+      const ds = dt.toISOString().substring(0,10);
+      const dow = dt.getDay();
+      if(dow===5||dow===6) return;
+      cutoffDates.push({date:ds, dow:dt.getDay()});
+    });
+
+    // ימי החודש עצמו
+    const monthDates = [];
+    const year = S.year||2026;
+    const daysInMonth = new Date(year, mi+1, 0).getDate();
+    for(let d=1;d<=daysInMonth;d++){
+      const dt = new Date(year, mi, d, 12);
+      const dow = dt.getDay();
+      if(dow===5||dow===6) continue;
+      const ds = dt.toISOString().substring(0,10);
+      monthDates.push({date:ds, dow});
+    }
+
+    monthsData.push({
+      month: mName,
+      workers: workerNames,
+      cutoffDates,
+      monthDates,
+      dateMap
+    });
+  });
+
+  if(monthsData.length===0){alert('אין נתונים לייצוא');return;}
+
+  const dataJson = JSON.stringify(monthsData);
+  const year = S.year||2026;
+
+  const PY = `
+import io, base64, json
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+from datetime import date, datetime
+
+def run(data_json, year):
+    data = json.loads(data_json)
+    wb = Workbook()
+    wb.remove(wb.active)
+
+    YELLOW = 'FFFDE7'
+    GREEN = 'E8F5E9'
+    HEADER_BG = 'E0F2F1'
+    GRAY = 'F5F5F5'
+
+    thin = Side(style='thin', color='CCCCCC')
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+
+    def make_fill(color):
+        return PatternFill('solid', start_color=color, fgColor=color)
+
+    def write_row(ws, row_num, day_str, date_str, cells_data, workers, fill=None):
+        ws.cell(row_num, 1, day_str)
+        try:
+            d = datetime.strptime(date_str, '%Y-%m-%d')
+            ws.cell(row_num, 2, d.date())
+            ws.cell(row_num, 2).number_format = 'DD/MM'
+        except:
+            ws.cell(row_num, 2, date_str)
+        for ci, wn in enumerate(workers):
+            val = cells_data.get(wn, '')
+            if val:
+                ws.cell(row_num, ci+4, val)
+        if fill:
+            for c in range(1, len(workers)+5):
+                ws.cell(row_num, c).fill = make_fill(fill)
+        for c in range(1, len(workers)+5):
+            ws.cell(row_num, c).border = border
+            ws.cell(row_num, c).alignment = Alignment(horizontal='center')
+
+    SHORT = ['א','ב','ג','ד','ה','ו','ש']
+
+    for mdata in data:
+        ws = wb.create_sheet(mdata['month'])
+        workers = mdata['workers']
+        date_map = mdata['dateMap']
+        row = 1
+
+        # שורות חיתוך
+        if mdata['cutoffDates']:
+            for cd in mdata['cutoffDates']:
+                dow = cd['dow']
+                day_str = SHORT[dow] if dow < 7 else ''
+                cells = date_map.get(cd['date'], {})
+                write_row(ws, row, day_str, cd['date'], cells, workers, fill=YELLOW)
+                row += 1
+            row += 1  # שורה ריקה
+
+        # שורת כותרות עובדים
+        ws.cell(row, 1).fill = make_fill(HEADER_BG)
+        ws.cell(row, 2).fill = make_fill(HEADER_BG)
+        ws.cell(row, 3).fill = make_fill(HEADER_BG)
+        for ci, wn in enumerate(workers):
+            c = ws.cell(row, ci+4, wn)
+            c.font = Font(bold=True)
+            c.fill = make_fill(HEADER_BG)
+            c.alignment = Alignment(horizontal='center')
+            c.border = border
+        row += 2  # שורה ריקה אחרי כותרות
+
+        # ימי החודש
+        prev_dow = None
+        for md in mdata['monthDates']:
+            dow = md['dow']
+            # הוספת שורה ריקה בין שבועות (אחרי ה לפני א)
+            if prev_dow is not None and dow == 0 and prev_dow == 4:
+                for c in range(1, len(workers)+5):
+                    ws.cell(row, c).fill = make_fill(GRAY)
+                row += 1
+
+            cells = date_map.get(md['date'], {})
+            # בדיקת חג
+            is_hol = any(v and v not in ['חופש','מחלה','חצי חופש','חצי מחלה','אבל','אחר'] for v in cells.values())
+            fill = GREEN if is_hol else None
+            write_row(ws, row, SHORT[dow], md['date'], cells, workers, fill=fill)
+            prev_dow = dow
+            row += 1
+
+        # עיצוב עמודות
+        ws.column_dimensions['A'].width = 5
+        ws.column_dimensions['B'].width = 10
+        ws.column_dimensions['C'].width = 3
+        for ci in range(len(workers)):
+            ws.column_dimensions[get_column_letter(ci+4)].width = 14
+
+    out = io.BytesIO()
+    wb.save(out)
+    return base64.b64encode(out.getvalue()).decode()
+
+result = run(data_json, year)
+result
+`;
+
+  pyodide.globals.set('data_json', dataJson);
+  pyodide.globals.set('year', year);
+
+  pyodide.runPythonAsync(PY).then(b64=>{
+    const binStr = atob(b64);
+    const bytes = new Uint8Array(binStr.length);
+    for(let i=0;i<binStr.length;i++) bytes[i]=binStr.charCodeAt(i);
+    const blob = new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `חופש_מחלה_${S.year||2026}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }).catch(e=>{alert('שגיאה בייצוא: '+e);});
+}
 
 // ===== PRESENCE =====
 function startPresenceLoop(){
