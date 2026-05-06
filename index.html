@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v129</span>
+      <span class="topbar-title">Reports_Workers v130CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -612,8 +612,9 @@ function renderTable(){
       const pv=pr&&pr.cells?(pr.cells[w.name]||pr.cells[String(w.name).trim()]||''):'';
       const cv=cr&&cr.cells?(cr.cells[w.name]||cr.cells[String(w.name).trim()]||''):'';
       const val=cv||pv||'';
-      if(val) combinedCells[w.name]=val;
       const holName=getHolForWorker(d,w.name);
+      const effectiveVal=val||(holName?'חג':'');
+      if(effectiveVal) combinedCells[w.name]=effectiveVal;
       const td=document.createElement('td');
       const isDup=dupKeys.has(d+'|'+w.name)&&val;
       if(isDup){
