@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v135</span>
+      <span class="topbar-title">Reports_Workers v136</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1694,6 +1694,11 @@ def run(wb_b64, writes_json, month_num, year):
         if sn not in wb.sheetnames:
             continue
         ws = wb[sn]
+        # טיפול בהגדרת print_area
+        if w.get('type') == 'print_area':
+            end_row = w['endRow'] + 1  # המרה ל-1-based
+            ws.print_area = f'$A$1:$U${end_row}'
+            continue
         col = w['col']
         # בטיחות: נוגעים רק בעמודות T (19) ו-U (20) ובסיכומים (17)
         if col not in [17, 19, 20]:
@@ -1752,6 +1757,16 @@ result
 `;
 
       pyodide.globals.set('wb_b64', b64);
+      // הוספת הגדרות print_area לכל עובד
+      wb.SheetNames.forEach(sheetName => {
+        const workerName = normName(sheetName);
+        if(/\d/.test(workerName)) return;
+        if(!activeWorkers.find(w => normName(w.name) === workerName)) return;
+        const ws2 = wb.Sheets[sheetName];
+        const monthRange2 = getMonthRange(ws2, monthNum, S.year);
+        const printEndRow = monthRange2.endRow; // 0-based
+        writes.push({type:'print_area', sheet: sheetName, endRow: printEndRow});
+      });
       pyodide.globals.set('writes_json', JSON.stringify(writes));
       pyodide.globals.set('month_num', monthNum);
       pyodide.globals.set('year_num', S.year);
