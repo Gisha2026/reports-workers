@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v120</span>
+      <span class="topbar-title">Reports_Workers v121</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -436,7 +436,7 @@ function makeWorkdayRange(start,end){
   return out;
 }
 const ALL_DAYS=['א','ב','ג','ד','ה','ו','ש'];
-const VALUES=['','חופש','חצי חופש','מחלה','חצי מחלה','חג','אבל','אחר'];
+const VALUES=['','חופש','חצי חופש','מחלה','חצי מחלה','אבל','אחר'];
 const KNOWN_VALS=new Set(VALUES.filter(Boolean));
 const VAL_BG={'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
 const TOK_KEY='rw_gisha_token'; // PERMANENT
@@ -1435,13 +1435,7 @@ function generateTimesheet(){
             ds = p.y + '-' + String(p.m).padStart(2,'0') + '-' + String(p.d).padStart(2,'0');
           } else continue;
           const dsMonth = '2026-' + String(monthNum).padStart(2,'0');
-          const inCurMonth2 = ds.startsWith(dsMonth);
-          const inPrevRows2 = (monthData.prev||[]).some(pr => {
-            if(!pr||!pr.date) return false;
-            const prd = new Date(pr.date).toISOString().substring(0,10);
-            return prd === ds;
-          });
-          if(!inCurMonth2 && !inPrevRows2) continue;
+          if(!ds.startsWith(dsMonth)) continue;
           writes.push({sheet: sheetName, row: r, col: 19, value: ''});
         }
 
@@ -1479,15 +1473,9 @@ function generateTimesheet(){
             dateStr = cellA.v.toISOString().substring(0,10);
           } else continue;
 
-          // בדיקת חודש ושנה — מאפשרים גם תאריכי חיתוך מהחודש הקודם שב-dateMap
+          // בדיקת חודש ושנה — רק ימי החודש הנוכחי
           const monthStr = '2026-' + String(monthNum).padStart(2,'0');
-          const inCurrentMonth = dateStr.startsWith(monthStr);
-          const inPrevRows = (monthData.prev||[]).some(r => {
-            if(!r||!r.date) return false;
-            const rd = new Date(r.date).toISOString().substring(0,10);
-            return rd === dateStr;
-          });
-          if(!inCurrentMonth && !inPrevRows) continue;
+          if(!dateStr.startsWith(monthStr)) continue;
 
           // בדיקת סוף שבוע
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
@@ -1501,12 +1489,8 @@ function generateTimesheet(){
             const hStart = String(h.start||'').substring(0,10);
             const hEnd = String(h.end||h.start||'').substring(0,10);
             const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.some(wn => normName(wn) === workerName));
-            // לוג לאבחון - רק עבור דווה ו-01/04 ו-21/04
-            if(workerName === 'דווה' && (dateStr === '2026-04-01' || dateStr === '2026-04-21')){
-              console.log('בדיקת חג:', {dateStr, hStart, hEnd, workerMatch, match: workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd});
-            }
             if(workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd){
-              appVal = 'חג';
+              appVal = h.name || 'Holiday';
               break;
             }
           }
@@ -1517,8 +1501,16 @@ function generateTimesheet(){
             appVal = dayData ? (dayData[workerName] || dayData[Object.keys(dayData).find(k=>normName(k)===workerName)||''] || null) : null;
           }
 
-          // שלב 5: כתיבה ל-T
-          const tVal = appVal ? (T_MAP[appVal] || null) : null;
+          // שלב 5: כתיבה ל-T — חגים בשמם המוגדר, שאר הערכים לפי T_MAP
+          let tVal = null;
+          if(appVal){
+            if(T_MAP[appVal] !== undefined){
+              tVal = T_MAP[appVal] || null;
+            } else {
+              // שם חג מוגדר — נשמר כפי שהוא
+              tVal = appVal;
+            }
+          }
           // כותב ל-T רק אם יש ערך — לא נוגעים בימי עבודה רגילים
           if(tVal !== null){
             writes.push({sheet: sheetName, row: r, col: 19, value: tVal});
