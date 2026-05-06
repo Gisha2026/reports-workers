@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v119</span>
+      <span class="topbar-title">Reports_Workers v120</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1417,7 +1417,9 @@ function generateTimesheet(){
               }
               if(isHol) continue;
               const cellT0 = ws[XLSX.utils.encode_cell({r, c:19})];
-              if(!cellT0 || !cellT0.v) originalEmptyRows.push(r);
+              // גם לא לכלול ימים שיש להם ערך ב-dateMap (כבר נספרים לחודש הנוכחי)
+              const hasAppVal = dateMap[ds] && (dateMap[ds][workerName] || dateMap[ds][Object.keys(dateMap[ds]).find(k=>normName(k)===workerName)||'']);
+              if((!cellT0 || !cellT0.v) && !hasAppVal) originalEmptyRows.push(r);
             }
           }
         }
