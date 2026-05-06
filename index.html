@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v115</span>
+      <span class="topbar-title">Reports_Workers v116</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1401,8 +1401,12 @@ function generateTimesheet(){
           } else continue;
           const dsMonth = '2026-' + String(monthNum).padStart(2,'0');
           const inCurMonth2 = ds.startsWith(dsMonth);
-          const inDateMap2 = dateMap.hasOwnProperty(ds);
-          if(!inCurMonth2 && !inDateMap2) continue;
+          const inPrevRows2 = (monthData.prev||[]).some(pr => {
+            if(!pr||!pr.date) return false;
+            const prd = new Date(pr.date).toISOString().substring(0,10);
+            return prd === ds;
+          });
+          if(!inCurMonth2 && !inPrevRows2) continue;
           writes.push({sheet: sheetName, row: r, col: 19, value: ''});
         }
 
@@ -1420,11 +1424,15 @@ function generateTimesheet(){
             dateStr = cellA.v.toISOString().substring(0,10);
           } else continue;
 
-          // בדיקת חודש ושנה — מאפשרים גם תאריכי חודש קודם שנמצאים ב-dateMap (ימי חיתוך)
+          // בדיקת חודש ושנה — מאפשרים גם תאריכי חיתוך מהחודש הקודם שב-dateMap
           const monthStr = '2026-' + String(monthNum).padStart(2,'0');
           const inCurrentMonth = dateStr.startsWith(monthStr);
-          const inDateMap = dateMap.hasOwnProperty(dateStr);
-          if(!inCurrentMonth && !inDateMap) continue;
+          const inPrevRows = (monthData.prev||[]).some(r => {
+            if(!r||!r.date) return false;
+            const rd = new Date(r.date).toISOString().substring(0,10);
+            return rd === dateStr;
+          });
+          if(!inCurrentMonth && !inPrevRows) continue;
 
           // בדיקת סוף שבוע
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
