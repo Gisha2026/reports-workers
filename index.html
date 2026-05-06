@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v130CH</span>
+      <span class="topbar-title">Reports_Workers v132CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -694,6 +694,18 @@ function calcSum(rows,worker){
   return{v,s,h,o};
 }
 
+function calcSumEffective(rows,worker){
+  let v=0,s=0,h=0,o=0;
+  rows.forEach(r=>{
+    const raw=(r.cells&&r.cells[worker])||'';
+    const val=raw || (getHolForWorker(r.date,worker)?'חג':'');
+    if(val==='חופש') v+=1; else if(val==='חצי חופש') v+=0.5;
+    else if(val==='מחלה') s+=1; else if(val==='חצי מחלה') s+=0.5;
+    else if(val==='חג') h+=1; else if(val==='אבל'||val==='אחר') o+=1;
+  });
+  return{v,s,h,o};
+}
+
 function getHolForWorker(date,wname){
   const h=S.holidays.find(h=>{
     if(date<h.start||date>h.end) return false;
@@ -1003,7 +1015,7 @@ function renderAnnual(){
     }
     let tv=0,ts=0,th=0,to=0;
     MONTHS.forEach(m=>{
-      const s=calcSum(getRows(m),w.name);
+      const s=calcSumEffective(getRows(m),w.name);
       tv+=s.v+(s.hv||0)*0.5;
       ts+=s.s+(s.hs||0)*0.5;
       th+=s.h;
@@ -1036,7 +1048,7 @@ function renderAnnual(){
       html+=`<tr class="${cls}"><td class="wc">${w.name}</td>`;
       let tot=0;
       MONTHS.forEach(m=>{
-        const s=calcSum(getRows(m),w.name);
+        const s=calcSumEffective(getRows(m),w.name);
         const v=cat.fn(s); tot+=v;
         html+=`<td>${v>0?v:'—'}</td>`;
       });
@@ -1297,35 +1309,37 @@ function generateTimesheet(){
     }
   });
 
-  // שורת סיכום מהאפליקציה לכל עובד
+  // שורת סיכום לאקסל — זהה ללוגיקת הסיכום במסך
+  // ערך ידני בתא קודם; אם אין ערך ידני ויש חג מטאב החגים, הערך האפקטיבי הוא 'חג'.
+  const summaryRows = [];
+  const cutoffForSummary = S.cutoffs[monthName] ? String(S.cutoffs[monthName]).trim().substring(0,10) : null;
+  const monthStartForSummary = S.year + '-' + String(monthNum).padStart(2,'0') + '-01';
+  const startForSummary = cutoffForSummary || monthStartForSummary;
+  const endForSummary = lastDayOfMonth(S.year, monthNum - 1);
+  const datesForSummary = makeWorkdayRange(startForSummary, endForSummary);
+  const prevByDateForSummary = new Map((monthData.prev||[]).filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10), r]));
+  const curByDateForSummary = new Map((monthData.cur||[]).filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10), r]));
+
+  datesForSummary.forEach(d => {
+    const pr = prevByDateForSummary.get(d);
+    const cr = curByDateForSummary.get(d);
+    const cells = {};
+    S.workers.forEach(w => {
+      const wn = w.name;
+      const pv = pr && pr.cells ? (pr.cells[wn] || pr.cells[String(wn).trim()] || '') : '';
+      const cv = cr && cr.cells ? (cr.cells[wn] || cr.cells[String(wn).trim()] || '') : '';
+      const val = cv || pv || '';
+      const holName = getHolForWorker(d, wn);
+      const effectiveVal = val || (holName ? 'חג' : '');
+      if(effectiveVal) cells[wn] = effectiveVal;
+    });
+    summaryRows.push({date: d, day: getDayName(d), cells});
+  });
+
   const summaryMap = {};
   S.workers.forEach(w => {
-    const s = calcSum(allRows, w.name);
-    // ספירת ימי חג מ-S.holidays עבור החודש הנוכחי
-    let holCount = 0;
-    S.holidays.forEach(h => {
-      const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.some(wn => normName(wn) === normName(w.name)));
-      if (!workerMatch) return;
-      const hStart = String(h.start || '').substring(0, 10);
-      const hEnd = String(h.end || h.start || '').substring(0, 10);
-      if (!hStart) return;
-      const monthStr = '2026-' + String(monthNum).padStart(2, '0');
-      // עוברים יום-יום על טווח החג וסופרים ימים בחודש הנוכחי
-      let cur = new Date(hStart + 'T12:00:00');
-      const endD = new Date(hEnd + 'T12:00:00');
-      while (cur <= endD) {
-        const ds = cur.toISOString().substring(0, 10);
-        if (ds.startsWith(monthStr)) {
-          // בודקים שזה לא שבת/שישי
-          const dow = cur.getDay(); // 0=ראשון ... 5=שישי, 6=שבת
-          if (dow !== 5 && dow !== 6) holCount++;
-        }
-        cur.setDate(cur.getDate() + 1);
-      }
-    });
-    const finalH = s.h + holCount;
-    console.log('summaryMap:', normName(w.name), '| h מטבלה:', s.h, '| holCount:', holCount, '| סה"כ:', finalH);
-    summaryMap[normName(w.name)] = {v: s.v, s: s.s, h: finalH, o: s.o};
+    const s = calcSum(summaryRows, w.name);
+    summaryMap[normName(w.name)] = {v: s.v, s: s.s, h: s.h, o: s.o};
   });
 
   // מיפוי ערכים
