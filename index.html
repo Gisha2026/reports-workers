@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v133CH</span>
+      <span class="topbar-title">Reports_Workers v135</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -1443,6 +1443,55 @@ function generateTimesheet(){
         return;
       }
 
+      // ===== חישוב טווח שורות לפי חוק החיתוך =====
+      // מחזיר {headerRow, startRow, endRow} (0-based)
+      // headerRow: שורת הכותרות (Date, Day, ...) — נכלל תמיד
+      // startRow: 0 (תמיד מתחילת הקובץ)
+      // endRow: שורה אחרונה לכתיבה עבור החודש הנוכחי
+      function getMonthRange(ws, monthNum, year){
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        // 1. מציאת שורת הכותרות (מכילה 'Date' בעמודה A)
+        let headerRow = -1;
+        for(let r = range.s.r; r <= range.e.r; r++){
+          const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
+          if(cellA && String(cellA.v).trim().toLowerCase() === 'date'){
+            headerRow = r;
+            break;
+          }
+        }
+
+        // 2. דצמבר — מסתיים 5 שורות מתחת לשורת OTHER האחרונה
+        if(monthNum === 12){
+          let otherRow = -1;
+          for(let r = range.s.r; r <= range.e.r; r++){
+            const cellQ = ws[XLSX.utils.encode_cell({r, c:16})];
+            if(cellQ && String(cellQ.v).trim() === 'Other'){
+              otherRow = r;
+            }
+          }
+          const endRow = otherRow >= 0 ? otherRow + 5 : range.e.r;
+          return {headerRow, startRow: range.s.r, endRow};
+        }
+
+        // 3. כלל כללי — שתי שורות מעל ה-1 של החודש הבא
+        const nextMonth = monthNum + 1; // ינואר=1, ..., נובמבר=11
+        const nextMonthStr = year + '-' + String(nextMonth).padStart(2,'0') + '-01';
+        let nextMonthRow = -1;
+        for(let r = range.s.r; r <= range.e.r; r++){
+          const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
+          if(!cellA || typeof cellA.v !== 'number') continue;
+          const p = XLSX.SSF.parse_date_code(cellA.v);
+          if(!p) continue;
+          const ds = p.y + '-' + String(p.m).padStart(2,'0') + '-' + String(p.d).padStart(2,'0');
+          if(ds === nextMonthStr){
+            nextMonthRow = r;
+            break;
+          }
+        }
+        const endRow = nextMonthRow >= 0 ? nextMonthRow - 2 : range.e.r;
+        return {headerRow, startRow: range.s.r, endRow};
+      }
+
       wb.SheetNames.forEach(sheetName => {
         // שלב 3: מאתרים טאב ששמו בדיוק שם העובד — בלי מספרים
         const workerName = normName(sheetName);
@@ -1453,6 +1502,10 @@ function generateTimesheet(){
 
         const ws = wb.Sheets[sheetName];
         const range = XLSX.utils.decode_range(ws['!ref']);
+        const monthRange = getMonthRange(ws, monthNum, S.year);
+        const cutRowStart = monthRange.startRow;   // 0 בד"כ
+        const cutRowEnd   = monthRange.endRow;     // שורה אחרונה לחודש
+        const headerRow   = monthRange.headerRow;  // שורת כותרות — נכללת תמיד
         const dailyHours = DAILY_HOURS[workerName] || DEFAULT_HOURS;
 
         // איסוף שורות פנויות מהקובץ המקורי לפני כל כתיבה
@@ -1464,7 +1517,7 @@ function generateTimesheet(){
             return val && val !== 'חג';
           });
           if(prevWithVals.length > 0){
-            for(let r = range.s.r; r <= range.e.r; r++){
+            for(let r = cutRowStart; r <= cutRowEnd; r++){
               const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
               if(!cellA || typeof cellA.v !== 'number') continue;
               const p = XLSX.SSF.parse_date_code(cellA.v);
@@ -1491,7 +1544,7 @@ function generateTimesheet(){
         }
 
         // מחיקת כל ערכי T של החודש לפני הכתיבה
-        for(let r = range.s.r; r <= range.e.r; r++){
+        for(let r = cutRowStart; r <= cutRowEnd; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
           if(!cellA || cellA.v === undefined || cellA.v === null) continue;
           let ds;
@@ -1531,7 +1584,7 @@ function generateTimesheet(){
           }
         });
 
-        for(let r = range.s.r; r <= range.e.r; r++){
+        for(let r = cutRowStart; r <= cutRowEnd; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
           if(!cellA || cellA.v === undefined || cellA.v === null) continue;
 
@@ -1631,7 +1684,9 @@ function generateTimesheet(){
 import io, base64, json
 from openpyxl import load_workbook
 
-def run(wb_b64, writes_json):
+def run(wb_b64, writes_json, month_num, year):
+    from datetime import date
+    from openpyxl.utils import get_column_letter
     writes = json.loads(writes_json)
     wb = load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
     for w in writes:
@@ -1649,16 +1704,57 @@ def run(wb_b64, writes_json):
         cell.value = None
         if val is not None and val != '':
             cell.value = val
+
+    # הסתרת שורות — רק אם לא ינואר
+    if month_num > 1:
+        for sn in wb.sheetnames:
+            ws = wb[sn]
+            # מציאת שורת הכותרות (מכילה 'Date' בעמודה A)
+            header_row = None
+            for r in range(1, ws.max_row + 1):
+                cell_a = ws.cell(r, 1).value
+                if cell_a and str(cell_a).strip().lower() == 'date':
+                    header_row = r
+                    break
+            if header_row is None:
+                continue
+
+            # מציאת שורת 1/X (1 בחודש הנוכחי) בעמודה A
+            first_of_month = None
+            target = date(year, month_num, 1)
+            for r in range(1, ws.max_row + 1):
+                cell_a = ws.cell(r, 1).value
+                if hasattr(cell_a, 'date'):
+                    cell_date = cell_a.date()
+                elif isinstance(cell_a, date):
+                    cell_date = cell_a
+                else:
+                    continue
+                if cell_date == target:
+                    first_of_month = r
+                    break
+            if first_of_month is None:
+                continue
+
+            # שורת הסוף של החודש הקודם = שתי שורות מעל 1/X
+            hide_end = first_of_month - 2
+
+            # מסתירים שורות מ-header_row+1 עד hide_end
+            for r in range(header_row + 1, hide_end + 1):
+                ws.row_dimensions[r].hidden = True
+
     out = io.BytesIO()
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
 
-result = run(wb_b64, writes_json)
+result = run(wb_b64, writes_json, month_num, year_num)
 result
 `;
 
       pyodide.globals.set('wb_b64', b64);
       pyodide.globals.set('writes_json', JSON.stringify(writes));
+      pyodide.globals.set('month_num', monthNum);
+      pyodide.globals.set('year_num', S.year);
       const resultB64 = await pyodide.runPythonAsync(PY);
 
       const binStr = atob(resultB64);
