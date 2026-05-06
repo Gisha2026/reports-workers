@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v132CH</span>
+      <span class="topbar-title">Reports_Workers v133CH</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -732,6 +732,33 @@ function getRows(mName){
   return(md.cur||[]).filter(r=>r&&r.date).sort((a,b)=>a.date.localeCompare(b.date));
 }
 
+function getAnnualRows(mName){
+  const mi=MONTHS.indexOf(mName);
+  if(mi<0) return getRows(mName);
+  const cutoff=S.cutoffs[mName]?String(S.cutoffs[mName]).trim().substring(0,10):null;
+  const monthStart=S.year+'-'+String(mi+1).padStart(2,'0')+'-01';
+  const startDate=cutoff||monthStart;
+  const endDate=lastDayOfMonth(S.year,mi);
+  const dates=makeWorkdayRange(startDate,endDate);
+  const md=S.months[mName]||{prev:[],cur:[]};
+  const prevByDate=new Map([...(md.prev||[])].filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10),r]));
+  const curByDate=new Map([...(md.cur||[])].filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10),r]));
+  const workers=activeWorkers(mName);
+  return dates.map(d=>{
+    const pr=prevByDate.get(d);
+    const cr=curByDate.get(d);
+    const cells={};
+    workers.forEach(w=>{
+      const name=String(w.name||'').trim();
+      const pv=pr&&pr.cells?(pr.cells[w.name]||pr.cells[name]||''):'';
+      const cv=cr&&cr.cells?(cr.cells[w.name]||cr.cells[name]||''):'';
+      const val=cv||pv||'';
+      if(val) cells[w.name]=val;
+    });
+    return {date:d,day:getDayName(d),cells};
+  });
+}
+
 // ===== IMPORT =====
 function importExcel(input){
   const file=input.files[0];
@@ -1015,7 +1042,7 @@ function renderAnnual(){
     }
     let tv=0,ts=0,th=0,to=0;
     MONTHS.forEach(m=>{
-      const s=calcSumEffective(getRows(m),w.name);
+      const s=calcSumEffective(getAnnualRows(m),w.name);
       tv+=s.v+(s.hv||0)*0.5;
       ts+=s.s+(s.hs||0)*0.5;
       th+=s.h;
@@ -1048,7 +1075,7 @@ function renderAnnual(){
       html+=`<tr class="${cls}"><td class="wc">${w.name}</td>`;
       let tot=0;
       MONTHS.forEach(m=>{
-        const s=calcSumEffective(getRows(m),w.name);
+        const s=calcSumEffective(getAnnualRows(m),w.name);
         const v=cat.fn(s); tot+=v;
         html+=`<td>${v>0?v:'—'}</td>`;
       });
