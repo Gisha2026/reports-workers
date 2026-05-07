@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v138</span>
+      <span class="topbar-title">Reports_Workers v140</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -182,6 +182,7 @@ async function initPyodide(){
     <div class="tab" onclick="switchTab('holidays')">חגים</div>
     <div class="tab" onclick="switchTab('annual')">סיכום שנתי</div>
     <div class="tab" onclick="switchTab('timesheet')">Timesheet</div>
+    <button class="exp-btn" onclick="exportExcel()" style="margin-right:8px;padding:5px 12px;">ייצוא לאקסל</button>
     <div class="tab" onclick="switchTab('email')">מייל</div>
     <div class="tab" onclick="switchTab('settings')">הגדרות</div>
   </div>
@@ -343,7 +344,6 @@ async function initPyodide(){
 
   <div class="save-bar">
     <button class="save-btn" onclick="saveData()">שמור</button>
-    <button class="exp-btn" onclick="exportExcel()">ייצוא לאקסל</button>
     <span class="sst" id="saveStatus"></span>
   </div>
 </div>
@@ -454,8 +454,17 @@ window.onload=()=>{
     const old=localStorage.getItem(k);
     if(old&&!localStorage.getItem(TOK_KEY)) localStorage.setItem(TOK_KEY,old);
   });
-  const saved=localStorage.getItem('rw_gisha_data');
+  // מיגרציה: העברת נתונים ישנים למפתח 2026
+  const legacy=localStorage.getItem('rw_gisha_data');
+  if(legacy&&!localStorage.getItem('rw_gisha_data_2026')){
+    localStorage.setItem('rw_gisha_data_2026',legacy);
+    localStorage.removeItem('rw_gisha_data');
+  }
+  // טעינה לפי שנה נוכחית
+  const initYear=S.year||2026;
+  const saved=localStorage.getItem(storeKey(initYear));
   if(saved) try{S=JSON.parse(saved);}catch(e){}
+  if(!S.year) S.year=initYear;
   buildJumps();
   startPresenceLoop();
 };
@@ -512,7 +521,31 @@ function renderAll(){
 function prevMonth(){if(curMI>0){curMI--;refresh();}}
 function nextMonth(){if(curMI<11){curMI++;refresh();}}
 function jumpMonth(v){curMI=parseInt(v);refresh();}
-function jumpYear(v){S.year=parseInt(v);refresh();}
+function jumpYear(v){
+  const newYear=parseInt(v);
+  if(newYear===S.year) return;
+  // שמירת נתוני השנה הנוכחית לפני המעבר
+  saveLocally();
+  // טעינת נתוני השנה החדשה
+  const newKey=storeKey(newYear);
+  const saved=localStorage.getItem(newKey);
+  const user=S.currentUser;
+  const token=getToken();
+  const allHols=(S.holidays||[]).slice();
+  if(saved){
+    try{S=JSON.parse(saved);}catch(e){
+      S={version:'v62',currentUser:user,workers:S.workers||[],months:{},cutoffs:{},holidays:allHols,emailTemplate:S.emailTemplate,year:newYear};
+    }
+  } else {
+    // שנה חדשה — נתונים ריקים, חגים נשמרים
+    S={version:'v62',currentUser:user,workers:S.workers||[],months:{},cutoffs:{},holidays:allHols,emailTemplate:S.emailTemplate,year:newYear};
+  }
+  S.currentUser=user;
+  S.year=newYear;
+  S.holidays=allHols;
+  document.getElementById('yearJump').value=newYear;
+  refresh();
+}
 function refresh(){
   document.getElementById('monthJump').value=curMI;
   document.getElementById('yearJump').value=S.year;
@@ -1087,11 +1120,12 @@ function renderAnnual(){
 }
 
 // ===== SYNC =====
-function saveLocally(){localStorage.setItem('rw_gisha_data',JSON.stringify(S));}
+function storeKey(year){ return 'rw_gisha_data_'+(year||S.year||2026); }
+function saveLocally(){localStorage.setItem(storeKey(),JSON.stringify(S));}
 
 async function saveToGithub(){
   const token=getToken(); if(!token) return false;
-  const url='https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json';
+  const url='https://api.github.com/repos/Gisha2026/reports-workers/contents/data_'+(S.year||2026)+'.json';
   try{
     let sha='';
     const gr=await fetch(url,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
@@ -1107,7 +1141,7 @@ async function saveToGithub(){
 async function loadFromGithub(){
   const token=getToken(); if(!token) return null;
   try{
-    const r=await fetch('https://api.github.com/repos/Gisha2026/reports-workers/contents/data.json',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
+    const r=await fetch('https://api.github.com/repos/Gisha2026/reports-workers/contents/data_'+(S.year||2026)+'.json',{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
     if(!r.ok) return null;
     const f=await r.json();
     return JSON.parse(decodeURIComponent(escape(atob(f.content))));
@@ -1274,6 +1308,7 @@ def run(data_json, year):
 
     for mdata in data:
         ws = wb.create_sheet(mdata['month'])
+        ws.sheet_view.rightToLeft = True
         workers = mdata['workers']
         date_map = mdata['dateMap']
         row = 1
