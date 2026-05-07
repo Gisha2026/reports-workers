@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v154CH</span>
+      <span class="topbar-title">Reports_Workers v155CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1252,297 +1252,281 @@ function generateAccounting(){
 
   status.textContent='מחשב...';status.style.color='#666';
 
-  // 1. חישוב E, F, G מהאפליקציה
+  // E/F/G מגיעים מהאפליקציה בלבד
   const md=S.months[monthName]||{prev:[],cur:[]};
   const allRows=[...(md.prev||[]),...(md.cur||[])].filter(r=>r&&r.date);
   const workers=activeWorkers(monthName);
 
-  // סיכום לכל עובד
   const efgMap={};
   workers.forEach(w=>{
     const s=calcSumEffective(allRows,w.name);
     efgMap[w.name]={e:s.v, f:s.s, g:s.h+s.o};
   });
 
-  // 2. H, I נקראים מדוח השעות שמועלה
-
-  // 3. חישוב O — ותק וצביעה
-  // טבלת ותק: {minYears, maxYears, days, monthly}
-  const SENIORITY=[
-    {min:0,max:3,days:15,monthly:'15/1.25'},
-    {min:3,max:6,days:18,monthly:'18/1.5'},
-    {min:6,max:7,days:21,monthly:'21/1.75'},
-    {min:7,max:8,days:22,monthly:'22/1.83'},
-    {min:8,max:9,days:23,monthly:'23/1.91'},
-    {min:9,max:999,days:24,monthly:'24/2'}
-  ];
-
-  function getSeniority(yearsWorked){
-    return SENIORITY.find(s=>yearsWorked>=s.min&&yearsWorked<s.max)||SENIORITY[SENIORITY.length-1];
-  }
-
-  // 4. בניית נתונים לפייתון
   const workerData=workers.map(w=>({
     name: w.name,
     e: efgMap[w.name]?efgMap[w.name].e:0,
     f: efgMap[w.name]?efgMap[w.name].f:0,
-    g: efgMap[w.name]?efgMap[w.name].g:0,
-    startDate: w.startDate||null
+    g: efgMap[w.name]?efgMap[w.name].g:0
   }));
 
-  const dataJson=JSON.stringify({workers:workerData, monthName, year, today:new Date().toISOString().substring(0,10)});
+  const dataJson=JSON.stringify({workers:workerData, monthName, year, monthNum});
 
   const PY=`
-import io, base64, json, datetime
+import io, base64, json, datetime, re
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+from openpyxl.utils.cell import range_boundaries, coordinate_to_tuple, get_column_letter
+
+MONTH_EN = {
+    'ינואר':'January','פברואר':'February','מרץ':'March','אפריל':'April','מאי':'May','יוני':'June',
+    'יולי':'July','אוגוסט':'August','ספטמבר':'September','אוקטובר':'October','נובמבר':'November','דצמבר':'December'
+}
+MONTH_EN_SHORT = {
+    'ינואר':'Jan','פברואר':'Feb','מרץ':'Mar','אפריל':'Apr','מאי':'May','יוני':'Jun',
+    'יולי':'Jul','אוגוסט':'Aug','ספטמבר':'Sep','אוקטובר':'Oct','נובמבר':'Nov','דצמבר':'Dec'
+}
+
+QUOTAS = [
+    (0,3,'15/1.25',15,'1.25'),
+    (3,6,'18/1.5',18,'1.5'),
+    (6,7,'21/1.75',21,'1.75'),
+    (7,8,'22/1.83',22,'1.83'),
+    (8,9,'23/1.91',23,'1.91'),
+    (9,999,'24/2',24,'2')
+]
+
+def quota_for_years(years):
+    for mn,mx,text,days,monthly in QUOTAS:
+        if mn <= years < mx:
+            return text, days, monthly
+    return '24/2',24,'2'
+
+def years_between(start, dt):
+    return (dt - start).days / 365.25
+
+def month_bounds(year, month_num):
+    start = datetime.date(year, month_num, 1)
+    if month_num == 12:
+        end = datetime.date(year, 12, 31)
+        prev = datetime.date(year, 11, 30)
+    else:
+        end = datetime.date(year, month_num+1, 1) - datetime.timedelta(days=1)
+        prev = start - datetime.timedelta(days=1)
+    return start, end, prev
+
+def clean_name(v):
+    return str(v or '').strip()
+
+def first_name(v):
+    s=clean_name(v)
+    return s.split()[0] if s else ''
+
+def is_main_sheet(sheet_name):
+    # טאב עובד ראשי: שם ללא מספר. אם יש מספר בשם, זה טאב ייעודי ולא מקור ל-H/I של הנהלת חשבונות.
+    return not re.search(r'\d', str(sheet_name or ''))
+
+class FormulaEvaluator:
+    def __init__(self, ws):
+        self.ws=ws
+        self.cache={}
+        self.stack=set()
+
+    def eval_cell(self, coord):
+        coord = coord.replace('$','')
+        if coord in self.cache:
+            return self.cache[coord]
+        if coord in self.stack:
+            return 0.0
+        self.stack.add(coord)
+        try:
+            v = self.ws[coord].value
+            ans = self.eval_value(v, coord)
+        finally:
+            self.stack.discard(coord)
+        self.cache[coord]=ans
+        return ans
+
+    def eval_value(self, v, current_coord=None):
+        if v is None:
+            return 0.0
+        if isinstance(v, (int,float)):
+            return float(v)
+        if isinstance(v, datetime.datetime):
+            return 0.0
+        if not isinstance(v, str):
+            return 0.0
+        s=v.strip()
+        if not s.startswith('='):
+            try:
+                return float(s)
+            except:
+                return 0.0
+        expr=s[1:].replace('$','').strip()
+
+        # SUM(A1:B2)
+        m=re.fullmatch(r'SUM\(([A-Z]+\d+):([A-Z]+\d+)\)', expr, re.I)
+        if m:
+            return self.sum_range(m.group(1), m.group(2))
+
+        # COUNTIF(A1:B2,">1")
+        m=re.fullmatch(r'COUNTIF\(([A-Z]+\d+):([A-Z]+\d+),\s*"?>([-0-9.]+)"?\)', expr, re.I)
+        if m:
+            threshold=float(m.group(3))
+            return self.countif_gt(m.group(1), m.group(2), threshold)
+
+        # C188-SUM(D188:R188)
+        m=re.fullmatch(r'([A-Z]+\d+)\s*-\s*SUM\(([A-Z]+\d+):([A-Z]+\d+)\)', expr, re.I)
+        if m:
+            return self.eval_cell(m.group(1)) - self.sum_range(m.group(2), m.group(3))
+
+        # 20%*C188 or 20% * C188
+        m=re.fullmatch(r'([-0-9.]+)%\s*\*\s*([A-Z]+\d+)', expr, re.I)
+        if m:
+            return (float(m.group(1))/100.0) * self.eval_cell(m.group(2))
+
+        # C5/5
+        m=re.fullmatch(r'([A-Z]+\d+)\s*/\s*([-0-9.]+)', expr, re.I)
+        if m:
+            denom=float(m.group(2))
+            return self.eval_cell(m.group(1))/denom if denom else 0.0
+
+        # A1 reference
+        m=re.fullmatch(r'([A-Z]+\d+)', expr, re.I)
+        if m:
+            return self.eval_cell(m.group(1))
+
+        # literal number
+        try:
+            return float(expr)
+        except:
+            return 0.0
+
+    def sum_range(self, start, end):
+        min_col,min_row,max_col,max_row = range_boundaries(f'{start}:{end}')
+        total=0.0
+        for r in range(min_row, max_row+1):
+            for c in range(min_col, max_col+1):
+                total += self.eval_cell(f'{get_column_letter(c)}{r}')
+        return total
+
+    def countif_gt(self, start, end, threshold):
+        min_col,min_row,max_col,max_row = range_boundaries(f'{start}:{end}')
+        cnt=0
+        for r in range(min_row, max_row+1):
+            for c in range(min_col, max_col+1):
+                if self.eval_cell(f'{get_column_letter(c)}{r}') > threshold:
+                    cnt += 1
+        return cnt
+
+
+def find_month_marker(ws, month_name):
+    targets={MONTH_EN.get(month_name, month_name), MONTH_EN_SHORT.get(month_name, month_name), month_name}
+    for row in ws.iter_rows(min_row=1, max_row=ws.max_row):
+        for cell in row:
+            val=cell.value
+            if val is None: continue
+            if str(val).strip() in targets:
+                return cell.row
+    return None
+
+
+def find_summary_value(ws, evaluator, month_name, label):
+    marker_row = find_month_marker(ws, month_name)
+    if marker_row is None:
+        return None
+    # תיבות הסיכום נמצאות סביב שורת החודש, אך לא באותו מקום אצל כל עובד.
+    start=max(1, marker_row-8)
+    end=min(ws.max_row, marker_row+8)
+    for r in range(start, end+1):
+        for c in range(1, ws.max_column+1):
+            val=ws.cell(r,c).value
+            if isinstance(val, str) and val.strip().lower()==label.lower():
+                # לפי דוח השעות: התווית בעמודה T והנוסחה/ערך בעמודה U, אבל נשאיר גמישות לתא שמימין.
+                target = ws.cell(r, c+1) if c < ws.max_column else None
+                if target is not None:
+                    return evaluator.eval_cell(target.coordinate)
+    return None
+
+
+def build_hi_map(ts_wb, month_name):
+    out={}
+    # קודם טאב ללא מספר; טאב עם מספר לא ידרוס טאב ראשי.
+    sheets=sorted(ts_wb.sheetnames, key=lambda sn: (not is_main_sheet(sn), sn))
+    for sn in sheets:
+        ws=ts_wb[sn]
+        key=first_name(sn)
+        if not key: continue
+        if key in out and is_main_sheet(out[key].get('_sheet','')):
+            continue
+        ev=FormulaEvaluator(ws)
+        hours=find_summary_value(ws, ev, month_name, 'Hours')
+        days=find_summary_value(ws, ev, month_name, 'Days')
+        if hours is None and days is None:
+            continue
+        out[key]={'i': round(hours,2) if hours is not None else None, 'h': round(days,2) if days is not None else None, '_sheet': sn}
+    return out
 
 def run(wb_b64, ts_b64, data_json):
-    data = json.loads(data_json)
-    workers = data['workers']
-    month_name = data['monthName']
-    today = datetime.date.today()
+    data=json.loads(data_json)
+    workers=data['workers']
+    month_name=data['monthName']
+    year=int(data['year'])
+    month_num=int(data['monthNum'])
 
-    # ותק
-    SENIORITY = [
-        (0,3,15,'15/1.25'),(3,6,18,'18/1.5'),(6,7,21,'21/1.75'),
-        (7,8,22,'22/1.83'),(8,9,23,'23/1.91'),(9,999,24,'24/2')
-    ]
-    def get_seniority(years):
-        for mn,mx,d,m in SENIORITY:
-            if mn <= years < mx: return d,m
-        return 24,'24/2'
-
-    wb_bytes = base64.b64decode(wb_b64)
-    wb = load_workbook(io.BytesIO(wb_bytes))
+    wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
+    ts_wb=load_workbook(io.BytesIO(base64.b64decode(ts_b64)), data_only=False)
 
     if month_name not in wb.sheetnames:
         return 'ERROR:גיליון לא נמצא: '+month_name
+    ws=wb[month_name]
 
-    ws = wb[month_name]
-    YELLOW = PatternFill('solid', start_color='FFFF00', fgColor='FFFF00')
-
-    # עדכון כל עובד
-    # קריאת H, I מדוח השעות לפי תיבות הסיכום החודשי של כל עובד.
-    # תיקון 154CH: התיבות Hours/Days הן נוסחאות, ולכן לא מספיק load_workbook(data_only=True).
-    # מאתרים את נוסחת Hours/Days של החודש ומחשבים אותה בפועל מתוך טווח U היומי.
-    hi_map = {}
-    try:
-        import re
-        ts_wb = load_workbook(io.BytesIO(base64.b64decode(ts_b64)), data_only=False)
-
-        def norm_name(v):
-            return str(v or '').strip().replace('\u200f','').replace('\u200e','')
-
-        def as_number(v):
-            if isinstance(v, (int, float)):
-                return round(float(v), 1)
-            if isinstance(v, str):
-                s = v.strip().replace(',', '')
-                try:
-                    return round(float(s), 1)
-                except:
-                    return None
-            return None
-
-        def eval_simple_number(v):
-            """מחשב מספר פשוט או נוסחה פשוטה כמו =8*5 / =42 / =21."""
-            n = as_number(v)
-            if n is not None:
-                return n
-            if isinstance(v, str):
-                expr = v.strip()
-                if expr.startswith('='):
-                    expr = expr[1:]
-                if re.fullmatch(r'[0-9\.\+\-\*/\(\) ]+', expr):
-                    try:
-                        return round(float(eval(expr, {'__builtins__': {}}, {})), 4)
-                    except:
-                        return None
-            return None
-
-        MONTH_EN = {
-            'ינואר':'January','פברואר':'February','מרץ':'March','אפריל':'April',
-            'מאי':'May','יוני':'June','יולי':'July','אוגוסט':'August',
-            'ספטמבר':'September','אוקטובר':'October','נובמבר':'November','דצמבר':'December'
-        }
-        month_en = MONTH_EN.get(month_name, month_name)
-
-        def row_has_month(ws, r, wanted):
-            wanted_l = str(wanted).strip().lower()
-            for c in range(1, min(ws.max_column, 8) + 1):
-                v = ws.cell(r, c).value
-                if isinstance(v, str) and v.strip().lower() == wanted_l:
-                    return True
-            return False
-
-        def find_month_label_row(ws):
-            for r in range(1, ws.max_row + 1):
-                if row_has_month(ws, r, month_en) or row_has_month(ws, r, month_name):
-                    return r
-            return None
-
-        def find_label_row(ws, label, month_row):
-            # בדוח השעות Hours נמצא לעיתים שורה אחת לפני שם החודש, ו-Days אחריו.
-            # לכן מחפשים סביב שורת החודש, לא רק אחריה.
-            if month_row is None:
-                search_start, search_end = 1, ws.max_row
-            else:
-                search_start = max(1, month_row - 10)
-                search_end = min(ws.max_row, month_row + 20)
-            wanted = label.strip().lower()
-            # עדיפות לעמודה T, כפי שהוגדר.
-            for r in range(search_start, search_end + 1):
-                v = ws.cell(r, 20).value
-                if isinstance(v, str) and v.strip().lower() == wanted:
-                    return r, 20
-            # גיבוי: חיפוש באותה סביבה בכל העמודות.
-            for r in range(search_start, search_end + 1):
-                for c in range(1, ws.max_column + 1):
-                    v = ws.cell(r, c).value
-                    if isinstance(v, str) and v.strip().lower() == wanted:
-                        return r, c
-            return None, None
-
-        def parse_u_range_from_formula(formula):
-            # תומך בנוסחאות כמו =SUM(U186:U216) או =COUNTIF(U186:U216,">1")
-            if not isinstance(formula, str):
-                return None
-            m = re.search(r'U(\d+)\s*:\s*U(\d+)', formula, flags=re.IGNORECASE)
-            if not m:
-                return None
-            a, b = int(m.group(1)), int(m.group(2))
-            if a > b:
-                a, b = b, a
-            return a, b
-
-        def formula_cell_near_label(ws, r, c):
-            # הערך של Hours/Days יושב בדרך כלל בתא U באותה שורה.
-            for cc in range(c + 1, min(ws.max_column, c + 6) + 1):
-                v = ws.cell(r, cc).value
-                if isinstance(v, str) and v.strip().startswith('='):
-                    return v
-                if as_number(v) is not None:
-                    return v
-            return ws.cell(r, c + 1).value if c + 1 <= ws.max_column else None
-
-        def daily_hours_for_sheet(ws):
-            weekly = eval_simple_number(ws.cell(5, 3).value)
-            if weekly is None:
-                # גיבוי: חיפוש בקרבת הכותרת אם C5 אינו זמין
-                for r in range(1, 10):
-                    n = eval_simple_number(ws.cell(r, 3).value)
-                    if n is not None and n > 0:
-                        weekly = n
-                        break
-            return round(float(weekly) / 5, 4) if weekly is not None else None
-
-        def u_value_for_row(ws, r, daily_hours):
-            # עמודה T היא הסיבה; עמודה U היא השעות/הנוסחה.
-            reason = ws.cell(r, 20).value
-            reason_l = str(reason or '').strip().lower()
-            u = ws.cell(r, 21).value
-            n = as_number(u)
-            if n is not None:
-                return n
-            if reason_l in ('vacation','sick','holiday','other'):
-                return 0
-            if reason_l in ('half vacation','half sick'):
-                return round(float(daily_hours or 0) / 2, 4)
-            # אם זו שורת סוף שבוע — לא נספר.
-            b = str(ws.cell(r, 2).value or '').strip().lower()
-            c = str(ws.cell(r, 3).value or '').strip().lower()
-            if b in ('friday','saturday') or c == 'weekend':
-                return 0
-            # יום עבודה רגיל: U היא נוסחה קיימת, גם אם אין לה ערך מחושב בקובץ.
-            if isinstance(u, str) and u.strip().startswith('='):
-                return round(float(daily_hours or 0), 4)
-            return 0
-
-        def compute_from_u_range(ws, start_row, end_row):
-            dh = daily_hours_for_sheet(ws)
-            hours = 0.0
-            days = 0.0
-            for rr in range(start_row, end_row + 1):
-                val = u_value_for_row(ws, rr, dh)
-                hours += val
-                if val > 1:
-                    days += 1
-            return round(days, 1), round(hours, 1)
-
-        def find_hours_days(ws):
-            month_row = find_month_label_row(ws)
-            h_row, h_col = find_label_row(ws, 'Hours', month_row)
-            d_row, d_col = find_label_row(ws, 'Days', month_row)
-
-            # עדיפות: שימוש בנוסחת Hours כי היא מכילה את טווח U היומי של החודש.
-            h_formula = formula_cell_near_label(ws, h_row, h_col) if h_row else None
-            rng = parse_u_range_from_formula(h_formula)
-            if rng:
-                return compute_from_u_range(ws, rng[0], rng[1])
-
-            # גיבוי: נוסחת Days מכילה בדרך כלל אותו טווח U.
-            d_formula = formula_cell_near_label(ws, d_row, d_col) if d_row else None
-            rng = parse_u_range_from_formula(d_formula)
-            if rng:
-                return compute_from_u_range(ws, rng[0], rng[1])
-
-            return None, None
-
-        for sn in ts_wb.sheetnames:
-            clean_sn = norm_name(sn)
-            if not clean_sn or clean_sn == '_gisha_data':
-                continue
-            # דוח הנהלת חשבונות מתייחס לטאבים הראשיים של העובדים, לא לטאבים עם מספר.
-            if any(ch.isdigit() for ch in clean_sn):
-                continue
-            ts_ws = ts_wb[sn]
-            days, hours = find_hours_days(ts_ws)
-            if days is not None or hours is not None:
-                first = clean_sn.split()[0]
-                hi_map[first] = {'h': days, 'i': hours}
-    except Exception:
-        pass
+    hi_map=build_hi_map(ts_wb, month_name)
+    worker_map={w['name'].strip():w for w in workers}
+    yellow=PatternFill('solid', start_color='FFFF00', fgColor='FFFF00')
+    _, report_end, prev_end = month_bounds(year, month_num)
 
     for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-        name_cell = row[3]  # עמודה D (index 3)
-        if not name_cell.value: continue
-        full_name = str(name_cell.value).strip()
-        first_name = full_name.split()[0] if full_name else ''
-        if not first_name: continue
+        name_cell=row[3]  # D
+        if not name_cell.value:
+            continue
+        fname=first_name(name_cell.value)
+        if not fname:
+            continue
+        worker=worker_map.get(fname)
+        if not worker:
+            continue
 
-        # חיפוש עובד לפי שם פרטי
-        worker = next((w for w in workers if w['name'].strip() == first_name), None)
-        if not worker: continue
+        # E/F/G מהאפליקציה
+        row[4].value = worker['e'] if worker.get('e') else None
+        row[5].value = worker['f'] if worker.get('f') else None
+        row[6].value = worker['g'] if worker.get('g') else None
 
-        hi = hi_map.get(first_name, {})
+        # H/I מדוח השעות: Days/Hours לפי נוסחאות הסיכום שכבר קיימות ב-Timesheet
+        hi=hi_map.get(fname,{})
+        row[7].value = hi.get('h') if hi.get('h') is not None else None
+        row[8].value = hi.get('i') if hi.get('i') is not None else None
 
-        # עמודות E-I (index 4-8)
-        row[4].value = worker['e'] if worker['e'] else None  # E
-        row[5].value = worker['f'] if worker['f'] else None  # F
-        row[6].value = worker['g'] if worker['g'] else None  # G
-        row[7].value = hi.get('h') if hi.get('h') else None  # H
-        row[8].value = hi.get('i') if hi.get('i') else None  # I
+        # J/K/L/M/N/P — לא נוגעים.
+        # O — לא משנים ערך; רק צובעים בחודש מעבר מכסה. Q — הערה מחוץ לטבלה.
+        o_cell=row[14]  # O
+        o_val=str(o_cell.value).strip() if o_cell.value is not None else ''
+        if o_val == '24/2':
+            continue
+        start_val=row[12].value  # M = תאריך ותק/תחילת עבודה
+        if isinstance(start_val, datetime.datetime):
+            start_date=start_val.date()
+        elif isinstance(start_val, datetime.date):
+            start_date=start_val
+        else:
+            continue
+        old_quota,_,_=quota_for_years(years_between(start_date, prev_end))
+        new_quota,new_days,new_monthly=quota_for_years(years_between(start_date, report_end))
+        if old_quota != new_quota and o_val != new_quota:
+            o_cell.fill = yellow
+            row[16].value = f'עדכון ימי חופש: {new_days} ימים בשנה, {new_monthly} ימים בחודש'
 
-        # עמודה O (index 14) — בדיקת ותק וצביעה
-        o_cell = row[14]
-        o_val = str(o_cell.value).strip() if o_cell.value else ''
-        if o_val == '24/2': continue  # מוחרג
-
-        if worker.get('startDate'):
-            try:
-                start = datetime.date.fromisoformat(str(worker['startDate'])[:10])
-                years = (today - start).days / 365.25
-                days, monthly = get_seniority(years)
-                expected = monthly
-                if o_val and o_val != expected:
-                    o_cell.fill = YELLOW
-                    # עמודה Q (index 16)
-                    q_cell = row[16]
-                    q_cell.value = f'עדכון ימי חופש: {days} ימים בשנה, {monthly.split("/")[1]} ימים בחודש'
-            except: pass
-
-    out = io.BytesIO()
+    out=io.BytesIO()
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
 
