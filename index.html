@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v148</span>
+      <span class="topbar-title">Reports_Workers v149</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1235,9 +1235,196 @@ function generateAccounting(){
   const sel=document.getElementById('acc-month');
   const file=document.getElementById('acc-file').files[0];
   if(!sel.value){status.textContent='בחר חודש.';status.style.color='red';return;}
-  if(!file){status.textContent='העלה קובץ.';status.style.color='red';return;}
-  const [monthName,year]=sel.value.split('_');
-  status.textContent='בקרוב...';status.style.color='#666';
+  if(!file){status.textContent='העלה קובץ דוח הנהלת חשבונות.';status.style.color='red';return;}
+  if(!pyReady){status.textContent='המנוע עדיין בטעינה, נסה שוב.';status.style.color='red';return;}
+
+  const [monthName,yearStr]=sel.value.split('_');
+  const year=parseInt(yearStr)||S.year||2026;
+  const monthNum=MONTHS.indexOf(monthName)+1;
+  if(!monthNum){status.textContent='חודש לא מוכר.';status.style.color='red';return;}
+
+  status.textContent='מחשב...';status.style.color='#666';
+
+  // 1. חישוב E, F, G מהאפליקציה
+  const md=S.months[monthName]||{prev:[],cur:[]};
+  const allRows=[...(md.prev||[]),...(md.cur||[])].filter(r=>r&&r.date);
+  const workers=activeWorkers(monthName);
+
+  // סיכום לכל עובד
+  const efgMap={};
+  workers.forEach(w=>{
+    const s=calcSumEffective(allRows,w.name);
+    efgMap[w.name]={e:s.v, f:s.s, g:s.h+s.o};
+  });
+
+  // 2. חישוב H, I מנתוני Timesheet (מאחורי הקלעים)
+  const DAILY_HOURS={'דווה':8,'אדם':4.2,'אלי':2};
+  const DEFAULT_HOURS=8.4;
+
+  // בניית רשימת ימי עבודה לחודש
+  const monthStart=year+'-'+String(monthNum).padStart(2,'0')+'-01';
+  const endDate=lastDayOfMonth(year,monthNum-1);
+  const workdays=makeWorkdayRange(monthStart,endDate);
+
+  const hiMap={};
+  workers.forEach(w=>{
+    const dailyH=DAILY_HOURS[w.name]||DEFAULT_HOURS;
+    let totalHours=0, totalDays=0;
+    workdays.forEach(d=>{
+      const pr=md.prev&&md.prev.find(r=>r&&String(r.date).substring(0,10)===d);
+      const cr=md.cur&&md.cur.find(r=>r&&String(r.date).substring(0,10)===d);
+      const val=(cr&&cr.cells&&cr.cells[w.name])||(pr&&pr.cells&&pr.cells[w.name])||'';
+      const holName=getHolForWorker(d,w.name);
+      const effectiveVal=val||(holName?'חג':'');
+      if(!effectiveVal){
+        // יום עבודה רגיל
+        totalHours+=dailyH;
+        totalDays+=1;
+      } else if(effectiveVal==='חצי חופש'||effectiveVal==='חצי מחלה'){
+        totalHours+=dailyH/2;
+        totalDays+=1;
+      }
+      // חופש מלא/מחלה/חג/אחר/אבל — 0 שעות, אבל יום נספר אם הגיע (חצי יום)
+    });
+    hiMap[w.name]={h:totalDays, i:parseFloat(totalHours.toFixed(1))};
+  });
+
+  // 3. חישוב O — ותק וצביעה
+  // טבלת ותק: {minYears, maxYears, days, monthly}
+  const SENIORITY=[
+    {min:0,max:3,days:15,monthly:'15/1.25'},
+    {min:3,max:6,days:18,monthly:'18/1.5'},
+    {min:6,max:7,days:21,monthly:'21/1.75'},
+    {min:7,max:8,days:22,monthly:'22/1.83'},
+    {min:8,max:9,days:23,monthly:'23/1.91'},
+    {min:9,max:999,days:24,monthly:'24/2'}
+  ];
+
+  function getSeniority(yearsWorked){
+    return SENIORITY.find(s=>yearsWorked>=s.min&&yearsWorked<s.max)||SENIORITY[SENIORITY.length-1];
+  }
+
+  // 4. בניית נתונים לפייתון
+  const workerData=workers.map(w=>({
+    name: w.name,
+    e: efgMap[w.name]?efgMap[w.name].e:0,
+    f: efgMap[w.name]?efgMap[w.name].f:0,
+    g: efgMap[w.name]?efgMap[w.name].g:0,
+    h: hiMap[w.name]?hiMap[w.name].h:0,
+    i: hiMap[w.name]?hiMap[w.name].i:0,
+    startDate: w.startDate||null
+  }));
+
+  const dataJson=JSON.stringify({workers:workerData, monthName, year, today:new Date().toISOString().substring(0,10)});
+
+  const PY=`
+import io, base64, json, datetime
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
+
+def run(wb_b64, data_json):
+    data = json.loads(data_json)
+    workers = data['workers']
+    month_name = data['monthName']
+    today = datetime.date.today()
+
+    # ותק
+    SENIORITY = [
+        (0,3,15,'15/1.25'),(3,6,18,'18/1.5'),(6,7,21,'21/1.75'),
+        (7,8,22,'22/1.83'),(8,9,23,'23/1.91'),(9,999,24,'24/2')
+    ]
+    def get_seniority(years):
+        for mn,mx,d,m in SENIORITY:
+            if mn <= years < mx: return d,m
+        return 24,'24/2'
+
+    wb_bytes = base64.b64decode(wb_b64)
+    wb = load_workbook(io.BytesIO(wb_bytes))
+
+    if month_name not in wb.sheetnames:
+        return 'ERROR:גיליון לא נמצא: '+month_name
+
+    ws = wb[month_name]
+    YELLOW = PatternFill('solid', start_color='FFFF00', fgColor='FFFF00')
+
+    # עדכון כל עובד
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+        name_cell = row[3]  # עמודה D (index 3)
+        if not name_cell.value: continue
+        full_name = str(name_cell.value).strip()
+        first_name = full_name.split()[0] if full_name else ''
+        if not first_name: continue
+
+        # חיפוש עובד לפי שם פרטי
+        worker = next((w for w in workers if w['name'].strip() == first_name), None)
+        if not worker: continue
+
+        # עמודות E-I (index 4-8)
+        row[4].value = worker['e'] if worker['e'] else None  # E
+        row[5].value = worker['f'] if worker['f'] else None  # F
+        row[6].value = worker['g'] if worker['g'] else None  # G
+        row[7].value = worker['h'] if worker['h'] else None  # H
+        row[8].value = worker['i'] if worker['i'] else None  # I
+
+        # עמודה O (index 14) — בדיקת ותק וצביעה
+        o_cell = row[14]
+        o_val = str(o_cell.value).strip() if o_cell.value else ''
+        if o_val == '24/2': continue  # מוחרג
+
+        if worker.get('startDate'):
+            try:
+                start = datetime.date.fromisoformat(str(worker['startDate'])[:10])
+                years = (today - start).days / 365.25
+                days, monthly = get_seniority(years)
+                expected = monthly
+                if o_val and o_val != expected:
+                    o_cell.fill = YELLOW
+                    # עמודה Q (index 16)
+                    q_cell = row[16]
+                    q_cell.value = f'עדכון ימי חופש: {days} ימים בשנה, {monthly.split("/")[1]} ימים בחודש'
+            except: pass
+
+    out = io.BytesIO()
+    wb.save(out)
+    return base64.b64encode(out.getvalue()).decode()
+
+result = run(wb_b64, data_json)
+result
+`;
+
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    try{
+      const bytes=new Uint8Array(e.target.result);
+      let bin='';
+      for(let i=0;i<bytes.length;i+=8192) bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+8192));
+      const b64=btoa(bin);
+      pyodide.globals.set('wb_b64',b64);
+      pyodide.globals.set('data_json',dataJson);
+      const result=await pyodide.runPythonAsync(PY);
+      if(String(result).startsWith('ERROR:')){
+        status.textContent='שגיאה: '+result.substring(6);
+        status.style.color='red';
+        return;
+      }
+      const binStr=atob(result);
+      const outBytes=new Uint8Array(binStr.length);
+      for(let i=0;i<binStr.length;i++) outBytes[i]=binStr.charCodeAt(i);
+      const blob=new Blob([outBytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      a.download='דוח_הנהלת_חשבונות_'+monthName+'_'+year+'.xlsx';
+      a.click();
+      URL.revokeObjectURL(url);
+      status.textContent='✓ הקובץ הורד בהצלחה!';
+      status.style.color='green';
+    } catch(err){
+      status.textContent='שגיאה: '+err;
+      status.style.color='red';
+    }
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 function exportExcel(){
