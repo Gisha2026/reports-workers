@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v141</span>
+      <span class="topbar-title">Reports_Workers v142</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -182,7 +182,7 @@ async function initPyodide(){
     <div class="tab" onclick="switchTab('holidays')">חגים</div>
     <div class="tab" onclick="switchTab('annual')">סיכום שנתי</div>
     <div class="tab" onclick="switchTab('timesheet')">Timesheet</div>
-    <button class="exp-btn" onclick="exportExcel()" style="margin-right:8px;padding:5px 12px;">ייצוא לאקסל</button>
+    <div class="tab" onclick="exportExcel()" style="cursor:pointer;">ייצוא לאקסל</div>
     <div class="tab" onclick="switchTab('email')">מייל</div>
     <div class="tab" onclick="switchTab('settings')">הגדרות</div>
   </div>
@@ -460,11 +460,7 @@ window.onload=()=>{
     localStorage.setItem('rw_gisha_data_2026',legacy);
     localStorage.removeItem('rw_gisha_data');
   }
-  // v141: מחיקת נתונים שגויים שנוצרו בטעות לשנים מעבר ל-2026
-  // הפקודה תוסר לאחר אישור המשתמש שהכל תקין
-  ['rw_gisha_data_2027','rw_gisha_data_2028','rw_gisha_data_2029','rw_gisha_data_2030'].forEach(k=>{
-    if(localStorage.getItem(k)) localStorage.removeItem(k);
-  });
+
   // טעינה לפי שנה נוכחית
   const initYear=S.year||2026;
   const saved=localStorage.getItem(storeKey(initYear));
@@ -1187,7 +1183,7 @@ function exportExcel(){
   const workers = S.workers.filter(w=>w.active!==false);
   const workerNames = workers.map(w=>w.name);
 
-  // מיפוי חגים לפי תאריך
+  // מיפוי חגים לפי תאריך — כולל כל התאריכים מכל החודשים
   const holidayMap = {};
   (S.holidays||[]).forEach(h=>{
     const hStart = String(h.start||'').substring(0,10);
@@ -1196,7 +1192,7 @@ function exportExcel(){
     let cur = new Date(hStart+'T12:00:00');
     const end = new Date(hEnd+'T12:00:00');
     while(cur<=end){
-      const ds = cur.toISOString().substring(0,10);
+      const ds = cur.toLocaleDateString('sv').substring(0,10);
       if(!holidayMap[ds]) holidayMap[ds]={};
       workers.forEach(w=>{
         const match = h.workers==='all'||(Array.isArray(h.workers)&&h.workers.includes(w.name));
@@ -1680,7 +1676,9 @@ function generateTimesheet(){
         .filter(s => !/\d/.test(s) && s.length > 0);
 
       const appWithoutTab = appWorkerNames.filter(n => !xlsTabNames.includes(n));
-      const tabWithoutApp = xlsTabNames.filter(n => !appWorkerNames.includes(n));
+      // עובדים שסיימו עבודה לא נחשבים כטאב ללא עובד
+      const allWorkerNames = S.workers.map(w => normName(w.name));
+      const tabWithoutApp = xlsTabNames.filter(n => !appWorkerNames.includes(n) && !allWorkerNames.includes(n));
 
       if(appWithoutTab.length > 0 || tabWithoutApp.length > 0){
         let msg = '⚠️ אי-התאמת שמות — הקובץ לא יופק עד לתיקון:\n\n';
