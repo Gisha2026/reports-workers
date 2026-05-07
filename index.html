@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v147</span>
+      <span class="topbar-title">Reports_Workers v148</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -510,6 +510,7 @@ function startApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('userBadge').textContent=S.currentUser;
+  fillMonthYearSelects();
   renderAll();
   startSyncLoop();
   // Only show token modal if no token AND user hasn't dismissed it before
@@ -1214,13 +1215,16 @@ function fillMonthYearSelects(){
     const cur=sel.value;
     sel.innerHTML='<option value="">-- בחר חודש --</option>';
     years.forEach(y=>{
+      const grp=document.createElement('optgroup');
+      grp.label=String(y);
       MONTHS_HE.forEach(m=>{
         const val=m+'_'+y;
         const opt=document.createElement('option');
         opt.value=val;
         opt.textContent=m+' '+y;
-        sel.appendChild(opt);
+        grp.appendChild(opt);
       });
+      sel.appendChild(grp);
     });
     if(cur) sel.value=cur;
   });
@@ -1595,7 +1599,8 @@ const TS_MAP = {
 };
 
 function generateTimesheet(){
-  const monthName = document.getElementById('ts-month').value;
+  const tsVal = document.getElementById('ts-month').value;
+  const monthName = tsVal.includes('_') ? tsVal.split('_')[0] : tsVal;
   const file = document.getElementById('ts-file').files[0];
   const status = document.getElementById('ts-status');
 
