@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v156CH</span>
+      <span class="topbar-title">Reports_Workers v157CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1497,8 +1497,9 @@ def run(wb_b64, ts_b64, data_json):
     yellow=PatternFill('solid', start_color='FFFF00', fgColor='FFFF00')
     _, report_end, prev_end = month_bounds(year, month_num)
 
-    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-        name_cell=row[3]  # D
+    for r in range(2, ws.max_row + 1):
+        # שימוש בגישה ישירה לתאים כדי לא להיכשל אם שורה קצרה/מבנה הגיליון משתנה
+        name_cell = ws.cell(r, 4)  # D
         if not name_cell.value:
             continue
         fname=first_name(name_cell.value)
@@ -1509,22 +1510,22 @@ def run(wb_b64, ts_b64, data_json):
             continue
 
         # E/F/G מהאפליקציה
-        row[4].value = worker['e'] if worker.get('e') else None
-        row[5].value = worker['f'] if worker.get('f') else None
-        row[6].value = worker['g'] if worker.get('g') else None
+        ws.cell(r, 5).value = worker['e'] if worker.get('e') else None
+        ws.cell(r, 6).value = worker['f'] if worker.get('f') else None
+        ws.cell(r, 7).value = worker['g'] if worker.get('g') else None
 
         # H/I מדוח השעות: Days/Hours לפי נוסחאות הסיכום שכבר קיימות ב-Timesheet
         hi=hi_map.get(fname,{})
-        row[7].value = hi.get('h') if hi.get('h') is not None else None
-        row[8].value = hi.get('i') if hi.get('i') is not None else None
+        ws.cell(r, 8).value = hi.get('h') if hi.get('h') is not None else None
+        ws.cell(r, 9).value = hi.get('i') if hi.get('i') is not None else None
 
         # J/K/L/M/N/P — לא נוגעים.
         # O — לא משנים ערך; רק צובעים בחודש מעבר מכסה. Q — הערה מחוץ לטבלה.
-        o_cell=row[14]  # O
+        o_cell=ws.cell(r, 15)  # O
         o_val=str(o_cell.value).strip() if o_cell.value is not None else ''
         if o_val == '24/2':
             continue
-        start_val=row[12].value  # M = תאריך ותק/תחילת עבודה
+        start_val=ws.cell(r, 13).value  # M = תאריך ותק/תחילת עבודה
         if isinstance(start_val, datetime.datetime):
             start_date=start_val.date()
         elif isinstance(start_val, datetime.date):
@@ -1535,7 +1536,7 @@ def run(wb_b64, ts_b64, data_json):
         new_quota,new_days,new_monthly=quota_for_years(years_between(start_date, report_end))
         if old_quota != new_quota and o_val != new_quota:
             o_cell.fill = yellow
-            row[16].value = f'עדכון ימי חופש: {new_days} ימים בשנה, {new_monthly} ימים בחודש'
+            ws.cell(r, 17).value = f'עדכון ימי חופש: {new_days} ימים בשנה, {new_monthly} ימים בחודש'
 
     out=io.BytesIO()
     wb.save(out)
