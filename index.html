@@ -21,6 +21,7 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;font-size:13px;direction:rt
 .login-import-label:hover{background:#e8f5e9}
 #app{display:none}
 .topbar{background:#00897B;color:white;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-center{flex:1;text-align:center;font-size:16px;font-weight:500;letter-spacing:0.3px}
 .topbar-right{display:flex;align-items:center;gap:10px}
 .topbar-logo{width:30px;height:30px;background:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;color:#00897B}
 .topbar-title{font-size:14px;font-weight:bold}
@@ -55,9 +56,16 @@ td.dtl{color:#888;min-width:44px;font-size:10px}
 tr.wkend td{background:#e0e0e0!important;height:6px;padding:0;border:none}
 tr.prev-row td.prev-empty{background:#ffe082}
 tr.prev-row:hover td.prev-empty{background:#ffd54f}
+td.col-even{background:#f0f7f6!important}
+td.col-odd{background:var(--color-background-primary)}
+tr:hover:not(.wkend) td.col-even{background:#9ed8d3!important}
+td.col-border{border-right:1.5px solid #b2dfdb!important}
+th.col-even{background:#007a6a!important}
+th.col-border{border-right:1.5px solid rgba(255,255,255,0.3)!important}
+.prev-row td.col-even{background:#fff4d0!important}
 tr.after-cut td{background:#fff3e0}
 tr.dup-row td{background:#ffebee!important}
-tr:hover:not(.wkend) td{background:#f0faf9}
+tr:hover:not(.wkend) td{background:#b2dfdb}
 select.cs{border:none;background:transparent;font-size:11px;width:80px;cursor:pointer}
 select.cs.val-colored{background:var(--cell-bg)!important;border-radius:3px;padding:1px 2px;}
 select.cs:focus{outline:1px solid #00897B;border-radius:3px}
@@ -169,8 +177,9 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v144</span>
+      <span class="topbar-title">Reports_Workers v145</span>
     </div>
+    <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
       <span class="user-badge" id="userBadge"></span>
@@ -272,11 +281,11 @@ async function initPyodide(){
       <h3>שליחת מייל חודשי</h3>
       <div style="margin-bottom:12px;">
         <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורת פתיחה (לעריכה בכל חודש):</label>
-        <textarea id="emailOpening" rows="2" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:12px;resize:vertical;direction:rtl;" placeholder="דיווח למשכורת חודש אפריל יש להגיש עד יום חמישי 23/04/2026 בשעה 12:00"></textarea>
+        <textarea id="emailOpening" rows="2" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;" placeholder="דיווח למשכורת חודש אפריל יש להגיש עד יום חמישי 23/04/2026 בשעה 12:00"></textarea>
       </div>
       <div style="margin-bottom:12px;">
         <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורות קבועות (נשמרות בהגדרות):</label>
-        <textarea id="emailFixed" rows="6" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:12px;resize:vertical;direction:rtl;background:#f9f9f9;"></textarea>
+        <textarea id="emailFixed" rows="6" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;background:#f9f9f9;"></textarea>
         <button onclick="saveEmailFixed()" style="margin-top:6px;padding:5px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">שמור שורות קבועות</button>
       </div>
       <div style="border-top:1px solid #eee;padding-top:12px;">
@@ -624,7 +633,10 @@ function renderTable(){
 
   const head=document.getElementById('tHead');
   head.innerHTML='<th>יום</th><th>תאריך</th>';
-  workers.forEach(w=>head.innerHTML+=`<th>${w.name}</th>`);
+  workers.forEach((w,wi)=>{
+    const cls=(wi%2===1?'col-even ':'')+' col-border';
+    head.innerHTML+=`<th class="${cls}">${w.name}</th>`;
+  });
 
   const body=document.getElementById('tBody');
   body.innerHTML='';
@@ -650,6 +662,8 @@ function renderTable(){
       const effectiveVal=val||(holName?'חג':'');
       if(effectiveVal) combinedCells[w.name]=effectiveVal;
       const td=document.createElement('td');
+      if(wi%2===1) td.classList.add('col-even');
+      td.classList.add('col-border');
       const isDup=dupKeys.has(d+'|'+w.name)&&val;
       if(isDup){
         td.setAttribute('style','background:#ff5252!important');
