@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v151</span>
+      <span class="topbar-title">Reports_Workers v152</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2281,12 +2281,18 @@ def run(wb_b64, writes_json, month_num, year):
         first = sn.strip().split()[0]
         h_val = None
         d_val = None
-        for i in range(ws2.max_row, 150, -1):
-            u = ws2.cell(i, 21).value
-            if isinstance(u, (int, float)) and u is not None:
-                if h_val is None and u > 20:
+        # חיפוש לפי "Hours" ו-"Days" בעמודה T (עמודה 20)
+        for i in range(1, ws2.max_row+1):
+            t = ws2.cell(i, 20).value
+            if t is None: continue
+            t_str = str(t).strip()
+            if t_str == 'Hours' and h_val is None:
+                u = ws2.cell(i, 21).value
+                if isinstance(u, (int, float)):
                     h_val = round(float(u), 1)
-                elif d_val is None and 0 < u <= 25:
+            elif t_str == 'Days' and d_val is None:
+                u = ws2.cell(i, 21).value
+                if isinstance(u, (int, float)):
                     d_val = round(float(u), 1)
             if h_val is not None and d_val is not None:
                 break
