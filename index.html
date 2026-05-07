@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v149</span>
+      <span class="topbar-title">Reports_Workers v150</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -353,10 +353,15 @@ async function initPyodide(){
           <option value="">-- בחר חודש --</option>
         </select>
       </div>
-      <div style="margin-bottom:20px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ דוח הנהלת חשבונות:</label>
+      <div style="margin-bottom:18px;">
+        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח הנהלת חשבונות:</label>
         <input type="file" id="acc-file" accept=".xlsx" style="font-size:13px;">
-        <div id="acc-ts-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:6px;"></div>
+        <div id="acc-ts-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
+      </div>
+      <div style="margin-bottom:18px;">
+        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח שעות:</label>
+        <input type="file" id="acc-ts-file" accept=".xlsx" style="font-size:13px;">
+        <div id="acc-ts-file-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
       </div>
       <hr style="border:none;border-top:0.5px solid var(--color-border-tertiary);margin:20px 0;">
       <button onclick="generateAccounting()" style="padding:9px 20px;background:#00897B;color:white;border:none;border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;font-weight:500;">הפק דוח הנהלת חשבונות</button>
@@ -1236,6 +1241,8 @@ function generateAccounting(){
   const file=document.getElementById('acc-file').files[0];
   if(!sel.value){status.textContent='בחר חודש.';status.style.color='red';return;}
   if(!file){status.textContent='העלה קובץ דוח הנהלת חשבונות.';status.style.color='red';return;}
+  const tsFile=document.getElementById('acc-ts-file').files[0];
+  if(!tsFile){status.textContent='העלה דוח שעות.';status.style.color='red';return;}
   if(!pyReady){status.textContent='המנוע עדיין בטעינה, נסה שוב.';status.style.color='red';return;}
 
   const [monthName,yearStr]=sel.value.split('_');
@@ -1257,37 +1264,7 @@ function generateAccounting(){
     efgMap[w.name]={e:s.v, f:s.s, g:s.h+s.o};
   });
 
-  // 2. חישוב H, I מנתוני Timesheet (מאחורי הקלעים)
-  const DAILY_HOURS={'דווה':8,'אדם':4.2,'אלי':2};
-  const DEFAULT_HOURS=8.4;
-
-  // בניית רשימת ימי עבודה לחודש
-  const monthStart=year+'-'+String(monthNum).padStart(2,'0')+'-01';
-  const endDate=lastDayOfMonth(year,monthNum-1);
-  const workdays=makeWorkdayRange(monthStart,endDate);
-
-  const hiMap={};
-  workers.forEach(w=>{
-    const dailyH=DAILY_HOURS[w.name]||DEFAULT_HOURS;
-    let totalHours=0, totalDays=0;
-    workdays.forEach(d=>{
-      const pr=md.prev&&md.prev.find(r=>r&&String(r.date).substring(0,10)===d);
-      const cr=md.cur&&md.cur.find(r=>r&&String(r.date).substring(0,10)===d);
-      const val=(cr&&cr.cells&&cr.cells[w.name])||(pr&&pr.cells&&pr.cells[w.name])||'';
-      const holName=getHolForWorker(d,w.name);
-      const effectiveVal=val||(holName?'חג':'');
-      if(!effectiveVal){
-        // יום עבודה רגיל
-        totalHours+=dailyH;
-        totalDays+=1;
-      } else if(effectiveVal==='חצי חופש'||effectiveVal==='חצי מחלה'){
-        totalHours+=dailyH/2;
-        totalDays+=1;
-      }
-      // חופש מלא/מחלה/חג/אחר/אבל — 0 שעות, אבל יום נספר אם הגיע (חצי יום)
-    });
-    hiMap[w.name]={h:totalDays, i:parseFloat(totalHours.toFixed(1))};
-  });
+  // 2. H, I נקראים מדוח השעות שמועלה
 
   // 3. חישוב O — ותק וצביעה
   // טבלת ותק: {minYears, maxYears, days, monthly}
@@ -1310,8 +1287,6 @@ function generateAccounting(){
     e: efgMap[w.name]?efgMap[w.name].e:0,
     f: efgMap[w.name]?efgMap[w.name].f:0,
     g: efgMap[w.name]?efgMap[w.name].g:0,
-    h: hiMap[w.name]?hiMap[w.name].h:0,
-    i: hiMap[w.name]?hiMap[w.name].i:0,
     startDate: w.startDate||null
   }));
 
@@ -1322,7 +1297,7 @@ import io, base64, json, datetime
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 
-def run(wb_b64, data_json):
+def run(wb_b64, ts_b64, data_json):
     data = json.loads(data_json)
     workers = data['workers']
     month_name = data['monthName']
@@ -1348,6 +1323,27 @@ def run(wb_b64, data_json):
     YELLOW = PatternFill('solid', start_color='FFFF00', fgColor='FFFF00')
 
     # עדכון כל עובד
+    # קריאת H, I מדוח השעות
+    hi_map = {}
+    try:
+        ts_wb = load_workbook(io.BytesIO(base64.b64decode(ts_b64)), data_only=True)
+        for sn in ts_wb.sheetnames:
+            ts_ws = ts_wb[sn]
+            first = sn.strip().split()[0]
+            hours = None
+            days = None
+            for i in range(ts_ws.max_row, 150, -1):
+                u = ts_ws.cell(i, 21).value
+                if isinstance(u, (int, float)) and u is not None:
+                    if hours is None and u > 20:
+                        hours = round(float(u), 1)
+                    elif days is None and 0 < u <= 25:
+                        days = round(float(u), 1)
+                if hours is not None and days is not None:
+                    break
+            hi_map[first] = {'h': days, 'i': hours}
+    except: pass
+
     for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
         name_cell = row[3]  # עמודה D (index 3)
         if not name_cell.value: continue
@@ -1359,12 +1355,14 @@ def run(wb_b64, data_json):
         worker = next((w for w in workers if w['name'].strip() == first_name), None)
         if not worker: continue
 
+        hi = hi_map.get(first_name, {})
+
         # עמודות E-I (index 4-8)
         row[4].value = worker['e'] if worker['e'] else None  # E
         row[5].value = worker['f'] if worker['f'] else None  # F
         row[6].value = worker['g'] if worker['g'] else None  # G
-        row[7].value = worker['h'] if worker['h'] else None  # H
-        row[8].value = worker['i'] if worker['i'] else None  # I
+        row[7].value = hi.get('h') if hi.get('h') else None  # H
+        row[8].value = hi.get('i') if hi.get('i') else None  # I
 
         # עמודה O (index 14) — בדיקת ותק וצביעה
         o_cell = row[14]
@@ -1388,18 +1386,16 @@ def run(wb_b64, data_json):
     wb.save(out)
     return base64.b64encode(out.getvalue()).decode()
 
-result = run(wb_b64, data_json)
+result = run(wb_b64, ts_b64, data_json)
 result
 `;
 
-  const reader=new FileReader();
-  reader.onload=async function(e){
+  function fileToB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>{const bytes=new Uint8Array(e.target.result);let bin='';for(let i=0;i<bytes.length;i+=8192)bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+8192));res(btoa(bin));};r.onerror=rej;r.readAsArrayBuffer(f);});}
+
+  Promise.all([fileToB64(file),fileToB64(tsFile)]).then(async([accB64,tsB64])=>{
     try{
-      const bytes=new Uint8Array(e.target.result);
-      let bin='';
-      for(let i=0;i<bytes.length;i+=8192) bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+8192));
-      const b64=btoa(bin);
-      pyodide.globals.set('wb_b64',b64);
+      pyodide.globals.set('wb_b64',accB64);
+      pyodide.globals.set('ts_b64',tsB64);
       pyodide.globals.set('data_json',dataJson);
       const result=await pyodide.runPythonAsync(PY);
       if(String(result).startsWith('ERROR:')){
@@ -1423,8 +1419,7 @@ result
       status.textContent='שגיאה: '+err;
       status.style.color='red';
     }
-  };
-  reader.readAsArrayBuffer(file);
+  }).catch(err=>{status.textContent='שגיאה בקריאת קבצים: '+err;status.style.color='red';});
 }
 
 function exportExcel(){
