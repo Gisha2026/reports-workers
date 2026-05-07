@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v142</span>
+      <span class="topbar-title">Reports_Workers v144</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -741,8 +741,12 @@ function calcSumEffective(rows,worker){
 }
 
 function getHolForWorker(date,wname){
+  const ds=String(date).substring(0,10);
   const h=S.holidays.find(h=>{
-    if(date<h.start||date>h.end) return false;
+    const hStart=String(h.start||'').substring(0,10);
+    const hEnd=String(h.end||h.start||'').substring(0,10);
+    if(!hStart) return false;
+    if(ds<hStart||ds>hEnd) return false;
     return h.workers==='all'||(Array.isArray(h.workers)&&h.workers.includes(wname));
   });
   return h?h.name:null;
@@ -1723,15 +1727,20 @@ function generateTimesheet(){
         }
 
         // 3. כלל כללי — שתי שורות מעל ה-1 של החודש הבא
-        const nextMonth = monthNum + 1; // ינואר=1, ..., נובמבר=11
+        const nextMonth = monthNum + 1;
         const nextMonthStr = year + '-' + String(nextMonth).padStart(2,'0') + '-01';
         let nextMonthRow = -1;
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
-          if(!cellA || typeof cellA.v !== 'number') continue;
-          const p = XLSX.SSF.parse_date_code(cellA.v);
-          if(!p) continue;
-          const ds = p.y + '-' + String(p.m).padStart(2,'0') + '-' + String(p.d).padStart(2,'0');
+          if(!cellA) continue;
+          let ds = null;
+          if(typeof cellA.v === 'number'){
+            const p = XLSX.SSF.parse_date_code(cellA.v);
+            if(p) ds = p.y + '-' + String(p.m).padStart(2,'0') + '-' + String(p.d).padStart(2,'0');
+          } else if(cellA.v instanceof Date){
+            const d = cellA.v;
+            ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+          }
           if(ds === nextMonthStr){
             nextMonthRow = r;
             break;
