@@ -48,7 +48,7 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;font-size:13px;direction:rt
 .cutoff-bar input[type=date]{padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px}
 .cutoff-badge{background:#FF8F00;color:white;padding:3px 10px;border-radius:12px;font-size:11px;white-space:nowrap}
 .table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 180px)}
-table{border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);width:100%}
+table{border-collapse:collapse;background:white;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.08);width:100%}
 th{background:#00897B;color:white;padding:6px 8px;text-align:center;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:2}
 td{padding:3px 5px;text-align:center;border-bottom:1px solid #f0f0f0;font-size:11px}
 td.dl{font-weight:bold;color:#333;min-width:24px}
@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v146</span>
+      <span class="topbar-title">Reports_Workers v147</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -191,6 +191,7 @@ async function initPyodide(){
     <div class="tab" onclick="switchTab('holidays')">חגים</div>
     <div class="tab" onclick="switchTab('annual')">סיכום שנתי</div>
     <div class="tab" onclick="switchTab('timesheet')">Timesheet</div>
+    <div class="tab" onclick="switchTab('accounting')">הנהלת חשבונות</div>
     <div class="tab" onclick="exportExcel()" style="cursor:pointer;">ייצוא לאקסל</div>
     <div class="tab" onclick="switchTab('email')">מייל</div>
     <div class="tab" onclick="switchTab('settings')">הגדרות</div>
@@ -327,18 +328,6 @@ async function initPyodide(){
         <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש:</label>
         <select id="ts-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
           <option value="">-- בחר חודש --</option>
-          <option value="ינואר">ינואר</option>
-          <option value="פברואר">פברואר</option>
-          <option value="מרץ">מרץ</option>
-          <option value="אפריל">אפריל</option>
-          <option value="מאי">מאי</option>
-          <option value="יוני">יוני</option>
-          <option value="יולי">יולי</option>
-          <option value="אוגוסט">אוגוסט</option>
-          <option value="ספטמבר">ספטמבר</option>
-          <option value="אוקטובר">אוקטובר</option>
-          <option value="נובמבר">נובמבר</option>
-          <option value="דצמבר">דצמבר</option>
         </select>
       </div>
       <div style="margin-bottom:16px;">
@@ -348,6 +337,30 @@ async function initPyodide(){
 <div id="ts-indicator" style="font-size:13px;margin-bottom:10px;color:#888;">⏳ טוען מנוע Python ברקע...</div>
       <button onclick="generateTimesheet()" style="background:#1a7a4a;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">הפק Timesheet</button>
       <div id="ts-status" style="margin-top:12px;font-size:13px;"></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-accounting">
+    <div style="padding:20px 24px;max-width:600px;">
+      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:16px;">דוח הנהלת חשבונות</div>
+      <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 16px;font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;line-height:1.7;">
+        האפליקציה תמלא אוטומטית: חופש · מחלה · חג/אבל · ימי עבודה · שעות<br>
+        עדכון מכסת חופש בעמודה Q כשעובד עובר סף ותק
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש לדיווח:</label>
+        <select id="acc-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
+          <option value="">-- בחר חודש --</option>
+        </select>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ דוח הנהלת חשבונות:</label>
+        <input type="file" id="acc-file" accept=".xlsx" style="font-size:13px;">
+        <div id="acc-ts-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:6px;"></div>
+      </div>
+      <hr style="border:none;border-top:0.5px solid var(--color-border-tertiary);margin:20px 0;">
+      <button onclick="generateAccounting()" style="padding:9px 20px;background:#00897B;color:white;border:none;border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;font-weight:500;">הפק דוח הנהלת חשבונות</button>
+      <div id="acc-status" style="margin-top:10px;font-size:13px;"></div>
     </div>
   </div>
 
@@ -557,6 +570,7 @@ function jumpYear(v){
   refresh();
 }
 function refresh(){
+  fillMonthYearSelects();
   document.getElementById('monthJump').value=curMI;
   document.getElementById('yearJump').value=S.year;
   updateCutoffUI(); renderTable();
@@ -1190,6 +1204,38 @@ function startSyncLoop(){
   },30000);
 }
 
+function fillMonthYearSelects(){
+  const MONTHS_HE=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const curYear=S.year||2026;
+  const years=[curYear-1,curYear,curYear+1,curYear+2,curYear+3,curYear+4,curYear+5];
+  ['ts-month','acc-month'].forEach(id=>{
+    const sel=document.getElementById(id);
+    if(!sel) return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">-- בחר חודש --</option>';
+    years.forEach(y=>{
+      MONTHS_HE.forEach(m=>{
+        const val=m+'_'+y;
+        const opt=document.createElement('option');
+        opt.value=val;
+        opt.textContent=m+' '+y;
+        sel.appendChild(opt);
+      });
+    });
+    if(cur) sel.value=cur;
+  });
+}
+
+function generateAccounting(){
+  const status=document.getElementById('acc-status');
+  const sel=document.getElementById('acc-month');
+  const file=document.getElementById('acc-file').files[0];
+  if(!sel.value){status.textContent='בחר חודש.';status.style.color='red';return;}
+  if(!file){status.textContent='העלה קובץ.';status.style.color='red';return;}
+  const [monthName,year]=sel.value.split('_');
+  status.textContent='בקרוב...';status.style.color='#666';
+}
+
 function exportExcel(){
   if(!pyReady){alert('המנוע עדיין בטעינה, נסה שוב בעוד כמה שניות.');return;}
 
@@ -1420,7 +1466,7 @@ function startPresenceLoop(){
 
 // ===== TABS =====
 function switchTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leave','holidays','annual','timesheet','email','settings'][i]===name));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leave','holidays','annual','timesheet','accounting','export','email','settings'][i]===name));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   if(name==='annual') renderAnnual();
