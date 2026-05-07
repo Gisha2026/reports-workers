@@ -169,7 +169,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v140</span>
+      <span class="topbar-title">Reports_Workers v141</span>
     </div>
     <div class="topbar-left">
       <span class="lock-warning" id="lockWarn"></span>
@@ -460,6 +460,11 @@ window.onload=()=>{
     localStorage.setItem('rw_gisha_data_2026',legacy);
     localStorage.removeItem('rw_gisha_data');
   }
+  // v141: מחיקת נתונים שגויים שנוצרו בטעות לשנים מעבר ל-2026
+  // הפקודה תוסר לאחר אישור המשתמש שהכל תקין
+  ['rw_gisha_data_2027','rw_gisha_data_2028','rw_gisha_data_2029','rw_gisha_data_2030'].forEach(k=>{
+    if(localStorage.getItem(k)) localStorage.removeItem(k);
+  });
   // טעינה לפי שנה נוכחית
   const initYear=S.year||2026;
   const saved=localStorage.getItem(storeKey(initYear));
