@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v153CH</span>
+      <span class="topbar-title">Reports_Workers v154CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1323,12 +1323,13 @@ def run(wb_b64, ts_b64, data_json):
     YELLOW = PatternFill('solid', start_color='FFFF00', fgColor='FFFF00')
 
     # עדכון כל עובד
-    # קריאת H, I מדוח השעות לפי תיבות הסיכום החודשי של כל עובד
-    # מקור האמת ל-H/I: בתחתית חודש העובד בגיליון ה-Timesheet, התוויות Hours ו-Days.
-    # אין להשתמש בשורות קבועות, כי מיקום התיבות יכול להשתנות בין עובדים.
+    # קריאת H, I מדוח השעות לפי תיבות הסיכום החודשי של כל עובד.
+    # תיקון 154CH: התיבות Hours/Days הן נוסחאות, ולכן לא מספיק load_workbook(data_only=True).
+    # מאתרים את נוסחת Hours/Days של החודש ומחשבים אותה בפועל מתוך טווח U היומי.
     hi_map = {}
     try:
-        ts_wb = load_workbook(io.BytesIO(base64.b64decode(ts_b64)), data_only=True)
+        import re
+        ts_wb = load_workbook(io.BytesIO(base64.b64decode(ts_b64)), data_only=False)
 
         def norm_name(v):
             return str(v or '').strip().replace('\u200f','').replace('\u200e','')
@@ -1344,12 +1345,27 @@ def run(wb_b64, ts_b64, data_json):
                     return None
             return None
 
+        def eval_simple_number(v):
+            """מחשב מספר פשוט או נוסחה פשוטה כמו =8*5 / =42 / =21."""
+            n = as_number(v)
+            if n is not None:
+                return n
+            if isinstance(v, str):
+                expr = v.strip()
+                if expr.startswith('='):
+                    expr = expr[1:]
+                if re.fullmatch(r'[0-9\.\+\-\*/\(\) ]+', expr):
+                    try:
+                        return round(float(eval(expr, {'__builtins__': {}}, {})), 4)
+                    except:
+                        return None
+            return None
+
         MONTH_EN = {
             'ינואר':'January','פברואר':'February','מרץ':'March','אפריל':'April',
             'מאי':'May','יוני':'June','יולי':'July','אוגוסט':'August',
             'ספטמבר':'September','אוקטובר':'October','נובמבר':'November','דצמבר':'December'
         }
-        EN_MONTHS = set(MONTH_EN.values())
         month_en = MONTH_EN.get(month_name, month_name)
 
         def row_has_month(ws, r, wanted):
@@ -1360,68 +1376,122 @@ def run(wb_b64, ts_b64, data_json):
                     return True
             return False
 
-        def find_month_start(ws):
-            # קודם חיפוש מדויק של שם החודש באנגלית/עברית, כפי שמופיע בדוח השעות
+        def find_month_label_row(ws):
             for r in range(1, ws.max_row + 1):
                 if row_has_month(ws, r, month_en) or row_has_month(ws, r, month_name):
                     return r
-            return 1
-
-        def find_month_end(ws, start_row):
-            # סוף הבלוק הוא לפני החודש הבא שמופיע בהמשך. אם לא נמצא — מספיק טווח רחב.
-            for r in range(start_row + 1, ws.max_row + 1):
-                for c in range(1, min(ws.max_column, 8) + 1):
-                    v = ws.cell(r, c).value
-                    if isinstance(v, str) and v.strip() in EN_MONTHS:
-                        return r - 1
-            return min(ws.max_row, start_row + 90)
-
-        def value_to_right(ws, r, c):
-            # בתיבות הסיכום הערך נמצא מימין/לצד התווית. מחפשים מספר קרוב באותה שורה.
-            for cc in range(c + 1, min(ws.max_column, c + 8) + 1):
-                num = as_number(ws.cell(r, cc).value)
-                if num is not None:
-                    return num
-            # גיבוי נדיר: אם הערך משמאל לתווית
-            for cc in range(max(1, c - 7), c):
-                num = as_number(ws.cell(r, cc).value)
-                if num is not None:
-                    return num
             return None
 
-        def find_hours_days(ws):
-            start = find_month_start(ws)
-            end = find_month_end(ws, start)
-            hours = None
-            days = None
-            for r in range(start, end + 1):
+        def find_label_row(ws, label, month_row):
+            # בדוח השעות Hours נמצא לעיתים שורה אחת לפני שם החודש, ו-Days אחריו.
+            # לכן מחפשים סביב שורת החודש, לא רק אחריה.
+            if month_row is None:
+                search_start, search_end = 1, ws.max_row
+            else:
+                search_start = max(1, month_row - 10)
+                search_end = min(ws.max_row, month_row + 20)
+            wanted = label.strip().lower()
+            # עדיפות לעמודה T, כפי שהוגדר.
+            for r in range(search_start, search_end + 1):
+                v = ws.cell(r, 20).value
+                if isinstance(v, str) and v.strip().lower() == wanted:
+                    return r, 20
+            # גיבוי: חיפוש באותה סביבה בכל העמודות.
+            for r in range(search_start, search_end + 1):
                 for c in range(1, ws.max_column + 1):
                     v = ws.cell(r, c).value
-                    if not isinstance(v, str):
-                        continue
-                    label = v.strip().lower()
-                    if label == 'hours' and hours is None:
-                        hours = value_to_right(ws, r, c)
-                    elif label == 'days' and days is None:
-                        days = value_to_right(ws, r, c)
-                if hours is not None and days is not None:
-                    return days, hours
-            return days, hours
+                    if isinstance(v, str) and v.strip().lower() == wanted:
+                        return r, c
+            return None, None
 
-        # אם קיימת טבלת עזר, קוראים אותה, אבל דוח השעות עצמו לפי Hours/Days גובר כשהוא נמצא.
-        hidden_sn = '_gisha_data'
-        if hidden_sn in ts_wb.sheetnames:
-            hws = ts_wb[hidden_sn]
-            for i in range(2, hws.max_row+1):
-                name = hws.cell(i,1).value
-                h_val = hws.cell(i,2).value
-                d_val = hws.cell(i,3).value
-                if name:
-                    hi_map[norm_name(name)] = {'h': as_number(d_val), 'i': as_number(h_val)}
+        def parse_u_range_from_formula(formula):
+            # תומך בנוסחאות כמו =SUM(U186:U216) או =COUNTIF(U186:U216,">1")
+            if not isinstance(formula, str):
+                return None
+            m = re.search(r'U(\d+)\s*:\s*U(\d+)', formula, flags=re.IGNORECASE)
+            if not m:
+                return None
+            a, b = int(m.group(1)), int(m.group(2))
+            if a > b:
+                a, b = b, a
+            return a, b
+
+        def formula_cell_near_label(ws, r, c):
+            # הערך של Hours/Days יושב בדרך כלל בתא U באותה שורה.
+            for cc in range(c + 1, min(ws.max_column, c + 6) + 1):
+                v = ws.cell(r, cc).value
+                if isinstance(v, str) and v.strip().startswith('='):
+                    return v
+                if as_number(v) is not None:
+                    return v
+            return ws.cell(r, c + 1).value if c + 1 <= ws.max_column else None
+
+        def daily_hours_for_sheet(ws):
+            weekly = eval_simple_number(ws.cell(5, 3).value)
+            if weekly is None:
+                # גיבוי: חיפוש בקרבת הכותרת אם C5 אינו זמין
+                for r in range(1, 10):
+                    n = eval_simple_number(ws.cell(r, 3).value)
+                    if n is not None and n > 0:
+                        weekly = n
+                        break
+            return round(float(weekly) / 5, 4) if weekly is not None else None
+
+        def u_value_for_row(ws, r, daily_hours):
+            # עמודה T היא הסיבה; עמודה U היא השעות/הנוסחה.
+            reason = ws.cell(r, 20).value
+            reason_l = str(reason or '').strip().lower()
+            u = ws.cell(r, 21).value
+            n = as_number(u)
+            if n is not None:
+                return n
+            if reason_l in ('vacation','sick','holiday','other'):
+                return 0
+            if reason_l in ('half vacation','half sick'):
+                return round(float(daily_hours or 0) / 2, 4)
+            # אם זו שורת סוף שבוע — לא נספר.
+            b = str(ws.cell(r, 2).value or '').strip().lower()
+            c = str(ws.cell(r, 3).value or '').strip().lower()
+            if b in ('friday','saturday') or c == 'weekend':
+                return 0
+            # יום עבודה רגיל: U היא נוסחה קיימת, גם אם אין לה ערך מחושב בקובץ.
+            if isinstance(u, str) and u.strip().startswith('='):
+                return round(float(daily_hours or 0), 4)
+            return 0
+
+        def compute_from_u_range(ws, start_row, end_row):
+            dh = daily_hours_for_sheet(ws)
+            hours = 0.0
+            days = 0.0
+            for rr in range(start_row, end_row + 1):
+                val = u_value_for_row(ws, rr, dh)
+                hours += val
+                if val > 1:
+                    days += 1
+            return round(days, 1), round(hours, 1)
+
+        def find_hours_days(ws):
+            month_row = find_month_label_row(ws)
+            h_row, h_col = find_label_row(ws, 'Hours', month_row)
+            d_row, d_col = find_label_row(ws, 'Days', month_row)
+
+            # עדיפות: שימוש בנוסחת Hours כי היא מכילה את טווח U היומי של החודש.
+            h_formula = formula_cell_near_label(ws, h_row, h_col) if h_row else None
+            rng = parse_u_range_from_formula(h_formula)
+            if rng:
+                return compute_from_u_range(ws, rng[0], rng[1])
+
+            # גיבוי: נוסחת Days מכילה בדרך כלל אותו טווח U.
+            d_formula = formula_cell_near_label(ws, d_row, d_col) if d_row else None
+            rng = parse_u_range_from_formula(d_formula)
+            if rng:
+                return compute_from_u_range(ws, rng[0], rng[1])
+
+            return None, None
 
         for sn in ts_wb.sheetnames:
             clean_sn = norm_name(sn)
-            if not clean_sn or clean_sn == hidden_sn:
+            if not clean_sn or clean_sn == '_gisha_data':
                 continue
             # דוח הנהלת חשבונות מתייחס לטאבים הראשיים של העובדים, לא לטאבים עם מספר.
             if any(ch.isdigit() for ch in clean_sn):
