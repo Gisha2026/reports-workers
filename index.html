@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v155CH</span>
+      <span class="topbar-title">Reports_Workers v156CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1324,7 +1324,7 @@ def first_name(v):
 
 def is_main_sheet(sheet_name):
     # טאב עובד ראשי: שם ללא מספר. אם יש מספר בשם, זה טאב ייעודי ולא מקור ל-H/I של הנהלת חשבונות.
-    return not re.search(r'\d', str(sheet_name or ''))
+    return not re.search(r'\\d', str(sheet_name or ''))
 
 class FormulaEvaluator:
     def __init__(self, ws):
@@ -1365,34 +1365,45 @@ class FormulaEvaluator:
         expr=s[1:].replace('$','').strip()
 
         # SUM(A1:B2)
-        m=re.fullmatch(r'SUM\(([A-Z]+\d+):([A-Z]+\d+)\)', expr, re.I)
+        m=re.fullmatch(r'SUM\\(([A-Z]+\\d+):([A-Z]+\\d+)\\)', expr, re.I)
         if m:
             return self.sum_range(m.group(1), m.group(2))
 
         # COUNTIF(A1:B2,">1")
-        m=re.fullmatch(r'COUNTIF\(([A-Z]+\d+):([A-Z]+\d+),\s*"?>([-0-9.]+)"?\)', expr, re.I)
+        m=re.fullmatch(r'COUNTIF\\(([A-Z]+\\d+):([A-Z]+\\d+),\\s*"?>([-0-9.]+)"?\\)', expr, re.I)
         if m:
             threshold=float(m.group(3))
             return self.countif_gt(m.group(1), m.group(2), threshold)
 
         # C188-SUM(D188:R188)
-        m=re.fullmatch(r'([A-Z]+\d+)\s*-\s*SUM\(([A-Z]+\d+):([A-Z]+\d+)\)', expr, re.I)
+        m=re.fullmatch(r'([A-Z]+\\d+)\\s*-\\s*SUM\\(([A-Z]+\\d+):([A-Z]+\\d+)\\)', expr, re.I)
         if m:
             return self.eval_cell(m.group(1)) - self.sum_range(m.group(2), m.group(3))
 
+
+        # C188*5% or C188 * 5%
+        m=re.fullmatch(r'([A-Z]+\\d+)\\s*\\*\\s*([-0-9.]+)%', expr, re.I)
+        if m:
+            return self.eval_cell(m.group(1)) * (float(m.group(2))/100.0)
+
+        # 8*5 or 8.4*5
+        m=re.fullmatch(r'([-0-9.]+)\\s*\\*\\s*([-0-9.]+)', expr, re.I)
+        if m:
+            return float(m.group(1)) * float(m.group(2))
+
         # 20%*C188 or 20% * C188
-        m=re.fullmatch(r'([-0-9.]+)%\s*\*\s*([A-Z]+\d+)', expr, re.I)
+        m=re.fullmatch(r'([-0-9.]+)%\\s*\\*\\s*([A-Z]+\\d+)', expr, re.I)
         if m:
             return (float(m.group(1))/100.0) * self.eval_cell(m.group(2))
 
         # C5/5
-        m=re.fullmatch(r'([A-Z]+\d+)\s*/\s*([-0-9.]+)', expr, re.I)
+        m=re.fullmatch(r'([A-Z]+\\d+)\\s*/\\s*([-0-9.]+)', expr, re.I)
         if m:
             denom=float(m.group(2))
             return self.eval_cell(m.group(1))/denom if denom else 0.0
 
         # A1 reference
-        m=re.fullmatch(r'([A-Z]+\d+)', expr, re.I)
+        m=re.fullmatch(r'([A-Z]+\\d+)', expr, re.I)
         if m:
             return self.eval_cell(m.group(1))
 
