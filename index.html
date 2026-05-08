@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v157CH</span>
+      <span class="topbar-title">Reports_Workers v158CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1252,9 +1252,8 @@ function generateAccounting(){
 
   status.textContent='מחשב...';status.style.color='#666';
 
-  // E/F/G מגיעים מהאפליקציה בלבד
-  const md=S.months[monthName]||{prev:[],cur:[]};
-  const allRows=[...(md.prev||[]),...(md.cur||[])].filter(r=>r&&r.date);
+  // E/F/G מגיעים מהאפליקציה בלבד — לפי טווח הימים המלא של החודש, כולל חגים מטאב חגים
+  const allRows=getAnnualRows(monthName);
   const workers=activeWorkers(monthName);
 
   const efgMap={};
@@ -1442,6 +1441,21 @@ def find_month_marker(ws, month_name):
     return None
 
 
+def _summary_hours_range(ws, start, end):
+    # מוצא את טווח U של נוסחת Hours באותו בלוק חודש, ומשמש fallback ל-Days אם תא Days פגום.
+    for r in range(start, end+1):
+        for c in range(1, ws.max_column+1):
+            val=ws.cell(r,c).value
+            if isinstance(val, str) and val.strip().lower()=='hours':
+                target = ws.cell(r, c+1) if c < ws.max_column else None
+                formula = target.value if target is not None else None
+                if isinstance(formula, str):
+                    m=re.search(r'SUM\(([A-Z]+\d+):([A-Z]+\d+)\)', formula.replace('$',''), re.I)
+                    if m:
+                        return m.group(1), m.group(2)
+    return None
+
+
 def find_summary_value(ws, evaluator, month_name, label):
     marker_row = find_month_marker(ws, month_name)
     if marker_row is None:
@@ -1456,7 +1470,15 @@ def find_summary_value(ws, evaluator, month_name, label):
                 # לפי דוח השעות: התווית בעמודה T והנוסחה/ערך בעמודה U, אבל נשאיר גמישות לתא שמימין.
                 target = ws.cell(r, c+1) if c < ws.max_column else None
                 if target is not None:
-                    return evaluator.eval_cell(target.coordinate)
+                    result = evaluator.eval_cell(target.coordinate)
+                    # אם תא Days פגום/לא מכיל נוסחה (למשל כתוב בו "U"), מחשבים Days מטווח Hours של אותו בלוק.
+                    if label.lower()=='days':
+                        tv = target.value
+                        if (not isinstance(tv, str)) or (not tv.strip().startswith('=')):
+                            rng=_summary_hours_range(ws, start, end)
+                            if rng:
+                                return evaluator.countif_gt(rng[0], rng[1], 1)
+                    return result
     return None
 
 
