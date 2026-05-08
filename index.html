@@ -182,7 +182,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v168</span>
+      <span class="topbar-title">Reports_Workers v169</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -811,14 +811,14 @@ function calcSumEffective(rows,worker){
 function workerWorksOnDate(wname, dateStr){
   const norm=n=>String(n||'').trim().replace(/\s+/g,' ');
   const w=S.workers.find(w=>norm(w.name)===norm(wname));
-  if(!w) return true;
+  if(!w){ console.log('workerWorksOnDate: עובד לא נמצא:', wname); return true; }
   const wd=w.workDays!==undefined?w.workDays:[0,1,2,3,4];
   const d=new Date(dateStr+'T12:00:00');
-  const dow=d.getDay(); // 0=ראשון...6=שבת
-  // ימי שבוע: 0=ראשון=א, 1=שני=ב, ... 4=חמישי=ה
-  // workDays מאוחסן כ-[0,1,2,3,4] כאשר 0=ראשון
-  if(dow===5||dow===6) return false; // סוף שבוע
-  return wd.includes(dow);
+  const dow=d.getDay();
+  if(dow===5||dow===6) return false;
+  const result = wd.includes(dow);
+  if(!result) console.log('workerWorksOnDate: חסום:', wname, dateStr, 'dow='+dow, 'workDays='+JSON.stringify(wd));
+  return result;
 }
 
 function getHolForWorker(date,wname){
@@ -2422,7 +2422,9 @@ function generateTimesheet(){
         // 3. כלל כללי — שתי שורות מעל ה-1 של החודש הבא
         const nextMonth = monthNum + 1;
         const nextMonthStr = year + '-' + String(nextMonth).padStart(2,'0') + '-01';
+        const curMonthStr = year + '-' + String(monthNum).padStart(2,'0');
         let nextMonthRow = -1;
+        let lastCurMonthRow = -1;
         for(let r = range.s.r; r <= range.e.r; r++){
           const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
           if(!cellA) continue;
@@ -2434,12 +2436,13 @@ function generateTimesheet(){
             const d = cellA.v;
             ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
           }
-          if(ds === nextMonthStr){
-            nextMonthRow = r;
-            break;
-          }
+          if(!ds) continue;
+          if(ds === nextMonthStr){ nextMonthRow = r; break; }
+          if(ds.startsWith(curMonthStr)) lastCurMonthRow = r;
         }
-        const endRow = nextMonthRow >= 0 ? nextMonthRow - 2 : range.e.r;
+        const endRow = nextMonthRow >= 0 ? nextMonthRow - 2
+                     : lastCurMonthRow >= 0 ? lastCurMonthRow + 2
+                     : range.e.r;
         return {headerRow, startRow: range.s.r, endRow};
       }
 
