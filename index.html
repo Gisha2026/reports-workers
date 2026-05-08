@@ -182,7 +182,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v167</span>
+      <span class="topbar-title">Reports_Workers v168</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -809,7 +809,8 @@ function calcSumEffective(rows,worker){
 }
 
 function workerWorksOnDate(wname, dateStr){
-  const w=S.workers.find(w=>w.name===wname);
+  const norm=n=>String(n||'').trim().replace(/\s+/g,' ');
+  const w=S.workers.find(w=>norm(w.name)===norm(wname));
   if(!w) return true;
   const wd=w.workDays!==undefined?w.workDays:[0,1,2,3,4];
   const d=new Date(dateStr+'T12:00:00');
