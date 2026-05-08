@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v158CH</span>
+      <span class="topbar-title">Reports_Workers v159CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -324,11 +324,17 @@ async function initPyodide(){
   <div class="tab-content" id="tab-timesheet">
     <div class="s-sec">
       <h3>הפקת Timesheet</h3>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש:</label>
-        <select id="ts-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
-          <option value="">-- בחר חודש --</option>
-        </select>
+      <div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+        <div>
+          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה:</label>
+          <select id="ts-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
+        </div>
+        <div>
+          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש:</label>
+          <select id="ts-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
+            <option value="">-- בחר חודש --</option>
+          </select>
+        </div>
       </div>
       <div style="margin-bottom:16px;">
         <label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ Timesheet:</label>
@@ -347,11 +353,17 @@ async function initPyodide(){
         האפליקציה תמלא אוטומטית: חופש · מחלה · חג/אבל · ימי עבודה · שעות<br>
         עדכון מכסת חופש בעמודה Q כשעובד עובר סף ותק
       </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש לדיווח:</label>
-        <select id="acc-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
-          <option value="">-- בחר חודש --</option>
-        </select>
+      <div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+        <div>
+          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה לדיווח:</label>
+          <select id="acc-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
+        </div>
+        <div>
+          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש לדיווח:</label>
+          <select id="acc-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
+            <option value="">-- בחר חודש --</option>
+          </select>
+        </div>
       </div>
       <div style="margin-bottom:18px;">
         <label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח הנהלת חשבונות:</label>
@@ -501,7 +513,8 @@ function buildJumps(){
   const mj=document.getElementById('monthJump');
   MONTHS.forEach((m,i)=>mj.innerHTML+=`<option value="${i}">${m}</option>`);
   const yj=document.getElementById('yearJump');
-  for(let y=2024;y<=2030;y++) yj.innerHTML+=`<option value="${y}"${y===S.year?' selected':''}>${y}</option>`;
+  const yEnd=Math.max(new Date().getFullYear(), S.year||2026)+5;
+  for(let y=2026;y<=yEnd;y++) yj.innerHTML+=`<option value="${y}"${y===S.year?' selected':''}>${y}</option>`;
 }
 
 // ===== LOGIN =====
@@ -1212,53 +1225,86 @@ function startSyncLoop(){
 
 function fillMonthYearSelects(){
   const MONTHS_HE=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-  const curYear=S.year||2026;
-  const years=[curYear-1,curYear,curYear+1,curYear+2,curYear+3,curYear+4,curYear+5];
-  ['ts-month','acc-month'].forEach(id=>{
-    const sel=document.getElementById(id);
-    if(!sel) return;
-    const cur=sel.value;
-    sel.innerHTML='<option value="">-- בחר חודש --</option>';
-    years.forEach(y=>{
-      const grp=document.createElement('optgroup');
-      grp.label=String(y);
-      MONTHS_HE.forEach(m=>{
-        const val=m+'_'+y;
+  const selectedYear=S.year||2026;
+  const endYear=Math.max(new Date().getFullYear(), selectedYear)+5;
+  const years=[];
+  for(let y=2026; y<=endYear; y++) years.push(y);
+
+  [['ts-year','ts-month'],['acc-year','acc-month']].forEach(([yearId,monthId])=>{
+    const ySel=document.getElementById(yearId);
+    const mSel=document.getElementById(monthId);
+    if(ySel){
+      const curY=ySel.value||String(selectedYear);
+      ySel.innerHTML='';
+      years.forEach(y=>{
         const opt=document.createElement('option');
-        opt.value=val;
-        opt.textContent=m+' '+y;
-        grp.appendChild(opt);
+        opt.value=String(y);
+        opt.textContent=String(y);
+        ySel.appendChild(opt);
       });
-      sel.appendChild(grp);
-    });
-    if(cur) sel.value=cur;
+      ySel.value=years.includes(parseInt(curY))?curY:String(selectedYear);
+    }
+    if(mSel){
+      const curM=mSel.value;
+      mSel.innerHTML='<option value="">-- בחר חודש --</option>';
+      MONTHS_HE.forEach(m=>{
+        const opt=document.createElement('option');
+        opt.value=m;
+        opt.textContent=m;
+        mSel.appendChild(opt);
+      });
+      if(curM) mSel.value=curM;
+    }
   });
 }
 
 function generateAccounting(){
   const status=document.getElementById('acc-status');
-  const sel=document.getElementById('acc-month');
+  const monthSel=document.getElementById('acc-month');
+  const yearSel=document.getElementById('acc-year');
   const file=document.getElementById('acc-file').files[0];
-  if(!sel.value){status.textContent='בחר חודש.';status.style.color='red';return;}
+  if(!monthSel.value){status.textContent='בחר חודש.';status.style.color='red';return;}
   if(!file){status.textContent='העלה קובץ דוח הנהלת חשבונות.';status.style.color='red';return;}
   const tsFile=document.getElementById('acc-ts-file').files[0];
   if(!tsFile){status.textContent='העלה דוח שעות.';status.style.color='red';return;}
   if(!pyReady){status.textContent='המנוע עדיין בטעינה, נסה שוב.';status.style.color='red';return;}
 
-  const [monthName,yearStr]=sel.value.split('_');
-  const year=parseInt(yearStr)||S.year||2026;
+  const monthName=monthSel.value;
+  const year=parseInt(yearSel&&yearSel.value)||S.year||2026;
   const monthNum=MONTHS.indexOf(monthName)+1;
   if(!monthNum){status.textContent='חודש לא מוכר.';status.style.color='red';return;}
 
   status.textContent='מחשב...';status.style.color='#666';
 
   // E/F/G מגיעים מהאפליקציה בלבד — לפי טווח הימים המלא של החודש, כולל חגים מטאב חגים
-  const allRows=getAnnualRows(monthName);
   const workers=activeWorkers(monthName);
+  const monthData=S.months[monthName]||{prev:[],cur:[]};
+  const cutoffForAcc=S.cutoffs[monthName]?String(S.cutoffs[monthName]).trim().substring(0,10):null;
+  const monthStartForAcc=year+'-'+String(monthNum).padStart(2,'0')+'-01';
+  const startForAcc=cutoffForAcc||monthStartForAcc;
+  const endForAcc=lastDayOfMonth(year,monthNum-1);
+  const datesForAcc=makeWorkdayRange(startForAcc,endForAcc);
+  const prevByDateAcc=new Map((monthData.prev||[]).filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10),r]));
+  const curByDateAcc=new Map((monthData.cur||[]).filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10),r]));
+  const allRows=datesForAcc.map(d=>{
+    const pr=prevByDateAcc.get(d);
+    const cr=curByDateAcc.get(d);
+    const cells={};
+    workers.forEach(w=>{
+      const wn=w.name;
+      const pv=pr&&pr.cells?(pr.cells[wn]||pr.cells[String(wn).trim()]||''):'';
+      const cv=cr&&cr.cells?(cr.cells[wn]||cr.cells[String(wn).trim()]||''):'';
+      const val=cv||pv||'';
+      const holName=getHolForWorker(d,wn);
+      const effectiveVal=val||(holName?'חג':'');
+      if(effectiveVal) cells[wn]=effectiveVal;
+    });
+    return {date:d,day:getDayName(d),cells};
+  });
 
   const efgMap={};
   workers.forEach(w=>{
-    const s=calcSumEffective(allRows,w.name);
+    const s=calcSum(allRows,w.name);
     efgMap[w.name]={e:s.v, f:s.s, g:s.h+s.o};
   });
 
@@ -1518,6 +1564,13 @@ def run(wb_b64, ts_b64, data_json):
     worker_map={w['name'].strip():w for w in workers}
     yellow=PatternFill('solid', start_color='FFFF00', fgColor='FFFF00')
     _, report_end, prev_end = month_bounds(year, month_num)
+    # L1 בדוח משמש תאריך ייחוס אם הוא קיים; אחרת סוף חודש הדיווח
+    ref_cell = ws.cell(1,12).value
+    if isinstance(ref_cell, datetime.datetime):
+        report_end = ref_cell.date()
+    elif isinstance(ref_cell, datetime.date):
+        report_end = ref_cell
+    prev_end = datetime.date(report_end.year, report_end.month, 1) - datetime.timedelta(days=1)
 
     for r in range(2, ws.max_row + 1):
         # שימוש בגישה ישירה לתאים כדי לא להיכשל אם שורה קצרה/מבנה הגיליון משתנה
@@ -1960,6 +2013,7 @@ const TS_MAP = {
 
 function generateTimesheet(){
   const tsVal = document.getElementById('ts-month').value;
+  const selectedYear = parseInt(document.getElementById('ts-year')?.value)||S.year||2026;
   const monthName = tsVal.includes('_') ? tsVal.split('_')[0] : tsVal;
   const file = document.getElementById('ts-file').files[0];
   const status = document.getElementById('ts-status');
@@ -2016,9 +2070,9 @@ function generateTimesheet(){
   // ערך ידני בתא קודם; אם אין ערך ידני ויש חג מטאב החגים, הערך האפקטיבי הוא 'חג'.
   const summaryRows = [];
   const cutoffForSummary = S.cutoffs[monthName] ? String(S.cutoffs[monthName]).trim().substring(0,10) : null;
-  const monthStartForSummary = S.year + '-' + String(monthNum).padStart(2,'0') + '-01';
+  const monthStartForSummary = selectedYear + '-' + String(monthNum).padStart(2,'0') + '-01';
   const startForSummary = cutoffForSummary || monthStartForSummary;
-  const endForSummary = lastDayOfMonth(S.year, monthNum - 1);
+  const endForSummary = lastDayOfMonth(selectedYear, monthNum - 1);
   const datesForSummary = makeWorkdayRange(startForSummary, endForSummary);
   const prevByDateForSummary = new Map((monthData.prev||[]).filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10), r]));
   const curByDateForSummary = new Map((monthData.cur||[]).filter(r=>r&&r.date).map(r=>[String(r.date).trim().substring(0,10), r]));
