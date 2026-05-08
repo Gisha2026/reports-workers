@@ -177,7 +177,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v159CH</span>
+      <span class="topbar-title">Reports_Workers v160</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1546,6 +1546,123 @@ def build_hi_map(ts_wb, month_name):
         out[key]={'i': round(hours,2) if hours is not None else None, 'h': round(days,2) if days is not None else None, '_sheet': sn}
     return out
 
+def count_from_T(ws, month_start_row, month_end_row):
+    """
+    סופר ישירות מעמודה T:
+    - vacation: Vacation + Half vacation (0.5)
+    - sick: Sick + Half sick (0.5)
+    - holiday: Holiday + Other
+    - work_days: שורות עם C לא Weekend ו-T ריק (יום עבודה רגיל או חצי)
+    - hours: work_days * שעות יומיות (מ-C5)
+    """
+    # שעות יומיות מ-C5
+    c5 = ws.cell(5, 3).value
+    daily_hours = 0.0
+    if isinstance(c5, (int,float)):
+        daily_hours = float(c5)
+    elif isinstance(c5, str) and c5.strip().startswith('='):
+        # $C$5/5 — נחשב ממנו
+        import re as _re
+        m = _re.search(r'(\d+(?:\.\d+)?)\s*/\s*5', c5)
+        if m:
+            daily_hours = float(m.group(1)) / 5
+
+    v = s = h = 0.0
+    work_days = 0
+    total_hours = 0.0
+
+    for r in range(month_start_row, month_end_row + 1):
+        c_val = ws.cell(r, 3).value   # C
+        t_val = ws.cell(r, 20).value  # T
+        # דלג על סופי שבוע
+        if isinstance(c_val, str) and 'Weekend' in str(c_val):
+            continue
+        if c_val is None and t_val is None:
+            continue
+        t_str = str(t_val).strip() if t_val else ''
+        if t_str == 'Vacation':
+            v += 1
+        elif t_str == 'Half vacation':
+            v += 0.5
+            work_days += 1
+            total_hours += daily_hours / 2
+        elif t_str == 'Sick':
+            s += 1
+        elif t_str == 'Half sick':
+            s += 0.5
+            work_days += 1
+            total_hours += daily_hours / 2
+        elif t_str in ('Holiday', 'Other'):
+            h += 1
+        elif t_str == '':
+            # יום עבודה רגיל
+            work_days += 1
+            total_hours += daily_hours
+
+    return {
+        'v': v, 's': s, 'h': h,
+        'days': work_days,
+        'hours': round(total_hours, 1)
+    }
+
+
+def find_month_rows(ws, month_name):
+    """מוצא את שורת ההתחלה והסוף של חודש בטאב עובד לפי סמן חודש."""
+    targets = {MONTH_EN.get(month_name, month_name), MONTH_EN_SHORT.get(month_name, month_name), month_name}
+    marker_row = None
+    for row in ws.iter_rows(min_row=1, max_row=ws.max_row):
+        for cell in row:
+            if cell.value and str(cell.value).strip() in targets:
+                marker_row = cell.row
+                break
+        if marker_row:
+            break
+    if marker_row is None:
+        return None, None
+    # מוצא את שורות הנתונים: שורות עם תאריך בעמודה A בחודש הנכון
+    import datetime as _dt
+    month_en = MONTH_EN.get(month_name, month_name)
+    month_num_map = {'January':1,'February':2,'March':3,'April':4,'May':5,'June':6,
+                     'July':7,'August':8,'September':9,'October':10,'November':11,'December':12}
+    mnum = month_num_map.get(month_en, 0)
+    start_row = end_row = None
+    for r in range(max(1, marker_row - 50), min(ws.max_row, marker_row + 50)):
+        a = ws.cell(r, 1).value
+        if isinstance(a, (_dt.datetime, _dt.date)):
+            dt = a if isinstance(a, _dt.date) else a.date() if hasattr(a,'date') else None
+            if dt and (mnum == 0 or dt.month == mnum):
+                if start_row is None:
+                    start_row = r
+                end_row = r
+    return start_row, end_row
+
+
+def build_hi_map_v2(ts_wb, month_name):
+    """בונה מפה של H/I לכל עובד לפי קריאת T ישירות."""
+    out = {}
+    for sn in ts_wb.sheetnames:
+        if sn == '_gisha_data': continue
+        key = first_name(sn)
+        if not key: continue
+        # עדיפות לטאב ראשי (ללא מספר)
+        if key in out and is_main_sheet(out[key].get('_sheet','')):
+            continue
+        ws = ts_wb[sn]
+        start_row, end_row = find_month_rows(ws, month_name)
+        if start_row is None:
+            continue
+        res = count_from_T(ws, start_row, end_row)
+        out[key] = {
+            'h': res['days'],
+            'i': res['hours'],
+            'v': res['v'],
+            's': res['s'],
+            'g': res['h'],
+            '_sheet': sn
+        }
+    return out
+
+
 def run(wb_b64, ts_b64, data_json):
     data=json.loads(data_json)
     workers=data['workers']
@@ -1560,7 +1677,7 @@ def run(wb_b64, ts_b64, data_json):
         return 'ERROR:גיליון לא נמצא: '+month_name
     ws=wb[month_name]
 
-    hi_map=build_hi_map(ts_wb, month_name)
+    hi_map=build_hi_map_v2(ts_wb, month_name)
     worker_map={w['name'].strip():w for w in workers}
     yellow=PatternFill('solid', start_color='FFFF00', fgColor='FFFF00')
     _, report_end, prev_end = month_bounds(year, month_num)
