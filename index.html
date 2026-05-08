@@ -86,6 +86,10 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .wact{background:#c8e6c9;color:#2e7d32}.wend{background:#ffcdd2;color:#c62828}
 .ord-btn{background:#f5f5f5;border:1px solid #ddd;padding:2px 5px;border-radius:4px;cursor:pointer;font-size:11px}
 .end-btn{background:#fff3e0;border:1px solid #FFB300;color:#E65100;padding:2px 7px;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap}
+.wday-btn{width:24px;height:24px;border-radius:4px;border:0.5px solid #ccc;background:white;font-size:11px;cursor:pointer;font-weight:500;color:#555;display:inline-flex;align-items:center;justify-content:center;}
+.wday-btn.on{background:#00897B;color:white;border-color:#00897B;}
+.wday-btn.off{background:#f5f5f5;color:#bbb;border-color:#e0e0e0;}
+.wdays-wrap{display:inline-flex;gap:3px;align-items:center;}
 .ended-sep{border-top:2px dashed #ccc;margin:8px 0 4px;color:#999;font-size:11px;padding-top:4px;text-align:center}
 .add-row{display:flex;gap:8px;margin-top:10px}
 .add-row input{flex:1;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:12px}
@@ -177,7 +181,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v160</span>
+      <span class="topbar-title">Reports_Workers v161</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -787,8 +791,22 @@ function calcSumEffective(rows,worker){
   return{v,s,h,o};
 }
 
+function workerWorksOnDate(wname, dateStr){
+  const w=S.workers.find(w=>w.name===wname);
+  if(!w) return true;
+  const wd=w.workDays!==undefined?w.workDays:[0,1,2,3,4];
+  const d=new Date(dateStr+'T12:00:00');
+  const dow=d.getDay(); // 0=ראשון...6=שבת
+  // ימי שבוע: 0=ראשון=א, 1=שני=ב, ... 4=חמישי=ה
+  // workDays מאוחסן כ-[0,1,2,3,4] כאשר 0=ראשון
+  if(dow===5||dow===6) return false; // סוף שבוע
+  return wd.includes(dow);
+}
+
 function getHolForWorker(date,wname){
   const ds=String(date).substring(0,10);
+  // אם עובד לא עובד ביום זה — אין חג עבורו
+  if(!workerWorksOnDate(wname,ds)) return null;
   const h=S.holidays.find(h=>{
     const hStart=String(h.start||'').substring(0,10);
     const hEnd=String(h.end||h.start||'').substring(0,10);
@@ -965,13 +983,32 @@ function mkWRow(w,i){
   const btn=w.active
     ?`<button class="end-btn" onclick="openEnd(${i})">סיום עבודה</button>`
     :`<button class="end-btn" onclick="reactivate(${i})">החזר לפעיל</button>`;
+  // ימי עבודה — ברירת מחדל כל 5 ימים
+  const wd = w.workDays || [0,1,2,3,4];
+  const dayNames = ['א','ב','ג','ד','ה'];
+  const daysHtml = dayNames.map((d,idx)=>{
+    const on = wd.includes(idx);
+    return `<button class="wday-btn ${on?'on':'off'}" onclick="toggleWorkDay(${i},${idx})" title="${on?'עובד':'לא עובד'}">${d}</button>`;
+  }).join('');
   r.innerHTML=`
     <span class="wname">${w.name}</span>
-    <span class="wst ${stCls}">${stTxt}</span>
     ${arrows}
+    <span class="wdays-wrap">${daysHtml}</span>
+    <span class="wst ${stCls}">${stTxt}</span>
     ${btn}
   `;
   return r;
+}
+
+function toggleWorkDay(i,day){
+  if(!S.workers[i].workDays) S.workers[i].workDays=[0,1,2,3,4];
+  const wd=S.workers[i].workDays;
+  const idx=wd.indexOf(day);
+  if(idx>=0) wd.splice(idx,1);
+  else wd.push(day);
+  wd.sort();
+  renderWorkerList();
+  saveData();
 }
 
 function fmtMonth(m){
@@ -991,7 +1028,7 @@ function addWorker(){
   const n=document.getElementById('newWorker').value.trim();
   if(!n) return;
   if(S.workers.find(w=>w.name===n)){alert('עובד זה כבר קיים');return;}
-  S.workers.push({name:n,active:true,endMonth:null});
+  S.workers.push({name:n,active:true,endMonth:null,workDays:[0,1,2,3,4]});
   document.getElementById('newWorker').value='';
   renderWorkerList(); renderHolWorkers(); renderTable();
 }
@@ -1555,17 +1592,22 @@ def count_from_T(ws, month_start_row, month_end_row):
     - work_days: שורות עם C לא Weekend ו-T ריק (יום עבודה רגיל או חצי)
     - hours: work_days * שעות יומיות (מ-C5)
     """
-    # שעות יומיות מ-C5
+    # שעות יומיות מ-C5 (C5 = שעות שבועיות, לכן מחלקים ב-5)
     c5 = ws.cell(5, 3).value
     daily_hours = 0.0
     if isinstance(c5, (int,float)):
-        daily_hours = float(c5)
+        daily_hours = float(c5) / 5.0
     elif isinstance(c5, str) and c5.strip().startswith('='):
-        # $C$5/5 — נחשב ממנו
         import re as _re
-        m = _re.search(r'(\d+(?:\.\d+)?)\s*/\s*5', c5)
-        if m:
-            daily_hours = float(m.group(1)) / 5
+        # =8*5 → שעות יומיות = 8
+        m2 = _re.search(r'(\d+(?:\.\d+)?)\s*\*\s*5', c5)
+        if m2:
+            daily_hours = float(m2.group(1))
+        else:
+            # כל מספר אחר — מחלקים ב-5
+            m2 = _re.search(r'(\d+(?:\.\d+)?)', c5)
+            if m2:
+                daily_hours = float(m2.group(1)) / 5.0
 
     v = s = h = 0.0
     work_days = 0
