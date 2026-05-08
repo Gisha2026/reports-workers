@@ -80,13 +80,14 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:grid;grid-template-columns:80px 52px 200px 70px 60px 90px;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
+.w-row{display:grid;grid-template-columns:80px 52px 200px 120px 80px 100px;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
 .wname{font-weight:500;font-size:13px;text-align:right}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px;text-align:center}
-.wact{background:#c8e6c9;color:#2e7d32}.wend{background:#ffcdd2;color:#c62828}
+.wact{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}.wend{background:#ffcdd2;color:#c62828;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}
 .ord-btn{background:#f5f5f5;border:1px solid #ddd;padding:2px 5px;border-radius:4px;cursor:pointer;font-size:11px}
-.end-btn{background:#fff3e0;border:1px solid #FFB300;color:#E65100;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;text-align:center}
-.edit-btn{background:var(--color-background-secondary,#f5f5f5);border:1px solid #ccc;color:#555;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;text-align:center}
+.end-btn{background:#fff3e0;border:1px solid #FFB300;color:#E65100;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;white-space:nowrap;width:100%;}
+.edit-btn{background:#f5f5f5;border:1px solid #ccc;color:#555;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;width:100%;}
+.badge-days{font-size:11px;padding:3px 8px;border-radius:6px;background:#fff8e1;color:#f57f17;font-weight:500;display:inline-block;}
 .wday-btn{width:34px;height:34px;border-radius:8px;border:2px solid #00897B;background:#00897B;font-size:13px;cursor:pointer;font-weight:600;color:white;display:inline-flex;align-items:center;justify-content:center;}
 .wday-btn.off{background:white;color:#ccc;border:2px solid #ddd;}
 .wdays-wrap{display:inline-flex;gap:6px;align-items:center;margin:0 6px;}
@@ -181,7 +182,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v165</span>
+      <span class="topbar-title">Reports_Workers v166</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1007,11 +1008,18 @@ function mkWRow(w,i){
     return `<button class="wday-btn ${on?'on':'off'}" onclick="toggleWorkDay(${i},${idx})" title="${on?'עובד':'לא עובד'}">${d}</button>`;
   }).join('');
   const editBtn=`<button class="edit-btn" onclick="openEditWorker(${i})">עריכה</button>`;
+  // סטטוס: פעיל + מספר ימים אם פחות מ-5
+  const wd2 = w.workDays !== undefined ? w.workDays : [0,1,2,3,4];
+  const daysCount = wd2.length;
+  let statusHtml = `<span class="wst ${stCls}">${stTxt}</span>`;
+  if(w.active && daysCount < 5){
+    statusHtml += ` <span class="badge-days">${daysCount} ימים</span>`;
+  }
   r.innerHTML=`
     <span class="wname">${w.name}</span>
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
-    <span class="wst ${stCls}">${stTxt}</span>
+    <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
     ${editBtn}
     ${btn}
   `;
