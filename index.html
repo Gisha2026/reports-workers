@@ -182,7 +182,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v169</span>
+      <span class="topbar-title">Reports_Workers v170</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2497,25 +2497,14 @@ function generateTimesheet(){
           }
         }
 
-        // מחיקת כל ערכי T של החודש לפני הכתיבה
-        for(let r = cutRowStart; r <= cutRowEnd; r++){
-          const cellA = ws[XLSX.utils.encode_cell({r, c:0})];
-          if(!cellA || cellA.v === undefined || cellA.v === null) continue;
-          let ds;
-          if(typeof cellA.v === 'number'){
-            const p = XLSX.SSF.parse_date_code(cellA.v);
-            if(!p) continue;
-            ds = p.y + '-' + String(p.m).padStart(2,'0') + '-' + String(p.d).padStart(2,'0');
-          } else continue;
-          const dsMonth = '2026-' + String(monthNum).padStart(2,'0');
-          const inCurMonth2 = ds.startsWith(dsMonth);
-          const inPrevRows2 = (monthData.prev||[]).some(pr => {
-            if(!pr||!pr.date) return false;
-            const prd = new Date(pr.date).toISOString().substring(0,10);
-            return prd === ds;
-          });
-          if(!inCurMonth2 && !inPrevRows2) continue;
-          writes.push({sheet: sheetName, row: r, col: 19, value: ''});
+        // מחיקת כל ערכי T של העובד בכל הטווח — כולל חגים מחוץ לחודש
+        const wsRange = XLSX.utils.decode_range(ws['!ref']);
+        for(let r = wsRange.s.r; r <= wsRange.e.r; r++){
+          const cellAr = ws[XLSX.utils.encode_cell({r, c:0})];
+          const cellTr = ws[XLSX.utils.encode_cell({r, c:19})];
+          if(cellAr && cellAr.v && cellTr && cellTr.v !== undefined && cellTr.v !== null && cellTr.v !== ''){
+            writes.push({sheet: sheetName, row: r, col: 19, value: ''});
+          }
         }
 
         // כתיבת ימי חיתוך לשורות הפנויות שנאספו מהקובץ המקורי
@@ -2529,6 +2518,9 @@ function generateTimesheet(){
           const val = pr.cells[workerName] || pr.cells[Object.keys(pr.cells).find(k=>normName(k)===workerName)||''];
           const tVal = T_MAP[val] || null;
           if(!tVal) return;
+          // בדיקת יום עבודה גם לימי חיתוך
+          const prDateStr = new Date(pr.date).toISOString().substring(0,10);
+          if(!workerWorksOnDate(workerName, prDateStr)) return;
           const targetRow = originalEmptyRows[idx];
           writes.push({sheet: sheetName, row: targetRow, col: 19, value: tVal});
           if(tVal==='Vacation'||tVal==='Sick'||tVal==='Other'){
