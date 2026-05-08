@@ -80,12 +80,13 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:flex;flex-direction:row;align-items:center;gap:8px;padding:8px 8px;border-bottom:1px solid #f0f0f0;direction:rtl;text-align:right;flex-wrap:wrap}
-.wname{font-weight:bold;font-size:13px}
+.w-row{display:grid;grid-template-columns:80px 52px 200px 70px 60px 90px;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
+.wname{font-weight:500;font-size:13px;text-align:right}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px;text-align:center}
 .wact{background:#c8e6c9;color:#2e7d32}.wend{background:#ffcdd2;color:#c62828}
 .ord-btn{background:#f5f5f5;border:1px solid #ddd;padding:2px 5px;border-radius:4px;cursor:pointer;font-size:11px}
-.end-btn{background:#fff3e0;border:1px solid #FFB300;color:#E65100;padding:2px 7px;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap}
+.end-btn{background:#fff3e0;border:1px solid #FFB300;color:#E65100;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;text-align:center}
+.edit-btn{background:var(--color-background-secondary,#f5f5f5);border:1px solid #ccc;color:#555;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;text-align:center}
 .wday-btn{width:34px;height:34px;border-radius:8px;border:2px solid #00897B;background:#00897B;font-size:13px;cursor:pointer;font-weight:600;color:white;display:inline-flex;align-items:center;justify-content:center;}
 .wday-btn.off{background:white;color:#ccc;border:2px solid #ddd;}
 .wdays-wrap{display:inline-flex;gap:6px;align-items:center;margin:0 6px;}
@@ -180,7 +181,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v163</span>
+      <span class="topbar-title">Reports_Workers v165</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -387,6 +388,22 @@ async function initPyodide(){
   <div class="save-bar">
     <button class="save-btn" onclick="saveData()">שמור</button>
     <span class="sst" id="saveStatus"></span>
+  </div>
+</div>
+
+<!-- EDIT WORKER MODAL -->
+<div class="mo" id="editWorkerModal">
+  <div class="mo-box">
+    <h3 style="margin:0 0 14px;font-size:15px;">עריכת עובד</h3>
+    <input type="hidden" id="editWorkerIdx">
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שם העובד:</label>
+      <input type="text" id="editWorkerName" style="width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+      <button onclick="closeModal('editWorkerModal')" style="padding:6px 14px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:12px;">ביטול</button>
+      <button onclick="saveEditWorker()" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">שמור</button>
+    </div>
   </div>
 </div>
 
@@ -989,14 +1006,44 @@ function mkWRow(w,i){
     const on = wd.includes(idx);
     return `<button class="wday-btn ${on?'on':'off'}" onclick="toggleWorkDay(${i},${idx})" title="${on?'עובד':'לא עובד'}">${d}</button>`;
   }).join('');
+  const editBtn=`<button class="edit-btn" onclick="openEditWorker(${i})">עריכה</button>`;
   r.innerHTML=`
     <span class="wname">${w.name}</span>
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span class="wst ${stCls}">${stTxt}</span>
+    ${editBtn}
     ${btn}
   `;
   return r;
+}
+
+function openEditWorker(i){
+  const w=S.workers[i];
+  document.getElementById('editWorkerIdx').value=i;
+  document.getElementById('editWorkerName').value=w.name;
+  document.getElementById('editWorkerModal').classList.add('open');
+}
+
+function saveEditWorker(){
+  const i=parseInt(document.getElementById('editWorkerIdx').value);
+  const newName=document.getElementById('editWorkerName').value.trim();
+  if(!newName) return;
+  const oldName=S.workers[i].name;
+  S.workers[i].name=newName;
+  // עדכון שם בכל הנתונים
+  if(oldName!==newName){
+    Object.values(S.months).forEach(md=>{
+      [...(md.prev||[]),(md.cur||[])].flat().forEach(r=>{
+        if(r&&r.cells&&r.cells[oldName]!==undefined){
+          r.cells[newName]=r.cells[oldName];
+          delete r.cells[oldName];
+        }
+      });
+    });
+  }
+  closeModal('editWorkerModal');
+  renderWorkerList(); renderTable(); saveData();
 }
 
 function toggleWorkDay(i,day){
