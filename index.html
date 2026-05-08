@@ -182,7 +182,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v166</span>
+      <span class="topbar-title">Reports_Workers v167</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2562,6 +2562,9 @@ function generateTimesheet(){
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
+          // בדיקת יום עבודה — אם העובד לא עובד ביום זה, לא כותבים כלום
+          if(!workerWorksOnDate(workerName, dateStr)) continue;
+
           // בדיקת חג ישירות מ-S.holidays בתוך הלולאה
           let appVal = null;
           const holidays = S.holidays;
@@ -2570,10 +2573,6 @@ function generateTimesheet(){
             const hStart = String(h.start||'').substring(0,10);
             const hEnd = String(h.end||h.start||'').substring(0,10);
             const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.some(wn => normName(wn) === workerName));
-            // לוג לאבחון - רק עבור דווה ו-01/04 ו-21/04
-            if(workerName === 'דווה' && (dateStr === '2026-04-01' || dateStr === '2026-04-21')){
-              console.log('בדיקת חג:', {dateStr, hStart, hEnd, workerMatch, match: workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd});
-            }
             if(workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd){
               appVal = 'חג';
               break;
