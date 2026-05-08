@@ -182,7 +182,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v170</span>
+      <span class="topbar-title">Reports_Workers v171</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -214,6 +214,7 @@ async function initPyodide(){
         <select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
         <span class="month-h2" id="monthTitle"></span>
         <button class="nav-btn" onclick="prevMonth()" title="חודש קודם">&#8250;</button>
+        <button class="view-btn" onclick="goToday()" title="חזרה לחודש הנוכחי">Today</button>
       </div>
       <div style="width:100px;"></div>
     </div>
@@ -504,7 +505,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v62",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v171",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -609,6 +610,30 @@ function jumpYear(v){
   document.getElementById('yearJump').value=newYear;
   refresh();
 }
+function goToday(){
+  const today = new Date();
+  const targetYear = today.getFullYear();
+  const targetMonth = today.getMonth();
+  if(targetYear !== S.year){
+    saveLocally();
+    const saved = localStorage.getItem(storeKey(targetYear));
+    const user = S.currentUser;
+    const allHols = (S.holidays||[]).slice();
+    const oldWorkers = S.workers || [];
+    const oldEmail = S.emailTemplate || {};
+    if(saved){
+      try{ S = JSON.parse(saved); } catch(e){ S = {version:'v171',currentUser:user,workers:oldWorkers,months:{},cutoffs:{},holidays:allHols,emailTemplate:oldEmail,year:targetYear}; }
+    } else {
+      S = {version:'v171',currentUser:user,workers:oldWorkers,months:{},cutoffs:{},holidays:allHols,emailTemplate:oldEmail,year:targetYear};
+    }
+    S.currentUser = user;
+    S.year = targetYear;
+    S.holidays = allHols;
+  }
+  curMI = targetMonth;
+  refresh();
+}
+
 function refresh(){
   fillMonthYearSelects();
   document.getElementById('monthJump').value=curMI;
@@ -811,16 +836,14 @@ function calcSumEffective(rows,worker){
 function workerWorksOnDate(wname, dateStr){
   const norm=n=>String(n||'').trim().replace(/\s+/g,' ');
   const w=S.workers.find(w=>norm(w.name)===norm(wname));
-  if(!w){ console.log('workerWorksOnDate: עובד לא נמצא:', wname); return true; }
-  const wd=w.workDays!==undefined?w.workDays:[0,1,2,3,4];
-  const d=new Date(dateStr+'T12:00:00');
+  if(!w) return true;
+  const wd=Array.isArray(w.workDays)?w.workDays:[0,1,2,3,4];
+  const d=localDate(String(dateStr).substring(0,10));
+  if(!d) return true;
   const dow=d.getDay();
   if(dow===5||dow===6) return false;
-  const result = wd.includes(dow);
-  if(!result) console.log('workerWorksOnDate: חסום:', wname, dateStr, 'dow='+dow, 'workDays='+JSON.stringify(wd));
-  return result;
+  return wd.includes(dow);
 }
-
 function getHolForWorker(date,wname){
   const ds=String(date).substring(0,10);
   // אם עובד לא עובד ביום זה — אין חג עבורו
@@ -2246,13 +2269,21 @@ function generateTimesheet(){
   const monthData = S.months[monthName] || {prev:[], cur:[]};
   const allRows = [...(monthData.prev||[]), ...(monthData.cur||[])];
 
+  // טווח התאריכים שמותר לכתוב לטיימשיט: החודש הנבחר + ימי החיתוך בלבד
+  const cutoffForTS = S.cutoffs[monthName] ? String(S.cutoffs[monthName]).trim().substring(0,10) : null;
+  const monthStartForTS = selectedYear + '-' + String(monthNum).padStart(2,'0') + '-01';
+  const startForTS = cutoffForTS || monthStartForTS;
+  const endForTS = lastDayOfMonth(selectedYear, monthNum - 1);
+  const allowedDatesForTS = new Set(makeWorkdayRange(startForTS, endForTS));
+
   // dateMap: תאריך -> {עובד: ערך}
   const dateMap = {};
   allRows.forEach(row => {
     if(!row || !row.date || !row.cells) return;
     // row.date הוא Date object - חילוץ תאריך UTC
-    const dt = new Date(row.date);
-    const d = dt.toISOString().substring(0,10);
+    const dt = localDate(String(row.date).substring(0,10));
+    const d = dt ? ymd(dt) : String(row.date).substring(0,10);
+    if(!allowedDatesForTS.has(d)) return;
     dateMap[d] = row.cells;
   });
 
@@ -2267,11 +2298,12 @@ function generateTimesheet(){
     const end = new Date(hEnd + 'T00:00:00Z');
     while(cur <= end){
       const d = cur.toISOString().substring(0,10);
+      if(!allowedDatesForTS.has(d)){ cur.setDate(cur.getDate() + 1); continue; }
       if(!dateMap[d]) dateMap[d] = {};
-      // מוסיפים 'חג' לכל עובד רלוונטי
+      // מוסיפים 'חג' לכל עובד רלוונטי, רק אם העובד עובד ביום זה
       S.workers.forEach(w => {
-        const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.includes(w.name));
-        if(workerMatch){
+        const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.some(wn => normName(wn) === normName(w.name)));
+        if(workerMatch && workerWorksOnDate(w.name,d)){
           // חג גובר על כל ערך אחר
           dateMap[d][normName(w.name)] = 'חג';
         }
@@ -2456,7 +2488,7 @@ function generateTimesheet(){
 
         const ws = wb.Sheets[sheetName];
         const range = XLSX.utils.decode_range(ws['!ref']);
-        const monthRange = getMonthRange(ws, monthNum, S.year);
+        const monthRange = getMonthRange(ws, monthNum, selectedYear);
         const cutRowStart = monthRange.startRow;   // 0 בד"כ
         const cutRowEnd   = monthRange.endRow;     // שורה אחרונה לחודש
         const headerRow   = monthRange.headerRow;  // שורת כותרות — נכללת תמיד
@@ -2544,8 +2576,11 @@ function generateTimesheet(){
             dateStr = cellA.v.toISOString().substring(0,10);
           } else continue;
 
+          // מונע כתיבה מחוץ לחודש הנבחר וימי החיתוך שלו
+          if(!allowedDatesForTS.has(dateStr)) continue;
+
           // בדיקת חודש ושנה — מאפשרים גם תאריכי חיתוך מהחודש הקודם שב-dateMap
-          const monthStr = '2026-' + String(monthNum).padStart(2,'0');
+          const monthStr = selectedYear + '-' + String(monthNum).padStart(2,'0');
           const inCurrentMonth = dateStr.startsWith(monthStr);
           const inPrevRows = (monthData.prev||[]).some(r => {
             if(!r||!r.date) return false;
