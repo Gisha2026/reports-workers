@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v180CH | גישה</title>
+<title>Reports_Workers v181CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v180CH</span>
+      <span class="topbar-title">Reports_Workers v181CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -509,7 +509,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v180",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v181",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -779,12 +779,21 @@ function renderTable(){
       const rowType=isPrevMonth?'prev':'cur';
       if(!worksHere){
         td.innerHTML='';
-      } else if(editMode){
-        if(displayHolName&&(!val||val==='חג')) td.innerHTML=`<span class="hol-cell">${displayHolName}</span>`;
-        else td.innerHTML=mkSel(d,w.name,val,false,rowType);
       } else {
-        if(displayHolName&&(!val||val==='חג')) td.innerHTML=`<span class="hol-cell">${displayHolName}</span>`;
-        else td.innerHTML=val?`<span class="cv" style="background:${VAL_BG[val]||''}">${val}</span>`:'<span class="cv">—</span>';
+        // v181: display-only fix for holidays in cutoff rows.
+        // Do not change cutoff rows, eligibility, counting, or saved values.
+        // If the saved cell contains "חג" or the holiday name itself (a common
+        // cutoff import/display case), show the real holiday name from S.holidays.
+        const savedUnknownText = val && !VALUES.includes(val) ? String(val) : '';
+        const holidayText = displayHolName || savedUnknownText;
+        const shouldShowHolidayName = !!holidayText && (!val || val==='חג' || val===holidayText || !!savedUnknownText);
+        if(editMode){
+          if(shouldShowHolidayName) td.innerHTML=`<span class="hol-cell">${holidayText}</span>`;
+          else td.innerHTML=mkSel(d,w.name,val,false,rowType);
+        } else {
+          if(shouldShowHolidayName) td.innerHTML=`<span class="hol-cell">${holidayText}</span>`;
+          else td.innerHTML=val?`<span class="cv" style="background:${VAL_BG[val]||''}">${val}</span>`:'<span class="cv">—</span>';
+        }
       }
       tr.appendChild(td);
     });
@@ -1282,8 +1291,10 @@ function renderHolList(){
   // שיטה 6: טבלת HTML אמיתית
   // שיטה 7: RTL מפורש על כל תא
   // שיטה 8: רוחב מפורש על כל עמודה
+  // v181: הצגת רשימת החגים בסדר תאריכים יורד, בלי לשנות את סדר הנתונים השמור.
   let html='<table style="width:100%;border-collapse:collapse;direction:rtl;font-size:12px;">';
-  S.holidays.forEach((h,i)=>{
+  const holsSorted=(S.holidays||[]).map((h,i)=>({h,i})).sort((a,b)=>String(b.h.start||'').localeCompare(String(a.h.start||'')));
+  holsSorted.forEach(({h,i})=>{
     const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
     const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
     html+=`<tr style="background:white;border-bottom:1px solid #e0e0e0;">
