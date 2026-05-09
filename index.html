@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v175CH | גישה</title>
+<title>Reports_Workers v176CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v175CH</span>
+      <span class="topbar-title">Reports_Workers v176CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -509,7 +509,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v175",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v176",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -754,11 +754,12 @@ function renderTable(){
 
     const combinedCells={};
     workers.forEach((w,wi)=>{
-      const pv=pr&&pr.cells?(pr.cells[w.name]||pr.cells[String(w.name).trim()]||''):'';
-      const cv=cr&&cr.cells?(cr.cells[w.name]||cr.cells[String(w.name).trim()]||''):'';
-      const val=cv||pv||'';
-      const holName=getHolForWorker(d,w.name);
-      const effectiveVal=val||(holName?'חג':'');
+      const worksHere=workerWorksOnDate(w.name,d);
+      const pv=worksHere?cellValueForWorker(pr,w.name):'';
+      const cv=worksHere?cellValueForWorker(cr,w.name):'';
+      const val=worksHere?(cv||pv||''):'';
+      const holName=worksHere?getHolForWorker(d,w.name):null;
+      const effectiveVal=worksHere?(val||(holName?'חג':'')):'';
       if(effectiveVal) combinedCells[w.name]=effectiveVal;
       const td=document.createElement('td');
       if(wi%2===1) td.classList.add('col-even');
@@ -775,7 +776,9 @@ function renderTable(){
         td.className='prev-empty';
       }
       const rowType=isPrevMonth?'prev':'cur';
-      if(editMode){
+      if(!worksHere){
+        td.innerHTML='';
+      } else if(editMode){
         if(holName&&(!val||val==='חג')) td.innerHTML=`<span class="hol-cell">${holName}</span>`;
         else td.innerHTML=mkSel(d,w.name,val,false,rowType);
       } else {
@@ -823,7 +826,9 @@ function setCell(date,worker,val,rowType){
   let row=arr.find(r=>r.date===date);
   if(!row){row={date,day:'',cells:{}};arr.push(row);}
   if(!row.cells) row.cells={};
-  if(val) row.cells[worker]=val; else delete row.cells[worker];
+  if(!workerWorksOnDate(worker,date)){
+    Object.keys(row.cells).forEach(k=>{ if(String(k||'').trim().replace(/\s+/g,' ')===String(worker||'').trim().replace(/\s+/g,' ')) delete row.cells[k]; });
+  } else if(val) row.cells[worker]=val; else delete row.cells[worker];
   saveLocally();
   clearTimeout(window._autoSaveTimer);
   window._autoSaveTimer=setTimeout(()=>saveData(),1000);
@@ -833,7 +838,8 @@ function setCell(date,worker,val,rowType){
 function calcSum(rows,worker){
   let v=0,s=0,h=0,o=0;
   rows.forEach(r=>{
-    const val=r.cells&&r.cells[worker]||'';
+    if(!workerWorksOnDate(worker,r.date)) return;
+    const val=cellValueForWorker(r,worker);
     if(val==='חופש') v+=1; else if(val==='חצי חופש') v+=0.5;
     else if(val==='מחלה') s+=1; else if(val==='חצי מחלה') s+=0.5;
     else if(val==='חג') h+=1; else if(val==='אבל'||val==='אחר') o+=1;
@@ -844,7 +850,8 @@ function calcSum(rows,worker){
 function calcSumEffective(rows,worker){
   let v=0,s=0,h=0,o=0;
   rows.forEach(r=>{
-    const raw=(r.cells&&r.cells[worker])||'';
+    if(!workerWorksOnDate(worker,r.date)) return;
+    const raw=cellValueForWorker(r,worker);
     const val=raw || (getHolForWorker(r.date,worker)?'חג':'');
     if(val==='חופש') v+=1; else if(val==='חצי חופש') v+=0.5;
     else if(val==='מחלה') s+=1; else if(val==='חצי מחלה') s+=0.5;
@@ -863,6 +870,19 @@ function workerWorksOnDate(wname, dateStr){
   const dow=d.getDay();
   if(dow===5||dow===6) return false;
   return wd.includes(dow);
+}
+function cellValueForWorker(row,wname){
+  if(!row||!row.cells) return '';
+  const norm=n=>String(n||'').trim().replace(/\s+/g,' ');
+  const target=norm(wname);
+  const key=Object.keys(row.cells).find(k=>norm(k)===target);
+  return key ? (row.cells[key]||'') : '';
+}
+function effectiveCellValue(date,wname,manualVal){
+  const ds=String(date||'').substring(0,10);
+  if(!workerWorksOnDate(wname,ds)) return '';
+  const val=manualVal||'';
+  return val || (getHolForWorker(ds,wname)?'חג':'');
 }
 function getHolForWorker(date,wname){
   const ds=String(date).substring(0,10);
@@ -917,9 +937,9 @@ function getAnnualRows(mName){
     const cr=curByDate.get(d);
     const cells={};
     workers.forEach(w=>{
-      const name=String(w.name||'').trim();
-      const pv=pr&&pr.cells?(pr.cells[w.name]||pr.cells[name]||''):'';
-      const cv=cr&&cr.cells?(cr.cells[w.name]||cr.cells[name]||''):'';
+      if(!workerWorksOnDate(w.name,d)) return;
+      const pv=cellValueForWorker(pr,w.name);
+      const cv=cellValueForWorker(cr,w.name);
       const val=cv||pv||'';
       if(val) cells[w.name]=val;
     });
@@ -1431,8 +1451,9 @@ function generateAccounting(){
     const cells={};
     workers.forEach(w=>{
       const wn=w.name;
-      const pv=pr&&pr.cells?(pr.cells[wn]||pr.cells[String(wn).trim()]||''):'';
-      const cv=cr&&cr.cells?(cr.cells[wn]||cr.cells[String(wn).trim()]||''):'';
+      if(!workerWorksOnDate(wn,d)) return;
+      const pv=cellValueForWorker(pr,wn);
+      const cv=cellValueForWorker(cr,wn);
       const val=cv||pv||'';
       const holName=getHolForWorker(d,wn);
       const effectiveVal=val||(holName?'חג':'');
@@ -2318,7 +2339,11 @@ function generateTimesheet(){
     const dt = localDate(String(row.date).substring(0,10));
     const d = dt ? ymd(dt) : String(row.date).substring(0,10);
     if(!allowedDatesForTS.has(d)) return;
-    dateMap[d] = row.cells;
+    const cleanCells = {};
+    Object.keys(row.cells||{}).forEach(k=>{
+      if(workerWorksOnDate(k,d)) cleanCells[normName(k)] = row.cells[k];
+    });
+    if(Object.keys(cleanCells).length) dateMap[d] = cleanCells;
   });
 
   // הוספת ימי חג ל-dateMap מ-S.holidays
@@ -2363,8 +2388,9 @@ function generateTimesheet(){
     const cells = {};
     S.workers.forEach(w => {
       const wn = w.name;
-      const pv = pr && pr.cells ? (pr.cells[wn] || pr.cells[String(wn).trim()] || '') : '';
-      const cv = cr && cr.cells ? (cr.cells[wn] || cr.cells[String(wn).trim()] || '') : '';
+      if(!workerWorksOnDate(wn,d)) return;
+      const pv = cellValueForWorker(pr,wn);
+      const cv = cellValueForWorker(cr,wn);
       const val = cv || pv || '';
       const holName = getHolForWorker(d, wn);
       const effectiveVal = val || (holName ? 'חג' : '');
@@ -2543,7 +2569,8 @@ function generateTimesheet(){
               const p = XLSX.SSF.parse_date_code(cellA.v);
               if(!p) continue;
               const ds = p.y+'-'+String(p.m).padStart(2,'0')+'-'+String(p.d).padStart(2,'0');
-              if(!ds.startsWith('2026-'+String(monthNum).padStart(2,'0'))) continue;
+              if(!ds.startsWith(String(selectedYear)+'-'+String(monthNum).padStart(2,'0'))) continue;
+              if(!workerWorksOnDate(workerName,ds)) continue;
               const cellC2 = ws[XLSX.utils.encode_cell({r, c:2})];
               if(cellC2 && String(cellC2.v).toLowerCase()==='weekend') continue;
               let isHol = false;
@@ -2552,7 +2579,7 @@ function generateTimesheet(){
                 const hS=String(h.start||'').substring(0,10);
                 const hE=String(h.end||h.start||'').substring(0,10);
                 const wm=h.workers==='all'||(Array.isArray(h.workers)&&h.workers.some(wn=>normName(wn)===workerName));
-                if(wm&&hS&&ds>=hS&&ds<=hE){isHol=true;break;}
+                if(workerWorksOnDate(workerName,ds)&&wm&&hS&&ds>=hS&&ds<=hE){isHol=true;break;}
               }
               if(isHol) continue;
               const cellT0 = ws[XLSX.utils.encode_cell({r, c:19})];
@@ -2638,8 +2665,12 @@ function generateTimesheet(){
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
-          // בדיקת יום עבודה — אם העובד לא עובד ביום זה, לא כותבים כלום
-          if(!workerWorksOnDate(workerName, dateStr)) continue;
+          // בדיקת יום עבודה — אם העובד לא עובד ביום זה, מנקים T/U ולא כותבים כלום
+          if(!workerWorksOnDate(workerName, dateStr)){
+            writes.push({sheet: sheetName, row: r, col: 19, value: ''});
+            writes.push({sheet: sheetName, row: r, col: 20, value: ''});
+            continue;
+          }
 
           // בדיקת חג ישירות מ-S.holidays בתוך הלולאה
           let appVal = null;
@@ -2649,7 +2680,7 @@ function generateTimesheet(){
             const hStart = String(h.start||'').substring(0,10);
             const hEnd = String(h.end||h.start||'').substring(0,10);
             const workerMatch = h.workers === 'all' || (Array.isArray(h.workers) && h.workers.some(wn => normName(wn) === workerName));
-            if(workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd){
+            if(workerWorksOnDate(workerName,dateStr) && workerMatch && hStart && dateStr >= hStart && dateStr <= hEnd){
               appVal = 'חג';
               break;
             }
@@ -2825,13 +2856,13 @@ result
         if(/\d/.test(workerName)) return;
         if(!activeWorkers.find(w => normName(w.name) === workerName)) return;
         const ws2 = wb.Sheets[sheetName];
-        const monthRange2 = getMonthRange(ws2, monthNum, S.year);
+        const monthRange2 = getMonthRange(ws2, monthNum, selectedYear);
         const printEndRow = monthRange2.endRow; // 0-based
         writes.push({type:'print_area', sheet: sheetName, endRow: printEndRow});
       });
       pyodide.globals.set('writes_json', JSON.stringify(writes));
       pyodide.globals.set('month_num', monthNum);
-      pyodide.globals.set('year_num', S.year);
+      pyodide.globals.set('year_num', selectedYear);
       const resultB64 = await pyodide.runPythonAsync(PY);
 
       const binStr = atob(resultB64);
@@ -2842,7 +2873,7 @@ result
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Timesheet_${monthName}_2026.xlsx`;
+      a.download = `Timesheet_${monthName}_${selectedYear}.xlsx`;
       a.click();
       URL.revokeObjectURL(url);
 
