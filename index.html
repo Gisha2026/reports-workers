@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v173CH | גישה</title>
+<title>Reports_Workers v174CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v173CH</span>
+      <span class="topbar-title">Reports_Workers v174CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -215,7 +215,7 @@ async function initPyodide(){
         <select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
         <span class="month-h2" id="monthTitle"></span>
         <button class="nav-btn" onclick="prevMonth()" title="חודש קודם">&#8250;</button>
-        <button class="view-btn today-btn" onclick="goToday()" title="חזרה לחודש הנוכחי">Today</button>
+        <button class="view-btn today-btn" onclick="goToday()" title="חזרה לחודש הנוכחי" style="margin-right:8px;">Today</button>
       </div>
       <div style="width:100px;"></div>
     </div>
@@ -642,9 +642,9 @@ function goToday(){
     const oldWorkers = S.workers || [];
     const oldEmail = S.emailTemplate || {};
     if(saved){
-      try{ S = JSON.parse(saved); } catch(e){ S = {version:'v171',currentUser:user,workers:oldWorkers,months:{},cutoffs:{},holidays:allHols,emailTemplate:oldEmail,year:targetYear}; }
+      try{ S = JSON.parse(saved); } catch(e){ S = {version:'v174',currentUser:user,workers:oldWorkers,months:{},cutoffs:{},holidays:allHols,emailTemplate:oldEmail,year:targetYear}; }
     } else {
-      S = {version:'v171',currentUser:user,workers:oldWorkers,months:{},cutoffs:{},holidays:allHols,emailTemplate:oldEmail,year:targetYear};
+      S = {version:'v174',currentUser:user,workers:oldWorkers,months:{},cutoffs:{},holidays:allHols,emailTemplate:oldEmail,year:targetYear};
     }
     S.currentUser = user;
     S.year = targetYear;
@@ -880,18 +880,16 @@ function holidayMatchesWorker(h,wname){
 }
 function getHolForWorker(date,wname){
   const ds=String(date).substring(0,10);
-  // אם עובד לא עובד ביום זה — אין חג עבורו בחישוב האוטומטי
+  // חג אוטומטי יוצג רק לעובד שהחג הוגדר עבורו, ורק ביום עבודה שלו.
   if(!workerWorksOnDate(wname,ds)) return null;
   const exact=(S.holidays||[]).find(h=>holidayMatchesDate(h,ds)&&holidayMatchesWorker(h,wname));
-  if(exact) return exact.name;
-  // גיבוי לתאריכי חיתוך/ייבוא: אם היום מוגדר כחג אך רשימת העובדים השתנתה או יש פערי רווחים בשם,
-  // עדיין נציג את שם החג במקום להשאיר תא חג בלי שם.
-  const byDate=(S.holidays||[]).find(h=>holidayMatchesDate(h,ds));
-  return byDate?byDate.name:null;
+  return exact?exact.name:null;
 }
 function getHolDisplayName(date,wname,val){
   const byWorker=getHolForWorker(date,wname);
   if(byWorker) return byWorker;
+  // אם התא עצמו כבר מסומן כ"חג" מתוך נתוני החודש/החיתוך, נציג את שם החג לפי התאריך.
+  // זה מתקן שורות חיתוך ממרץ בלי להחיל את החג על עובדים שלא סומנו.
   if(String(val||'').trim()==='חג'){
     const ds=String(date).substring(0,10);
     const byDate=(S.holidays||[]).find(h=>holidayMatchesDate(h,ds));
