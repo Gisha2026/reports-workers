@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v176CH | גישה</title>
+<title>Reports_Workers v178CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v176CH</span>
+      <span class="topbar-title">Reports_Workers v178CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -509,7 +509,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v176",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v177",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -759,6 +759,7 @@ function renderTable(){
       const cv=worksHere?cellValueForWorker(cr,w.name):'';
       const val=worksHere?(cv||pv||''):'';
       const holName=worksHere?getHolForWorker(d,w.name):null;
+      const displayHolName=worksHere?getHolidayLabelForCell(d,w.name,val):null;
       const effectiveVal=worksHere?(val||(holName?'חג':'')):'';
       if(effectiveVal) combinedCells[w.name]=effectiveVal;
       const td=document.createElement('td');
@@ -770,7 +771,7 @@ function renderTable(){
         td.title='כפילות — נרשם בשני מקומות';
       } else if(val&&VAL_BG[val]){
         td.setAttribute('style',`background:${VAL_BG[val]}!important`);
-      } else if(holName){
+      } else if(displayHolName){
         td.style.background='#fffde7';
       } else if(isPrevMonth){
         td.className='prev-empty';
@@ -779,10 +780,10 @@ function renderTable(){
       if(!worksHere){
         td.innerHTML='';
       } else if(editMode){
-        if(holName&&(!val||val==='חג')) td.innerHTML=`<span class="hol-cell">${holName}</span>`;
+        if(displayHolName&&(!val||val==='חג')) td.innerHTML=`<span class="hol-cell">${displayHolName}</span>`;
         else td.innerHTML=mkSel(d,w.name,val,false,rowType);
       } else {
-        if(holName&&(!val||val==='חג')) td.innerHTML=`<span class="hol-cell">${holName}</span>`;
+        if(displayHolName&&(!val||val==='חג')) td.innerHTML=`<span class="hol-cell">${displayHolName}</span>`;
         else td.innerHTML=val?`<span class="cv" style="background:${VAL_BG[val]||''}">${val}</span>`:'<span class="cv">—</span>';
       }
       tr.appendChild(td);
@@ -900,6 +901,38 @@ function getHolForWorker(date,wname){
     return false;
   });
   return h?h.name:null;
+}
+
+function getHolidayLabelForCell(date,wname,val){
+  const ds=String(date||'').substring(0,10);
+  const norm=s=>String(s||'').trim().replace(/\s+/g,' ');
+  const workerName=norm(wname);
+
+  // For normal auto-holiday display, keep the strict worker workday rule.
+  const strictName=getHolForWorker(ds,wname);
+  if(strictName) return strictName;
+
+  // If the cell already contains "חג" because it was carried in by a cutoff/previous-month row,
+  // this is a display-only lookup: do not create a holiday and do not count anything.
+  // It only replaces the generic word "חג" with the real holiday name.
+  if(val!=='חג') return null;
+
+  const matchesDate=(h)=>{
+    const hStart=String(h.start||'').substring(0,10);
+    const hEnd=String(h.end||h.start||'').substring(0,10);
+    return !!hStart && ds>=hStart && ds<=hEnd;
+  };
+
+  const workerSpecific=(S.holidays||[]).find(h=>{
+    if(!matchesDate(h)) return false;
+    if(h.workers==='all') return true;
+    if(Array.isArray(h.workers)) return h.workers.some(x=>norm(x)===workerName);
+    return false;
+  });
+  if(workerSpecific) return workerSpecific.name;
+
+  const anyHoliday=(S.holidays||[]).find(matchesDate);
+  return anyHoliday ? anyHoliday.name : null;
 }
 
 function activeWorkers(mName){
@@ -1959,7 +1992,8 @@ function exportExcel(){
       if(!holidayMap[ds]) holidayMap[ds]={};
       workers.forEach(w=>{
         const match = h.workers==='all'||(Array.isArray(h.workers)&&h.workers.includes(w.name));
-        if(match) holidayMap[ds][w.name]=h.name||'חג';
+        // v178: לא מוסיפים חג לעובד/ת ביום שאינו יום עבודה שלו/ה
+        if(match && workerWorksOnDate(w.name, ds)) holidayMap[ds][w.name]=h.name||'חג';
       });
       cur.setDate(cur.getDate()+1);
     }
@@ -1978,14 +2012,20 @@ function exportExcel(){
       if(!r||!r.date) return;
       const dt = new Date(r.date);
       const ds = dt.toISOString().substring(0,10);
-      dateMap[ds] = r.cells||{};
+      // v178: סינון קשיח — ביום שאינו יום עבודה של העובד/ת לא עובר שום ערך לייצוא
+      const cleanCells = {};
+      Object.keys(r.cells||{}).forEach(wn=>{
+        if(workerWorksOnDate(wn, ds)) cleanCells[wn] = r.cells[wn];
+      });
+      dateMap[ds] = cleanCells;
     });
 
     // הוספת חגים ל-dateMap
     Object.keys(holidayMap).forEach(ds=>{
       if(!dateMap[ds]) dateMap[ds]={};
       Object.keys(holidayMap[ds]).forEach(wn=>{
-        if(!dateMap[ds][wn]) dateMap[ds][wn]=holidayMap[ds][wn];
+        // v178: חג נכנס לייצוא רק אם זה יום עבודה של העובד/ת
+        if(workerWorksOnDate(wn, ds) && !dateMap[ds][wn]) dateMap[ds][wn]=holidayMap[ds][wn];
       });
     });
 
@@ -2232,7 +2272,7 @@ function sendEmail(){
     tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${row.day}</td>`;
     tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${fmtD(row.date)}</td>`;
     workers.forEach(w=>{
-      const val=(row.cells&&row.cells[w.name])||'';
+      const val=workerWorksOnDate(w.name,row.date)?((row.cells&&row.cells[w.name])||''):'';
       const bg=val&&colBg[val]?colBg[val]:(isPrev?'#ffe082':'white');
       tbl+=`<td style="background:${bg};">${val||'—'}</td>`;
     });
@@ -2554,6 +2594,23 @@ function generateTimesheet(){
         const headerRow   = monthRange.headerRow;  // שורת כותרות — נכללת תמיד
         const dailyHours = DAILY_HOURS[workerName] || DEFAULT_HOURS;
 
+        // v178 — כלל קשיח: יום שאינו יום עבודה של העובד/ת = ריק מוחלט.
+        // מנקים את כל שורות התאריך בגיליון העובד/ת, לא רק החודש הנבחר, כדי שגם תבניות שנתיות לא ימשיכו לספור שעות.
+        for(let r = range.s.r; r <= range.e.r; r++){
+          const cellA0 = ws[XLSX.utils.encode_cell({r, c:0})];
+          if(!cellA0 || cellA0.v === undefined || cellA0.v === null) continue;
+          let ds0 = null;
+          if(typeof cellA0.v === 'number'){
+            const p0 = XLSX.SSF.parse_date_code(cellA0.v);
+            if(p0) ds0 = p0.y + '-' + String(p0.m).padStart(2,'0') + '-' + String(p0.d).padStart(2,'0');
+          } else if(cellA0.v instanceof Date){
+            ds0 = cellA0.v.toISOString().substring(0,10);
+          }
+          if(ds0 && !workerWorksOnDate(workerName, ds0)){
+            writes.push({type:'clear_non_working_row', sheet: sheetName, row: r});
+          }
+        }
+
         // איסוף שורות פנויות מהקובץ המקורי לפני כל כתיבה
         const originalEmptyRows = [];
         {
@@ -2665,10 +2722,9 @@ function generateTimesheet(){
           const cellC = ws[XLSX.utils.encode_cell({r, c:2})];
           if(cellC && String(cellC.v).toLowerCase() === 'weekend') continue;
 
-          // בדיקת יום עבודה — אם העובד לא עובד ביום זה, מנקים T/U ולא כותבים כלום
+          // בדיקת יום עבודה — אם העובד לא עובד ביום זה, מנקים את שורת העבודה ולא כותבים כלום
           if(!workerWorksOnDate(workerName, dateStr)){
-            writes.push({sheet: sheetName, row: r, col: 19, value: ''});
-            writes.push({sheet: sheetName, row: r, col: 20, value: ''});
+            writes.push({type:'clear_non_working_row', sheet: sheetName, row: r});
             continue;
           }
 
@@ -2755,8 +2811,14 @@ def run(wb_b64, writes_json, month_num, year):
             end_row = w['endRow'] + 1  # המרה ל-1-based
             ws.print_area = '$A$1:$U$' + str(end_row)
             continue
+        # v178: ניקוי מלא של יום שאינו יום עבודה — עמודות C:V בלבד, בלי לגעת בתאריך/יום
+        if w.get('type') == 'clear_non_working_row':
+            rr = w['row'] + 1
+            for cc in range(3, 23):
+                ws.cell(rr, cc).value = None
+            continue
         col = w['col']
-        # בטיחות: נוגעים רק בעמודות T (19) ו-U (20) ובסיכומים (17)
+        # בטיחות: כתיבה רגילה רק בעמודות הסיכום R, וב-T/U; ניקוי מלא נעשה רק דרך clear_non_working_row
         if col not in [17, 19, 20]:
             continue
         cell = ws.cell(w['row']+1, col+1)
