@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v179CH | גישה</title>
+<title>Reports_Workers v180CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v179CH</span>
+      <span class="topbar-title">Reports_Workers v180CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -509,7 +509,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v177",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v180",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -908,14 +908,10 @@ function getHolidayLabelForCell(date,wname,val){
   const norm=s=>String(s||'').trim().replace(/\s+/g,' ');
   const workerName=norm(wname);
 
-  // For normal auto-holiday display, keep the strict worker workday rule.
-  const strictName=getHolForWorker(ds,wname);
-  if(strictName) return strictName;
-
-  // If the cell already contains "חג" because it was carried in by a cutoff/previous-month row,
-  // this is a display-only lookup: do not create a holiday and do not count anything.
-  // It only replaces the generic word "חג" with the real holiday name.
-  if(val!=='חג') return null;
+  // v180 rule: holiday name is display-only, but it is still subject to the same
+  // eligibility gate as the numeric holiday value. If the employee does not work
+  // on this date, or the holiday is not assigned to this employee, return blank.
+  if(!workerWorksOnDate(workerName,ds)) return null;
 
   const matchesDate=(h)=>{
     const hStart=String(h.start||'').substring(0,10);
@@ -923,16 +919,18 @@ function getHolidayLabelForCell(date,wname,val){
     return !!hStart && ds>=hStart && ds<=hEnd;
   };
 
-  const workerSpecific=(S.holidays||[]).find(h=>{
+  const assignedHoliday=(S.holidays||[]).find(h=>{
     if(!matchesDate(h)) return false;
     if(h.workers==='all') return true;
     if(Array.isArray(h.workers)) return h.workers.some(x=>norm(x)===workerName);
     return false;
   });
-  if(workerSpecific) return workerSpecific.name;
 
-  const anyHoliday=(S.holidays||[]).find(matchesDate);
-  return anyHoliday ? anyHoliday.name : null;
+  // Display the actual holiday name whenever this date is a valid holiday for
+  // this worker, including cutoff rows from another month. Do not fall back to
+  // "any holiday on this date", because that would leak holiday names to workers
+  // who were not assigned to the holiday.
+  return assignedHoliday ? assignedHoliday.name : null;
 }
 
 function activeWorkers(mName){
