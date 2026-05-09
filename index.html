@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v178CH | גישה</title>
+<title>Reports_Workers v179CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v178CH</span>
+      <span class="topbar-title">Reports_Workers v179CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1689,7 +1689,7 @@ def _summary_hours_range(ws, start, end):
                 target = ws.cell(r, c+1) if c < ws.max_column else None
                 formula = target.value if target is not None else None
                 if isinstance(formula, str):
-                    m=re.search(r'SUM\(([A-Z]+\d+):([A-Z]+\d+)\)', formula.replace('$',''), re.I)
+                    m=re.search(r'SUM\\(([A-Z]+\\d+):([A-Z]+\\d+)\\)', formula.replace('$',''), re.I)
                     if m:
                         return m.group(1), m.group(2)
     return None
@@ -1756,12 +1756,12 @@ def count_from_T(ws, month_start_row, month_end_row):
     elif isinstance(c5, str) and c5.strip().startswith('='):
         import re as _re
         # =8*5 → שעות יומיות = 8
-        m2 = _re.search(r'(\d+(?:\.\d+)?)\s*\*\s*5', c5)
+        m2 = _re.search(r'(\\d+(?:\\.\\d+)?)\\s*\\*\\s*5', c5)
         if m2:
             daily_hours = float(m2.group(1))
         else:
             # כל מספר אחר — מחלקים ב-5
-            m2 = _re.search(r'(\d+(?:\.\d+)?)', c5)
+            m2 = _re.search(r'(\\d+(?:\\.\\d+)?)', c5)
             if m2:
                 daily_hours = float(m2.group(1)) / 5.0
 
