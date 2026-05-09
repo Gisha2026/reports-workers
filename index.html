@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v172CH | גישה</title>
+<title>Reports_Workers v173CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -43,6 +43,7 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;font-size:13px;direction:rt
 .jump-sel{padding:4px 6px;border:1px solid #ddd;border-radius:5px;font-size:12px}
 .view-btn{padding:5px 10px;border:1px solid #00897B;border-radius:5px;cursor:pointer;font-size:12px;color:#00897B;background:white}
 .view-btn.on{background:#00897B;color:white}
+.today-btn{margin-right:6px;}
 .cutoff-bar{background:white;padding:7px 12px;border-radius:8px;display:flex;align-items:center;gap:10px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);flex-wrap:wrap}
 .cutoff-bar label{font-size:12px;color:#666}
 .cutoff-bar input[type=date]{padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px}
@@ -182,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v171CH</span>
+      <span class="topbar-title">Reports_Workers v173CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -214,7 +215,7 @@ async function initPyodide(){
         <select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
         <span class="month-h2" id="monthTitle"></span>
         <button class="nav-btn" onclick="prevMonth()" title="חודש קודם">&#8250;</button>
-        <button class="view-btn" onclick="goToday()" title="חזרה לחודש הנוכחי">Today</button>
+        <button class="view-btn today-btn" onclick="goToday()" title="חזרה לחודש הנוכחי">Today</button>
       </div>
       <div style="width:100px;"></div>
     </div>
@@ -500,7 +501,7 @@ function makeWorkdayRange(start,end){
   return out;
 }
 const ALL_DAYS=['א','ב','ג','ד','ה','ו','ש'];
-const VALUES=['','חופש','חצי חופש','מחלה','חצי מחלה','אבל','אחר'];
+const VALUES=['','חופש','חצי חופש','מחלה','חצי מחלה','חג','אבל','אחר'];
 const KNOWN_VALS=new Set(VALUES.filter(Boolean));
 const VAL_BG={'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
 const TOK_KEY='rw_gisha_token'; // PERMANENT
@@ -508,7 +509,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v172",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v173CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -756,7 +757,7 @@ function renderTable(){
       const pv=pr&&pr.cells?(pr.cells[w.name]||pr.cells[String(w.name).trim()]||''):'';
       const cv=cr&&cr.cells?(cr.cells[w.name]||cr.cells[String(w.name).trim()]||''):'';
       const val=cv||pv||'';
-      const holName=getHolForWorker(d,w.name);
+      const holName=getHolDisplayName(d,w.name,val);
       const effectiveVal=val||(holName?'חג':'');
       if(effectiveVal) combinedCells[w.name]=effectiveVal;
       const td=document.createElement('td');
@@ -863,18 +864,40 @@ function workerWorksOnDate(wname, dateStr){
   if(dow===5||dow===6) return false;
   return wd.includes(dow);
 }
+function normName(v){
+  return String(v||'').trim().replace(/\s+/g,' ');
+}
+function holidayMatchesDate(h,ds){
+  const hStart=String(h.start||'').substring(0,10);
+  const hEnd=String(h.end||h.start||'').substring(0,10);
+  return !!hStart && ds>=hStart && ds<=hEnd;
+}
+function holidayMatchesWorker(h,wname){
+  if(h.workers==='all') return true;
+  if(!Array.isArray(h.workers)) return false;
+  const wn=normName(wname);
+  return h.workers.some(x=>normName(x)===wn);
+}
 function getHolForWorker(date,wname){
   const ds=String(date).substring(0,10);
-  // אם עובד לא עובד ביום זה — אין חג עבורו
+  // אם עובד לא עובד ביום זה — אין חג עבורו בחישוב האוטומטי
   if(!workerWorksOnDate(wname,ds)) return null;
-  const h=S.holidays.find(h=>{
-    const hStart=String(h.start||'').substring(0,10);
-    const hEnd=String(h.end||h.start||'').substring(0,10);
-    if(!hStart) return false;
-    if(ds<hStart||ds>hEnd) return false;
-    return h.workers==='all'||(Array.isArray(h.workers)&&h.workers.includes(wname));
-  });
-  return h?h.name:null;
+  const exact=(S.holidays||[]).find(h=>holidayMatchesDate(h,ds)&&holidayMatchesWorker(h,wname));
+  if(exact) return exact.name;
+  // גיבוי לתאריכי חיתוך/ייבוא: אם היום מוגדר כחג אך רשימת העובדים השתנתה או יש פערי רווחים בשם,
+  // עדיין נציג את שם החג במקום להשאיר תא חג בלי שם.
+  const byDate=(S.holidays||[]).find(h=>holidayMatchesDate(h,ds));
+  return byDate?byDate.name:null;
+}
+function getHolDisplayName(date,wname,val){
+  const byWorker=getHolForWorker(date,wname);
+  if(byWorker) return byWorker;
+  if(String(val||'').trim()==='חג'){
+    const ds=String(date).substring(0,10);
+    const byDate=(S.holidays||[]).find(h=>holidayMatchesDate(h,ds));
+    return byDate?byDate.name:'חג';
+  }
+  return null;
 }
 
 function activeWorkers(mName){
