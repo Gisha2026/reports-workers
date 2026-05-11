@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v181CH | גישה</title>
+<title>Reports_Workers v182CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v181CH</span>
+      <span class="topbar-title">Reports_Workers v182CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -509,7 +509,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v181",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v182",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -1282,6 +1282,7 @@ function addHoliday(){
   document.getElementById('holAll').checked=false;
   document.querySelectorAll('.hol-cb').forEach(c=>c.checked=false);
   renderHolList(); renderTable();
+  saveData();
 }
 
 function renderHolList(){
@@ -1374,6 +1375,7 @@ function renderAnnual(){
 
 // ===== SYNC =====
 function storeKey(year){ return 'rw_gisha_data_'+(year||S.year||2026); }
+function markUpdated(){ S.updatedAt = Date.now(); }
 function saveLocally(){localStorage.setItem(storeKey(),JSON.stringify(S));}
 
 async function saveToGithub(){
@@ -1402,6 +1404,7 @@ async function loadFromGithub(){
 }
 
 async function saveData(){
+  markUpdated();
   saveLocally();
   const st=document.getElementById('saveStatus');
   st.textContent='שומר...';
@@ -1413,8 +1416,11 @@ function startSyncLoop(){
   setInterval(async()=>{
     const remote=await loadFromGithub();
     if(remote&&remote.workers&&remote.workers.length>0){
-      const ls=JSON.stringify(S),rs=JSON.stringify(remote);
-      if(rs!==ls&&rs.length>ls.length){
+      const localTs=Number(S.updatedAt||0);
+      const remoteTs=Number(remote.updatedAt||0);
+      // v182: never overwrite local state just because the remote JSON is longer.
+      // Only newer timestamped remote data may replace local data.
+      if(remoteTs && remoteTs>localTs){
         const u=S.currentUser,c={...S.cutoffs};
         Object.assign(S,remote);
         S.currentUser=u; Object.assign(S.cutoffs,c);
