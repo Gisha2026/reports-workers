@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v186 | גישה</title>
+<title>Reports_Workers v187 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v186</span>
+      <span class="topbar-title">Reports_Workers v187</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -281,28 +281,11 @@ async function initPyodide(){
   <div class="tab-content" id="tab-annual">
     <div class="s-sec">
       <h3>סיכום שנתי</h3>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;direction:rtl;">
-        <label style="font-size:13px;font-weight:bold;">שנה:</label>
-        <select id="annualYearSel" onchange="renderAnnual()" style="padding:5px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;"></select>
-      </div>
       <div id="annualContent"></div>
     </div>
   </div>
 
-  <div class="tab-content" id="tab-wdw">
-    <div class="s-sec">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;direction:rtl;">
-        <button onclick="switchWDW('input')" id="wdw-btn-input" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#00897B;color:white;">הזנה</button>
-        <button onclick="switchWDW('org')" id="wdw-btn-org" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עמותה</button>
-        <button onclick="switchWDW('donor')" id="wdw-btn-donor" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">תורמים</button>
-        <button onclick="switchWDW('worker')" id="wdw-btn-worker" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
-      </div>
-      <div id="wdw-input" class="wdw-panel"></div>
-      <div id="wdw-org" class="wdw-panel" style="display:none;"></div>
-      <div id="wdw-donor" class="wdw-panel" style="display:none;"></div>
-      <div id="wdw-worker" class="wdw-panel" style="display:none;"></div>
-    </div>
-  </div>
+  <div class="tab-content" id="tab-email">
     <div class="s-sec">
       <h3>שליחת מייל חודשי</h3>
       <div style="margin-bottom:12px;">
@@ -343,6 +326,21 @@ async function initPyodide(){
         <button onclick="saveToken()">שמור</button>
       </div>
       <div id="tokStatus"></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-wdw">
+    <div class="s-sec">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;direction:rtl;">
+        <button onclick="switchWDW('input')" id="wdw-btn-input" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#00897B;color:white;">הזנה</button>
+        <button onclick="switchWDW('org')" id="wdw-btn-org" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עמותה</button>
+        <button onclick="switchWDW('donor')" id="wdw-btn-donor" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">תורמים</button>
+        <button onclick="switchWDW('worker')" id="wdw-btn-worker" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
+      </div>
+      <div id="wdw-input"></div>
+      <div id="wdw-org" style="display:none;"></div>
+      <div id="wdw-donor" style="display:none;"></div>
+      <div id="wdw-worker" style="display:none;"></div>
     </div>
   </div>
 
@@ -1330,64 +1328,13 @@ function renderHolList(){
 function delHol(i){S.holidays.splice(i,1);renderHolList();renderTable();}
 
 // ===== ANNUAL =====
-function populateAnnualYearSel(){
-  const sel=document.getElementById('annualYearSel');
-  if(!sel) return;
-  const curYear=S.year||2026;
-  sel.innerHTML='';
-  for(let y=2024;y<=curYear;y++){
-    const o=document.createElement('option');
-    o.value=y; o.textContent=y;
-    if(y===curYear) o.selected=true;
-    sel.appendChild(o);
-  }
-}
-
-async function renderAnnual(){
+function renderAnnual(){
   const div=document.getElementById('annualContent');
   if(!div) return;
 
-  const sel=document.getElementById('annualYearSel');
-  const selectedYear=sel?parseInt(sel.value):(S.year||2026);
-
-  // אם השנה הנבחרת שונה מהשנה הנוכחית — טען נתונים מגיטהאב
-  let annualS=S;
-  if(selectedYear !== (S.year||2026)){
-    div.innerHTML='<p style="color:#666;font-size:12px;">טוען נתונים...</p>';
-    try{
-      const key='rw_gisha_data_'+selectedYear;
-      const tok=getToken();
-      if(tok){
-        const url='https://api.github.com/repos/Gisha2026/reports-workers/contents/data_'+selectedYear+'.json';
-        const res=await fetch(url,{headers:{'Authorization':'token '+tok,'Accept':'application/vnd.github.v3+json'}});
-        if(res.ok){
-          const json=await res.json();
-          const content=JSON.parse(atob(json.content.replace(/\n/g,'')));
-          annualS=content;
-        } else {
-          // נסה localStorage
-          const local=localStorage.getItem(key);
-          if(local) annualS=JSON.parse(local);
-          else { div.innerHTML='<p style="color:#e53935;font-size:12px;">אין נתונים לשנת '+selectedYear+'</p>'; return; }
-        }
-      } else {
-        const local=localStorage.getItem('rw_gisha_data_'+selectedYear);
-        if(local) annualS=JSON.parse(local);
-        else { div.innerHTML='<p style="color:#e53935;font-size:12px;">אין נתונים לשנת '+selectedYear+'</p>'; return; }
-      }
-    } catch(e){
-      div.innerHTML='<p style="color:#e53935;font-size:12px;">שגיאה בטעינת נתונים</p>'; return;
-    }
-  }
-
-  function getRows(mName){
-    const md=(annualS.months||{})[mName]||{prev:[],cur:[]};
-    return [...(md.prev||[]),...(md.cur||[])];
-  }
-
-  // טבלת סיכום מצטבר
-  const allWorkers=[...(annualS.workers||[]).filter(w=>w.active),...(annualS.workers||[]).filter(w=>!w.active)];
-  let sumHtml='<h3 class="ann-h3">סיכום מצטבר '+selectedYear+'</h3>';
+  // טבלת סיכום מצטבר מתחילת השנה
+  const allWorkers=[...S.workers.filter(w=>w.active),...S.workers.filter(w=>!w.active)];
+  let sumHtml='<h3 class="ann-h3">סיכום מצטבר מתחילת השנה</h3>';
   sumHtml+='<div style="overflow-x:auto"><table class="ann-table"><thead><tr>';
   sumHtml+='<th>עובד</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר</th></tr></thead><tbody>';
   let sepAdded=false;
@@ -1398,7 +1345,7 @@ async function renderAnnual(){
     }
     let tv=0,ts=0,th=0,to=0;
     MONTHS.forEach(m=>{
-      const s=calcSumEffective(getRows(m),w.name);
+      const s=calcSumEffective(getAnnualRows(m),w.name);
       tv+=s.v+(s.hv||0)*0.5;
       ts+=s.s+(s.hs||0)*0.5;
       th+=s.h;
@@ -1415,8 +1362,8 @@ async function renderAnnual(){
     {label:'ימי מחלה',fn:s=>s.s},
     {label:'ימי חג/אבל',fn:s=>s.h+s.o}
   ];
-  const act=(annualS.workers||[]).filter(w=>w.active);
-  const end=(annualS.workers||[]).filter(w=>!w.active);
+  const act=S.workers.filter(w=>w.active);
+  const end=S.workers.filter(w=>!w.active);
   let html=sumHtml;
   cats.forEach(cat=>{
     html+=`<h3 class="ann-h3">${cat.label}</h3><div style="overflow-x:auto"><table class="ann-table"><thead><tr><th>עובד</th>`;
@@ -1431,7 +1378,7 @@ async function renderAnnual(){
       html+=`<tr class="${cls}"><td class="wc">${w.name}</td>`;
       let tot=0;
       MONTHS.forEach(m=>{
-        const s=calcSumEffective(getRows(m),w.name);
+        const s=calcSumEffective(getAnnualRows(m),w.name);
         const v=cat.fn(s); tot+=v;
         html+=`<td>${v>0?v:'—'}</td>`;
       });
@@ -2936,10 +2883,10 @@ function startPresenceLoop(){
 
 // ===== TABS =====
 function switchTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leave','holidays','annual','timesheet','accounting','export','email','settings'][i]===name));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leave','holidays','annual','wdw','timesheet','accounting','export','email','settings'][i]===name));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  if(name==='annual'){ populateAnnualYearSel(); renderAnnual(); }
+  if(name==='annual') renderAnnual();
   if(name==='wdw'){ initWDW(); switchWDW('input'); }
   if(name==='holidays'){renderHolWorkers();renderHolList();}
   if(name==='email') renderEmailTab();
