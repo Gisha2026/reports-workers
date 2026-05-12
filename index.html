@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v188 | גישה</title>
+<title>Reports_Workers v189 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v188</span>
+      <span class="topbar-title">Reports_Workers v189</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1630,44 +1630,65 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
   const cost=S.wdw.budget?parseFloat(S.wdw.budget[(w&&w.name)||'']||0):0;
   const defaultStart=d.startDate||S.year+'-01';
   const defaultEnd=d.endDate||S.year+'-12';
-  const otherWorkers=WDW_WORKERS.filter(x=>!isEdit||x!==(w&&w.name));
-  const replacesOpts=['— לא רלוונטי —',...WDW_WORKERS].map(x=>`<option value="${x==='— לא רלוונטי —'?'':x}"${w&&w.replaces===x?' selected':''}>${x}</option>`).join('');
+  const replacesVal=w&&w.replaces||'';
+  const replacesIsVacant=replacesVal==='__vacant__';
+  const repOpts=['<option value="">— לא רלוונטי —</option>',
+    ...WDW_WORKERS.map(x=>`<option value="${x}"${replacesVal===x?' selected':''}>${x}</option>`),
+    `<option value="__vacant__"${replacesIsVacant?' selected':''}>משרה פנויה</option>`
+  ].join('');
+  const fld=`padding:7px 9px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:100%;height:34px;box-sizing:border-box`;
+  const col=`display:flex;flex-direction:column;gap:4px`;
+  const lbl=`font-size:12px;color:#555;font-weight:500`;
+  const row=`display:grid;gap:10px;margin-bottom:10px;align-items:start`;
   return `
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-      <div style="display:flex;flex-direction:column;gap:3px;min-width:130px"><label style="font-size:11px;color:#666">עובד</label>
-        <select id="${pfx}-name" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px" onchange="wdwUpdateWorkerCost('${pfx}')">
+    <div style="${row};grid-template-columns:1fr 1fr">
+      <div style="${col}">
+        <label style="${lbl}">עובד</label>
+        <select id="${pfx}-name" style="${fld}" onchange="wdwUpdateWorkerCost('${pfx}')">
           ${WDW_WORKERS.map(x=>`<option value="${x}"${w&&w.name===x?' selected':''}>${x}</option>`).join('')}
         </select>
-        <div id="${pfx}-cost" style="font-size:10px;color:#2E7D32">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'}</div>
+        <div id="${pfx}-cost" style="font-size:11px;color:#2E7D32;margin-top:1px">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'}</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:3px;min-width:130px"><label style="font-size:11px;color:#666">סוג מימון</label>
-        <select id="${pfx}-ftype" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px">${WDW_FUNDING_TYPES.map(t=>`<option${w&&w.fundingType===t?' selected':''}>${t}</option>`).join('')}</select>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:flex-end">
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:11px;color:#666">אחוז %</label>
-        <input id="${pfx}-pct" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:75px" type="number" value="${w&&w.valueType==='percent'?w.value:''}" placeholder="20" oninput="wdwCalcAmt('${pfx}')">
-        <div style="font-size:10px;color:#1565C0;font-weight:600">↕ מחושב</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:11px;color:#666">סכום ₪ חודשי</label>
-        <input id="${pfx}-amt" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:105px" type="number" value="${w&&w.valueType==='amount'?w.value:''}" placeholder="${hasBudget?'3700':'—'}" ${!hasBudget?'disabled':''} oninput="wdwCalcPct('${pfx}')">
-      </div>
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:11px;color:#666">מסגרת מקסימום ₪</label>
-        <input id="${pfx}-cap" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:120px" type="number" value="${w&&w.cap||''}" placeholder="ללא הגבלה">
+      <div style="${col}">
+        <label style="${lbl}">סוג מימון</label>
+        <select id="${pfx}-ftype" style="${fld}">${WDW_FUNDING_TYPES.map(t=>`<option${w&&w.fundingType===t?' selected':''}>${t}</option>`).join('')}</select>
       </div>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:11px;color:#666">מחודש</label>
-        <input id="${pfx}-start" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px" type="month" value="${w&&w.startMonth||defaultStart}">
-        <div style="font-size:10px;color:#2E7D32">ברירת מחדל: משך התרומה</div>
+    <div style="${row};grid-template-columns:100px 140px 1fr">
+      <div style="${col}">
+        <label style="${lbl}">% אחוז</label>
+        <input id="${pfx}-pct" style="${fld}" type="number" value="${w&&w.valueType==='percent'?w.value:''}" placeholder="20" oninput="wdwCalcAmt('${pfx}')">
+        <div style="font-size:11px;color:#1565C0;font-weight:600;margin-top:1px">↕ מחושב</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:11px;color:#666">עד חודש</label>
-        <input id="${pfx}-end" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px" type="month" value="${w&&w.endMonth||defaultEnd}">
+      <div style="${col}">
+        <label style="${lbl}">סכום ₪ חודשי</label>
+        <input id="${pfx}-amt" style="${fld}" type="number" value="${w&&w.valueType==='amount'?w.value:''}" placeholder="${hasBudget?'3700':'—'}" ${!hasBudget?'disabled':''} oninput="wdwCalcPct('${pfx}')">
+        <div style="font-size:11px;color:#777;margin-top:1px">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():''}</div>
+      </div>
+      <div style="${col}">
+        <label style="${lbl}">מסגרת מקסימום ₪</label>
+        <input id="${pfx}-cap" style="${fld}" type="number" value="${w&&w.cap||''}" placeholder="ללא הגבלה">
       </div>
     </div>
-    <div style="display:flex;gap:10px">
-      <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:11px;color:#666">מחליף את</label>
-        <select id="${pfx}-replaces" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:180px">${replacesOpts}</select>
+    <div style="${row};grid-template-columns:160px 160px">
+      <div style="${col}">
+        <label style="${lbl}">מחודש</label>
+        <input id="${pfx}-start" style="${fld}" type="month" value="${w&&w.startMonth||defaultStart}">
+        <div style="font-size:11px;color:#2E7D32;margin-top:1px">ברירת מחדל: משך התרומה</div>
+      </div>
+      <div style="${col}">
+        <label style="${lbl}">עד חודש</label>
+        <input id="${pfx}-end" style="${fld}" type="month" value="${w&&w.endMonth||defaultEnd}">
+      </div>
+    </div>
+    <div style="${row};grid-template-columns:1fr 1fr">
+      <div style="${col}">
+        <label style="${lbl}">מחליף את</label>
+        <select id="${pfx}-replaces" style="${fld}" onchange="wdwToggleVacant('${pfx}')">${repOpts}</select>
+      </div>
+      <div id="${pfx}-vacant-wrap" style="${col};${replacesIsVacant?'':'display:none'}">
+        <label style="${lbl}">שם המשרה <span style="color:#e53935">*</span></label>
+        <input id="${pfx}-vacant-name" style="${fld};${replacesIsVacant?'border-color:#e53935':''}" type="text" value="${w&&w.vacantName||''}" placeholder="לדוגמה: רכזת קהילה">
       </div>
     </div>`;
 }
@@ -1680,6 +1701,19 @@ function wdwNewWorkerForm(did, hasBudget, curMonth, workerOpts){
       <button onclick="wdwSaveNewWorker('${did}')" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700">הוסף עובד</button>
       <button onclick="document.getElementById('wdw-add-worker-${did}').style.display='none'" style="padding:6px 12px;background:#f5f5f5;border:1px solid #ddd;border-radius:5px;cursor:pointer;font-size:12px;color:#555">ביטול</button>
     </div>`;
+}
+
+function wdwToggleVacant(pfx){
+  const sel=document.getElementById(pfx+'-replaces');
+  const wrap=document.getElementById(pfx+'-vacant-wrap');
+  if(!sel||!wrap) return;
+  if(sel.value==='__vacant__'){
+    wrap.style.display='flex';
+    const inp=document.getElementById(pfx+'-vacant-name');
+    if(inp) inp.style.borderColor='#e53935';
+  } else {
+    wrap.style.display='none';
+  }
 }
 
 function wdwUpdateWorkerCost(pfx){
@@ -1817,6 +1851,7 @@ function wdwSaveNewWorker(did){
     endMonth:document.getElementById(pfx+'-end')?.value,
     cap:parseFloat(document.getElementById(pfx+'-cap')?.value)||null,
     replaces:document.getElementById(pfx+'-replaces')?.value||null,
+    vacantName:document.getElementById(pfx+'-vacant-name')?.value||null,
     active:true
   });
   saveLocally();saveData();renderWDWInput();
@@ -1837,6 +1872,8 @@ function wdwSaveEditWorker(did,wid){
   w.startMonth=document.getElementById(pfx+'-start')?.value||w.startMonth;
   w.endMonth=document.getElementById(pfx+'-end')?.value||w.endMonth;
   w.cap=parseFloat(document.getElementById(pfx+'-cap')?.value)||null;
+  w.replaces=document.getElementById(pfx+'-replaces')?.value||null;
+  w.vacantName=document.getElementById(pfx+'-vacant-name')?.value||null;
   w.replaces=document.getElementById(pfx+'-replaces')?.value||null;
   saveLocally();saveData();renderWDWInput();
 }
