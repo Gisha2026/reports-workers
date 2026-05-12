@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v192 | גישה</title>
+<title>Reports_Workers v194 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v192</span>
+      <span class="topbar-title">Reports_Workers v194</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1431,16 +1431,15 @@ function wdwWorkerTotalPct(wname, month){
         if(w.startMonth&&month<w.startMonth) return;
         if(w.endMonth&&month>w.endMonth) return;
       }
-      if(w.valueType==='percent') total+=parseFloat(w.value)||0;
-      else if(w.valueType==='amount'){
-        const cost=S.wdw.budget?parseFloat(S.wdw.budget[wname]||0):0;
-        if(cost>0) total+=(parseFloat(w.value)||0)/cost*100;
+      if(w.valueType==='percent'){
+        total+=parseFloat(w.value)||0;
+        if(w.replacesPct) total+=parseFloat(w.replacesPct)||0;
+        (w.extraReplaces||[]).forEach(r=>{ if(r.pct) total+=parseFloat(r.pct)||0; });
       }
     });
   });
   return Math.round(total*10)/10;
 }
-
 function switchWDW(panel){
   ['org','donor','worker','input'].forEach(p=>{
     const d=document.getElementById('wdw-'+p);
@@ -1528,17 +1527,19 @@ function wdwRenderDonorBlock(d, hasBudget, curMonth, workerOpts, collapsed=false
   let html=`<div style="background:white;border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:14px;${opacity}">`;
 
   // כותרת תורם
-  html+=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:${collapsed?'0':'14px'};${!collapsed?'padding-bottom:12px;border-bottom:1px solid #eee;':''}">
-    <button onclick="wdwCycleStatus('${d.id}')" style="padding:7px 20px;background:${statusColor};color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;min-width:140px">${statusLabel}</button>
+  const isCollapsed=S.wdw.collapsed&&S.wdw.collapsed[d.id];
+  html+=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:${isCollapsed?'0':'12px'};margin-bottom:${isCollapsed?'0':'14px'};${!isCollapsed?'border-bottom:1px solid #eee;':''}">
+    <button onclick="wdwCycleStatus('${d.id}')" style="padding:6px 16px;background:${statusColor};color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700">${statusLabel}</button>
     <span style="width:10px;height:10px;border-radius:50%;background:${d.color||'#999'};display:inline-block"></span>
     <span style="font-weight:700;font-size:15px">${d.name}</span>
-    <span style="font-size:11px;color:#666">${d.type==='core'?'כללי':'תקציב'}${d.totalBudget?' | ₪'+parseFloat(d.totalBudget).toLocaleString():''}${d.startDate?' | '+d.startDate:''}${d.endDate?'–'+d.endDate:''}</span>
+    <span style="font-size:12px;color:#666">${d.type==='core'?'כללי':'תקציב'}${d.totalBudget?' | ₪'+parseFloat(d.totalBudget).toLocaleString():''}${d.startDate?' | '+fmtMonth(d.startDate):''}${d.endDate?' — '+fmtMonth(d.endDate):''}</span>
     <span style="flex:1"></span>
     <button onclick="wdwToggleEdit('${d.id}')" style="padding:5px 12px;background:white;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:12px;color:#555">✏ ערוך</button>
     <button onclick="wdwConfirmDelete('${d.id}')" style="padding:5px 12px;background:white;border:1px solid #ef9a9a;border-radius:4px;cursor:pointer;font-size:12px;color:#e53935">🗑 מחק</button>
+    <button onclick="wdwToggleCollapse('${d.id}')" style="padding:5px 10px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:13px;color:#666">${isCollapsed?'▼':'▲'}</button>
   </div>`;
 
-  if(!collapsed){
+  if(!isCollapsed){
     // שדות עריכת תורם (מוסתרים)
     html+=`<div id="wdw-edit-${d.id}" style="display:none;background:#f9f9f9;border-radius:6px;padding:12px;margin-bottom:14px">
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px">
@@ -1664,7 +1665,7 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
         <div id="${pfx}-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
           ${(()=>{
             const mp=w&&w.monthlyPct||{};
-            return MONTHS_ALL.map((mn,mi)=>{
+            return MONTHS.map((mn,mi)=>{
               const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
               return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'+
                 '<label style="font-size:11px;color:#555">'+mn+'</label>'+
@@ -1817,6 +1818,14 @@ function wdwToggleMonthlyPct(pfx){
   const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
   if(!wrap) return;
   wrap.style.display=wrap.style.display==='none'?'block':'none';
+}
+
+
+function wdwToggleCollapse(did){
+  if(!S.wdw.collapsed) S.wdw.collapsed={};
+  S.wdw.collapsed[did]=!S.wdw.collapsed[did];
+  saveLocally();
+  renderWDWInput();
 }
 
 function wdwToggleVacant(pfx){
@@ -2072,13 +2081,29 @@ function renderWDWDonor(){
         <span style="font-size:11px;color:#666">${d.type==='core'?'כללי':'תקציב'}${d.totalBudget?' | ₪'+parseFloat(d.totalBudget).toLocaleString():''}${d.startDate?' | '+d.startDate:''}${d.endDate?'–'+d.endDate:''}</span>
       </div>`;
     if(workers.length>0){
-      html+=`<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#00897B;color:white"><th style="padding:6px 8px;text-align:right">עובד</th><th style="padding:6px 8px;text-align:right">ערך</th><th style="padding:6px 8px;text-align:right">תקופה</th><th style="padding:6px 8px;text-align:right">מחליף</th></tr></thead><tbody>`;
-      workers.forEach(w=>{
-        const val=w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString();
-        html+=`<tr style="border-bottom:1px solid #f0f0f0"><td style="padding:6px 8px;font-weight:bold">${w.name}</td><td style="padding:6px 8px">${val}</td><td style="padding:6px 8px">${w.startMonth||''}–${w.endMonth||''}</td><td style="padding:6px 8px">${w.replaces||'—'}</td></tr>`;
+      html+=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="background:#00897B;color:white">
+          <th style="padding:8px 10px;text-align:right;font-weight:600">עובד</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:600">ערך</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:600">מחודש</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:600">עד חודש</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:600">מחליף את</th>
+        </tr></thead><tbody>`;
+      workers.forEach((w,wi)=>{
+        const val=w.valueType==='percent'?`<strong>${w.value}%</strong>`:'₪'+parseFloat(w.value).toLocaleString();
+        const rep=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||'—';
+        const totalPct=wdwWorkerTotalPct(w.name, curMonth);
+        const overColor=totalPct>100?'#FFEBEE':wi%2===0?'#fff':'#f9f9f9';
+        html+=`<tr style="border-bottom:1px solid #f0f0f0;background:${overColor}">
+          <td style="padding:8px 10px;font-weight:600">${w.name}${totalPct>100?'<span style="color:#C62828;font-size:10px;margin-right:4px">⚠</span>':''}</td>
+          <td style="padding:8px 10px">${val}</td>
+          <td style="padding:8px 10px;color:#555">${w.startMonth?fmtMonth(w.startMonth):'—'}</td>
+          <td style="padding:8px 10px;color:#555">${w.endMonth?fmtMonth(w.endMonth):'—'}</td>
+          <td style="padding:8px 10px;color:#666">${rep}</td>
+        </tr>`;
       });
-      html+=`</tbody></table>`;
-    } else html+=`<div style="color:#999;font-size:12px">אין עובדים משויכים</div>`;
+      html+=`</tbody></table></div>`;
+    } else html+=`<div style="color:#999;font-size:12px;padding:8px 0">אין עובדים משויכים</div>`;
     html+=`</div>`;
   });
   div.innerHTML=html+'</div>';
@@ -2090,14 +2115,79 @@ function renderWDWWorker(){
   const div=document.getElementById('wdw-worker');
   if(!div) return;
   const curMonth=S.year+'-'+String(curMI+1).padStart(2,'0');
+  const donors=S.wdw.donors||[];
+  // כל העובדים
   let html=`<div style="direction:rtl;font-family:Arial,sans-serif">
-  <div style="margin-bottom:12px"><label style="font-size:12px;font-weight:bold">עובד: </label>
-  <select id="wdw-worker-sel" onchange="renderWDWWorkerCard()" style="padding:5px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px">
-  <option value="">-- בחר עובד --</option>
-  ${WDW_WORKERS.map(w=>`<option value="${w}">${w}</option>`).join('')}
-  </select></div>
-  <div id="wdw-worker-card"></div></div>`;
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <span style="font-size:13px;font-weight:600;color:#333">סינון עובדים:</span>
+    <div style="display:flex;flex-wrap:wrap;gap:6px" id="wdw-worker-filter">
+      <button onclick="wdwWorkerFilterAll()" style="padding:4px 12px;border-radius:20px;border:1px solid #00897B;background:#00897B;color:white;font-size:12px;cursor:pointer">כולם</button>
+      ${WDW_WORKERS.map(w=>`<button onclick="wdwWorkerFilterToggle('${w}',this)" data-worker="${w}" style="padding:4px 12px;border-radius:20px;border:1px solid #ddd;background:white;color:#333;font-size:12px;cursor:pointer">${w}</button>`).join('')}
+    </div>
+  </div>
+  <div id="wdw-worker-cards">`;
+  WDW_WORKERS.forEach(w=>{
+    const totalPct=wdwWorkerTotalPct(w,curMonth);
+    const cost=S.wdw.budget?parseFloat(S.wdw.budget[w]||0):0;
+    const overColor=totalPct>100?'#FFEBEE':totalPct>=80?'#FFF8E1':'white';
+    html+=`<div class="wdw-wcard" data-worker="${w}" style="background:${overColor};border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap">
+        <span style="font-size:15px;font-weight:700">${w}</span>
+        <span style="font-size:20px;font-weight:bold;color:${totalPct>100?'#C62828':totalPct>=80?'#E65100':'#00897B'}">${totalPct}%</span>
+        ${totalPct>100?'<span style="background:#C62828;color:white;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">⚠ חריגה</span>':''}
+        <span style="font-size:12px;color:#666">פנוי: ${Math.max(0,100-totalPct)}%</span>
+        ${cost>0?`<span style="font-size:12px;color:#555">עלות מעביד: ₪${cost.toLocaleString()}</span>`:''}
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#00897B;color:white">
+          <th style="padding:6px 8px;text-align:right">תורם</th>
+          <th style="padding:6px 8px;text-align:right">ערך</th>
+          <th style="padding:6px 8px;text-align:right">מחודש</th>
+          <th style="padding:6px 8px;text-align:right">עד חודש</th>
+          <th style="padding:6px 8px;text-align:right">מחליף את</th>
+        </tr></thead><tbody>`;
+    let found=false;
+    donors.forEach(d=>{
+      (d.workers||[]).filter(x=>x.name===w&&x.active!==false).forEach(x=>{
+        found=true;
+        const val=x.valueType==='percent'?`<strong>${x.value}%</strong>`:'₪'+parseFloat(x.value).toLocaleString();
+        const rep=x.replaces==='__vacant__'?(x.vacantName||'משרה פנויה'):x.replaces||'—';
+        html+=`<tr style="border-bottom:1px solid #f5f5f5">
+          <td style="padding:6px 8px;color:${d.color||'#333'};font-weight:600">${d.name}</td>
+          <td style="padding:6px 8px">${val}</td>
+          <td style="padding:6px 8px;color:#555">${x.startMonth?fmtMonth(x.startMonth):'—'}</td>
+          <td style="padding:6px 8px;color:#555">${x.endMonth?fmtMonth(x.endMonth):'—'}</td>
+          <td style="padding:6px 8px;color:#666">${rep}</td>
+        </tr>`;
+      });
+    });
+    if(!found) html+=`<tr><td colspan="5" style="padding:6px 8px;color:#bbb;text-align:center">אין שיוכים</td></tr>`;
+    html+=`</tbody></table></div>`;
+  });
+  html+=`</div></div>`;
   div.innerHTML=html;
+}
+
+function wdwWorkerFilterAll(){
+  document.querySelectorAll('.wdw-wcard').forEach(el=>el.style.display='block');
+  document.querySelectorAll('#wdw-worker-filter button').forEach(b=>{
+    b.style.background=b.textContent==='כולם'?'#00897B':'white';
+    b.style.color=b.textContent==='כולם'?'white':'#333';
+  });
+}
+function wdwWorkerFilterToggle(name,btn){
+  const cards=document.querySelectorAll('.wdw-wcard');
+  const allVisible=[...cards].every(el=>el.style.display!=='none');
+  if(allVisible){
+    cards.forEach(el=>el.style.display=el.dataset.worker===name?'block':'none');
+    document.querySelectorAll('#wdw-worker-filter button').forEach(b=>{b.style.background='white';b.style.color='#333';});
+    btn.style.background='#00897B';btn.style.color='white';
+  } else {
+    cards.forEach(el=>el.style.display='block');
+    document.querySelectorAll('#wdw-worker-filter button').forEach(b=>{b.style.background='white';b.style.color='#333';});
+    document.querySelector('#wdw-worker-filter button').style.background='#00897B';
+    document.querySelector('#wdw-worker-filter button').style.color='white';
+  }
 }
 
 function renderWDWWorkerCard(){
