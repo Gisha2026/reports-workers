@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v191 | גישה</title>
+<title>Reports_Workers v192 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v191</span>
+      <span class="topbar-title">Reports_Workers v192</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1645,6 +1645,7 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
       <div style="${col}">
         <label style="${lbl}">עובד</label>
         <select id="${pfx}-name" style="${fld}" onchange="wdwUpdateWorkerCost('${pfx}')">
+          <option value=""${(!w||(w&&!w.name))?' selected':''}>— בחר עובד —</option>
           ${WDW_WORKERS.map(x=>`<option value="${x}"${w&&w.name===x?' selected':''}>${x}</option>`).join('')}
         </select>
         <div id="${pfx}-cost" style="font-size:11px;color:#2E7D32;margin-top:1px">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'}</div>
@@ -1657,8 +1658,21 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
     <div style="${row};grid-template-columns:100px 140px 1fr">
       <div style="${col}">
         <label style="${lbl}">% אחוז</label>
-        <input id="${pfx}-pct" style="${fld}" type="number" value="${w&&w.valueType==='percent'?w.value:''}" placeholder="20" oninput="wdwCalcAmt('${pfx}')">
+        <input id="${pfx}-pct" style="${fld}" type="number" value="${w&&w.valueType==='percent'?w.value:''}" placeholder="0" oninput="wdwCalcAmt('${pfx}')">
         <div style="font-size:11px;color:#1565C0;font-weight:600;margin-top:1px">↕ מחושב</div>
+        <button type="button" onclick="wdwToggleMonthlyPct('${pfx}')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button>
+        <div id="${pfx}-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
+          ${(()=>{
+            const mp=w&&w.monthlyPct||{};
+            return MONTHS_ALL.map((mn,mi)=>{
+              const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
+              return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'+
+                '<label style="font-size:11px;color:#555">'+mn+'</label>'+
+                '<input id="'+pfx+'-mp-'+mkey+'" type="number" value="'+( mp[mkey]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'+
+                '</div>';
+            }).join('');
+          })()}
+        </div>
       </div>
       <div style="${col}">
         <label style="${lbl}">סכום ₪ חודשי</label>
@@ -1785,6 +1799,24 @@ function wdwToggleVacantExtra(pfx,idx){
   const wrap=document.getElementById(`${pfx}-extra-vacant-wrap-${idx}`);
   if(!sel||!wrap) return;
   wrap.style.display=sel.value==='__vacant__'?'flex':'none';
+}
+
+
+
+function wdwCollectMonthlyPct(pfx){
+  const mp={};
+  for(let mi=0;mi<12;mi++){
+    const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
+    const el=document.getElementById(pfx+'-mp-'+mkey);
+    if(el&&el.value) mp[mkey]=parseFloat(el.value)||0;
+  }
+  return Object.keys(mp).length?mp:null;
+}
+
+function wdwToggleMonthlyPct(pfx){
+  const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
+  if(!wrap) return;
+  wrap.style.display=wrap.style.display==='none'?'block':'none';
 }
 
 function wdwToggleVacant(pfx){
@@ -1939,7 +1971,9 @@ function wdwSaveNewWorker(did){
     replacesAmt:parseFloat(document.getElementById(pfx+'-replaces-amt')?.value)||null,
     vacantName:document.getElementById(pfx+'-vacant-name')?.value||null,
     extraReplaces:[],
-    active:true
+    active:true,
+    overLimit:valueType==='percent'&&total+value>100,
+    monthlyPct:wdwCollectMonthlyPct('nw-'+did)
   });
   saveLocally();saveData();
   // סגירת טופס ורענון
@@ -2002,7 +2036,8 @@ function renderWDWOrg(){
   html+=`<th style="background:#00897B;color:white;padding:7px 8px;text-align:center">סה"כ</th><th style="background:#00897B;color:white;padding:7px 8px;text-align:center">פנוי</th></tr></thead><tbody>`;
   WDW_WORKERS.forEach(w=>{
     let total=0;
-    html+=`<tr><td style="padding:6px 8px;border-bottom:1px solid #f5f5f5;font-weight:bold">${w}</td>`;
+    const workerOverLimit=(S.wdw.donors||[]).some(d=>(d.workers||[]).some(x=>x.name===w&&x.active!==false&&x.overLimit));
+    html+=`<tr><td style="padding:6px 8px;border-bottom:1px solid #f5f5f5;font-weight:bold">${w}${workerOverLimit?'<span style="color:#C62828;font-size:10px;margin-right:4px">⚠ חריגה</span>':''}</td>`;
     donors.filter(d=>d.status!==WDW_STATUS.INACTIVE).forEach(d=>{
       const wa=(d.workers||[]).filter(x=>x.name===w&&x.active!==false&&curMonth>=(x.startMonth||'')&&curMonth<=(x.endMonth||'9999'));
       let pct=0;
@@ -2012,8 +2047,8 @@ function renderWDWOrg(){
     });
     const free=Math.max(0,100-total);
     const tc=total>100?'#C62828':total>=80?'#E65100':'#2E7D32';
-    html+=`<td style="padding:6px 8px;border-bottom:1px solid #f5f5f5;text-align:center;color:${tc};font-weight:bold">${total}%</td>`;
-    html+=`<td style="padding:6px 8px;border-bottom:1px solid #f5f5f5;text-align:center;color:${free>0?'#2E7D32':'#C62828'};font-weight:bold">${free}%</td></tr>`;
+    html+=`<td style="padding:6px 8px;border-bottom:1px solid #f5f5f5;text-align:left;color:${tc};font-weight:bold">${total}%</td>`;
+    html+=`<td style="padding:6px 8px;border-bottom:1px solid #f5f5f5;text-align:left;color:${free>0?'#2E7D32':'#C62828'};font-weight:bold">${free}%</td></tr>`;
   });
   html+=`</tbody></table></div></div></div>`;
   div.innerHTML=html;
