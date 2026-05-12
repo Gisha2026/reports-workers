@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v196 | גישה</title>
+<title>Reports_Workers v197 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v196</span>
+      <span class="topbar-title">Reports_Workers v197</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2106,7 +2106,10 @@ function renderWDWDonor(){
           <th style="padding:8px 10px;text-align:right;font-weight:600">מחליף את</th>
         </tr></thead><tbody>`;
       workers.forEach((w,wi)=>{
-        const val=w.valueType==='percent'?`<strong>${w.value}%</strong>`:'₪'+parseFloat(w.value).toLocaleString();
+        const baseVal=w.valueType==='percent'?parseFloat(w.value)||0:0;
+        const repPct=parseFloat(w.replacesPct)||0;
+        const totalWorkerPct=baseVal+repPct;
+        const val=w.valueType==='percent'?`<strong>${totalWorkerPct}%</strong>${repPct?` <span style="font-size:11px;color:#1565C0">(${baseVal}%+${repPct}%)</span>`:''}`:'₪'+parseFloat(w.value).toLocaleString();
         const rep=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||'—';
         const totalPct=wdwWorkerTotalPct(w.name, curMonth);
         const overColor=totalPct>100?'#FFEBEE':wi%2===0?'#fff':'#f9f9f9';
@@ -2166,7 +2169,10 @@ function renderWDWWorker(){
     donors.forEach(d=>{
       (d.workers||[]).filter(x=>x.name===w&&x.active!==false).forEach(x=>{
         found=true;
-        const val=x.valueType==='percent'?`<strong>${x.value}%</strong>`:'₪'+parseFloat(x.value).toLocaleString();
+        const xBase=x.valueType==='percent'?parseFloat(x.value)||0:0;
+        const xRep=parseFloat(x.replacesPct)||0;
+        const xTotal=xBase+xRep;
+        const val=x.valueType==='percent'?`<strong>${xTotal}%</strong>${xRep?` <span style="font-size:11px;color:#1565C0">(${xBase}%+${xRep}%)</span>`:''}`:'₪'+parseFloat(x.value).toLocaleString();
         const rep=x.replaces==='__vacant__'?(x.vacantName||'משרה פנויה'):x.replaces||'—';
         html+=`<tr style="border-bottom:1px solid #f5f5f5">
           <td style="padding:6px 8px;color:${d.color||'#333'};font-weight:600">${d.name}</td>
