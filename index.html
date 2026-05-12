@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v190 | גישה</title>
+<title>Reports_Workers v191 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -183,7 +183,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v190</span>
+      <span class="topbar-title">Reports_Workers v191</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1681,37 +1681,58 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
         <input id="${pfx}-end" style="${fld}" type="month" value="${w&&w.endMonth||defaultEnd}">
       </div>
     </div>
-    <div style="${row};grid-template-columns:1fr 1fr" id="${pfx}-replaces-rows">
-      <div style="${col}">
-        <label style="${lbl}">מחליף את</label>
-        <select id="${pfx}-replaces" style="${fld}" onchange="wdwToggleVacant('${pfx}')">${repOpts}</select>
-      </div>
-      <div id="${pfx}-vacant-wrap" style="${col};${replacesIsVacant?'':'display:none'}">
-        <label style="${lbl}">שם המשרה <span style="color:#e53935">*</span></label>
-        <input id="${pfx}-vacant-name" style="${fld};${replacesIsVacant?'border-color:#e53935':''}" type="text" value="${w&&w.vacantName||''}" placeholder="לדוגמה: רכזת פניות">
-      </div>
-    </div>
-    ${(w&&w.extraReplaces||[]).map((r,i)=>`
-    <div style="${row};grid-template-columns:1fr 1fr 80px;margin-top:-4px" id="${pfx}-extra-row-${i}">
-      <div style="${col}">
-        <select id="${pfx}-extra-replaces-${i}" style="${fld}" onchange="wdwToggleVacantExtra('${pfx}',${i})">
-          <option value="">— לא רלוונטי —</option>
-          ${WDW_WORKERS.map(x=>`<option value="${x}"${r.replaces===x?' selected':''}>${x}</option>`).join('')}
-          <option value="__vacant__"${r.replaces==='__vacant__'?' selected':''}>משרה פנויה</option>
-        </select>
-        <div id="${pfx}-extra-vacant-wrap-${i}" style="${col};${r.replaces==='__vacant__'?'':'display:none'}">
-          <input id="${pfx}-extra-vacant-name-${i}" style="${fld}" type="text" value="${r.vacantName||''}" placeholder="לדוגמה: רכזת פניות">
+    <div style="margin-top:4px">
+      <label style="${lbl}">מחליף את</label>
+      <div id="${pfx}-replaces-rows" style="margin-top:6px">
+        <div style="${row};grid-template-columns:1fr 100px 100px 36px;align-items:end;margin-bottom:6px">
+          <div style="${col}">
+            <select id="${pfx}-replaces" style="${fld}" onchange="wdwToggleVacant('${pfx}')">
+              ${repOpts}
+            </select>
+            <div id="${pfx}-vacant-wrap" style="${col};margin-top:4px;${replacesIsVacant?'':'display:none'}">
+              <label style="${lbl}">שם המשרה <span style="color:#e53935">*</span></label>
+              <input id="${pfx}-vacant-name" style="${fld};${replacesIsVacant?'border-color:#e53935':''}" type="text" value="${w&&w.vacantName||''}" placeholder="לדוגמה: רכזת פניות">
+            </div>
+          </div>
+          <div style="${col}">
+            <label style="${lbl}">% אחוז</label>
+            <input id="${pfx}-replaces-pct" style="${fld}" type="number" value="${w&&w.replacesPct||''}" placeholder="20">
+          </div>
+          <div style="${col}">
+            <label style="${lbl}">סכום ₪</label>
+            <input id="${pfx}-replaces-amt" style="${fld}" type="number" value="${w&&w.replacesAmt||''}" placeholder="—">
+          </div>
+          <div style="${col};justify-content:flex-end">
+            <div style="height:34px"></div>
+          </div>
         </div>
+        ${(w&&w.extraReplaces||[]).map((r,i)=>`
+        <div style="${row};grid-template-columns:1fr 100px 100px 36px;align-items:end;margin-bottom:6px" id="${pfx}-extra-row-${i}">
+          <div style="${col}">
+            <select id="${pfx}-extra-replaces-${i}" style="${fld}" onchange="wdwToggleVacantExtra('${pfx}',${i})">
+              <option value="">— לא רלוונטי —</option>
+              ${WDW_WORKERS.map(x=>`<option value="${x}"${r.replaces===x?' selected':''}>${x}</option>`).join('')}
+              <option value="__vacant__"${r.replaces==='__vacant__'?' selected':''}>משרה פנויה</option>
+            </select>
+            <div id="${pfx}-extra-vacant-wrap-${i}" style="${col};margin-top:4px;${r.replaces==='__vacant__'?'':'display:none'}">
+              <input id="${pfx}-extra-vacant-name-${i}" style="${fld}" type="text" value="${r.vacantName||''}" placeholder="לדוגמה: רכזת פניות">
+            </div>
+          </div>
+          <div style="${col}">
+            <label style="${lbl}">% אחוז</label>
+            <input id="${pfx}-extra-pct-${i}" style="${fld}" type="number" value="${r.pct||''}" placeholder="20">
+          </div>
+          <div style="${col}">
+            <label style="${lbl}">סכום ₪</label>
+            <input id="${pfx}-extra-amt-${i}" style="${fld}" type="number" value="${r.amt||''}" placeholder="—">
+          </div>
+          <div style="${col};justify-content:flex-end">
+            <button onclick="wdwRemoveExtraReplace('${pfx}',${i})" style="height:34px;padding:0 10px;background:#fff;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;color:#e53935;font-size:14px">✕</button>
+          </div>
+        </div>`).join('')}
       </div>
-      <div style="${col}">
-        <label style="${lbl}">אחוז החלפה %</label>
-        <input id="${pfx}-extra-pct-${i}" style="${fld}" type="number" value="${r.pct||''}" placeholder="20">
-      </div>
-      <div style="${col};justify-content:flex-end">
-        <button onclick="wdwRemoveExtraReplace('${pfx}',${i})" style="padding:6px 10px;background:#fff;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;color:#e53935;font-size:13px;margin-top:20px">✕</button>
-      </div>
-    </div>`).join('')}
-    <button onclick="wdwAddExtraReplace('${pfx}')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:4px">+ הוסף החלפה נוספת</button>`;
+      <button onclick="wdwAddExtraReplace('${pfx}')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:2px">+ הוסף החלפה נוספת</button>
+    </div>`;
 }
 
 function wdwNewWorkerForm(did, hasBudget, curMonth, workerOpts){
@@ -1914,6 +1935,8 @@ function wdwSaveNewWorker(did){
     endMonth:document.getElementById(pfx+'-end')?.value,
     cap:parseFloat(document.getElementById(pfx+'-cap')?.value)||null,
     replaces:document.getElementById(pfx+'-replaces')?.value||null,
+    replacesPct:parseFloat(document.getElementById(pfx+'-replaces-pct')?.value)||null,
+    replacesAmt:parseFloat(document.getElementById(pfx+'-replaces-amt')?.value)||null,
     vacantName:document.getElementById(pfx+'-vacant-name')?.value||null,
     extraReplaces:[],
     active:true
@@ -1943,7 +1966,7 @@ function wdwSaveEditWorker(did,wid){
   w.replaces=document.getElementById(pfx+'-replaces')?.value||null;
   w.vacantName=document.getElementById(pfx+'-vacant-name')?.value||null;
   // שמירת extraReplaces מתוך הטופס
-  if(w.extraReplaces){w.extraReplaces.forEach((r,i)=>{r.replaces=document.getElementById(pfx+`-extra-replaces-${i}`)?.value||'';r.pct=document.getElementById(pfx+`-extra-pct-${i}`)?.value||'';r.vacantName=document.getElementById(pfx+`-extra-vacant-name-${i}`)?.value||'';});}
+  if(w.extraReplaces){w.extraReplaces.forEach((r,i)=>{r.replaces=document.getElementById(pfx+`-extra-replaces-${i}`)?.value||'';r.pct=document.getElementById(pfx+`-extra-pct-${i}`)?.value||'';r.amt=document.getElementById(pfx+`-extra-amt-${i}`)?.value||'';r.vacantName=document.getElementById(pfx+`-extra-vacant-name-${i}`)?.value||'';});}
   w.replaces=document.getElementById(pfx+'-replaces')?.value||null;
   saveLocally();saveData();renderWDWInput();
 }
