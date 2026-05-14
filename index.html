@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v207CH | גישה</title>
+<title>Reports_Workers v208CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -213,7 +213,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v207CH</span>
+      <span class="topbar-title">Reports_Workers v208CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1423,6 +1423,7 @@ function renderAnnual(){
 const WDW_WORKERS=['תניה','דווה','אדם','סתיו','מעיין','נעה','שי','ליטל','אסנת','סיגי','מוחמד','שאדי','סועאד','עלאא','לנא'];
 const WDW_FUNDING_TYPES=['אחוז קבוע','אחוז לתקופה','סכום חודשי','סכום לתקופה','גמיש','מוגבל מסגרת'];
 const WDW_STATUS={ACTIVE:'active',PENDING:'pending',INACTIVE:'inactive',ENDED:'ended'};
+let WDW_CREATING_DONOR=false;
 
 function wdwWorkersList(){
   const base = (Array.isArray(S.workers)?S.workers.map(w=>w.name):[]).filter(Boolean);
@@ -1435,6 +1436,7 @@ function initWDW(){
   if(!S.wdw) S.wdw={donors:[],budget:{}};
   if(!S.wdw.donors) S.wdw.donors=[];
   if(!S.wdw.budget) S.wdw.budget={};
+  if(S.wdw.creatingDonor) delete S.wdw.creatingDonor;
 }
 
 function wdwGenId(p){return p+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
@@ -1504,12 +1506,12 @@ function renderWDWInput(){
 
   let html=`<div style="padding:4px;direction:rtl;font-family:Arial,sans-serif">`;
 
-  const isCreatingDonor=!!S.wdw.creatingDonor;
+  const isCreatingDonor=!!WDW_CREATING_DONOR;
   // מצב הוספת תורם חדש נפרד לחלוטין מעריכת/פתיחת תורמים קיימים.
   // כשהטופס פתוח לא מציגים תורמים קיימים, כדי למנוע בלבול ופתיחה לא רצויה של מידע קיים.
   if(!isCreatingDonor){
     html+=`<div style="margin-bottom:16px">
-      <button onclick="wdwShowAddDonor()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700">+ הוסף תורם</button>
+      <button type="button" onclick="wdwShowAddDonor()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700">+ הוסף תורם</button>
     </div>`;
   }
   html+=`
@@ -1534,8 +1536,8 @@ function renderWDWInput(){
       <div style="display:flex;flex-direction:column;gap:3px"><label style="font-size:11px;color:#666">שער עדכני ₪</label><input id="wdw-new-donor-fxrate2" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:80px" type="number" placeholder="3.75" step="0.01"></div>
     </div>
     <div style="display:flex;gap:8px">
-      <button onclick="wdwSaveNewDonor()" style="padding:7px 18px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:700">שמור תורם</button>
-      <button onclick="wdwCancelAddDonor()" style="padding:7px 14px;background:#f5f5f5;border:1px solid #ddd;border-radius:5px;cursor:pointer;font-size:13px;color:#555">ביטול</button>
+      <button type="button" onclick="wdwSaveNewDonor()" style="padding:7px 18px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:700">שמור תורם</button>
+      <button type="button" onclick="wdwCancelAddDonor()" style="padding:7px 14px;background:#f5f5f5;border:1px solid #ddd;border-radius:5px;cursor:pointer;font-size:13px;color:#555">ביטול</button>
     </div>
   </div>`;
 
@@ -1926,12 +1928,16 @@ function wdwCalcPct(pfx){
 
 function wdwShowAddDonor(){
   initWDW();
-  S.wdw.creatingDonor=true;
+  WDW_CREATING_DONOR=true;
   renderWDWInput();
+  setTimeout(()=>{
+    const el=document.getElementById('wdw-new-donor-name');
+    if(el) el.focus();
+  },0);
 }
 function wdwCancelAddDonor(){
   initWDW();
-  S.wdw.creatingDonor=false;
+  WDW_CREATING_DONOR=false;
   renderWDWInput();
 }
 function wdwShowAddWorker(did){document.getElementById('wdw-add-worker-'+did).style.display='block';}
@@ -1999,7 +2005,8 @@ function wdwSaveNewDonor(){
     workers:[]
   };
   S.wdw.donors.push(donor);
-  S.wdw.creatingDonor=false;
+  WDW_CREATING_DONOR=false;
+  if(S.wdw) delete S.wdw.creatingDonor;
   saveLocally();saveData();renderWDWInput();
 }
 
