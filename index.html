@@ -2059,14 +2059,22 @@ function wdwSaveNewWorker(did){
     overLimit:valueType==='percent'&&total+value>100,
     monthlyPct:wdwCollectMonthlyPct('nw-'+did)
   });
-  saveLocally();saveData();
-  // השארת טופס הוספת עובד פתוח להזנה רציפה.
-  // הרינדור מאפס את השדות ומציג שוב את טופס ההוספה לאותה תרומה.
-  renderWDWInput();
-  setTimeout(()=>{
-    const addWrap=document.getElementById('wdw-add-worker-'+did);
-    if(addWrap) addWrap.style.display='block';
-  },0);
+  saveLocally();
+  saveData();
+  // UX קריטי: לא מרנדרים מחדש את כל WDW אחרי הוספת עובד.
+  // רינדור מלא סוגר את ה-accordion/טופס ומכריח לפתוח שוב את התרומה.
+  // במקום זאת משאירים את טופס ההוספה פתוח ומחליפים אותו בטופס ריק לעובד הבא.
+  const addWrap=document.getElementById('wdw-add-worker-'+did);
+  if(addWrap){
+    addWrap.style.display='block';
+    addWrap.innerHTML=wdwNewWorkerForm(did, !!(S.wdw.budget&&Object.keys(S.wdw.budget).length>0), curMonth, wdwWorkersList().map(x=>`<option value="${x}">${x}</option>`).join(''));
+    const addedMsg=document.createElement('div');
+    addedMsg.style.cssText='margin-bottom:8px;padding:7px 10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:5px;color:#2e7d32;font-size:12px;font-weight:700';
+    addedMsg.textContent='✓ העובד נוסף. אפשר להוסיף עובד נוסף לאותה תרומה.';
+    addWrap.prepend(addedMsg);
+    const nextSel=document.getElementById('nw-'+did+'-name');
+    if(nextSel) nextSel.focus();
+  }
 }
 
 function wdwSaveEditWorker(did,wid){
