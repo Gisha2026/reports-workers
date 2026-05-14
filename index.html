@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v202CH | גישה</title>
+<title>Reports_Workers v203CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -213,7 +213,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v202CH</span>
+      <span class="topbar-title">Reports_Workers v203CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2036,10 +2036,13 @@ function wdwSaveNewWorker(did){
     monthlyPct:wdwCollectMonthlyPct('nw-'+did)
   });
   saveLocally();saveData();
-  // סגירת טופס ורענון
-  const addWrap=document.getElementById('wdw-add-worker-'+did);
-  if(addWrap) addWrap.style.display='none';
+  // השארת טופס הוספת עובד פתוח להזנה רציפה.
+  // הרינדור מאפס את השדות ומציג שוב את טופס ההוספה לאותה תרומה.
   renderWDWInput();
+  setTimeout(()=>{
+    const addWrap=document.getElementById('wdw-add-worker-'+did);
+    if(addWrap) addWrap.style.display='block';
+  },0);
 }
 
 function wdwSaveEditWorker(did,wid){
