@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v213 | גישה</title>
+<title>Reports_Workers v214 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -213,7 +213,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v213</span>
+      <span class="topbar-title">Reports_Workers v214</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1572,18 +1572,25 @@ function wdwRenderDonorBlock(d, hasBudget, curMonth, workerOpts, collapsed=false
 
   let html=`<div style="background:white;border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:14px;${opacity}">`;
 
-  // כותרת תורם
+  // כותרת תורם — תמיד מוצגת, עם ערוך/מחק/הפוך ללא פעיל/הרחב
   const isCollapsed=S.wdw.collapsed&&S.wdw.collapsed[d.id];
-  html+=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:${isCollapsed?'0':'12px'};margin-bottom:${isCollapsed?'0':'14px'};${!isCollapsed?'border-bottom:1px solid #eee;':''}">
-    <button onclick="wdwCycleStatus('${d.id}')" style="padding:6px 16px;background:${statusColor};color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700">${statusLabel}</button>
-    <span style="width:10px;height:10px;border-radius:50%;background:${d.color||'#999'};display:inline-block"></span>
-    <span style="font-weight:700;font-size:15px">${d.name}</span>
-    <span style="font-size:12px;color:#666">${d.type==='core'?'כללי':'תקציב'}${d.totalBudget?' | ₪'+parseFloat(d.totalBudget).toLocaleString():''}${d.startDate?' | '+fmtMonth(d.startDate):''}${d.endDate?' — '+fmtMonth(d.endDate):''}</span>
+  html+=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid #eee;">
+    <button onclick="wdwCycleStatus('${d.id}')" style="padding:5px 14px;background:${statusColor};color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;flex-shrink:0">${statusLabel}</button>
+    <span style="width:10px;height:10px;border-radius:50%;background:${d.color||'#999'};display:inline-block;flex-shrink:0"></span>
+    <span style="font-weight:700;font-size:15px;flex-shrink:0">${d.name}</span>
+    <span style="font-size:12px;color:#666;">${d.type==='core'?'כללי':'תקציב'}${d.totalBudget?' | ₪'+parseFloat(d.totalBudget).toLocaleString():''}${d.startDate?' | '+fmtMonth(d.startDate):''}${d.endDate?' — '+fmtMonth(d.endDate):''}</span>
     <span style="flex:1"></span>
-    <button onclick="wdwToggleEdit('${d.id}')" style="padding:5px 12px;background:white;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:12px;color:#555">✏ ערוך</button>
-    <button onclick="wdwConfirmDelete('${d.id}')" style="padding:5px 12px;background:white;border:1px solid #ef9a9a;border-radius:4px;cursor:pointer;font-size:12px;color:#e53935">🗑 מחק</button>
-    <button onclick="wdwToggleCollapse('${d.id}')" style="padding:5px 10px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:13px;color:#666">${isCollapsed?'▼':'▲'}</button>
+    <button onclick="wdwOpenEdit('${d.id}')" style="padding:5px 12px;background:white;border:1px solid #90caf9;border-radius:5px;cursor:pointer;font-size:12px;color:#1565c0;font-weight:600">✏ ערוך</button>
+    <button onclick="wdwToggleInactive('${d.id}')" style="padding:5px 12px;background:white;border:1px solid #ffd54f;border-radius:5px;cursor:pointer;font-size:12px;color:#e65100;font-weight:600">${d.status==='inactive'?'✓ הפעל':'✕ השבת'}</button>
+    <button onclick="wdwConfirmDelete('${d.id}')" style="padding:5px 12px;background:white;border:1px solid #ef9a9a;border-radius:5px;cursor:pointer;font-size:12px;color:#e53935;font-weight:600">🗑 מחק</button>
+    <button onclick="wdwToggleCollapse('${d.id}')" style="padding:5px 10px;background:white;border:1px solid #ddd;border-radius:5px;cursor:pointer;font-size:14px;color:#666;font-weight:700" title="${isCollapsed?'הרחב':'צמצם'}">${isCollapsed?'▼':'▲'}</button>
   </div>`;
+
+  // שדות עריכת תורם — תמיד ב-DOM, מוסתרים
+  html+=`<div id="wdw-edit-${d.id}" style="display:none;background:#f0f4ff;border-bottom:1px solid #c5cae9;padding:14px;">`;
+  // תוכן שדות העריכה יוכנס ע"י wdwOpenEdit
+  html+=`<div id="wdw-edit-content-${d.id}"></div>`;
+  html+=`</div>`;
 
   if(!isCollapsed){
     // שדות עריכת תורם (מוסתרים)
@@ -1876,6 +1883,50 @@ function wdwToggleMonthlyPct(pfx){
   wrap.style.display=wrap.style.display==='none'?'block':'none';
 }
 
+
+
+function wdwOpenEdit(did){
+  const d=(S.wdw.donors||[]).find(x=>x.id===did);
+  if(!d) return;
+  const wrap=document.getElementById('wdw-edit-'+did);
+  const cont=document.getElementById('wdw-edit-content-'+did);
+  if(!wrap||!cont) return;
+  const isOpen=wrap.style.display!=='none';
+  if(isOpen){ wrap.style.display='none'; return; }
+  // בניית שדות עריכה
+  cont.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:10px">
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">שם תורם</label><input id="ed-name-${did}" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px" value="${d.name}"></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">סוג</label><select id="ed-type-${did}" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="budget"${d.type==='budget'?' selected':''}>תקציב</option><option value="core"${d.type==='core'?' selected':''}>כללי</option></select></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">תקציב ₪</label><input id="ed-budget-${did}" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px" type="number" value="${d.totalBudget||''}"></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">קוד</label><input id="ed-code-${did}" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px" value="${d.code||''}"></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">צבע</label><input id="ed-color-${did}" style="padding:2px 4px;border:1px solid #ddd;border-radius:6px;height:36px;width:60px" type="color" value="${d.color||'#1565C0'}"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">תחילת חוזה</label><input id="ed-start-${did}" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px" type="month" value="${d.startDate||''}"></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">סיום חוזה</label><input id="ed-end-${did}" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px" type="month" value="${d.endDate||''}"></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">מטבע חוץ</label><select id="ed-currency-${did}" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px"><option value="">ללא</option><option value="USD"${d.currency==='USD'?' selected':''}>$ דולר</option><option value="EUR"${d.currency==='EUR'?' selected':''}>€ יורו</option><option value="GBP"${d.currency==='GBP'?' selected':''}>£ פאונד</option></select></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:12px;color:#555;font-weight:500">סכום במטח</label><input id="ed-fx-${did}" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px" type="number" value="${d.fxAmount||''}"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="wdwSaveDonorEdit('${did}')" style="padding:7px 18px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700">שמור שינויים</button>
+      <button onclick="document.getElementById('wdw-edit-${did}').style.display='none'" style="padding:7px 14px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;cursor:pointer;font-size:13px;color:#555">ביטול</button>
+    </div>`;
+  wrap.style.display='block';
+  wrap.scrollIntoView({block:'nearest'});
+}
+
+function wdwToggleInactive(did){
+  const d=(S.wdw.donors||[]).find(x=>x.id===did);
+  if(!d) return;
+  if(d.status===WDW_STATUS.INACTIVE){
+    d.status=WDW_STATUS.ACTIVE;
+  } else {
+    if(!confirm('להפוך את "'+d.name+'" ללא פעיל?')) return;
+    d.status=WDW_STATUS.INACTIVE;
+  }
+  saveLocally(); saveData(); renderWDWInput();
+}
 
 function wdwToggleCollapse(did){
   if(!S.wdw.collapsed) S.wdw.collapsed={};
