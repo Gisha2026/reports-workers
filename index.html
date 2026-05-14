@@ -4274,7 +4274,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     // לא מרנדרים מחדש — רק מעדכנים את רשימת העובדים ומנקים את הטופס
     wdwRefreshWorkerList(did);
     wdwResetNewWorkerForm(did);
-  }};;
+  };
 
   window.wdwSaveEditWorker=function(did,wid){var d=(S.wdw.donors||[]).find(function(x){return x.id===did;}); if(!d)return; var w=(d.workers||[]).find(function(x){return x.id===wid;}); if(!w)return; var pfx='ew-'+did+'-'+wid; w.name=document.getElementById(pfx+'-name')?.value||w.name; w.fundingType=document.getElementById(pfx+'-ftype')?.value||w.fundingType; var pct=parseFloat(document.getElementById(pfx+'-pct')?.value)||0, amt=parseFloat(document.getElementById(pfx+'-amt')?.value)||0; w.valueType=pct?'percent':'amount'; w.value=pct||amt; w.startMonth=document.getElementById(pfx+'-start')?.value||w.startMonth; w.endMonth=document.getElementById(pfx+'-end')?.value||w.endMonth; w.cap=parseFloat(document.getElementById(pfx+'-cap')?.value)||null; w.replaces=document.getElementById(pfx+'-replaces')?.value||null; w.vacantName=document.getElementById(pfx+'-vacant-name')?.value||null; w.replacesPct=parseFloat(document.getElementById(pfx+'-replaces-pct')?.value)||null; w.replacesAmt=parseFloat(document.getElementById(pfx+'-replaces-amt')?.value)||null; w.replaceStartMonth=document.getElementById(pfx+'-replaces-start')?.value||null; w.replaceEndMonth=document.getElementById(pfx+'-replaces-end')?.value||null; w.monthlyPct=wdwCollectMonthlyPct(pfx); if(w.extraReplaces){w.extraReplaces.forEach(function(r,i){r.replaces=document.getElementById(pfx+'-extra-replaces-'+i)?.value||''; r.pct=document.getElementById(pfx+'-extra-pct-'+i)?.value||''; r.amt=document.getElementById(pfx+'-extra-amt-'+i)?.value||''; r.vacantName=document.getElementById(pfx+'-extra-vacant-name-'+i)?.value||''; r.startMonth=document.getElementById(pfx+'-extra-start-'+i)?.value||''; r.endMonth=document.getElementById(pfx+'-extra-end-'+i)?.value||'';});} saveLocally(); saveData(); renderWDWInput();};
 
@@ -4578,21 +4578,27 @@ window.wdwRefreshWorkerList = function(did) {
   if(!d) return;
   var listEl = document.getElementById('wdw-worker-list-'+did);
   if(!listEl) return;
-  // בניית רשימת עובדים מעודכנת
-  var html = '';
+  var frag = document.createDocumentFragment();
   (d.workers||[]).filter(function(w){ return w.active!==false; }).forEach(function(w) {
-    var rep = w.replaces==='__vacant__' ? (w.vacantName||'משרה פנויה') : w.replaces||'—';
-    var val = w.valueType==='percent' ? w.value+'%' : '₪'+parseFloat(w.value).toLocaleString();
-    var repPct = w.replacesPct ? ' + '+w.replacesPct+'% החלפה' : '';
-    html += '<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:13px;flex-wrap:wrap">';
-    html += '<strong>'+w.name+'</strong>';
-    html += '<span>'+val+repPct+'</span>';
-    if(rep!=='—') html += '<span style="color:#6b7280">מחליף: '+rep+'</span>';
-    html += '<span style="color:#6b7280">'+( w.startMonth||'')+' — '+(w.endMonth||'')+'</span>';
-    html += '<button onclick="wdwEndWorker(''+d.id+'',''+w.id+'')" style="margin-right:auto;padding:3px 8px;background:#fff;border:1px solid #fca5a5;border-radius:4px;cursor:pointer;font-size:11px;color:#dc2626">סיים תפקיד</button>';
-    html += '</div>';
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:13px;flex-wrap:wrap';
+    var val = w.valueType==='percent' ? (w.value+'%') : ('₪'+parseFloat(w.value).toLocaleString());
+    var repPct = w.replacesPct ? (' + '+w.replacesPct+'% החלפה') : '';
+    var rep = w.replaces==='__vacant__' ? (w.vacantName||'משרה פנויה') : (w.replaces||'—');
+    var nameEl = document.createElement('strong'); nameEl.textContent = w.name; row.appendChild(nameEl);
+    var valEl = document.createElement('span'); valEl.textContent = val+repPct; row.appendChild(valEl);
+    if(w.replaces) { var repEl = document.createElement('span'); repEl.style.color='#6b7280'; repEl.textContent = 'מחליף: '+rep; row.appendChild(repEl); }
+    var perEl = document.createElement('span'); perEl.style.color='#6b7280'; perEl.textContent = (w.startMonth||'')+' — '+(w.endMonth||''); row.appendChild(perEl);
+    var btn = document.createElement('button');
+    btn.textContent = 'סיים תפקיד';
+    btn.style.cssText = 'margin-right:auto;padding:3px 8px;background:#fff;border:1px solid #fca5a5;border-radius:4px;cursor:pointer;font-size:11px;color:#dc2626';
+    (function(did2,wid2){ btn.onclick = function(){ wdwEndWorker(did2,wid2); }; })(d.id, w.id);
+    row.appendChild(btn);
+    frag.appendChild(row);
   });
-  listEl.innerHTML = html || '<div style="padding:8px;color:#9ca3af;font-size:12px">אין עובדים</div>';
+  listEl.innerHTML = '';
+  if(frag.childNodes.length) { listEl.appendChild(frag); }
+  else { listEl.innerHTML = '<div style="padding:8px;color:#9ca3af;font-size:12px">אין עובדים</div>'; }
 };
 
 window.wdwResetNewWorkerForm = function(did) {
