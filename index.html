@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v203CH | גישה</title>
+<title>Reports_Workers v204CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -213,7 +213,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v203CH</span>
+      <span class="topbar-title">Reports_Workers v204CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4255,6 +4255,100 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     if(ind){ ind.textContent='⚠ שגיאה בטעינה'; ind.style.color='red'; }
   }
 })();
+
+/* ===== WDW v204CH fixes — WDW only =====
+   1) Remove misleading summed donor percentages from management/donor summary rows.
+   2) Replace “פתח ניהול מלא” with per-project “ערוך” action.
+   3) “ערוך” opens the full existing donor/project data so current add/edit logic is preserved.
+*/
+(function(){
+  function esc204(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+  function month204(){return (typeof wdwMonthKey==='function')?wdwMonthKey():((S.year||2026)+'-'+String((typeof curMI==='number'?curMI:0)+1).padStart(2,'0'));}
+  function fmtM204(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
+  function isActive204(w,m){if(typeof wdwIsActiveInMonth==='function') return wdwIsActiveInMonth(w,m); if(!w||w.active===false) return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}
+  function rowPct204(w,m){if(typeof wdwTotalRowPct==='function') return wdwTotalRowPct(w,m); let n=0;if(w&&w.valueType==='percent')n+=parseFloat(w.value)||0;if(w&&w.replacesPct)n+=parseFloat(w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}
+  function replPct204(w,m){if(typeof wdwReplacePct==='function') return wdwReplacePct(w,m); let n=parseFloat(w&&w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return n;}
+  function typeChip204(d){if(typeof wdwDonorTypeChip==='function')return wdwDonorTypeChip(d);return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
+  function statusLabel204(d){try{return wdwStatusLabel(d.status);}catch(e){return d&&d.status||'פעיל';}}
+  function projectHealth204(d,m){
+    const ws=(d.workers||[]).filter(function(w){return isActive204(w,m);});
+    const hasOver=ws.some(function(w){return (typeof wdwWorkerTotalPct==='function'?wdwWorkerTotalPct(w.name,m):0)>100;});
+    const hasReplacement=ws.some(function(w){return replPct204(w,m)>0;});
+    if(hasOver) return {label:'חריגה', cls:'bad', note:'קיימת חריגת עובד מעל 100%'};
+    if(d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE) return {label:'הסתיים', cls:'gray', note:'הפרויקט אינו פעיל'};
+    if(hasReplacement) return {label:'לבדיקה', cls:'warn', note:'כולל החלפות פעילות'};
+    return {label:'תקין', cls:'budget', note:'אין חריגה ידועה'};
+  }
+  window.wdwEditProject204=function(id){
+    if(typeof window.wdwShowLegacyInput==='function') window.wdwShowLegacyInput();
+    setTimeout(function(){
+      try{
+        if(typeof window.wdwToggleEdit==='function'){
+          const ed=document.getElementById('wdw-edit-'+id);
+          if(ed&&ed.style.display==='none') window.wdwToggleEdit(id);
+        }
+        const el=document.getElementById('wdw-edit-'+id) || document.querySelector('[onclick*="'+id+'"]');
+        if(el&&el.scrollIntoView) el.scrollIntoView({behavior:'smooth',block:'center'});
+      }catch(e){console.warn('wdwEditProject204',e);}
+    },120);
+  };
+  window.renderWDWInput=function(){
+    initWDW();
+    const div=document.getElementById('wdw-input'); if(!div) return;
+    const m=month204();
+    const donors=(S.wdw&&S.wdw.donors)||[];
+    let html=(typeof wdwHeader==='function'?wdwHeader('WDW — ניהול','ניהול תורמים ושיוכי עובדים. כל פרויקט מוצג כשורת סיכום; עריכה נפתחת מתוך שורת הפרויקט.'): '<div class="wdw-shell">');
+    if(typeof wdwKpis==='function') html+=wdwKpis();
+    html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">שורת הסיכום מציגה מצב ניהולי בלבד. לעריכה לחץ על ״ערוך״ בשורת הפרויקט.</div></div></div>';
+    if(!donors.length){html+='<div style="padding:14px;color:#64748b">אין תורמים מוגדרים.</div>';}
+    const active=donors.filter(function(d){return d.status!==WDW_STATUS.ENDED&&d.status!==WDW_STATUS.INACTIVE;});
+    const ended=donors.filter(function(d){return d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE;});
+    function row(d){
+      const ws=(d.workers||[]).filter(function(w){return isActive204(w,m);});
+      const health=projectHealth204(d,m);
+      return '<div class="wdw-mgmt-row"><div class="wdw-mgmt-summary" style="grid-template-columns:1.6fr 110px 110px 120px 160px auto;cursor:default">'+
+        '<div><b>'+esc204(d.name)+'</b><div class="wdw-muted">'+esc204(d.code||'ללא קוד')+' · '+fmtM204(d.startDate)+'–'+fmtM204(d.endDate)+'</div></div>'+
+        '<div>'+typeChip204(d)+'</div>'+
+        '<div><span class="wdw-chip '+health.cls+'">'+health.label+'</span></div>'+
+        '<div class="wdw-num">'+ws.length+' עובדים</div>'+
+        '<div class="wdw-muted">'+esc204(health.note)+'</div>'+
+        '<div class="wdw-actions"><button onclick="event.stopPropagation();window.wdwEditProject204(\''+d.id+'\')">ערוך</button></div>'+
+      '</div></div>';
+    }
+    active.forEach(function(d){html+=row(d);});
+    if(ended.length){
+      html+='<div style="border-top:2px dashed #cbd5e1;margin:14px 0 8px;padding-top:10px;color:#64748b;font-size:12px;font-weight:700">תרומות / פרויקטים שהסתיימו</div>';
+      ended.forEach(function(d){html+=row(d);});
+    }
+    html+='</div><div id="wdw-legacy-input-wrap" style="display:none;margin-top:12px"></div></div>';
+    div.innerHTML=html;
+  };
+  window.renderWDWDonor=function(){
+    initWDW();
+    const div=document.getElementById('wdw-donor'); if(!div) return;
+    const m=month204();
+    const donors=(S.wdw&&S.wdw.donors)||[];
+    let html=(typeof wdwHeader==='function'?wdwHeader('WDW — תורמים','מעקב לפי תורם/פרויקט: עובדים, החלפות, תאריכים וסטטוס תקינות.'): '<div class="wdw-shell">');
+    if(typeof wdwKpis==='function') html+=wdwKpis();
+    if(!donors.length){div.innerHTML=html+'<div class="wdw-panel"><div class="wdw-panel-h"><div class="wdw-panel-title">אין תורמים מוגדרים</div></div></div></div>';return;}
+    const active=donors.filter(function(d){return d.status!==WDW_STATUS.ENDED&&d.status!==WDW_STATUS.INACTIVE;});
+    const ended=donors.filter(function(d){return d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE;});
+    function card(d){
+      const ws=(d.workers||[]).filter(function(w){return isActive204(w,m);});
+      const health=projectHealth204(d,m);
+      let out='<div class="wdw-donor-card"><div class="wdw-donor-head"><div><div style="display:flex;align-items:center;gap:8px"><span class="wdw-donor-dot"></span><span class="wdw-donor-name">'+esc204(d.name)+'</span>'+typeChip204(d)+'<span class="wdw-chip '+health.cls+'">'+health.label+'</span></div><div class="wdw-donor-meta">פרויקט: '+esc204(d.code||'—')+' · תקופה: '+fmtM204(d.startDate)+' עד '+fmtM204(d.endDate)+' · תקציב: '+(d.totalBudget?'₪'+Number(d.totalBudget).toLocaleString():'—')+'</div></div><div class="wdw-actions"><button onclick="window.wdwEditProject204(\''+d.id+'\')">ערוך</button></div></div>';
+      out+='<div style="overflow-x:auto"><table class="wdw-table"><thead><tr><th>עובד</th><th class="wdw-num">אחוז בסיס</th><th class="wdw-num">אחוז החלפה</th><th class="wdw-num">סה״כ לעובד</th><th>מחליף את</th><th>תאריך התחלה</th><th>תאריך סיום</th><th>מצב עובד</th></tr></thead><tbody>';
+      if(!ws.length) out+='<tr><td colspan="8" style="text-align:center!important;color:#94a3b8">אין עובדים פעילים בחודש זה</td></tr>';
+      ws.forEach(function(w){const total=rowPct204(w,m), repl=replPct204(w,m); const status=(typeof wdwWorkerTotalPct==='function'&&wdwWorkerTotalPct(w.name,m)>100)?'<span class="wdw-chip bad">חריגה</span>':'<span class="wdw-chip budget">תקין</span>'; const replText=(typeof wdwReplacementText==='function'?wdwReplacementText(w):'—'); out+='<tr><td><b>'+esc204(w.name)+'</b><div class="wdw-muted">סה״כ עובד בכל התורמים: '+(typeof wdwWorkerTotalPct==='function'?wdwWorkerTotalPct(w.name,m):total)+'%</div></td><td class="wdw-num">'+(typeof wdwBasePct==='function'?wdwBasePct(w,m):0)+'%</td><td class="wdw-num">'+repl+'%</td><td class="wdw-num"><b>'+total+'%</b></td><td>'+(repl?'<span class="wdw-chip repl">'+esc204(replText)+'</span>':'<span class="wdw-muted">—</span>')+'</td><td>'+fmtM204(w.startMonth)+'</td><td>'+fmtM204(w.endMonth)+'</td><td>'+status+'</td></tr>';});
+      out+='</tbody></table></div></div>';
+      return out;
+    }
+    active.forEach(function(d){html+=card(d);});
+    if(ended.length){html+='<div style="border-top:2px dashed #cbd5e1;margin:16px 0 10px;padding-top:10px;color:#64748b;font-size:12px;font-weight:800">תרומות / פרויקטים שהסתיימו</div>'; ended.forEach(function(d){html+=card(d);});}
+    div.innerHTML=html+'</div>';
+  };
+})();
+
 </script>
 </body>
 </html>
