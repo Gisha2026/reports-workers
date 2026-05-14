@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v205CH | גישה</title>
+<title>Reports_Workers v206CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -213,7 +213,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v205CH</span>
+      <span class="topbar-title">Reports_Workers v206CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4366,5 +4366,48 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 })();
 
 </script>
+
+<script>
+/* ===== WDW v206CH fix — clean add-donor state =====
+   When adding a new donor, do not show another '+ הוסף תורם' button above the form.
+   Keep one clear state: either list mode with add button, or add-form mode with save/cancel only.
+*/
+(function(){
+  function isAddDonorBtn(btn){
+    return btn && (btn.textContent||'').replace(/\s+/g,' ').indexOf('הוסף תורם') !== -1;
+  }
+  function setAddDonorButtonsVisible(show){
+    document.querySelectorAll('button').forEach(function(btn){
+      if(isAddDonorBtn(btn)){
+        btn.style.display = show ? '' : 'none';
+      }
+    });
+  }
+  window.wdwCancelAddDonor206=function(){
+    var form=document.getElementById('wdw-add-donor-form');
+    if(form) form.style.display='none';
+    setAddDonorButtonsVisible(true);
+  };
+  window.wdwAddDonor205=function(){
+    if(typeof window.wdwShowLegacyInput==='function') window.wdwShowLegacyInput();
+    setTimeout(function(){
+      try{
+        if(typeof window.wdwShowAddDonor==='function') window.wdwShowAddDonor();
+        var form=document.getElementById('wdw-add-donor-form');
+        if(form){
+          form.style.display='block';
+          setAddDonorButtonsVisible(false);
+          var cancel=[].slice.call(form.querySelectorAll('button')).find(function(b){return (b.textContent||'').trim()==='ביטול';});
+          if(cancel) cancel.onclick=window.wdwCancelAddDonor206;
+          form.scrollIntoView({behavior:'smooth',block:'start'});
+          var name=document.getElementById('wdw-new-donor-name');
+          if(name) name.focus();
+        }
+      }catch(e){console.warn('wdwAddDonor205/v206',e);}
+    },120);
+  };
+})();
+</script>
+
 </body>
 </html>
