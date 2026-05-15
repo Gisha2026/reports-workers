@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v236CH | גישה</title>
+<title>Reports_Workers v237CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v236CH</span>
+      <span class="topbar-title">Reports_Workers v237CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -600,7 +600,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v235CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v231CL",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -5648,8 +5648,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function id(){return (typeof wdwGenId==='function'?wdwGenId('w'):'w_'+Date.now()+'_'+Math.floor(Math.random()*1000));}
   function monthsBetween(a,b){if(!a||!b)return 1;var ma=String(a).match(/^(\d{4})-(\d{2})/), mb=String(b).match(/^(\d{4})-(\d{2})/);if(!ma||!mb)return 1;var c=(parseInt(mb[1])*12+parseInt(mb[2]))-(parseInt(ma[1])*12+parseInt(ma[2]))+1;return Math.max(1,c);}
   window.wdwCalcFromPeriodAmt234=function(pfx){var total=document.getElementById(pfx+'-total-amt'), amt=document.getElementById(pfx+'-amt'), st=document.getElementById(pfx+'-start'), en=document.getElementById(pfx+'-end'); if(!total||!amt)return; var v=n(total.value); if(!v){return;} amt.value=(Math.round((v/monthsBetween(st&&st.value,en&&en.value))*100)/100)||'';};
-  window.wdwCalcFxToTotal234=function(pfx){var fa=document.getElementById(pfx+'-fx-amount'), rate=document.getElementById(pfx+'-fx-rate'), calc=document.getElementById(pfx+'-fx-ils'), total=document.getElementById(pfx+'-total-amt'); if(!fa||!rate||!total)return; var a=n(fa.value), r=n(rate.value); if(a&&r){var ils=Math.round(a*r*100)/100; if(calc)calc.value=ils; total.value=ils; wdwCalcFromPeriodAmt234(pfx);} else {if(calc)calc.value='';}};
-  function formHtml(did){var d=donor(did)||{};var p='nw-'+did;var cur=month();var donorEnd=d.endDate||'';return ''+
+  function formHtml(did){var d=donor(did)||{};var p='nw-'+did;var cur=month();return ''+
     '<div class="v234-worker-form" style="border:1px solid #d0d5dd;border-radius:12px;background:#fff;padding:14px;margin-top:10px">'+
     '<div style="font-weight:800;color:#00695c;margin-bottom:10px">הוספת עובד לתרומה</div>'+ 
     '<div class="v234-grid">'+
@@ -5657,27 +5656,22 @@ window.wdwResetNewWorkerForm = function(did) {
       '<label>אחוז חודשי<input id="'+p+'-pct" class="wdw-inp" type="number" step="0.01" placeholder="למשל 10"></label>'+ 
       '<label>סכום חודשי<input id="'+p+'-amt" class="wdw-inp" type="number" step="0.01" placeholder="יחושב או יוזן ידנית"></label>'+ 
       '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000" oninput="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
-      '<label>סכום במט״ח<input id="'+p+'-fx-amount" class="wdw-inp" type="number" step="0.01" placeholder="למשל 1000" oninput="wdwCalcFxToTotal234(\''+p+'\')"></label>'+ 
-      '<label>מטבע<select id="'+p+'-fx-currency" class="wdw-inp"><option value="">בחר מטבע</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="ILS">ILS</option></select></label>'+ 
-      '<label>שער<input id="'+p+'-fx-rate" class="wdw-inp" type="number" step="0.0001" placeholder="למשל 3.7000" oninput="wdwCalcFxToTotal234(\''+p+'\')"></label>'+ 
-      '<label>סכום בש״ח (מחושב)<input id="'+p+'-fx-ils" class="wdw-inp" type="number" step="0.01" readonly placeholder="מתמלא אוטומטית"></label>'+ 
       '<label>תחילת פעילות<input id="'+p+'-start" class="wdw-inp" type="month" value="'+esc(d.startDate||cur)+'" onchange="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
       '<label>סיום פעילות<input id="'+p+'-end" class="wdw-inp" type="month" value="'+esc(d.endDate||'')+'" onchange="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
       '<label>סוג מימון<select id="'+p+'-ftype" class="wdw-inp"><option value="אחוז קבוע">אחוז קבוע</option><option value="סכום קבוע">סכום קבוע</option></select></label>'+ 
+      '<label>תקרת %<input id="'+p+'-cap" class="wdw-inp" type="number" step="0.01"></label>'+ 
       '<label>מחליף את<select id="'+p+'-replaces" class="wdw-inp"><option value="">לא מחליף</option><option value="__vacant__">משרה פנויה</option>'+workerOptions()+'</select></label>'+ 
       '<label>שם משרה פנויה<input id="'+p+'-vacant-name" class="wdw-inp" placeholder="למשל משרה פנויה"></label>'+ 
       '<label>אחוז החלפה<input id="'+p+'-replaces-pct" class="wdw-inp" type="number" step="0.01" placeholder="למשל 10"></label>'+ 
-      '<label>תאריך תחילת החלפה<input id="'+p+'-replace-start" class="wdw-inp" type="month" placeholder="למשל 2025-05"></label>'+ 
-      '<label>תאריך סיום החלפה<input id="'+p+'-replace-end" class="wdw-inp" type="month" value="'+esc(donorEnd)+'"></label>'+ 
       '<label>סכום החלפה<input id="'+p+'-replaces-amt" class="wdw-inp" type="number" step="0.01"></label>'+ 
     '</div>'+ 
-    '<div style="font-size:12px;color:#1565c0;margin-top:8px">שדה “סכום ₪ לכל התקופה” מחלק אוטומטית לפי מספר החודשים בין תחילת הפעילות לסיום הפעילות וממלא את “סכום חודשי”. אם מזינים סכום במט״ח ושער — הסכום המחושב בש״ח מוזן אוטומטית לתוך “סכום ₪ לכל התקופה”. תאריך סיום החלפה מתמלא כברירת מחדל לפי סוף הפרויקט.</div>'+ 
+    '<div style="font-size:12px;color:#1565c0;margin-top:8px">שדה “סכום ₪ לכל התקופה” מחלק אוטומטית לפי מספר החודשים בין תחילת הפעילות לסיום הפעילות וממלא את “סכום חודשי”.</div>'+ 
     '<div style="display:flex;gap:8px;margin-top:12px"><button class="wdw-primary" onclick="wdwSaveNewWorker(\''+did+'\')">הוסף עובד</button><button class="wdw-secondary" onclick="wdwCancelAddWorker234(\''+did+'\')">בטל</button></div>'+ 
     '</div>';}
   window.wdwCancelAddWorker234=function(did){var f=document.getElementById('wdw-add-worker-'+did)||document.getElementById('wdw-add-worker-form-'+did);if(f)f.remove();window.WDW_ADD_WORKER_FOR=null;};
   window.wdwShowAddWorker234=function(did){init();var d=donor(did);if(!d){alert('לא נמצא תורם');return;}window.WDW_EDIT_DONOR_ID=did;window.WDW_ADD_WORKER_FOR=did;var form=document.getElementById('wdw-add-worker-'+did)||document.getElementById('wdw-add-worker-form-'+did);if(!form){var list=document.getElementById('wdw-worker-list-'+did);if(!list&&typeof renderWDWInput==='function'){renderWDWInput();list=document.getElementById('wdw-worker-list-'+did);}if(!list){alert('לא נמצא אזור עובדים לתורם. פתח את עריכת התורם ונסה שוב.');return;}form=document.createElement('div');form.id='wdw-add-worker-'+did;list.insertAdjacentElement('afterend',form);}form.innerHTML=formHtml(did);form.style.display='block';setTimeout(function(){var e=document.getElementById('nw-'+did+'-name');if(e)e.focus();},0);try{form.scrollIntoView({block:'nearest'});}catch(e){}};
   window.wdwShowAddWorker=window.wdwShowAddWorker234;window.wdwShowAddWorker217=window.wdwShowAddWorker234;window.wdwShowAddWorker227=window.wdwShowAddWorker234;
-  window.wdwSaveNewWorker=function(did){try{init();var d=donor(did);if(!d){alert('לא נמצא תורם');return;}var p='nw-'+did;wdwCalcFromPeriodAmt234(p);var name=(document.getElementById(p+'-name')||{}).value||'';var pctVal=n((document.getElementById(p+'-pct')||{}).value);var amtVal=n((document.getElementById(p+'-amt')||{}).value);var totalAmt=n((document.getElementById(p+'-total-amt')||{}).value);var fxAmount=n((document.getElementById(p+'-fx-amount')||{}).value);var fxCurrency=(document.getElementById(p+'-fx-currency')||{}).value||'';var fxRate=n((document.getElementById(p+'-fx-rate')||{}).value);var fxIls=n((document.getElementById(p+'-fx-ils')||{}).value);if(!name){alert('נא לבחור עובד');return;}if(!pctVal&&!amtVal&&!totalAmt){alert('נא להזין אחוז חודשי, סכום חודשי או סכום לכל התקופה');return;}var valueType=pctVal?'percent':'amount', value=pctVal||amtVal;var replPct=n((document.getElementById(p+'-replaces-pct')||{}).value);var m=month();var curTotal=workerTotal(name,m);if(valueType==='percent'&&curTotal+value+replPct>100){if(!confirm('⚠ '+name+' יהיה ב-'+pct(curTotal+value+replPct)+' — חריגה מ-100%. להמשיך?'))return;}d.workers=d.workers||[];d.workers.push({id:id(),name:name,valueType:valueType,value:value,totalPeriodAmount:totalAmt||null,fxAmount:fxAmount||null,fxCurrency:fxCurrency||null,fxRate:fxRate||null,fxIls:fxIls||null,fundingType:(document.getElementById(p+'-ftype')||{}).value||'אחוז קבוע',startMonth:(document.getElementById(p+'-start')||{}).value||d.startDate||'',endMonth:(document.getElementById(p+'-end')||{}).value||d.endDate||'',replaces:(document.getElementById(p+'-replaces')||{}).value||null,replacesStart:(document.getElementById(p+'-replace-start')||{}).value||null,replaceStartMonth:(document.getElementById(p+'-replace-start')||{}).value||null,replacesEnd:(document.getElementById(p+'-replace-end')||{}).value||d.endDate||null,replaceEndMonth:(document.getElementById(p+'-replace-end')||{}).value||d.endDate||null,replacesPct:replPct||null,replacesAmt:n((document.getElementById(p+'-replaces-amt')||{}).value)||null,vacantName:(document.getElementById(p+'-vacant-name')||{}).value||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&curTotal+value+replPct>100,monthlyPct:{}});save();window.WDW_EDIT_DONOR_ID=did;window.WDW_ADD_WORKER_FOR=did;if(typeof renderWDWInput==='function')renderWDWInput();setTimeout(function(){window.wdwShowAddWorker234(did);var f=document.getElementById('wdw-add-worker-'+did);if(f)f.insertAdjacentHTML('afterbegin','<div style="margin-bottom:8px;padding:7px 10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:5px;color:#2e7d32;font-size:12px;font-weight:700">✓ העובד נוסף. אפשר להוסיף עובד נוסף לאותה תרומה.</div>');},0);}catch(e){console.error('wdwSaveNewWorker234 failed',e);alert('שגיאה בהוספת עובד: '+(e&&e.message?e.message:e));}};
+  window.wdwSaveNewWorker=function(did){try{init();var d=donor(did);if(!d){alert('לא נמצא תורם');return;}var p='nw-'+did;wdwCalcFromPeriodAmt234(p);var name=(document.getElementById(p+'-name')||{}).value||'';var pctVal=n((document.getElementById(p+'-pct')||{}).value);var amtVal=n((document.getElementById(p+'-amt')||{}).value);var totalAmt=n((document.getElementById(p+'-total-amt')||{}).value);if(!name){alert('נא לבחור עובד');return;}if(!pctVal&&!amtVal&&!totalAmt){alert('נא להזין אחוז חודשי, סכום חודשי או סכום לכל התקופה');return;}var valueType=pctVal?'percent':'amount', value=pctVal||amtVal;var replPct=n((document.getElementById(p+'-replaces-pct')||{}).value);var m=month();var curTotal=workerTotal(name,m);if(valueType==='percent'&&curTotal+value+replPct>100){if(!confirm('⚠ '+name+' יהיה ב-'+pct(curTotal+value+replPct)+' — חריגה מ-100%. להמשיך?'))return;}d.workers=d.workers||[];d.workers.push({id:id(),name:name,valueType:valueType,value:value,totalPeriodAmount:totalAmt||null,fundingType:(document.getElementById(p+'-ftype')||{}).value||'אחוז קבוע',startMonth:(document.getElementById(p+'-start')||{}).value||d.startDate||'',endMonth:(document.getElementById(p+'-end')||{}).value||d.endDate||'',cap:n((document.getElementById(p+'-cap')||{}).value)||null,replaces:(document.getElementById(p+'-replaces')||{}).value||null,replacesPct:replPct||null,replacesAmt:n((document.getElementById(p+'-replaces-amt')||{}).value)||null,vacantName:(document.getElementById(p+'-vacant-name')||{}).value||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&curTotal+value+replPct>100,monthlyPct:{}});save();window.WDW_EDIT_DONOR_ID=did;window.WDW_ADD_WORKER_FOR=did;if(typeof renderWDWInput==='function')renderWDWInput();setTimeout(function(){window.wdwShowAddWorker234(did);var f=document.getElementById('wdw-add-worker-'+did);if(f)f.insertAdjacentHTML('afterbegin','<div style="margin-bottom:8px;padding:7px 10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:5px;color:#2e7d32;font-size:12px;font-weight:700">✓ העובד נוסף. אפשר להוסיף עובד נוסף לאותה תרומה.</div>');},0);}catch(e){console.error('wdwSaveNewWorker234 failed',e);alert('שגיאה בהוספת עובד: '+(e&&e.message?e.message:e));}};
   window.wdwBasePct=function(w,m){return base(w,m||month());};window.wdwReplacePct=function(w,m){return repl(w,m||month());};window.wdwTotalRowPct=function(w,m){return total(w,m||month());};window.wdwWorkerTotalPct=function(name,m){return workerTotal(name,m||month());};window.wdwReplacementText=function(w){var parts=replParts(w,month());return parts.length?parts.map(function(p){return p.who+(p.pct?' '+pct(p.pct):'');}).join(' · '):'—';};
   window.wdwToggleWorkerDetail234=function(id){var e=document.getElementById(id);if(e)e.style.display=e.style.display==='none'?'block':'none';};
   window.renderWDWWorker=function(){init();var div=document.getElementById('wdw-worker');if(!div)return;var m=month();var html=(typeof wdwHeader==='function'?wdwHeader('WDW — עובדים','שורה מצומצמת לכל עובד. לחיצה על שורה פותחת פירוט פרויקטים.'):('<div class="wdw-shell"><div class="wdw-top"><div class="wdw-title">WDW — עובדים</div></div>'));try{if(typeof wdwKpis==='function')html+=wdwKpis();}catch(e){}html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">עובדים — סיכום מהיר</div><div class="wdw-panel-note">שם, ניצול חודשי, פנוי, מחליף, חריגה ומספר פרויקטים.</div></div></div><div class="v234-worker-list">';names().forEach(function(name,i){var rs=rowsFor(name,m), b=rs.reduce(function(s,r){return s+base(r.worker,m);},0), rp=rs.reduce(function(s,r){return s+repl(r.worker,m);},0), t=Math.round((b+rp)*10)/10, free=Math.max(0,Math.round((100-t)*10)/10), detail='v234-worker-detail-'+i, replCount=rs.filter(function(r){return repl(r.worker,m)>0;}).length;html+='<div class="v234-worker-row '+(t>100?'over':t>=90?'near':'')+'" onclick="wdwToggleWorkerDetail234(\''+detail+'\')"><div class="v234-worker-name">'+esc(name)+'</div><div class="wdw-num">ניצול '+pct(t)+'</div><div class="wdw-num">פנוי '+pct(free)+'</div><div>'+(replCount?chip('repl','מחליף '+replCount):chip('gray','אין החלפה'))+'</div><div>'+(t>100?chip('bad','חריגה '+pct(t-100)):t>=90?chip('warn','כמעט מלא'):chip('budget','תקין'))+'</div><div class="wdw-num">'+rs.length+' פרויקטים</div></div>';html+='<div id="'+detail+'" class="v234-worker-detail" style="display:none"><table class="wdw-table"><thead><tr><th>תורם / פרויקט</th><th class="wdw-num">בסיס</th><th class="wdw-num">החלפה</th><th class="wdw-num">סה״כ</th><th>מחליף את</th><th>תקופה</th></tr></thead><tbody>';if(!rs.length)html+='<tr><td colspan="6" style="text-align:center!important;color:#94a3b8">אין שיוכים פעילים בחודש זה</td></tr>';rs.forEach(function(r){html+='<tr><td><b>'+esc(r.donor.name||'')+'</b><div class="wdw-muted">'+esc(r.donor.code||'')+'</div></td><td class="wdw-num">'+pct(base(r.worker,m))+'</td><td class="wdw-num">'+pct(repl(r.worker,m))+'</td><td class="wdw-num"><b>'+pct(total(r.worker,m))+'</b></td><td>'+esc(window.wdwReplacementText(r.worker))+'</td><td>'+esc((r.worker.startMonth||'')+' — '+(r.worker.endMonth||''))+'</td></tr>';});html+='</tbody></table></div>';});html+='</div></div>';div.innerHTML=html;};
@@ -5686,6 +5680,94 @@ window.wdwResetNewWorkerForm = function(did) {
   var oldDonor=window.renderWDWDonor;if(typeof oldDonor==='function'){window.renderWDWDonor=function(){var r=oldDonor.apply(this,arguments);setTimeout(cleanup,0);return r;};}
   document.addEventListener('click',function(ev){var btn=ev.target&&ev.target.closest&&ev.target.closest('button');if(!btn)return;var txt=(btn.textContent||'').replace(/\s+/g,' ').trim();if(txt.indexOf('הוסף עובד לתרומה')>-1){var oc=btn.getAttribute('onclick')||'', mm=oc.match(/wdwShowAddWorker(?:217|227|234)?\('([^']+)'\)/);if(mm&&mm[1]){ev.preventDefault();ev.stopPropagation();window.wdwShowAddWorker234(mm[1]);}}},true);
   function style(){if(document.getElementById('wdw-v234-style'))return;var st=document.createElement('style');st.id='wdw-v234-style';st.textContent='.v234-grid{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:10px}.v234-grid label{font-size:12px;color:#475569;font-weight:700;display:flex;flex-direction:column;gap:4px}.v234-worker-row{display:grid;grid-template-columns:minmax(160px,1.4fr) 120px 120px 130px 130px 110px;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid #e5e7eb;cursor:pointer;background:#fff}.v234-worker-row:hover{background:#f8fafc}.v234-worker-row.over{background:#fff1f2}.v234-worker-row.near{background:#fff7ed}.v234-worker-name{font-size:16px;font-weight:900;color:#111827}.v234-worker-detail{padding:10px 16px 16px;background:#fbfdff;border-bottom:1px solid #e5e7eb}.wdw-inp{padding:8px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px}@media(max-width:1000px){.v234-grid,.v234-worker-row{grid-template-columns:1fr 1fr}.v234-worker-detail{overflow:auto}}';document.head.appendChild(st);}style();
+})();
+</script>
+
+
+<script>
+/* ===== v237CH FINAL ONLY: clean add-worker form layout + FX helper. Based on v234CH; no button changes. ===== */
+(function(){
+  function init(){try{if(typeof initWDW==='function')initWDW();}catch(e){} if(!S.wdw)S.wdw={donors:[]}; if(!Array.isArray(S.wdw.donors))S.wdw.donors=[];}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function n(v){var x=parseFloat(String(v||'').replace(/,/g,''));return isNaN(x)?0:x;}
+  function donor(did){init();return (S.wdw.donors||[]).find(function(d){return String(d.id)===String(did);});}
+  function id(){return (typeof wdwGenId==='function'?wdwGenId('w'):'w_'+Date.now()+'_'+Math.floor(Math.random()*1000));}
+  function save(){try{if(typeof saveData==='function')saveData();else if(typeof saveLocally==='function')saveLocally();}catch(e){}}
+  function month(){try{if(typeof wdwMonthKey==='function')return wdwMonthKey();}catch(e){} return (S.year||new Date().getFullYear())+'-'+String((typeof curMI==='number'?curMI:new Date().getMonth())+1).padStart(2,'0');}
+  function workerOptions(){try{return (typeof wdwWorkersList==='function'?wdwWorkersList():(S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';})).filter(Boolean).map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join('');}catch(e){return '';}}
+  function monthsBetween(st,en){var a=String(st||'').match(/^(\d{4})-(\d{2})/), b=String(en||'').match(/^(\d{4})-(\d{2})/); if(!a||!b)return 1; var m=(+b[1]-+a[1])*12+(+b[2]-+a[2])+1; return Math.max(1,m);}
+  function workerTotal(name,m){try{if(typeof wdwWorkerTotalPct==='function')return wdwWorkerTotalPct(name,m)||0;}catch(e){} return 0;}
+  window.wdwV237RecalcILS=function(pfx){
+    var fxAmt=document.getElementById(pfx+'-fx-amt'), fxRate=document.getElementById(pfx+'-fx-rate'), total=document.getElementById(pfx+'-total-amt');
+    if(!fxAmt||!fxRate||!total)return;
+    var v=n(fxAmt.value)*n(fxRate.value);
+    if(v>0){total.value=(Math.round(v*100)/100);}
+    window.wdwV237CalcMonthly(pfx);
+  };
+  window.wdwV237CalcMonthly=function(pfx){
+    var total=document.getElementById(pfx+'-total-amt'), amt=document.getElementById(pfx+'-amt'), st=document.getElementById(pfx+'-start'), en=document.getElementById(pfx+'-end');
+    if(!total||!amt)return;
+    var v=n(total.value); if(!v)return;
+    amt.value=(Math.round((v/monthsBetween(st&&st.value,en&&en.value))*100)/100)||'';
+  };
+  function formHtml(did){
+    var d=donor(did)||{}, cur=month(), p='nw-'+did, end=esc(d.endDate||'');
+    return '<div class="v237-add-worker-box">'+
+      '<div class="v237-section"><div class="v237-title">1. בחירת עובד</div><div class="v237-grid one">'+
+        '<label>עובד<select id="'+p+'-name" class="wdw-inp"><option value="">בחר עובד</option>'+workerOptions()+'</select></label>'+ 
+      '</div></div>'+ 
+      '<div class="v237-section"><div class="v237-title">2. תקופת עבודה על התרומה</div><div class="v237-grid two">'+
+        '<label>תחילת פעילות<input id="'+p+'-start" class="wdw-inp" type="month" value="'+esc(d.startDate||cur)+'" onchange="wdwV237CalcMonthly(\''+p+'\')"></label>'+ 
+        '<label>סיום פעילות<input id="'+p+'-end" class="wdw-inp" type="month" value="'+end+'" onchange="wdwV237CalcMonthly(\''+p+'\')"></label>'+ 
+      '</div></div>'+ 
+      '<div class="v237-section"><div class="v237-title">3. הקצאת העובד לתרומה</div><div class="v237-grid two">'+
+        '<label>אחוז קבוע<input id="'+p+'-pct" class="wdw-inp" type="number" step="0.01" placeholder="למשל 10"></label>'+ 
+        '<label>או סכום חודשי קבוע<input id="'+p+'-amt" class="wdw-inp" type="number" step="0.01" placeholder="אם אין אחוז"></label>'+ 
+      '</div><div class="v237-help">לעובד הראשי מזינים אחוז קבוע או סכום חודשי קבוע. החלפה אינה חלק מהשורה הזו.</div></div>'+ 
+      '<div class="v237-section"><div class="v237-title">4. תקציב ש״ח</div><div class="v237-grid two">'+
+        '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000" oninput="wdwV237CalcMonthly(\''+p+'\')"></label>'+ 
+        '<label>סכום חודשי מחושב<input id="'+p+'-monthly-calc" class="wdw-inp" type="text" value="מתעדכן לפי התקופה" disabled></label>'+ 
+      '</div><div class="v237-help">הסכום החודשי נשמר בשדה סכום חודשי קבוע למעלה, לפי מספר החודשים בתקופת העבודה.</div></div>'+ 
+      '<div class="v237-section"><div class="v237-title">5. תקציב מט״ח</div><div class="v237-grid three">'+
+        '<label>סכום במט״ח<input id="'+p+'-fx-amt" class="wdw-inp" type="number" step="0.01" oninput="wdwV237RecalcILS(\''+p+'\')"></label>'+ 
+        '<label>מטבע<select id="'+p+'-fx-currency" class="wdw-inp"><option value="">בחר</option><option>USD</option><option>EUR</option><option>GBP</option><option>CHF</option><option>CAD</option><option>AUD</option></select></label>'+ 
+        '<label>שער<input id="'+p+'-fx-rate" class="wdw-inp" type="number" step="0.0001" oninput="wdwV237RecalcILS(\''+p+'\')"></label>'+ 
+      '</div><div class="v237-help">אם הוזן מט״ח, המערכת מחשבת ש״ח ומעדכנת אוטומטית את “סכום ₪ לכל התקופה”.</div></div>'+ 
+      '<div class="v237-section"><div class="v237-title">6. החלפת עובד</div><div class="v237-grid three">'+
+        '<label>מחליף את<select id="'+p+'-replaces" class="wdw-inp"><option value="">לא מחליף</option><option value="__vacant__">משרה פנויה</option>'+workerOptions()+'</select></label>'+ 
+        '<label>שם משרה פנויה<input id="'+p+'-vacant-name" class="wdw-inp" placeholder="אם נבחרה משרה פנויה"></label>'+ 
+        '<label>אחוז החלפה<input id="'+p+'-replaces-pct" class="wdw-inp" type="number" step="0.01" placeholder="למשל 10"></label>'+ 
+        '<label>סכום החלפה<input id="'+p+'-replaces-amt" class="wdw-inp" type="number" step="0.01"></label>'+ 
+        '<label>תאריך תחילת החלפה<input id="'+p+'-replace-start" class="wdw-inp" type="month"></label>'+ 
+        '<label>תאריך סיום החלפה<input id="'+p+'-replace-end" class="wdw-inp" type="month" value="'+end+'"></label>'+ 
+      '</div></div>'+ 
+      '<div style="display:flex;gap:8px;margin-top:12px"><button class="wdw-primary" onclick="wdwSaveNewWorker(\''+did+'\')">הוסף עובד</button><button class="wdw-secondary" onclick="wdwCancelAddWorker234(\''+did+'\')">בטל</button></div>'+ 
+    '</div>';
+  }
+  window.wdwShowAddWorker234=function(did){
+    init();var d=donor(did);if(!d){alert('לא נמצא תורם');return;}window.WDW_EDIT_DONOR_ID=did;window.WDW_ADD_WORKER_FOR=did;
+    var form=document.getElementById('wdw-add-worker-'+did)||document.getElementById('wdw-add-worker-form-'+did);
+    if(!form){var list=document.getElementById('wdw-worker-list-'+did);if(!list&&typeof renderWDWInput==='function'){renderWDWInput();list=document.getElementById('wdw-worker-list-'+did);}if(!list){alert('לא נמצא אזור עובדים לתורם. פתח את עריכת התורם ונסה שוב.');return;}form=document.createElement('div');form.id='wdw-add-worker-'+did;list.insertAdjacentElement('afterend',form);}
+    form.innerHTML=formHtml(did);form.style.display='block';setTimeout(function(){var e=document.getElementById('nw-'+did+'-name');if(e)e.focus();},0);try{form.scrollIntoView({block:'nearest'});}catch(e){}
+  };
+  window.wdwShowAddWorker=window.wdwShowAddWorker234;window.wdwShowAddWorker217=window.wdwShowAddWorker234;window.wdwShowAddWorker227=window.wdwShowAddWorker234;
+  window.wdwSaveNewWorker=function(did){
+    try{init();var d=donor(did);if(!d){alert('לא נמצא תורם');return;}var p='nw-'+did;window.wdwV237RecalcILS(p);window.wdwV237CalcMonthly(p);
+      var name=(document.getElementById(p+'-name')||{}).value||'';
+      var pctVal=n((document.getElementById(p+'-pct')||{}).value);
+      var amtVal=n((document.getElementById(p+'-amt')||{}).value);
+      var totalAmt=n((document.getElementById(p+'-total-amt')||{}).value);
+      if(!name){alert('נא לבחור עובד');return;}
+      if(!pctVal&&!amtVal&&!totalAmt){alert('נא להזין אחוז קבוע, סכום חודשי קבוע או סכום לכל התקופה');return;}
+      var valueType=pctVal?'percent':'amount', value=pctVal||amtVal;
+      var replPct=n((document.getElementById(p+'-replaces-pct')||{}).value), m=month(), curTotal=workerTotal(name,m);
+      if(valueType==='percent'&&curTotal+value+replPct>100){if(!confirm('⚠ '+name+' יהיה ב-'+(Math.round((curTotal+value+replPct)*10)/10)+'% — חריגה מ-100%. להמשיך?'))return;}
+      d.workers=d.workers||[];
+      d.workers.push({id:id(),name:name,valueType:valueType,value:value,totalPeriodAmount:totalAmt||null,fundingType:valueType==='percent'?'אחוז קבוע':'סכום קבוע',startMonth:(document.getElementById(p+'-start')||{}).value||d.startDate||'',endMonth:(document.getElementById(p+'-end')||{}).value||d.endDate||'',replaces:(document.getElementById(p+'-replaces')||{}).value||null,replacesPct:replPct||null,replacesAmt:n((document.getElementById(p+'-replaces-amt')||{}).value)||null,replacementStartMonth:(document.getElementById(p+'-replace-start')||{}).value||null,replacementEndMonth:(document.getElementById(p+'-replace-end')||{}).value||d.endDate||null,vacantName:(document.getElementById(p+'-vacant-name')||{}).value||null,fxAmount:n((document.getElementById(p+'-fx-amt')||{}).value)||null,fxCurrency:(document.getElementById(p+'-fx-currency')||{}).value||null,fxRate:n((document.getElementById(p+'-fx-rate')||{}).value)||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&curTotal+value+replPct>100,monthlyPct:{}});
+      save();window.WDW_EDIT_DONOR_ID=did;window.WDW_ADD_WORKER_FOR=did;if(typeof renderWDWInput==='function')renderWDWInput();setTimeout(function(){window.wdwShowAddWorker234(did);var f=document.getElementById('wdw-add-worker-'+did);if(f)f.insertAdjacentHTML('afterbegin','<div style="margin-bottom:8px;padding:7px 10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:5px;color:#2e7d32;font-size:12px;font-weight:700">✓ העובד נוסף. אפשר להוסיף עובד נוסף לאותה תרומה.</div>');},0);
+    }catch(e){console.error('wdwSaveNewWorker v237 failed',e);alert('שגיאה בהוספת עובד: '+(e&&e.message?e.message:e));}
+  };
+  function style(){if(document.getElementById('wdw-v237-style'))return;var st=document.createElement('style');st.id='wdw-v237-style';st.textContent='.v237-add-worker-box{background:#fff;border:1px solid #d5dce3;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}.v237-section{border:1px solid #e5eaf0;border-radius:12px;padding:12px;margin-bottom:10px;background:#fbfdff}.v237-title{font-size:13px;font-weight:900;color:#073f3d;margin-bottom:10px}.v237-grid{display:grid;gap:10px}.v237-grid.one{grid-template-columns:minmax(260px,1fr)}.v237-grid.two{grid-template-columns:repeat(2,minmax(190px,1fr))}.v237-grid.three{grid-template-columns:repeat(3,minmax(160px,1fr))}.v237-grid label{font-size:12px;color:#475569;font-weight:700;display:flex;flex-direction:column;gap:4px}.v237-help{font-size:11px;color:#64748b;margin-top:8px;line-height:1.45}.wdw-inp[disabled]{background:#f1f5f9;color:#64748b}@media(max-width:1000px){.v237-grid.one,.v237-grid.two,.v237-grid.three{grid-template-columns:1fr}}';document.head.appendChild(st);}style();
 })();
 </script>
 
