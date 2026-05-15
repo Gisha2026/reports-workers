@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v241CL | גישה</title>
+<title>Reports_Workers v242CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v241CL</span>
+      <span class="topbar-title">Reports_Workers v242CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3582,6 +3582,46 @@ function sendEmail(){
   const prevRows=[...(md.prev||[])].sort((a,b)=>a.date.localeCompare(b.date));
   const curRows=[...(md.cur||[])].sort((a,b)=>a.date.localeCompare(b.date));
   const allRows=[...prevRows,...curRows];
+  // הוספת כל ימי העבודה (א-ה) של החודש שלא קיימים כבר
+  const allRowsDates=new Set(allRows.map(r=>r.date));
+  const emailMName=document.getElementById("emailMonth")?.value||getCurM();
+  const emailMonthNum=MONTHS.indexOf(emailMName);
+  if(emailMonthNum>=0){
+    const yr=S.year||2026;
+    const daysInMonth=new Date(yr,emailMonthNum+1,0).getDate();
+    for(let day=1;day<=daysInMonth;day++){
+      const d=new Date(yr,emailMonthNum,day,12,0,0);
+      const dow=d.getDay();
+      if(dow>=0&&dow<=4){
+        const ds=yr+'-'+String(emailMonthNum+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+        if(!allRowsDates.has(ds)){
+          const dayLetters=['א','ב','ג','ד','ה'];
+          allRows.push({date:ds,day:dayLetters[dow],cells:{}});
+          allRowsDates.add(ds);
+        }
+      }
+    }
+  }
+  // הוספת ימי חג מ-S.holidays — רק ימי עבודה שלא קיימים כבר
+  (S.holidays||[]).forEach(h=>{
+    if(!h.start) return;
+    let d=new Date(h.start+'T12:00:00');
+    const dEnd=new Date((h.end||h.start)+'T12:00:00');
+    while(d<=dEnd){
+      const dow=d.getDay();
+      if(dow>=0&&dow<=4){
+        const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        const dsMonth=MONTHS[d.getMonth()];
+        if(dsMonth===emailMName&&!allRowsDates.has(ds)){
+          const dayLetters=['א','ב','ג','ד','ה'];
+          allRows.push({date:ds,day:dayLetters[dow],cells:{},_holName:h.name});
+          allRowsDates.add(ds);
+        }
+      }
+      d.setDate(d.getDate()+1);
+    }
+  });
+  allRows.sort((a,b)=>a.date.localeCompare(b.date));
   // הוספת ימי חג מ-S.holidays — רק ימי עבודה (א-ה) שלא קיימים כבר
   const allRowsDates=new Set(allRows.map(r=>r.date));
   const emailMName=document.getElementById("emailMonth")?.value||getCurM();
