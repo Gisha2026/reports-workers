@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v239CL | גישה</title>
+<title>Reports_Workers v240CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v239CL</span>
+      <span class="topbar-title">Reports_Workers v240CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3584,10 +3584,22 @@ function sendEmail(){
   const allRows=[...prevRows,...curRows];
   // הוספת ימי חג מ-S.holidays שלא קיימים כבר ב-allRows
   const allRowsDates=new Set(allRows.map(r=>r.date));
-  const mName2=document.getElementById("emailMonth")?.value||getCurM();
+  const emailMName=document.getElementById("emailMonth")?.value||getCurM();
   (S.holidays||[]).forEach(h=>{
-    if(h.month===mName2&&h.date&&!allRowsDates.has(h.date)){
-      allRows.push({date:h.date,day:h.day||'',cells:{}});
+    if(!h.start) return;
+    // כל תאריך בטווח החג
+    let d=new Date(h.start);
+    const dEnd=new Date(h.end||h.start);
+    while(d<=dEnd){
+      const ds=d.toISOString().slice(0,10);
+      // בדיקה שהחג שייך לחודש המייל
+      const dsMonth=MONTHS[d.getMonth()];
+      if(dsMonth===emailMName&&!allRowsDates.has(ds)){
+        const days=['א','ב','ג','ד','ה','ו','ש'];
+        allRows.push({date:ds,day:days[d.getDay()]||'',cells:{},_holName:h.name});
+        allRowsDates.add(ds);
+      }
+      d.setDate(d.getDate()+1);
     }
   });
   allRows.sort((a,b)=>a.date.localeCompare(b.date));
@@ -3607,8 +3619,7 @@ function sendEmail(){
     tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${fmtD(row.date)}</td>`;
     workers.forEach(w=>{
       const cellVal=(row.cells&&row.cells[w.name])||'';
-      const holForDate=(S.holidays||[]).find(h=>h.date===row.date&&h.month===(document.getElementById("emailMonth")?.value||getCurM()));
-      const holName=holForDate?holForDate.name:'';
+      const holName=row._holName||'';
       const val=workerWorksOnDate(w.name,row.date)?cellVal:(holName||'');
       const bg=val&&colBg[val]?colBg[val]:holName?'#fffde7':(isPrev?'#ffe082':'white');
       tbl+=`<td style="background:${bg};">${val||'—'}</td>`;
