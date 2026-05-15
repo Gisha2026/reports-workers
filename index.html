@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v220 | גישה</title>
+<title>Reports_Workers v221 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -213,7 +213,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v220</span>
+      <span class="topbar-title">Reports_Workers v221</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4160,7 +4160,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   };
   window.wdwWorkerTotalPct=function(wname,month){let total=0; wdwWorkerDonorRows(wname,month).forEach(r=>{ total+=wdwTotalRowPct(r.worker,month); }); return Math.round(total*10)/10;};
   window.wdwStatusClass=function(p){return p>100?'bad':p>=90?'warn':'ok';};
-  window.wdwHeader=function(title,sub){const month=wdwMonthKey();return '<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">'+title+'</div><div class="wdw-sub">'+sub+'</div></div><div class="wdw-nav"><span class="wdw-month">'+wdwFmtM(month)+'</span></div></div>';};
+  /* wdwHeader removed - using latest version below */
   window.wdwKpis=function(){
     const m=wdwMonthKey(); let funded=0,near=0,over=0,repl=0; const donors=(S.wdw&&S.wdw.donors)||[]; wdwWorkersList().forEach(w=>{const p=wdwWorkerTotalPct(w,m); if(p>0) funded++; if(p>=90&&p<=100) near++; if(p>100) over++; if(wdwWorkerDonorRows(w,m).some(x=>wdwReplacePct(x.worker,m)>0)) repl++;});
     const activeDonors=donors.filter(d=>d.status!==WDW_STATUS.INACTIVE&&d.status!==WDW_STATUS.ENDED).length;
@@ -4261,20 +4261,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     const p=wdwActivePanel();
     if(p==='org') renderWDWOrg(); else if(p==='donor') renderWDWDonor(); else if(p==='worker') renderWDWWorker(); else renderWDWInput();
   };
-  window.wdwHeader=function(title,sub){
-    const month=wdwMonthKey();
-    return '<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">'+title+'</div><div class="wdw-sub">'+sub+'</div></div><div class="wdw-top-actions"><select class="wdw-month-select" onchange="wdwSetViewMonth(this.value)">'+monthOptions199(month)+'</select><button class="wdw-write-btn" onclick="wdwOpenWriteTimesheet()">כתיבה ל־Timesheet</button></div></div>';
-  };
-  window.wdwWriteRowsFor=function(month, workers){
-    const rows=[];
-    workers.forEach(name=>{
-      wdwWorkerDonorRows(name,month).forEach(r=>{
-        const pct=wdwTotalRowPct(r.worker,month);
-        if(pct>0) rows.push({worker:name, donor:r.donor.name, project:r.donor.code||'', pct, replacement:wdwReplacementText(r.worker)});
-      });
-    });
-    return rows;
-  };
+  /* wdwHeader removed */
   window.wdwOpenWriteTimesheet=function(){
     initWDW();
     let old=document.getElementById('wdw-write-modal'); if(old) old.remove();
