@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v224CH | גישה</title>
+<title>Reports_Workers v225CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v224CH</span>
+      <span class="topbar-title">Reports_Workers v225CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -600,7 +600,7 @@ const TOK_KEY='rw_gisha_token'; // PERMANENT
 // ===== STATE =====
 // months[name] = { prev:[{date,day,cells}], cur:[{date,day,cells}] }
 // cutoffs[name] = 'YYYY-MM-DD'
-let S={version:"v224CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
+let S={version:"v225CH",currentUser:'',workers:[],months:{},cutoffs:{},holidays:[],emailTemplate:{fixed:'האחריות לוודא שהדו"ח תקין ומכיל את הפרטים המלאים היא שלכם.\nדו"ח השעות מכיל את המידע שיש לגבי חופש / מחלה / העדרות וכד\', ממיילים שנשלחו ומטבלת הסיילספורס.\nהדיווח כולל פירוט של שעות העבודה, חלוקה בין פרויקטים, ימי מחלה, חופש, חג וכד\'. כל דיווח חייב בשתי חתימות: עובד ומנהל.\nבבקשה לבדוק אם שכחתם לדווח על חופש / מחלה, אם נרשם חופש במקום מחלה (או להיפך), יצאתם לפני הזמן ולא השלמתם שעות - או כל דבר שבגללו הדו"ח שאתם חותמים עליו אינו נכון.'},year:2026};
 let curMI=new Date().getMonth(), editMode=true, endWIdx=null;
 
 // ===== BOOT =====
@@ -5124,6 +5124,91 @@ window.wdwResetNewWorkerForm = function(did) {
   window.wdwSaveNewDonor217=function(){init();var name=(document.getElementById('v217-new-name')||{}).value||'';name=name.trim();if(!name){alert('נא להזין שם תורם');return;}var d={id:(typeof wdwGenId==='function'?wdwGenId('d'):'d_'+Date.now()),name:name,type:(document.getElementById('v217-new-type')||{}).value||'budget',status:(document.getElementById('v217-new-status')||{}).value||'active',totalBudget:parseFloat((document.getElementById('v217-new-budget')||{}).value)||0,startDate:(document.getElementById('v217-new-start')||{}).value||'',endDate:(document.getElementById('v217-new-end')||{}).value||'',code:(document.getElementById('v217-new-code')||{}).value||'',address:(document.getElementById('v217-new-address')||{}).value||'',workers:[]};S.wdw.donors.push(d);window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=d.id;try{saveLocally();saveData();}catch(e){}renderWDWInput();};
   window.wdwSaveDonor217=function(id){var d=donors().find(function(x){return x.id===id;});if(!d)return;d.name=(document.getElementById('v217-ed-name-'+id)||{}).value||d.name;d.type=(document.getElementById('v217-ed-type-'+id)||{}).value||d.type;d.status=(document.getElementById('v217-ed-status-'+id)||{}).value||d.status;d.totalBudget=parseFloat((document.getElementById('v217-ed-budget-'+id)||{}).value)||0;d.startDate=(document.getElementById('v217-ed-start-'+id)||{}).value||'';d.endDate=(document.getElementById('v217-ed-end-'+id)||{}).value||'';d.code=(document.getElementById('v217-ed-code-'+id)||{}).value||'';d.address=(document.getElementById('v217-ed-address-'+id)||{}).value||'';try{saveLocally();saveData();}catch(e){}window.WDW_EDIT_DONOR_ID=id;renderWDWInput();};
   var style=document.createElement('style');style.id='wdw-v219-style';style.textContent='\n.wdw-v219-view{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:12px 16px;margin:10px 0}.wdw-v219-month-title{font-size:18px;font-weight:900;color:#00695c}.wdw-v219-controls{display:flex;gap:8px;align-items:center}.wdw-v219-controls select{padding:7px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-weight:700}.wdw-v219-controls button{padding:8px 18px;background:#00695c;color:#fff;border:none;border-radius:8px;font-weight:800;cursor:pointer}.v219-table-wrap{max-height:430px;overflow:auto;border-radius:10px;border:1px solid #e2e8f0}.v219-table-wrap .wdw-table thead th{position:sticky!important;top:0!important;z-index:10!important;background:#f8fafc!important;color:#475569!important}.v219-worker-summary{font-size:16px!important;font-weight:900!important;color:#111827!important;margin-top:4px}.v219-sub{font-size:13px;font-weight:800;color:#475569;margin-top:3px}.v219-repl-text{font-size:12.5px!important;color:#1f2937!important;font-weight:700!important}.v219-donor-summary{display:grid;grid-template-columns:130px minmax(220px,1.4fr) 100px minmax(170px,1fr) 110px 150px auto;gap:12px;align-items:center;padding:14px;border-bottom:1px solid #edf2f7}.v219-donor-summary:hover{background:#f8fafc}.v219-donor-card{overflow:hidden}.v219-mgmt-summary{grid-template-columns:minmax(260px,1.5fr) 100px 110px 120px 180px auto!important}.v219-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}.v219-worker-line{display:grid;grid-template-columns:1.3fr 90px 1.4fr 160px auto auto;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid #e5e7eb}.v219-worker-line button{padding:4px 9px;background:#fff;border:1px solid #cbd5e1;border-radius:5px;cursor:pointer}.v219-worker-line .danger{border-color:#fecaca;color:#b91c1c}.wdw-chip.repl{background:transparent!important;border:none!important;color:#1f2937!important;padding:0!important;font-weight:700!important}\n';document.head.appendChild(style);
+})();
+</script>
+
+
+<script>
+/* ===== WDW v225CH TODAY BUTTON PATCH — only adds היום button to WDW month controls ===== */
+(function(){
+  function todayKey225(){
+    var d=new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  }
+  function activeWDWPanel225(){
+    var p='org';
+    ['org','donor','worker','input'].forEach(function(x){
+      var el=document.getElementById('wdw-'+x);
+      if(el && el.style.display!=='none') p=x;
+    });
+    return p;
+  }
+  function rerenderWDW225(){
+    var p=activeWDWPanel225();
+    try{
+      if(p==='donor' && typeof renderWDWDonor==='function') renderWDWDonor();
+      else if(p==='worker' && typeof renderWDWWorker==='function') renderWDWWorker();
+      else if(p==='input' && typeof renderWDWInput==='function') renderWDWInput();
+      else if(typeof renderWDWOrg==='function') renderWDWOrg();
+    }catch(e){console.error(e);}
+  }
+  window.wdwToday225=function(){
+    if(!S.wdw) S.wdw={donors:[]};
+    S.wdw.viewMonth=todayKey225();
+    try{saveLocally();}catch(e){}
+    rerenderWDW225();
+  };
+  function addTodayButton225(root){
+    root=root||document;
+    var controls=root.querySelectorAll('.wdw-v219-controls');
+    controls.forEach(function(c){
+      if(c.querySelector('.wdw-today-btn-225')) return;
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.className='wdw-today-btn-225';
+      btn.textContent='היום';
+      btn.onclick=window.wdwToday225;
+      c.insertBefore(btn,c.firstChild);
+    });
+  }
+  function installStyle225(){
+    if(document.getElementById('wdw-today-style-225')) return;
+    var st=document.createElement('style');
+    st.id='wdw-today-style-225';
+    st.textContent='.wdw-today-btn-225{border:1px solid #00695c;background:#fff;color:#00695c;border-radius:10px;padding:8px 16px;font-weight:800;cursor:pointer;min-width:72px}.wdw-today-btn-225:hover{background:#f0f7f6}.wdw-v219-controls{align-items:end}';
+    document.head.appendChild(st);
+  }
+  var oldSwitch=window.switchWDW;
+  if(typeof oldSwitch==='function'){
+    window.switchWDW=function(panel){
+      oldSwitch.apply(this,arguments);
+      setTimeout(function(){installStyle225();addTodayButton225(document);},0);
+    };
+  }
+  ['renderWDWOrg','renderWDWDonor','renderWDWWorker','renderWDWInput'].forEach(function(fn){
+    var old=window[fn];
+    if(typeof old==='function'){
+      window[fn]=function(){
+        var ret=old.apply(this,arguments);
+        setTimeout(function(){installStyle225();addTodayButton225(document);},0);
+        return ret;
+      };
+    }
+  });
+  var oldStart=window.startApp;
+  if(typeof oldStart==='function'){
+    window.startApp=function(){
+      if(!S.wdw) S.wdw={donors:[]};
+      S.wdw.viewMonth=todayKey225();
+      return oldStart.apply(this,arguments);
+    };
+  }
+  if(document.readyState!=='loading'){
+    installStyle225();
+    addTodayButton225(document);
+  }else{
+    document.addEventListener('DOMContentLoaded',function(){installStyle225();addTodayButton225(document);});
+  }
 })();
 </script>
 
