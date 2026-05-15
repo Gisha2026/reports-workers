@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v245CL | גישה</title>
+<title>Reports_Workers v246CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v245CL</span>
+      <span class="topbar-title">Reports_Workers v246CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3682,11 +3682,11 @@ function sendEmail(){
     tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${row.day}</td>`;
     tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${fmtD(row.date)}</td>`;
     workers.forEach(w=>{
-      const cellVal=workerWorksOnDate(w.name,row.date)?((row.cells&&row.cells[w.name])||''):'';
+      const works=workerWorksOnDate(w.name,row.date);
+      const cellVal=works?((row.cells&&row.cells[w.name])||''):'';
       const holName=row._holName||'';
-      const val=cellVal||(holName&&workerWorksOnDate(w.name,row.date)?holName:'');
-      const displayVal=cellVal||holName||'';
-      const bg=displayVal&&colBg[displayVal]?colBg[displayVal]:holName?'#fffde7':(isPrev?'#ffe082':'white');
+      const displayVal=cellVal||(works&&holName?holName:'');
+      const bg=displayVal&&colBg[displayVal]?colBg[displayVal]:holName&&works?'#fffde7':(isPrev?'#ffe082':'white');
       tbl+=`<td style="background:${bg};">${displayVal||'—'}</td>`;
     });
     tbl+='</tr>';
