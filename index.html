@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v225CH | גישה</title>
+<title>Reports_Workers v226CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v225CH</span>
+      <span class="topbar-title">Reports_Workers v226CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5209,6 +5209,103 @@ window.wdwResetNewWorkerForm = function(did) {
   }else{
     document.addEventListener('DOMContentLoaded',function(){installStyle225();addTodayButton225(document);});
   }
+})();
+</script>
+
+
+<script>
+/* ===== WDW v226CH CRITICAL PATCH — add donor/add worker only ===== */
+(function(){
+  function safeRenderInput(){
+    if(typeof window.renderWDWInput==='function') window.renderWDWInput();
+  }
+  function getDonorById(id){
+    try{
+      initWDW && initWDW();
+      return ((S.wdw&&S.wdw.donors)||[]).find(function(d){return d.id===id;});
+    }catch(e){return null;}
+  }
+  function getMonthKey(){
+    try{return (typeof wdwMonthKey==='function')?wdwMonthKey():((S.year||2026)+'-'+String((typeof curMI==='number'?curMI:0)+1).padStart(2,'0'));}
+    catch(e){return (new Date().getFullYear())+'-'+String(new Date().getMonth()+1).padStart(2,'0');}
+  }
+  function activeWorkerOptions(){
+    try{
+      var names=(typeof wdwWorkersList==='function'?wdwWorkersList():((S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';}))).filter(Boolean);
+      return names.map(function(n){var escN=String(n).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');return '<option value="'+escN+'">'+escN+'</option>';}).join('');
+    }catch(e){return '';}
+  }
+
+  window.wdwShowAddDonor217=function(){
+    try{
+      window.WDW_ADD_DONOR_MODE=true;
+      window.WDW_EDIT_DONOR_ID=null;
+      window.WDW_ADD_WORKER_FOR=null;
+      safeRenderInput();
+      setTimeout(function(){var el=document.getElementById('v217-new-name'); if(el) el.focus();},0);
+    }catch(e){console.error('wdwShowAddDonor217 failed',e);}
+  };
+
+  window.wdwEditDonor217=function(id){
+    try{
+      window.WDW_ADD_DONOR_MODE=false;
+      window.WDW_EDIT_DONOR_ID=id;
+      window.WDW_ADD_WORKER_FOR=null;
+      safeRenderInput();
+    }catch(e){console.error('wdwEditDonor217 failed',e);}
+  };
+
+  window.wdwShowAddWorker217=function(id){
+    try{
+      window.WDW_ADD_DONOR_MODE=false;
+      window.WDW_EDIT_DONOR_ID=id;
+      window.WDW_ADD_WORKER_FOR=id;
+      var d=getDonorById(id);
+      if(!d){safeRenderInput(); return;}
+      var form=document.getElementById('wdw-add-worker-'+id);
+      if(!form){
+        var list=document.getElementById('wdw-worker-list-'+id);
+        if(!list){ safeRenderInput(); setTimeout(function(){window.wdwShowAddWorker217(id);},0); return; }
+        form=document.createElement('div');
+        form.id='wdw-add-worker-'+id;
+        form.style.cssText='display:block;border:1px dashed #00897B;border-radius:10px;padding:12px;margin-top:10px;background:#fff';
+        list.insertAdjacentElement('afterend',form);
+      }
+      var hasBudget=!!(S.wdw&&S.wdw.budget&&Object.keys(S.wdw.budget).length>0);
+      var workerOpts=activeWorkerOptions();
+      if(typeof wdwNewWorkerForm==='function'){
+        form.innerHTML=wdwNewWorkerForm(id,hasBudget,getMonthKey(),workerOpts);
+      }
+      form.style.display='block';
+      setTimeout(function(){var sel=document.getElementById('nw-'+id+'-name'); if(sel) sel.focus();},0);
+      form.scrollIntoView({block:'nearest'});
+    }catch(e){console.error('wdwShowAddWorker217 failed',e);}
+  };
+
+  var oldSaveNewWorker=window.wdwSaveNewWorker;
+  window.wdwSaveNewWorker=function(did){
+    try{
+      if(typeof oldSaveNewWorker==='function') oldSaveNewWorker.apply(this,arguments);
+      window.WDW_ADD_DONOR_MODE=false;
+      window.WDW_EDIT_DONOR_ID=did;
+      window.WDW_ADD_WORKER_FOR=did;
+      setTimeout(function(){window.wdwShowAddWorker217(did);},0);
+    }catch(e){console.error('wdwSaveNewWorker failed',e); alert('שגיאה בהוספת עובד: '+(e&&e.message?e.message:e));}
+  };
+
+  document.addEventListener('click',function(ev){
+    var btn=ev.target&&ev.target.closest&&ev.target.closest('button');
+    if(!btn) return;
+    var txt=(btn.textContent||'').trim();
+    if(txt.indexOf('הוסף תורם')>-1){
+      ev.preventDefault(); ev.stopPropagation(); window.wdwShowAddDonor217(); return;
+    }
+    if(txt.indexOf('הוסף עובד לתרומה זו')>-1){
+      var oc=btn.getAttribute('onclick')||'';
+      var m=oc.match(/wdwShowAddWorker217\('([^']+)'\)/)||oc.match(/wdwShowAddWorker\('([^']+)'\)/);
+      if(m&&m[1]){ev.preventDefault(); ev.stopPropagation(); window.wdwShowAddWorker217(m[1]);}
+    }
+  },true);
 })();
 </script>
 
