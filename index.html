@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v227CH | גישה</title>
+<title>Reports_Workers v228 | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v227CH</span>
+      <span class="topbar-title">Reports_Workers v228</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1503,6 +1503,51 @@ function wdwCheckEnded(){
       if(d.endDate&&d.endDate<today) d.status=WDW_STATUS.ENDED;
     }
   });
+}
+
+
+// חישוב כמה חודשים של עובד פעילים בשנה נתונה
+function wdwActiveMonthsInYear(worker, donor, year){
+  const startM = worker.startMonth || donor.startDate || (year+'-01');
+  const endM   = worker.endMonth   || donor.endDate   || (year+'-12');
+  const yearStart = year+'-01';
+  const yearEnd   = year+'-12';
+  const effectiveStart = startM > yearStart ? startM : yearStart;
+  const effectiveEnd   = endM   < yearEnd   ? endM   : yearEnd;
+  if(effectiveStart > effectiveEnd) return 0;
+  const [sy,sm] = effectiveStart.split('-').map(Number);
+  const [ey,em] = effectiveEnd.split('-').map(Number);
+  return (ey - sy) * 12 + (em - sm) + 1;
+}
+
+// חישוב סכום חודשי לעובד לפי תקציב שנתי ומספר חודשים פעילים
+function wdwMonthlyAmount(worker, donor, year){
+  const activeMonths = wdwActiveMonthsInYear(worker, donor, year);
+  if(activeMonths <= 0) return 0;
+  if(worker.valueType === 'amount'){
+    // סכום שנתי — מחלק לחודשים פעילים
+    return Math.round((parseFloat(worker.value)||0) / activeMonths);
+  }
+  // אחוז — מחשב לפי עלות מעביד
+  const cost = S.wdw.budget ? parseFloat(S.wdw.budget[worker.name]||0) : 0;
+  const pct  = parseFloat(worker.value)||0;
+  return cost > 0 ? Math.round(cost * pct / 100) : 0;
+}
+
+// חישוב סכום שנתי יחסי לעובד (רק החודשים הפעילים)
+function wdwYearlyAmount(worker, donor, year){
+  const activeMonths = wdwActiveMonthsInYear(worker, donor, year);
+  if(activeMonths <= 0) return 0;
+  const monthly = wdwMonthlyAmount(worker, donor, year);
+  return monthly * activeMonths;
+}
+
+// אחוז יחסי שנתי (מתוך 100%)
+function wdwYearlyPct(worker, donor, year){
+  const cost = S.wdw.budget ? parseFloat(S.wdw.budget[worker.name]||0) : 0;
+  if(cost <= 0) return null; // אין עלות — לא מציגים אחוז
+  const yearly = wdwYearlyAmount(worker, donor, year);
+  return Math.round(yearly / cost * 100 * 10) / 10;
 }
 
 function wdwWorkerTotalPct(wname, month){
@@ -5311,7 +5356,7 @@ window.wdwResetNewWorkerForm = function(did) {
 
 
 <script>
-/* ===== WDW v227CH CRITICAL FIXES — targeted only ===== */
+/* ===== WDW v228 CRITICAL FIXES — targeted only ===== */
 (function(){
   function esc227(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
   function monthKey227(){
@@ -5392,7 +5437,7 @@ window.wdwResetNewWorkerForm = function(did) {
         form.style.display='block';
         setTimeout(function(){var sel=document.getElementById('nw-'+did+'-name'); if(sel) sel.focus();},0);
       }
-    }catch(e){console.error('wdwSaveNewWorker v227 failed',e); alert('שגיאה בהוספת עובד: '+(e&&e.message?e.message:e));}
+    }catch(e){console.error('wdwSaveNewWorker v228 failed',e); alert('שגיאה בהוספת עובד: '+(e&&e.message?e.message:e));}
   };
 
   window.wdwShowAddWorker=window.wdwShowAddWorker227;
@@ -5420,22 +5465,22 @@ window.wdwResetNewWorkerForm = function(did) {
   window.cleanupDonorDisplay227=cleanupDonorDisplay227;
 
   function installStyle227(){
-    if(document.getElementById('wdw-v227-style')) return;
+    if(document.getElementById('wdw-v228-style')) return;
     var st=document.createElement('style');
-    st.id='wdw-v227-style';
+    st.id='wdw-v228-style';
     st.textContent='.wdw-today-btn-225,.wdw-today-btn{border:1px solid #00695c!important;background:#fff!important;color:#00695c!important;border-radius:10px!important;padding:8px 16px!important;font-weight:800!important;cursor:pointer!important;min-width:72px!important}.wdw-today-btn-225:hover,.wdw-today-btn:hover{background:#e7f3f1!important;color:#00695c!important;border-color:#00695c!important}.wdw-donor-meta:empty,.wdw-muted:empty{display:none!important}';
     document.head.appendChild(st);
   }
 
   ['renderWDWOrg','renderWDWDonor','renderWDWWorker','renderWDWInput'].forEach(function(fn){
     var old=window[fn];
-    if(typeof old==='function' && !old.__v227){
+    if(typeof old==='function' && !old.__v228){
       var wrapped=function(){
         var ret=old.apply(this,arguments);
         setTimeout(function(){installStyle227(); cleanupDonorDisplay227(document);},0);
         return ret;
       };
-      wrapped.__v227=true;
+      wrapped.__v228=true;
       window[fn]=wrapped;
     }
   });
