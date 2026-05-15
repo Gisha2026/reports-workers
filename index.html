@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v237CH | גישה</title>
+<title>Reports_Workers v238CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v237CH</span>
+      <span class="topbar-title">Reports_Workers v238CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3608,7 +3608,7 @@ function sendEmail(){
   tbl+='<tr style="background:#e8f5e9;font-weight:bold;">';
   tbl+='<td colspan="2" style="text-align:right;padding:4px 8px;">סיכום</td>';
   workers.forEach(w=>{
-    const s=calcSum(curRows,w.name);
+    const s=calcSum(allRows,w.name);
     const parts=[];
     if(s.v>0) parts.push(`חופש: ${s.v}`);
     if(s.s>0) parts.push(`מחלה: ${s.s}`);
@@ -5685,7 +5685,7 @@ window.wdwResetNewWorkerForm = function(did) {
 
 
 <script>
-/* ===== v237CH FINAL ONLY: clean add-worker form layout + FX helper. Based on v234CH; no button changes. ===== */
+/* ===== v238CL FINAL ONLY: clean add-worker form layout + FX helper. Based on v234CH; no button changes. ===== */
 (function(){
   function init(){try{if(typeof initWDW==='function')initWDW();}catch(e){} if(!S.wdw)S.wdw={donors:[]}; if(!Array.isArray(S.wdw.donors))S.wdw.donors=[];}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -5712,28 +5712,28 @@ window.wdwResetNewWorkerForm = function(did) {
   };
   function formHtml(did){
     var d=donor(did)||{}, cur=month(), p='nw-'+did, end=esc(d.endDate||'');
-    return '<div class="v237-add-worker-box">'+
-      '<div class="v237-section"><div class="v237-title">1. בחירת עובד</div><div class="v237-grid one">'+
+    return '<div class="v238-add-worker-box">'+
+      '<div class="v238-section"><div class="v238-title">1. בחירת עובד</div><div class="v238-grid one">'+
         '<label>עובד<select id="'+p+'-name" class="wdw-inp"><option value="">בחר עובד</option>'+workerOptions()+'</select></label>'+ 
       '</div></div>'+ 
-      '<div class="v237-section"><div class="v237-title">2. תקופת עבודה על התרומה</div><div class="v237-grid two">'+
+      '<div class="v238-section"><div class="v238-title">2. תקופת עבודה על התרומה</div><div class="v238-grid two">'+
         '<label>תחילת פעילות<input id="'+p+'-start" class="wdw-inp" type="month" value="'+esc(d.startDate||cur)+'" onchange="wdwV237CalcMonthly(\''+p+'\')"></label>'+ 
         '<label>סיום פעילות<input id="'+p+'-end" class="wdw-inp" type="month" value="'+end+'" onchange="wdwV237CalcMonthly(\''+p+'\')"></label>'+ 
       '</div></div>'+ 
-      '<div class="v237-section"><div class="v237-title">3. הקצאת העובד לתרומה</div><div class="v237-grid two">'+
+      '<div class="v238-section"><div class="v238-title">3. הקצאת העובד לתרומה</div><div class="v238-grid two">'+
         '<label>אחוז קבוע<input id="'+p+'-pct" class="wdw-inp" type="number" step="0.01" placeholder="למשל 10"></label>'+ 
         '<label>או סכום חודשי קבוע<input id="'+p+'-amt" class="wdw-inp" type="number" step="0.01" placeholder="אם אין אחוז"></label>'+ 
-      '</div><div class="v237-help">לעובד הראשי מזינים אחוז קבוע או סכום חודשי קבוע. החלפה אינה חלק מהשורה הזו.</div></div>'+ 
-      '<div class="v237-section"><div class="v237-title">4. תקציב ש״ח</div><div class="v237-grid two">'+
+      '</div><div class="v238-help">לעובד הראשי מזינים אחוז קבוע או סכום חודשי קבוע. החלפה אינה חלק מהשורה הזו.</div></div>'+ 
+      '<div class="v238-section"><div class="v238-title">4. תקציב ש״ח</div><div class="v238-grid two">'+
         '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000" oninput="wdwV237CalcMonthly(\''+p+'\')"></label>'+ 
         '<label>סכום חודשי מחושב<input id="'+p+'-monthly-calc" class="wdw-inp" type="text" value="מתעדכן לפי התקופה" disabled></label>'+ 
-      '</div><div class="v237-help">הסכום החודשי נשמר בשדה סכום חודשי קבוע למעלה, לפי מספר החודשים בתקופת העבודה.</div></div>'+ 
-      '<div class="v237-section"><div class="v237-title">5. תקציב מט״ח</div><div class="v237-grid three">'+
+      '</div><div class="v238-help">הסכום החודשי נשמר בשדה סכום חודשי קבוע למעלה, לפי מספר החודשים בתקופת העבודה.</div></div>'+ 
+      '<div class="v238-section"><div class="v238-title">5. תקציב מט״ח</div><div class="v238-grid three">'+
         '<label>סכום במט״ח<input id="'+p+'-fx-amt" class="wdw-inp" type="number" step="0.01" oninput="wdwV237RecalcILS(\''+p+'\')"></label>'+ 
         '<label>מטבע<select id="'+p+'-fx-currency" class="wdw-inp"><option value="">בחר</option><option>USD</option><option>EUR</option><option>GBP</option><option>CHF</option><option>CAD</option><option>AUD</option></select></label>'+ 
         '<label>שער<input id="'+p+'-fx-rate" class="wdw-inp" type="number" step="0.0001" oninput="wdwV237RecalcILS(\''+p+'\')"></label>'+ 
-      '</div><div class="v237-help">אם הוזן מט״ח, המערכת מחשבת ש״ח ומעדכנת אוטומטית את “סכום ₪ לכל התקופה”.</div></div>'+ 
-      '<div class="v237-section"><div class="v237-title">6. החלפת עובד</div><div class="v237-grid three">'+
+      '</div><div class="v238-help">אם הוזן מט״ח, המערכת מחשבת ש״ח ומעדכנת אוטומטית את “סכום ₪ לכל התקופה”.</div></div>'+ 
+      '<div class="v238-section"><div class="v238-title">6. החלפת עובד</div><div class="v238-grid three">'+
         '<label>מחליף את<select id="'+p+'-replaces" class="wdw-inp"><option value="">לא מחליף</option><option value="__vacant__">משרה פנויה</option>'+workerOptions()+'</select></label>'+ 
         '<label>שם משרה פנויה<input id="'+p+'-vacant-name" class="wdw-inp" placeholder="אם נבחרה משרה פנויה"></label>'+ 
         '<label>אחוז החלפה<input id="'+p+'-replaces-pct" class="wdw-inp" type="number" step="0.01" placeholder="למשל 10"></label>'+ 
@@ -5765,9 +5765,9 @@ window.wdwResetNewWorkerForm = function(did) {
       d.workers=d.workers||[];
       d.workers.push({id:id(),name:name,valueType:valueType,value:value,totalPeriodAmount:totalAmt||null,fundingType:valueType==='percent'?'אחוז קבוע':'סכום קבוע',startMonth:(document.getElementById(p+'-start')||{}).value||d.startDate||'',endMonth:(document.getElementById(p+'-end')||{}).value||d.endDate||'',replaces:(document.getElementById(p+'-replaces')||{}).value||null,replacesPct:replPct||null,replacesAmt:n((document.getElementById(p+'-replaces-amt')||{}).value)||null,replacementStartMonth:(document.getElementById(p+'-replace-start')||{}).value||null,replacementEndMonth:(document.getElementById(p+'-replace-end')||{}).value||d.endDate||null,vacantName:(document.getElementById(p+'-vacant-name')||{}).value||null,fxAmount:n((document.getElementById(p+'-fx-amt')||{}).value)||null,fxCurrency:(document.getElementById(p+'-fx-currency')||{}).value||null,fxRate:n((document.getElementById(p+'-fx-rate')||{}).value)||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&curTotal+value+replPct>100,monthlyPct:{}});
       save();window.WDW_EDIT_DONOR_ID=did;window.WDW_ADD_WORKER_FOR=did;if(typeof renderWDWInput==='function')renderWDWInput();setTimeout(function(){window.wdwShowAddWorker234(did);var f=document.getElementById('wdw-add-worker-'+did);if(f)f.insertAdjacentHTML('afterbegin','<div style="margin-bottom:8px;padding:7px 10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:5px;color:#2e7d32;font-size:12px;font-weight:700">✓ העובד נוסף. אפשר להוסיף עובד נוסף לאותה תרומה.</div>');},0);
-    }catch(e){console.error('wdwSaveNewWorker v237 failed',e);alert('שגיאה בהוספת עובד: '+(e&&e.message?e.message:e));}
+    }catch(e){console.error('wdwSaveNewWorker v238 failed',e);alert('שגיאה בהוספת עובד: '+(e&&e.message?e.message:e));}
   };
-  function style(){if(document.getElementById('wdw-v237-style'))return;var st=document.createElement('style');st.id='wdw-v237-style';st.textContent='.v237-add-worker-box{background:#fff;border:1px solid #d5dce3;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}.v237-section{border:1px solid #e5eaf0;border-radius:12px;padding:12px;margin-bottom:10px;background:#fbfdff}.v237-title{font-size:13px;font-weight:900;color:#073f3d;margin-bottom:10px}.v237-grid{display:grid;gap:10px}.v237-grid.one{grid-template-columns:minmax(260px,1fr)}.v237-grid.two{grid-template-columns:repeat(2,minmax(190px,1fr))}.v237-grid.three{grid-template-columns:repeat(3,minmax(160px,1fr))}.v237-grid label{font-size:12px;color:#475569;font-weight:700;display:flex;flex-direction:column;gap:4px}.v237-help{font-size:11px;color:#64748b;margin-top:8px;line-height:1.45}.wdw-inp[disabled]{background:#f1f5f9;color:#64748b}@media(max-width:1000px){.v237-grid.one,.v237-grid.two,.v237-grid.three{grid-template-columns:1fr}}';document.head.appendChild(st);}style();
+  function style(){if(document.getElementById('wdw-v238-style'))return;var st=document.createElement('style');st.id='wdw-v238-style';st.textContent='.v238-add-worker-box{background:#fff;border:1px solid #d5dce3;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}.v238-section{border:1px solid #e5eaf0;border-radius:12px;padding:12px;margin-bottom:10px;background:#fbfdff}.v238-title{font-size:13px;font-weight:900;color:#073f3d;margin-bottom:10px}.v238-grid{display:grid;gap:10px}.v238-grid.one{grid-template-columns:minmax(260px,1fr)}.v238-grid.two{grid-template-columns:repeat(2,minmax(190px,1fr))}.v238-grid.three{grid-template-columns:repeat(3,minmax(160px,1fr))}.v238-grid label{font-size:12px;color:#475569;font-weight:700;display:flex;flex-direction:column;gap:4px}.v238-help{font-size:11px;color:#64748b;margin-top:8px;line-height:1.45}.wdw-inp[disabled]{background:#f1f5f9;color:#64748b}@media(max-width:1000px){.v238-grid.one,.v238-grid.two,.v238-grid.three{grid-template-columns:1fr}}';document.head.appendChild(st);}style();
 })();
 </script>
 
