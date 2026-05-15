@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v249CH | גישה</title>
+<title>Reports_Workers v250CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v249CH</span>
+      <span class="topbar-title">Reports_Workers v250CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5107,13 +5107,97 @@ window.wdwResetNewWorkerForm = function(did) {
 })();
 </script>
 
+
+
+<!-- ===== v250CH ORG DASHBOARD REFINEMENT — org tab only ===== -->
+<style>
+#wdw-org .org250-wrap{direction:rtl;background:#f4f6f8;padding:0 0 28px;color:#0f172a;font-family:Arial,sans-serif}
+#wdw-org .org250-hero{background:#fff;border:1px solid #d5dce3;border-radius:16px;padding:24px 28px;margin-bottom:18px;box-shadow:0 2px 10px rgba(15,23,42,.05)}
+#wdw-org .org250-title{font-size:30px;font-weight:900;color:#073f3d;margin-bottom:6px}
+#wdw-org .org250-sub{font-size:14px;color:#667085;line-height:1.5}
+#wdw-org .org250-kpis{display:grid;grid-template-columns:repeat(5,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+#wdw-org .org250-kpi{background:#fff;border:1px solid #d8e0e8;border-radius:15px;padding:16px 18px;box-shadow:0 2px 8px rgba(15,23,42,.04);min-height:104px}
+#wdw-org .org250-kpi .lbl{font-size:13px;font-weight:800;color:#475569;margin-bottom:8px}
+#wdw-org .org250-kpi .num{font-size:32px;font-weight:900;line-height:1;color:#00897B}
+#wdw-org .org250-kpi .note{font-size:12px;color:#667085;margin-top:9px;line-height:1.35}
+#wdw-org .org250-kpi.bad .num{color:#c62828}#wdw-org .org250-kpi.warn .num{color:#e65100}#wdw-org .org250-kpi.info .num{color:#1565c0}
+#wdw-org .org250-grid{display:grid;grid-template-columns:1.65fr 1fr;gap:16px;margin-bottom:16px}
+#wdw-org .org250-grid.second{grid-template-columns:1.65fr 1fr}
+#wdw-org .org250-panel{background:#fff;border:1px solid #d5dce3;border-radius:16px;box-shadow:0 2px 10px rgba(15,23,42,.05);overflow:hidden}
+#wdw-org .org250-panel-h{padding:16px 20px;border-bottom:1px solid #e9eef3;display:flex;align-items:center;justify-content:space-between;gap:10px}
+#wdw-org .org250-panel-title{font-size:18px;font-weight:900;color:#073f3d}
+#wdw-org .org250-panel-note{font-size:12px;color:#667085;margin-top:4px}
+#wdw-org .org250-table-wrap{overflow-x:auto}
+#wdw-org table.org250-table{width:100%;border-collapse:separate!important;border-spacing:0!important;background:#fff;box-shadow:none!important;border-radius:0!important}
+#wdw-org .org250-table th{background:#f6f7f9!important;color:#344054!important;font-size:13px!important;font-weight:900!important;padding:12px 14px!important;border-bottom:1px solid #d9e0e7!important;text-align:right!important;white-space:nowrap!important;position:static!important}
+#wdw-org .org250-table td{font-size:13px!important;padding:12px 14px!important;border-bottom:1px solid #e9eef3!important;text-align:right!important;vertical-align:middle!important;line-height:1.45;color:#111827!important}
+#wdw-org .org250-table tr:hover td{background:#fafbfc!important}
+#wdw-org .org250-num{text-align:left!important;direction:ltr;font-weight:900!important;white-space:nowrap}
+#wdw-org .org250-chip{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:900;white-space:nowrap;border:1px solid #d0d5dd;background:#f2f4f7;color:#344054}
+#wdw-org .org250-chip.ok{background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7}
+#wdw-org .org250-chip.warn{background:#fff8e1;color:#e65100;border-color:#ffe0b2}
+#wdw-org .org250-chip.bad{background:#ffebee;color:#c62828;border-color:#ffcdd2}
+#wdw-org .org250-chip.info{background:#e3f2fd;color:#1565c0;border-color:#bbdefb}
+#wdw-org .org250-chip.gray{background:#eceff1;color:#607d8b;border-color:#cfd8dc}
+#wdw-org .org250-alert-row td:first-child{border-right:4px solid transparent!important}
+#wdw-org .org250-alert-row.bad td:first-child{border-right-color:#c62828!important}
+#wdw-org .org250-alert-row.warn td:first-child{border-right-color:#e65100!important}
+#wdw-org .org250-empty{padding:22px;color:#667085;text-align:center;font-size:13px}
+#wdw-org .org250-note-list{padding:14px 18px;display:grid;gap:10px}
+#wdw-org .org250-note-item{border:1px solid #e5eaf0;border-radius:12px;padding:10px 12px;background:#fbfdff;font-size:13px;line-height:1.45;color:#334155}
+@media(max-width:1200px){#wdw-org .org250-kpis{grid-template-columns:repeat(2,1fr)}#wdw-org .org250-grid,#wdw-org .org250-grid.second{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+  function init(){try{if(typeof initWDW==='function')initWDW();}catch(e){} if(!window.S) return; if(!S.wdw)S.wdw={donors:[]}; if(!Array.isArray(S.wdw.donors))S.wdw.donors=[];}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function norm(s){return String(s||'').trim();}
+  function donorList(){init();return (S.wdw&&S.wdw.donors)||[];}
+  function month(){try{if(S.wdw&&S.wdw.viewMonth)return S.wdw.viewMonth;}catch(e){} return (S.year||new Date().getFullYear())+'-'+String((typeof curMI==='number'?curMI:new Date().getMonth())+1).padStart(2,'0');}
+  function fmtMonth(m){if(!m)return '—';var a=String(m).match(/^(\d{4})-(\d{2})/);if(!a)return esc(m);var arr=(window.MONTHS||['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']);return arr[parseInt(a[2],10)-1]+' '+a[1];}
+  function num(v){var n=parseFloat(String(v||'').replace(/,/g,''));return isFinite(n)?n:0;}
+  function isWorkerActive(w,m){if(!w)return false; if(w.active===false||w.status==='inactive'||w.status==='ended')return false; var en=String(w.endMonth||w.endDate||'').substring(0,7); if(en&&m>en)return false; return true;}
+  function officialWorkers(m){return (S.workers||[]).filter(function(w){return w&&w.name&&isWorkerActive(w,m);}).map(function(w){return w.name;});}
+  function activeDonor(d,m){if(!d||d.status==='inactive'||d.status==='ended')return false;var en=String(d.endDate||'').substring(0,7);if(en&&m>en)return false;return true;}
+  function inRange(w,m){var st=String(w.startMonth||w.startDate||'').substring(0,7);var en=String(w.endMonth||w.endDate||'').substring(0,7);if(st&&m<st)return false;if(en&&m>en)return false;return true;}
+  function monthlyOverride(w,m){return w&&w.monthlyPct&&w.monthlyPct[m]!=null?num(w.monthlyPct[m]):null;}
+  function basePct(w,m){var ov=monthlyOverride(w,m); if(ov!=null)return ov; if(w.valueType==='percent'||w.fundingType==='אחוז קבוע'||w.fundingType==='percent')return num(w.value); return 0;}
+  function replActive(w,m){var st=String(w.replacementStartMonth||w.replacesStart||w.replacementStart||w.replStart||'').substring(0,7);var en=String(w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd||'').substring(0,7);if(st&&m<st)return false;if(en&&m>en)return false;return true;}
+  function replPct(w,m){if(!replActive(w,m))return 0;return num(w.replacesPct||w.replacementPct||0);}
+  function rowPct(w,m){return Math.round((basePct(w,m)+replPct(w,m))*10)/10;}
+  function pct(n){n=Math.round(num(n)*10)/10;return n+'%';}
+  function money(v){v=num(v);if(!v)return '—';return new Intl.NumberFormat('he-IL',{maximumFractionDigits:0}).format(v)+' ₪';}
+  function donorBudget(d){return num(d.totalBudget||d.budget||d.totalAmount||d.totalPeriodAmount);}
+  function donorWorkers(d,m){var out=[];(d.workers||[]).forEach(function(w){if(inRange(w,m))out.push(w);});return out;}
+  function donorAlloc(d,m){return donorWorkers(d,m).reduce(function(s,w){return s+rowPct(w,m);},0);}
+  function workerRows(n,m){var out=[];donorList().forEach(function(d){if(!activeDonor(d,m))return;(d.workers||[]).forEach(function(w){if(norm(w.name)===norm(n)&&inRange(w,m))out.push({donor:d,worker:w});});});return out;}
+  function workerTotal(n,m){return workerRows(n,m).reduce(function(s,r){return s+rowPct(r.worker,m);},0);}
+  function daysUntilEnd(d){var en=String(d.endDate||'').substring(0,7);if(!en)return null;var a=en.match(/^(\d{4})-(\d{2})/);if(!a)return null;var end=new Date(+a[1],+a[2],0);var today=new Date();return Math.ceil((end-today)/(1000*60*60*24));}
+  function endingSoon(d){var x=daysUntilEnd(d);return x!==null&&x>=0&&x<=90;}
+  function statusChip(d,m){var cls=activeDonor(d,m)?'ok':'gray';var txt=activeDonor(d,m)?'פעיל':'לא פעיל';if(d.status==='review'){cls='info';txt='בבחינה';} if(d.status==='pending'){cls='warn';txt='ממתין';} return '<span class="org250-chip '+cls+'">'+txt+'</span>';}
+  function range(d){return fmtMonth(d.startDate)+' — '+fmtMonth(d.endDate);}
+  function kpis(m){var activeD=donorList().filter(function(d){return activeDonor(d,m);});var assigned=0,over=0,near=0,ending=0,repls=0;officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>0)assigned++;if(t>100)over++;else if(t>=90)near++;});activeD.forEach(function(d){if(endingSoon(d))ending++;(d.workers||[]).forEach(function(w){if(inRange(w,m)&&replPct(w,m)>0)repls++;});});return '<div class="org250-kpis">'+
+    '<div class="org250-kpi"><div class="lbl">תורמים פעילים</div><div class="num">'+activeD.length+'</div><div class="note">בחודש התצוגה</div></div>'+ 
+    '<div class="org250-kpi"><div class="lbl">עובדים משויכים</div><div class="num">'+assigned+'</div><div class="note">עובדים פעילים בלבד</div></div>'+ 
+    '<div class="org250-kpi '+(over?'bad':'')+'"><div class="lbl">עובדים מעל 100%</div><div class="num">'+over+'</div><div class="note">חריגה אמיתית בעומס</div></div>'+ 
+    '<div class="org250-kpi '+(near?'warn':'')+'"><div class="lbl">עובדים 90%–100%</div><div class="num">'+near+'</div><div class="note">קרובים לתקרה</div></div>'+ 
+    '<div class="org250-kpi info"><div class="lbl">החלפות פעילות</div><div class="num">'+repls+'</div><div class="note">בחודש התצוגה</div></div>'+ 
+    '</div>';}
+  function alertsTable(m){var rows=[];officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>100)rows.push({lvl:'bad',type:'עובד מעל 100%',details:n+' משויך ל־'+pct(t),area:'עובד'});else if(t>=90)rows.push({lvl:'warn',type:'עובד קרוב ל־100%',details:n+' משויך ל־'+pct(t),area:'עובד'});});donorList().forEach(function(d){if(!activeDonor(d,m))return;if(endingSoon(d))rows.push({lvl:'warn',type:'תורם מסתיים בקרוב',details:(d.name||'—')+' מסתיים ב־'+fmtMonth(d.endDate),area:'תורם'});(d.workers||[]).forEach(function(w){if(!inRange(w,m))return;if((w.replaces||w.replacesPct||w.replacesAmt)&&!(w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd))rows.push({lvl:'warn',type:'החלפה ללא תאריך סיום',details:(w.name||'—')+' אצל '+(d.name||'—'),area:'החלפה'});});});var html='<div class="org250-panel"><div class="org250-panel-h"><div><div class="org250-panel-title">התראות וחריגות</div><div class="org250-panel-note">רק חריגות ברורות: עומס עובד גבוה, תורם שמסתיים בקרוב, או החלפה לא סגורה.</div></div><span class="org250-chip '+(rows.some(function(x){return x.lvl==='bad';})?'bad':rows.length?'warn':'ok')+'">'+rows.length+'</span></div>';if(!rows.length)return html+'<div class="org250-empty">אין התראות חריגות בחודש הנבחר.</div></div>';html+='<div class="org250-table-wrap"><table class="org250-table"><thead><tr><th>סוג</th><th>פרטים</th><th>תחום</th></tr></thead><tbody>';rows.slice(0,10).forEach(function(x){html+='<tr class="org250-alert-row '+x.lvl+'"><td><span class="org250-chip '+x.lvl+'">'+esc(x.type)+'</span></td><td>'+esc(x.details)+'</td><td>'+esc(x.area)+'</td></tr>';});return html+'</tbody></table></div></div>';}
+  function donorsTable(m){var html='<div class="org250-panel"><div class="org250-panel-h"><div><div class="org250-panel-title">תורמים — מצב נוכחי</div><div class="org250-panel-note">הקצאת עובדים מוצגת כמידע בלבד. היא אינה ניצול תקציבי ואינה חריגה.</div></div></div><div class="org250-table-wrap"><table class="org250-table"><thead><tr><th>תורם</th><th>סטטוס</th><th>תקופה</th><th>תקציב</th><th class="org250-num">עובדים</th><th class="org250-num">הקצאת עובדים</th><th>מצב</th></tr></thead><tbody>';var list=donorList().filter(function(d){return activeDonor(d,m)||d.status==='review'||d.status==='pending';});if(!list.length)html+='<tr><td colspan="7" class="org250-empty">אין תורמים פעילים בחודש הנבחר.</td></tr>';list.forEach(function(d){var ws=donorWorkers(d,m), b=donorBudget(d), note='תקין', cls='ok';if(d.status==='review'){note='בבחינה';cls='info';}else if(d.status==='pending'){note='ממתין';cls='warn';}else if(endingSoon(d)){note='מסתיים בקרוב';cls='warn';}html+='<tr><td><b>'+esc(d.name||'—')+'</b><div class="org250-sub">'+esc(d.type==='core'?'CORE':'BUDGET')+' · '+esc(d.code||'אין קוד')+'</div></td><td>'+statusChip(d,m)+'</td><td>'+range(d)+'</td><td>'+money(b)+'</td><td class="org250-num">'+ws.length+'</td><td class="org250-num">'+pct(donorAlloc(d,m))+'</td><td><span class="org250-chip '+cls+'">'+esc(note)+'</span></td></tr>';});return html+'</tbody></table></div></div>';}
+  function workersTable(m){var html='<div class="org250-panel"><div class="org250-panel-h"><div><div class="org250-panel-title">עובדים — עומס והקצאה</div><div class="org250-panel-note">עובדים פעילים בלבד. עובדים שסיימו עבודה או ללא שיוך אינם מוצגים כאן.</div></div></div><div class="org250-table-wrap"><table class="org250-table"><thead><tr><th>עובד</th><th class="org250-num">סה״כ הקצאה</th><th class="org250-num">פנוי</th><th>סטטוס עומס</th><th>תורם ראשי</th><th>הערות</th></tr></thead><tbody>';var list=officialWorkers(m).filter(function(n){return workerTotal(n,m)>0;});if(!list.length)html+='<tr><td colspan="6" class="org250-empty">אין עובדים משויכים בחודש הנבחר.</td></tr>';list.forEach(function(n){var rows=workerRows(n,m), t=Math.round(workerTotal(n,m)*10)/10, free=Math.max(0,Math.round((100-t)*10)/10), main=rows[0]?rows[0].donor.name:'—', cls=t>100?'bad':t>=90?'warn':'ok', label=t>100?'חריגה':t>=90?'כמעט מלא':'תקין', repl=rows.some(function(r){return replPct(r.worker,m)>0;});html+='<tr><td><b>'+esc(n)+'</b></td><td class="org250-num">'+pct(t)+'</td><td class="org250-num">'+pct(free)+'</td><td><span class="org250-chip '+cls+'">'+label+'</span></td><td>'+esc(main)+'</td><td>'+(repl?'<span class="org250-chip info">כולל החלפה</span>':'<span class="org250-chip gray">—</span>')+'</td></tr>';});return html+'</tbody></table></div></div>';}
+  function notesPanel(m){var activeD=donorList().filter(function(d){return activeDonor(d,m);});var ending=activeD.filter(endingSoon).length;var rows=['הקצאת עובדים לתורם מוצגת כמידע בלבד — לא כניצול ולא כחריגה.','תורמים ללא תקציב אינם מופיעים כהתראה בעמוד הראשי.','עובדים ללא שיוך ועובדים שסיימו עבודה אינם מוצגים בהתראות.'];if(ending)rows.unshift(ending+' תורמים מסתיימים בקרוב — מומלץ לבדוק הארכה או סגירה.');return '<div class="org250-panel"><div class="org250-panel-h"><div><div class="org250-panel-title">תזכורות ניהוליות</div><div class="org250-panel-note">מידע קצר שמסביר את הקריאה במסך.</div></div></div><div class="org250-note-list">'+rows.map(function(r){return '<div class="org250-note-item">'+esc(r)+'</div>';}).join('')+'</div></div>';}
+  window.renderWDWOrg=function(){init();var div=document.getElementById('wdw-org');if(!div)return;var m=month();div.innerHTML='<div class="org250-wrap"><div class="org250-hero"><div class="org250-title">עמותה — מצב נוכחי</div><div class="org250-sub">סקירה ניהולית נקייה של תורמים ועובדים. חודש תצוגה: <b>'+fmtMonth(m)+'</b>.</div></div>'+kpis(m)+'<div class="org250-grid">'+donorsTable(m)+alertsTable(m)+'</div><div class="org250-grid second">'+workersTable(m)+notesPanel(m)+'</div></div>';};
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v249CH | גישה</title>
+<title>Reports_Workers v250CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5368,7 +5452,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v249CH</span>
+      <span class="topbar-title">Reports_Workers v250CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11054,6 +11138,90 @@ window.wdwResetNewWorkerForm = function(did) {
   function workersTable(m){var html='<div class="org249-panel"><div class="org249-panel-h"><div><div class="org249-panel-title">עובדים — עומס והקצאה</div><div class="org249-panel-note">תצוגה מסכמת בלבד. הפירוט נשאר בטאב עובדים.</div></div></div><div class="org249-table-wrap"><table class="org249-table"><thead><tr><th>עובד</th><th class="org249-num">סה״כ הקצאה</th><th class="org249-num">פנוי</th><th>סטטוס עומס</th><th>תורם ראשי</th><th>הערות</th></tr></thead><tbody>';var list=names();if(!list.length)html+='<tr><td colspan="6" class="org249-empty">אין עובדים מוגדרים.</td></tr>';list.forEach(function(n){var rows=workerRows(n,m), t=Math.round(workerTotal(n,m)*10)/10, free=Math.max(0,Math.round((100-t)*10)/10), main=rows[0]?rows[0].donor.name:'—', cls=t>100?'bad':t>=90?'warn':t>0?'ok':'gray', label=t>100?'חריגה':t>=90?'כמעט מלא':t>0?'תקין':'לא משויך', repl=rows.some(function(r){return replPct(r.worker,m)>0;});html+='<tr><td><b>'+esc(n)+'</b></td><td class="org249-num">'+pct(t)+'</td><td class="org249-num">'+pct(free)+'</td><td><span class="org249-chip '+cls+'">'+label+'</span></td><td>'+esc(main)+'</td><td>'+(repl?'<span class="org249-chip info">כולל החלפה</span>':'<span class="org249-chip gray">—</span>')+'</td></tr>';});return html+'</tbody></table></div></div>';}
   function actions(){return '<div class="org249-panel"><div class="org249-panel-h"><div><div class="org249-panel-title">פעולות מהירות</div><div class="org249-panel-note">מעבר לטאבים הרלוונטיים בלי לשכפל מידע.</div></div></div><div class="org249-actions"><button class="primary" onclick="switchWDW(\'input\')">הוסף / ערוך תורם</button><button onclick="switchWDW(\'worker\')">פתח טאב עובדים</button><button onclick="switchWDW(\'donor\')">פתח טאב תורמים</button><button onclick="if(window.exportExcel) exportExcel();">ייצוא לאקסל</button></div></div>';}
   window.renderWDWOrg=function(){init();var div=document.getElementById('wdw-org');if(!div)return;var m=month();var html='<div class="org249-wrap"><div class="org249-hero"><div class="org249-title">עמותה — מצב נוכחי</div><div class="org249-sub">סקירה כללית של מצב התורמים והעובדים בזמן אמת. חודש תצוגה: <b>'+fmtMonth(m)+'</b>.</div></div>'+kpis(m)+'<div class="org249-grid">'+alertsTable(m)+donorsTable(m)+'</div><div class="org249-grid">'+workersTable(m)+actions()+'</div></div>';div.innerHTML=html;};
+})();
+</script>
+
+
+
+<!-- ===== v250CH ORG DASHBOARD REFINEMENT — org tab only ===== -->
+<style>
+#wdw-org .org250-wrap{direction:rtl;background:#f4f6f8;padding:0 0 28px;color:#0f172a;font-family:Arial,sans-serif}
+#wdw-org .org250-hero{background:#fff;border:1px solid #d5dce3;border-radius:16px;padding:24px 28px;margin-bottom:18px;box-shadow:0 2px 10px rgba(15,23,42,.05)}
+#wdw-org .org250-title{font-size:30px;font-weight:900;color:#073f3d;margin-bottom:6px}
+#wdw-org .org250-sub{font-size:14px;color:#667085;line-height:1.5}
+#wdw-org .org250-kpis{display:grid;grid-template-columns:repeat(5,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+#wdw-org .org250-kpi{background:#fff;border:1px solid #d8e0e8;border-radius:15px;padding:16px 18px;box-shadow:0 2px 8px rgba(15,23,42,.04);min-height:104px}
+#wdw-org .org250-kpi .lbl{font-size:13px;font-weight:800;color:#475569;margin-bottom:8px}
+#wdw-org .org250-kpi .num{font-size:32px;font-weight:900;line-height:1;color:#00897B}
+#wdw-org .org250-kpi .note{font-size:12px;color:#667085;margin-top:9px;line-height:1.35}
+#wdw-org .org250-kpi.bad .num{color:#c62828}#wdw-org .org250-kpi.warn .num{color:#e65100}#wdw-org .org250-kpi.info .num{color:#1565c0}
+#wdw-org .org250-grid{display:grid;grid-template-columns:1.65fr 1fr;gap:16px;margin-bottom:16px}
+#wdw-org .org250-grid.second{grid-template-columns:1.65fr 1fr}
+#wdw-org .org250-panel{background:#fff;border:1px solid #d5dce3;border-radius:16px;box-shadow:0 2px 10px rgba(15,23,42,.05);overflow:hidden}
+#wdw-org .org250-panel-h{padding:16px 20px;border-bottom:1px solid #e9eef3;display:flex;align-items:center;justify-content:space-between;gap:10px}
+#wdw-org .org250-panel-title{font-size:18px;font-weight:900;color:#073f3d}
+#wdw-org .org250-panel-note{font-size:12px;color:#667085;margin-top:4px}
+#wdw-org .org250-table-wrap{overflow-x:auto}
+#wdw-org table.org250-table{width:100%;border-collapse:separate!important;border-spacing:0!important;background:#fff;box-shadow:none!important;border-radius:0!important}
+#wdw-org .org250-table th{background:#f6f7f9!important;color:#344054!important;font-size:13px!important;font-weight:900!important;padding:12px 14px!important;border-bottom:1px solid #d9e0e7!important;text-align:right!important;white-space:nowrap!important;position:static!important}
+#wdw-org .org250-table td{font-size:13px!important;padding:12px 14px!important;border-bottom:1px solid #e9eef3!important;text-align:right!important;vertical-align:middle!important;line-height:1.45;color:#111827!important}
+#wdw-org .org250-table tr:hover td{background:#fafbfc!important}
+#wdw-org .org250-num{text-align:left!important;direction:ltr;font-weight:900!important;white-space:nowrap}
+#wdw-org .org250-chip{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:900;white-space:nowrap;border:1px solid #d0d5dd;background:#f2f4f7;color:#344054}
+#wdw-org .org250-chip.ok{background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7}
+#wdw-org .org250-chip.warn{background:#fff8e1;color:#e65100;border-color:#ffe0b2}
+#wdw-org .org250-chip.bad{background:#ffebee;color:#c62828;border-color:#ffcdd2}
+#wdw-org .org250-chip.info{background:#e3f2fd;color:#1565c0;border-color:#bbdefb}
+#wdw-org .org250-chip.gray{background:#eceff1;color:#607d8b;border-color:#cfd8dc}
+#wdw-org .org250-alert-row td:first-child{border-right:4px solid transparent!important}
+#wdw-org .org250-alert-row.bad td:first-child{border-right-color:#c62828!important}
+#wdw-org .org250-alert-row.warn td:first-child{border-right-color:#e65100!important}
+#wdw-org .org250-empty{padding:22px;color:#667085;text-align:center;font-size:13px}
+#wdw-org .org250-note-list{padding:14px 18px;display:grid;gap:10px}
+#wdw-org .org250-note-item{border:1px solid #e5eaf0;border-radius:12px;padding:10px 12px;background:#fbfdff;font-size:13px;line-height:1.45;color:#334155}
+@media(max-width:1200px){#wdw-org .org250-kpis{grid-template-columns:repeat(2,1fr)}#wdw-org .org250-grid,#wdw-org .org250-grid.second{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+  function init(){try{if(typeof initWDW==='function')initWDW();}catch(e){} if(!window.S) return; if(!S.wdw)S.wdw={donors:[]}; if(!Array.isArray(S.wdw.donors))S.wdw.donors=[];}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function norm(s){return String(s||'').trim();}
+  function donorList(){init();return (S.wdw&&S.wdw.donors)||[];}
+  function month(){try{if(S.wdw&&S.wdw.viewMonth)return S.wdw.viewMonth;}catch(e){} return (S.year||new Date().getFullYear())+'-'+String((typeof curMI==='number'?curMI:new Date().getMonth())+1).padStart(2,'0');}
+  function fmtMonth(m){if(!m)return '—';var a=String(m).match(/^(\d{4})-(\d{2})/);if(!a)return esc(m);var arr=(window.MONTHS||['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']);return arr[parseInt(a[2],10)-1]+' '+a[1];}
+  function num(v){var n=parseFloat(String(v||'').replace(/,/g,''));return isFinite(n)?n:0;}
+  function isWorkerActive(w,m){if(!w)return false; if(w.active===false||w.status==='inactive'||w.status==='ended')return false; var en=String(w.endMonth||w.endDate||'').substring(0,7); if(en&&m>en)return false; return true;}
+  function officialWorkers(m){return (S.workers||[]).filter(function(w){return w&&w.name&&isWorkerActive(w,m);}).map(function(w){return w.name;});}
+  function activeDonor(d,m){if(!d||d.status==='inactive'||d.status==='ended')return false;var en=String(d.endDate||'').substring(0,7);if(en&&m>en)return false;return true;}
+  function inRange(w,m){var st=String(w.startMonth||w.startDate||'').substring(0,7);var en=String(w.endMonth||w.endDate||'').substring(0,7);if(st&&m<st)return false;if(en&&m>en)return false;return true;}
+  function monthlyOverride(w,m){return w&&w.monthlyPct&&w.monthlyPct[m]!=null?num(w.monthlyPct[m]):null;}
+  function basePct(w,m){var ov=monthlyOverride(w,m); if(ov!=null)return ov; if(w.valueType==='percent'||w.fundingType==='אחוז קבוע'||w.fundingType==='percent')return num(w.value); return 0;}
+  function replActive(w,m){var st=String(w.replacementStartMonth||w.replacesStart||w.replacementStart||w.replStart||'').substring(0,7);var en=String(w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd||'').substring(0,7);if(st&&m<st)return false;if(en&&m>en)return false;return true;}
+  function replPct(w,m){if(!replActive(w,m))return 0;return num(w.replacesPct||w.replacementPct||0);}
+  function rowPct(w,m){return Math.round((basePct(w,m)+replPct(w,m))*10)/10;}
+  function pct(n){n=Math.round(num(n)*10)/10;return n+'%';}
+  function money(v){v=num(v);if(!v)return '—';return new Intl.NumberFormat('he-IL',{maximumFractionDigits:0}).format(v)+' ₪';}
+  function donorBudget(d){return num(d.totalBudget||d.budget||d.totalAmount||d.totalPeriodAmount);}
+  function donorWorkers(d,m){var out=[];(d.workers||[]).forEach(function(w){if(inRange(w,m))out.push(w);});return out;}
+  function donorAlloc(d,m){return donorWorkers(d,m).reduce(function(s,w){return s+rowPct(w,m);},0);}
+  function workerRows(n,m){var out=[];donorList().forEach(function(d){if(!activeDonor(d,m))return;(d.workers||[]).forEach(function(w){if(norm(w.name)===norm(n)&&inRange(w,m))out.push({donor:d,worker:w});});});return out;}
+  function workerTotal(n,m){return workerRows(n,m).reduce(function(s,r){return s+rowPct(r.worker,m);},0);}
+  function daysUntilEnd(d){var en=String(d.endDate||'').substring(0,7);if(!en)return null;var a=en.match(/^(\d{4})-(\d{2})/);if(!a)return null;var end=new Date(+a[1],+a[2],0);var today=new Date();return Math.ceil((end-today)/(1000*60*60*24));}
+  function endingSoon(d){var x=daysUntilEnd(d);return x!==null&&x>=0&&x<=90;}
+  function statusChip(d,m){var cls=activeDonor(d,m)?'ok':'gray';var txt=activeDonor(d,m)?'פעיל':'לא פעיל';if(d.status==='review'){cls='info';txt='בבחינה';} if(d.status==='pending'){cls='warn';txt='ממתין';} return '<span class="org250-chip '+cls+'">'+txt+'</span>';}
+  function range(d){return fmtMonth(d.startDate)+' — '+fmtMonth(d.endDate);}
+  function kpis(m){var activeD=donorList().filter(function(d){return activeDonor(d,m);});var assigned=0,over=0,near=0,ending=0,repls=0;officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>0)assigned++;if(t>100)over++;else if(t>=90)near++;});activeD.forEach(function(d){if(endingSoon(d))ending++;(d.workers||[]).forEach(function(w){if(inRange(w,m)&&replPct(w,m)>0)repls++;});});return '<div class="org250-kpis">'+
+    '<div class="org250-kpi"><div class="lbl">תורמים פעילים</div><div class="num">'+activeD.length+'</div><div class="note">בחודש התצוגה</div></div>'+ 
+    '<div class="org250-kpi"><div class="lbl">עובדים משויכים</div><div class="num">'+assigned+'</div><div class="note">עובדים פעילים בלבד</div></div>'+ 
+    '<div class="org250-kpi '+(over?'bad':'')+'"><div class="lbl">עובדים מעל 100%</div><div class="num">'+over+'</div><div class="note">חריגה אמיתית בעומס</div></div>'+ 
+    '<div class="org250-kpi '+(near?'warn':'')+'"><div class="lbl">עובדים 90%–100%</div><div class="num">'+near+'</div><div class="note">קרובים לתקרה</div></div>'+ 
+    '<div class="org250-kpi info"><div class="lbl">החלפות פעילות</div><div class="num">'+repls+'</div><div class="note">בחודש התצוגה</div></div>'+ 
+    '</div>';}
+  function alertsTable(m){var rows=[];officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>100)rows.push({lvl:'bad',type:'עובד מעל 100%',details:n+' משויך ל־'+pct(t),area:'עובד'});else if(t>=90)rows.push({lvl:'warn',type:'עובד קרוב ל־100%',details:n+' משויך ל־'+pct(t),area:'עובד'});});donorList().forEach(function(d){if(!activeDonor(d,m))return;if(endingSoon(d))rows.push({lvl:'warn',type:'תורם מסתיים בקרוב',details:(d.name||'—')+' מסתיים ב־'+fmtMonth(d.endDate),area:'תורם'});(d.workers||[]).forEach(function(w){if(!inRange(w,m))return;if((w.replaces||w.replacesPct||w.replacesAmt)&&!(w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd))rows.push({lvl:'warn',type:'החלפה ללא תאריך סיום',details:(w.name||'—')+' אצל '+(d.name||'—'),area:'החלפה'});});});var html='<div class="org250-panel"><div class="org250-panel-h"><div><div class="org250-panel-title">התראות וחריגות</div><div class="org250-panel-note">רק חריגות ברורות: עומס עובד גבוה, תורם שמסתיים בקרוב, או החלפה לא סגורה.</div></div><span class="org250-chip '+(rows.some(function(x){return x.lvl==='bad';})?'bad':rows.length?'warn':'ok')+'">'+rows.length+'</span></div>';if(!rows.length)return html+'<div class="org250-empty">אין התראות חריגות בחודש הנבחר.</div></div>';html+='<div class="org250-table-wrap"><table class="org250-table"><thead><tr><th>סוג</th><th>פרטים</th><th>תחום</th></tr></thead><tbody>';rows.slice(0,10).forEach(function(x){html+='<tr class="org250-alert-row '+x.lvl+'"><td><span class="org250-chip '+x.lvl+'">'+esc(x.type)+'</span></td><td>'+esc(x.details)+'</td><td>'+esc(x.area)+'</td></tr>';});return html+'</tbody></table></div></div>';}
+  function donorsTable(m){var html='<div class="org250-panel"><div class="org250-panel-h"><div><div class="org250-panel-title">תורמים — מצב נוכחי</div><div class="org250-panel-note">הקצאת עובדים מוצגת כמידע בלבד. היא אינה ניצול תקציבי ואינה חריגה.</div></div></div><div class="org250-table-wrap"><table class="org250-table"><thead><tr><th>תורם</th><th>סטטוס</th><th>תקופה</th><th>תקציב</th><th class="org250-num">עובדים</th><th class="org250-num">הקצאת עובדים</th><th>מצב</th></tr></thead><tbody>';var list=donorList().filter(function(d){return activeDonor(d,m)||d.status==='review'||d.status==='pending';});if(!list.length)html+='<tr><td colspan="7" class="org250-empty">אין תורמים פעילים בחודש הנבחר.</td></tr>';list.forEach(function(d){var ws=donorWorkers(d,m), b=donorBudget(d), note='תקין', cls='ok';if(d.status==='review'){note='בבחינה';cls='info';}else if(d.status==='pending'){note='ממתין';cls='warn';}else if(endingSoon(d)){note='מסתיים בקרוב';cls='warn';}html+='<tr><td><b>'+esc(d.name||'—')+'</b><div class="org250-sub">'+esc(d.type==='core'?'CORE':'BUDGET')+' · '+esc(d.code||'אין קוד')+'</div></td><td>'+statusChip(d,m)+'</td><td>'+range(d)+'</td><td>'+money(b)+'</td><td class="org250-num">'+ws.length+'</td><td class="org250-num">'+pct(donorAlloc(d,m))+'</td><td><span class="org250-chip '+cls+'">'+esc(note)+'</span></td></tr>';});return html+'</tbody></table></div></div>';}
+  function workersTable(m){var html='<div class="org250-panel"><div class="org250-panel-h"><div><div class="org250-panel-title">עובדים — עומס והקצאה</div><div class="org250-panel-note">עובדים פעילים בלבד. עובדים שסיימו עבודה או ללא שיוך אינם מוצגים כאן.</div></div></div><div class="org250-table-wrap"><table class="org250-table"><thead><tr><th>עובד</th><th class="org250-num">סה״כ הקצאה</th><th class="org250-num">פנוי</th><th>סטטוס עומס</th><th>תורם ראשי</th><th>הערות</th></tr></thead><tbody>';var list=officialWorkers(m).filter(function(n){return workerTotal(n,m)>0;});if(!list.length)html+='<tr><td colspan="6" class="org250-empty">אין עובדים משויכים בחודש הנבחר.</td></tr>';list.forEach(function(n){var rows=workerRows(n,m), t=Math.round(workerTotal(n,m)*10)/10, free=Math.max(0,Math.round((100-t)*10)/10), main=rows[0]?rows[0].donor.name:'—', cls=t>100?'bad':t>=90?'warn':'ok', label=t>100?'חריגה':t>=90?'כמעט מלא':'תקין', repl=rows.some(function(r){return replPct(r.worker,m)>0;});html+='<tr><td><b>'+esc(n)+'</b></td><td class="org250-num">'+pct(t)+'</td><td class="org250-num">'+pct(free)+'</td><td><span class="org250-chip '+cls+'">'+label+'</span></td><td>'+esc(main)+'</td><td>'+(repl?'<span class="org250-chip info">כולל החלפה</span>':'<span class="org250-chip gray">—</span>')+'</td></tr>';});return html+'</tbody></table></div></div>';}
+  function notesPanel(m){var activeD=donorList().filter(function(d){return activeDonor(d,m);});var ending=activeD.filter(endingSoon).length;var rows=['הקצאת עובדים לתורם מוצגת כמידע בלבד — לא כניצול ולא כחריגה.','תורמים ללא תקציב אינם מופיעים כהתראה בעמוד הראשי.','עובדים ללא שיוך ועובדים שסיימו עבודה אינם מוצגים בהתראות.'];if(ending)rows.unshift(ending+' תורמים מסתיימים בקרוב — מומלץ לבדוק הארכה או סגירה.');return '<div class="org250-panel"><div class="org250-panel-h"><div><div class="org250-panel-title">תזכורות ניהוליות</div><div class="org250-panel-note">מידע קצר שמסביר את הקריאה במסך.</div></div></div><div class="org250-note-list">'+rows.map(function(r){return '<div class="org250-note-item">'+esc(r)+'</div>';}).join('')+'</div></div>';}
+  window.renderWDWOrg=function(){init();var div=document.getElementById('wdw-org');if(!div)return;var m=month();div.innerHTML='<div class="org250-wrap"><div class="org250-hero"><div class="org250-title">עמותה — מצב נוכחי</div><div class="org250-sub">סקירה ניהולית נקייה של תורמים ועובדים. חודש תצוגה: <b>'+fmtMonth(m)+'</b>.</div></div>'+kpis(m)+'<div class="org250-grid">'+donorsTable(m)+alertsTable(m)+'</div><div class="org250-grid second">'+workersTable(m)+notesPanel(m)+'</div></div>';};
 })();
 </script>
 
