@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v243CL | גישה</title>
+<title>Reports_Workers v244CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v243CL</span>
+      <span class="topbar-title">Reports_Workers v244CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3653,6 +3653,15 @@ function sendEmail(){
   tbl+='</tr>';
 
   allRows.forEach(row=>{
+    // חישוב אות יום מהתאריך אם חסרה
+    if(!row.day&&row.date){
+      try{
+        const d=new Date(row.date+'T12:00:00');
+        const dow=d.getDay();
+        const dayLetters=['א','ב','ג','ד','ה','ו','ש'];
+        row.day=dayLetters[dow]||'';
+      }catch(e){}
+    }
     const isPrev=prevRows.some(r=>r.date===row.date);
     tbl+=`<tr>`;
     tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${row.day}</td>`;
