@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v238CL | גישה</title>
+<title>Reports_Workers v239CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v238CL</span>
+      <span class="topbar-title">Reports_Workers v239CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3582,6 +3582,15 @@ function sendEmail(){
   const prevRows=[...(md.prev||[])].sort((a,b)=>a.date.localeCompare(b.date));
   const curRows=[...(md.cur||[])].sort((a,b)=>a.date.localeCompare(b.date));
   const allRows=[...prevRows,...curRows];
+  // הוספת ימי חג מ-S.holidays שלא קיימים כבר ב-allRows
+  const allRowsDates=new Set(allRows.map(r=>r.date));
+  const mName2=document.getElementById("emailMonth")?.value||getCurM();
+  (S.holidays||[]).forEach(h=>{
+    if(h.month===mName2&&h.date&&!allRowsDates.has(h.date)){
+      allRows.push({date:h.date,day:h.day||'',cells:{}});
+    }
+  });
+  allRows.sort((a,b)=>a.date.localeCompare(b.date));
 
   // Build HTML table
   const colBg={'חופש':'#c8e6c9','חצי חופש':'#e8f5e9','מחלה':'#ffcdd2','חצי מחלה':'#fce4ec','חג':'#fffde7','אבל':'#e1bee7','אחר':'#e1bee7'};
@@ -3597,8 +3606,11 @@ function sendEmail(){
     tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${row.day}</td>`;
     tbl+=`<td style="background:${isPrev?'#ffe082':'#f9f9f9'};">${fmtD(row.date)}</td>`;
     workers.forEach(w=>{
-      const val=workerWorksOnDate(w.name,row.date)?((row.cells&&row.cells[w.name])||''):'';
-      const bg=val&&colBg[val]?colBg[val]:(isPrev?'#ffe082':'white');
+      const cellVal=(row.cells&&row.cells[w.name])||'';
+      const holForDate=(S.holidays||[]).find(h=>h.date===row.date&&h.month===(document.getElementById("emailMonth")?.value||getCurM()));
+      const holName=holForDate?holForDate.name:'';
+      const val=workerWorksOnDate(w.name,row.date)?cellVal:(holName||'');
+      const bg=val&&colBg[val]?colBg[val]:holName?'#fffde7':(isPrev?'#ffe082':'white');
       tbl+=`<td style="background:${bg};">${val||'—'}</td>`;
     });
     tbl+='</tr>';
