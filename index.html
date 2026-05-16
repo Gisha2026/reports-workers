@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v273CL | גישה</title>
+<title>Reports_Workers v274CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v273CL</span>
+      <span class="topbar-title">Reports_Workers v274CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5302,9 +5302,8 @@ window.wdwResetNewWorkerForm = function(did) {
     '<div class="org251-kpi '+(over?'bad':'')+'"><div class="lbl">עובדים מעל 100%</div><div class="num">'+over+'</div><div class="note">חריגה אמיתית בעומס</div></div>'+ 
     '<div class="org251-kpi '+(near?'warn':'')+'"><div class="lbl">עובדים 90%–100%</div><div class="num">'+near+'</div><div class="note">קרובים לתקרה</div></div>'+ 
     '<div class="org251-kpi info"><div class="lbl">החלפות פעילות</div><div class="num">'+repls+'</div><div class="note">בחודש התצוגה</div></div></div>';}
-  function alertsTable(m){var rows=[];officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>100)rows.push({lvl:'bad',type:'עובד מעל 100%',details:n+' משויך ל־'+pct(t),area:'עובד'});else if(t>=90)rows.push({lvl:'warn',type:'עובד קרוב ל־100%',details:n+' משויך ל־'+pct(t),area:'עובד'});});donors().forEach(function(d){if(!activeDonor(d,m))return;if(endingSoon(d))rows.push({lvl:'warn',type:'תורם מסתיים בקרוב',details:(d.name||'—')+' מסתיים ב־'+fmtMonth(d.endDate),area:'תורם'});donorWorkers(d,m).forEach(function(w){if((w.replaces||w.replacesPct||w.replacesAmt)&&!(w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd))rows.push({lvl:'warn',type:'החלפה ללא תאריך סיום',details:(w.name||'—')+' בתורם '+(d.name||'—'),area:'החלפה'});});});/* תת-ניצול 80% */
-  donors().forEach(function(d){if(!activeDonor(d,m))return;var util=donorUtilPct(d,m);if(util!==null&&util<80){var fx=d.flexible===true?' (גמיש)':d.flexible===false?' (לא גמיש)':'';rows.push({lvl:'warn',type:'תת-ניצול תרומה',details:(d.name||'—')+' — ניצול '+pct(util)+' (חסר '+pct(Math.round((80-util)*10)/10)+'%)'+fx,area:'תורם'});}});
-  rows=rows.slice(0,15);var html='<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">התראות וחריגות</div><div class="org251-panel-note">עובדים 90%+, סיום קרוב, החלפה פתוחה, תת-ניצול תרומה מתחת ל-80%.</div></div><span class="org251-chip '+(rows.some(function(r){return r.lvl==='bad';})?'bad':rows.length?'warn':'ok')+'">'+rows.length+'</span></div><div class="org251-table-wrap"><table class="org251-table"><thead><tr><th>סוג</th><th>פרטים</th><th>תחום</th></tr></thead><tbody>';if(!rows.length)html+='<tr><td colspan="3" class="org251-empty">אין חריגות בחודש הנבחר.</td></tr>';rows.forEach(function(r){html+='<tr><td><span class="org251-chip '+r.lvl+'">'+esc(r.type)+'</span></td><td>'+esc(r.details)+'</td><td>'+esc(r.area)+'</td></tr>';});return html+'</tbody></table></div></div>';}
+  function donorUtilPct(d,m){if(!calcDonor(d))return null;var ws=donorWorkers(d,m);if(!ws.length)return null;return Math.round(ws.reduce(function(s,w){return s+rowPct(w,m);},0)*10)/10;}
+  function alertsTable(m){var rows=[];officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>100)rows.push({lvl:'bad',type:'עובד מעל 100%',details:n+' משויך ל־'+pct(t),area:'עובד'});else if(t>=90)rows.push({lvl:'warn',type:'עובד קרוב ל־100%',details:n+' משויך ל־'+pct(t),area:'עובד'});});donors().forEach(function(d){if(!activeDonor(d,m))return;if(endingSoon(d))rows.push({lvl:'warn',type:'תורם מסתיים בקרוב',details:(d.name||'—')+' מסתיים ב־'+fmtMonth(d.endDate),area:'תורם'});donorWorkers(d,m).forEach(function(w){if((w.replaces||w.replacesPct||w.replacesAmt)&&!(w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd))rows.push({lvl:'warn',type:'החלפה ללא תאריך סיום',details:(w.name||'—')+' בתורם '+(d.name||'—'),area:'החלפה'});});});donors().forEach(function(d){if(!activeDonor(d,m))return;var u=donorUtilPct(d,m);if(u!==null&&u<80){var fx=d.flexible===true?' (גמיש)':d.flexible===false?' (לא גמיש)':'';rows.push({lvl:'warn',type:'תת-ניצול תרומה',details:(d.name||'—')+' — ניצול '+pct(u)+' (חסר '+pct(Math.round((80-u)*10)/10)+'%)'+fx,area:'תורם'});}}); rows=rows.slice(0,15);var html='<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">התראות וחריגות</div><div class="org251-panel-note">עובדים 90%+, סיום קרוב, החלפה פתוחה, תת-ניצול מתחת ל-80%.</div></div><span class="org251-chip '+(rows.some(function(r){return r.lvl==='bad';})?'bad':rows.length?'warn':'ok')+'">'+rows.length+'</span></div><div class="org251-table-wrap"><table class="org251-table"><thead><tr><th>סוג</th><th>פרטים</th><th>תחום</th></tr></thead><tbody>';if(!rows.length)html+='<tr><td colspan="3" class="org251-empty">אין חריגות בחודש הנבחר.</td></tr>';rows.forEach(function(r){html+='<tr><td><span class="org251-chip '+r.lvl+'">'+esc(r.type)+'</span></td><td>'+esc(r.details)+'</td><td>'+esc(r.area)+'</td></tr>';});return html+'</tbody></table></div></div>';}
   function donorUtilPct(d,m){if(!calcDonor(d))return null;var ws=donorWorkers(d,m);if(!ws.length)return null;var totalPct=ws.reduce(function(s,w){return s+rowPct(w,m);},0);return Math.round(totalPct*10)/10;}
 function utilBar(u){var color=u>100?'#c62828':u>=80?'#e65100':'#1d9e75';var w=Math.min(u,100);return '<div style="background:#e5e7eb;border-radius:4px;height:6px;overflow:hidden;margin-top:4px"><div style="width:'+w+'%;height:100%;background:'+color+';border-radius:4px"></div></div>';}
 function donorsTable(m){var html='<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">תורמים — מצב נוכחי</div><div class="org251-panel-note">ניצול = סך האחוזים של כל העובדים בתורם בחודש הנבחר.</div></div></div><div class="org251-table-wrap"><table class="org251-table"><thead><tr><th>תורם</th><th>סטטוס</th><th>תקופה</th><th>תקציב</th><th>ניצול תרומה</th><th class="org251-num">עובדים</th><th class="org251-num">90%+</th><th>מצב</th></tr></thead><tbody>';var list=donors().filter(function(d){return activeDonor(d,m)||d.status==='review'||d.status==='pending';});if(!list.length)html+='<tr><td colspan="8" class="org251-empty">אין תורמים פעילים בחודש הנבחר.</td></tr>';list.forEach(function(d){var ws=donorWorkers(d,m), ex=exceptionWorkersForDonor(d,m), note='תקין', cls='ok';if(ex.some(function(x){return x.total>100;})){note='יש עובד בחריגה';cls='bad';}else if(ex.length){note='יש עובד קרוב לתקרה';cls='warn';}else if(d.status==='review'){note='בבחינה';cls='info';}else if(d.status==='pending'){note='ממתין';cls='warn';}else if(endingSoon(d)){note='מסתיים בקרוב';cls='warn';}var exText=ex.length?ex.map(function(x){return esc(x.name)+' '+pct(x.total);}).join('<br>'):'—';var util=donorUtilPct(d,m);var utilCell=util!=null?'<div style="font-size:13px;font-weight:700;color:'+(util>100?'#c62828':util>=80?'#e65100':'#1d9e75')+'">'+pct(util)+'</div>'+utilBar(util):'<span class="org251-chip gray">לא מחושב</span>';html+='<tr><td><b>'+esc(d.name||'—')+'</b><div class="org250-sub">'+esc(typeLabel(d))+' · '+esc(d.code||'אין קוד')+'</div></td><td>'+statusChip(d,m)+'</td><td>'+range(d)+'</td><td>'+money(donorBudget(d))+'</td><td style="min-width:100px">'+utilCell+'</td><td class="org251-num">'+ws.length+'</td><td class="org251-num">'+ex.length+'<div style="font-weight:700;color:#667085;direction:rtl;text-align:right">'+exText+'</div></td><td><span class="org251-chip '+cls+'">'+esc(note)+'</span></td></tr>';});return html+'</tbody></table></div></div>';}
@@ -5323,7 +5322,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v273CL | גישה</title>
+<title>Reports_Workers v274CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5578,7 +5577,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v273CL</span>
+      <span class="topbar-title">Reports_Workers v274CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11472,39 +11471,8 @@ window.wdwResetNewWorkerForm = function(did) {
     '<div class="org251-kpi '+(over?'bad':'')+'"><div class="lbl">עובדים מעל 100%</div><div class="num">'+over+'</div><div class="note">חריגה אמיתית בעומס</div></div>'+ 
     '<div class="org251-kpi '+(near?'warn':'')+'"><div class="lbl">עובדים 90%–100%</div><div class="num">'+near+'</div><div class="note">קרובים לתקרה</div></div>'+ 
     '<div class="org251-kpi info"><div class="lbl">החלפות פעילות</div><div class="num">'+repls+'</div><div class="note">בחודש התצוגה</div></div></div>';}
-  function alertsTable(m){var rows=[];officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>100)rows.push({lvl:'bad',type:'עובד מעל 100%',details:n+' משויך ל־'+pct(t),area:'עובד'});else if(t>=90)rows.push({lvl:'warn',type:'עובד קרוב ל־100%',details:n+' משויך ל־'+pct(t),area:'עובד'});});donors().forEach(function(d){if(!activeDonor(d,m))return;if(endingSoon(d))rows.push({lvl:'warn',type:'תורם מסתיים בקרוב',details:(d.name||'—')+' מסתיים ב־'+fmtMonth(d.endDate),area:'תורם'});donorWorkers(d,m).forEach(function(w){if((w.replaces||w.replacesPct||w.replacesAmt)&&!(w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd))rows.push({lvl:'warn',type:'החלפה ללא תאריך סיום',details:(w.name||'—')+' בתורם '+(d.name||'—'),area:'החלפה'});});});/* תת-ניצול 80% */
-  donors().forEach(function(d){if(!activeDonor(d,m))return;var util=donorUtilPct(d,m);if(util!==null&&util<80){var fx=d.flexible===true?' (גמיש)':d.flexible===false?' (לא גמיש)':'';rows.push({lvl:'warn',type:'תת-ניצול תרומה',details:(d.name||'—')+' — ניצול '+pct(util)+' (חסר '+pct(Math.round((80-util)*10)/10)+'%)'+fx,area:'תורם'});}});
-  rows=rows.slice(0,15);var html='<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">התראות וחריגות</div><div class="org251-panel-note">עובדים 90%+, סיום קרוב, החלפה פתוחה, תת-ניצול תרומה מתחת ל-80%.</div></div><span class="org251-chip '+(rows.some(function(r){return r.lvl==='bad';})?'bad':rows.length?'warn':'ok')+'">'+rows.length+'</span></div><div class="org251-table-wrap"><table class="org251-table"><thead><tr><th>סוג</th><th>פרטים</th><th>תחום</th></tr></thead><tbody>';if(!rows.length)html+='<tr><td colspan="3" class="org251-empty">אין חריגות בחודש הנבחר.</td></tr>';rows.forEach(function(r){html+='<tr><td><span class="org251-chip '+r.lvl+'">'+esc(r.type)+'</span></td><td>'+esc(r.details)+'</td><td>'+esc(r.area)+'</td></tr>';});return html+'</tbody></table></div></div>';}
-  function donorUtilPct(d,m){if(!calcDonor(d))return null;var ws=donorWorkers(d,m);if(!ws.length)return null;return Math.round(ws.reduce(function(s,w){return s+rowPct(w,m);},0)*10)/10;}
-  function utilBar(u){var c=u>=80?'#1d9e75':u>=50?'#e65100':'#c62828';return '<div style="background:#e5e7eb;border-radius:3px;height:5px;margin-top:3px"><div style="width:'+Math.min(u,100)+'%;height:100%;background:'+c+';border-radius:3px"></div></div>';}
-  function donorsTable(m){
-    var html='<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">תורמים \u2014 מצב נוכחי</div><div class="org251-panel-note">ניצול = סך אחוזי כל העובדים בתורם בחודש הנבחר.</div></div></div><div class="org251-table-wrap"><table class="org251-table"><thead><tr><th>תורם</th><th>סטטוס</th><th>תקופה</th><th>תקציב</th><th>ניצול תרומה</th><th class="org251-num">עובדים</th><th class="org251-num">90%+</th><th>מצב</th></tr></thead><tbody>';
-    var list=donors().filter(function(d){return activeDonor(d,m)||d.status==='review'||d.status==='pending';});
-    if(!list.length)html+='<tr><td colspan="8" class="org251-empty">אין תורמים פעילים בחודש הנבחר.</td></tr>';
-    list.forEach(function(d){
-      var ws=donorWorkers(d,m),ex=exceptionWorkersForDonor(d,m),note='תקין',cls='ok';
-      if(ex.some(function(x){return x.total>100;})){note='יש עובד בחריגה';cls='bad';}
-      else if(ex.length){note='יש עובד קרוב לתקרה';cls='warn';}
-      else if(d.status==='review'){note='בבחינה';cls='info';}
-      else if(d.status==='pending'){note='ממתין';cls='warn';}
-      else if(endingSoon(d)){note='מסתיים בקרוב';cls='warn';}
-      var exText=ex.length?ex.map(function(x){return esc(x.name)+' '+pct(x.total);}).join('<br>'):'';
-      var util=donorUtilPct(d,m);
-      var uc=util!=null?(util>=80?'#1d9e75':util>=50?'#e65100':'#c62828'):'#94a3b8';
-      var utilCell=util!=null?('<div style="font-size:13px;font-weight:700;color:'+uc+'">'+pct(util)+'</div>'+utilBar(util)):'<span style="color:#94a3b8">\u2014</span>';
-      html+='<tr>';
-      html+='<td><b>'+esc(d.name||'\u2014')+'</b><div class="org250-sub">'+esc(typeLabel(d))+' \u00b7 '+esc(d.code||'אין קוד')+'</div></td>';
-      html+='<td>'+statusChip(d,m)+'</td>';
-      html+='<td>'+range(d)+'</td>';
-      html+='<td>'+money(donorBudget(d))+'</td>';
-      html+='<td style="min-width:90px">'+utilCell+'</td>';
-      html+='<td class="org251-num">'+ws.length+'</td>';
-      html+='<td class="org251-num">'+ex.length+(exText?'<div style="font-size:11px;color:#667085;text-align:right">'+exText+'</div>':'')+'</td>';
-      html+='<td><span class="org251-chip '+cls+'">'+esc(note)+'</span></td>';
-      html+='</tr>';
-    });
-    return html+'</tbody></table></div></div>';
-  }
+  function alertsTable(m){var rows=[];officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>100)rows.push({lvl:'bad',type:'עובד מעל 100%',details:n+' משויך ל־'+pct(t),area:'עובד'});else if(t>=90)rows.push({lvl:'warn',type:'עובד קרוב ל־100%',details:n+' משויך ל־'+pct(t),area:'עובד'});});donors().forEach(function(d){if(!activeDonor(d,m))return;if(endingSoon(d))rows.push({lvl:'warn',type:'תורם מסתיים בקרוב',details:(d.name||'—')+' מסתיים ב־'+fmtMonth(d.endDate),area:'תורם'});donorWorkers(d,m).forEach(function(w){if((w.replaces||w.replacesPct||w.replacesAmt)&&!(w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd))rows.push({lvl:'warn',type:'החלפה ללא תאריך סיום',details:(w.name||'—')+' בתורם '+(d.name||'—'),area:'החלפה'});});});rows=rows.slice(0,10);var html='<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">התראות וחריגות</div><div class="org251-panel-note">רק חריגות אמיתיות: עובדים 90% ומעלה, סיום קרוב או החלפה פתוחה.</div></div><span class="org251-chip '+(rows.some(function(r){return r.lvl==='bad';})?'bad':rows.length?'warn':'ok')+'">'+rows.length+'</span></div><div class="org251-table-wrap"><table class="org251-table"><thead><tr><th>סוג</th><th>פרטים</th><th>תחום</th></tr></thead><tbody>';if(!rows.length)html+='<tr><td colspan="3" class="org251-empty">אין חריגות בחודש הנבחר.</td></tr>';rows.forEach(function(r){html+='<tr><td><span class="org251-chip '+r.lvl+'">'+esc(r.type)+'</span></td><td>'+esc(r.details)+'</td><td>'+esc(r.area)+'</td></tr>';});return html+'</tbody></table></div></div>';}
+  function donorsTable(m){var html='<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">תורמים — מצב נוכחי</div><div class="org251-panel-note">במקום “הקצאת עובדים” מוצג מספר העובדים אצל אותו תורם שנמצאים ב־90% ומעלה בכלל השיוכים שלהם.</div></div></div><div class="org251-table-wrap"><table class="org251-table"><thead><tr><th>תורם</th><th>סטטוס</th><th>תקופה</th><th>תקציב</th><th class="org251-num">עובדים</th><th class="org251-num">עובדים 90%+</th><th>מצב</th></tr></thead><tbody>';var list=donors().filter(function(d){return activeDonor(d,m)||d.status==='review'||d.status==='pending';});if(!list.length)html+='<tr><td colspan="7" class="org251-empty">אין תורמים פעילים בחודש הנבחר.</td></tr>';list.forEach(function(d){var ws=donorWorkers(d,m), ex=exceptionWorkersForDonor(d,m), note='תקין', cls='ok';if(ex.some(function(x){return x.total>100;})){note='יש עובד בחריגה';cls='bad';}else if(ex.length){note='יש עובד קרוב לתקרה';cls='warn';}else if(d.status==='review'){note='בבחינה';cls='info';}else if(d.status==='pending'){note='ממתין';cls='warn';}else if(endingSoon(d)){note='מסתיים בקרוב';cls='warn';}var exText=ex.length?ex.map(function(x){return esc(x.name)+' '+pct(x.total);}).join('<br>'):'—';html+='<tr><td><b>'+esc(d.name||'—')+'</b><div class="org250-sub">'+esc(typeLabel(d))+' · '+esc(d.code||'אין קוד')+'</div></td><td>'+statusChip(d,m)+'</td><td>'+range(d)+'</td><td>'+money(donorBudget(d))+'</td><td class="org251-num">'+ws.length+'</td><td class="org251-num">'+ex.length+'<div style="font-weight:700;color:#667085;direction:rtl;text-align:right">'+exText+'</div></td><td><span class="org251-chip '+cls+'">'+esc(note)+'</span></td></tr>';});return html+'</tbody></table></div></div>';}
   function workersTable(m){var rows=officialWorkers(m).map(function(n){return {name:n,total:workerTotal(n,m),projects:workerRows(n,m).length};}).filter(function(r){return r.total>0;}).sort(function(a,b){return b.total-a.total;});var html='<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">עובדים — עומס והקצאה</div><div class="org251-panel-note">עובדים פעילים ומשויכים בלבד.</div></div></div><div class="org251-table-wrap"><table class="org251-table"><thead><tr><th>עובד</th><th>סטטוס הקצאה</th><th class="org251-num">סה״כ הקצאה</th><th class="org251-num">פרויקטים פעילים</th><th>תורם ראשי</th><th>הערות</th></tr></thead><tbody>';if(!rows.length)html+='<tr><td colspan="6" class="org251-empty">אין עובדים משויכים בחודש הנבחר.</td></tr>';rows.forEach(function(r){var cls=r.total>100?'bad':r.total>=90?'warn':'ok',status=r.total>100?'מעבר ל־100%':r.total>=90?'קרוב לתקרה':'תקין';var rs=workerRows(r.name,m);var main=rs[0]?rs[0].donor.name:'—';html+='<tr><td><b>'+esc(r.name)+'</b></td><td><span class="org251-chip '+cls+'">'+status+'</span></td><td class="org251-num">'+pct(r.total)+'</td><td class="org251-num">'+r.projects+'</td><td>'+esc(main)+'</td><td>'+(r.total>100?'<span class="org251-chip bad">חריגה של '+pct(r.total-100)+'</span>':r.total>=90?'<span class="org251-chip warn">נותרו '+pct(100-r.total)+'</span>':'<span class="org251-chip ok">תקין</span>')+'</td></tr>';});return html+'</tbody></table></div></div>';}
   function notesPanel(m){var rows=['תורם עם הרבה עובדים משויכים אינו חריגה כשלעצמו.','המדד המרכזי לחריגה הוא עומס עובד: 90% ומעלה או מעל 100%.','תורמים ללא תקציב ועובדים ללא שיוך אינם מוצגים כהתראות.'];return '<div class="org251-panel"><div class="org251-panel-h"><div><div class="org251-panel-title">הערות ניהוליות</div><div class="org251-panel-note">כללי קריאה למסך.</div></div></div><div class="org251-note-list">'+rows.map(function(r){return '<div class="org251-note-item">'+esc(r)+'</div>';}).join('')+'</div></div>';}
   window.renderWDWOrg=function(){init();var div=document.getElementById('wdw-org');if(!div)return;var m=month();div.innerHTML='<div class="org251-wrap"><div class="org251-hero"><div class="org251-title">עמותה — מצב נוכחי</div><div class="org251-sub">סקירה ניהולית נקייה של תורמים ועובדים. חודש תצוגה: <b>'+fmtMonth(m)+'</b>.</div></div>'+kpis(m)+'<div class="org251-grid rev">'+alertsTable(m)+donorsTable(m)+'</div><div class="org251-grid">'+workersTable(m)+notesPanel(m)+'</div></div>';};
@@ -11598,28 +11566,6 @@ window.wdwResetNewWorkerForm = function(did) {
     if(ended.length){html+='<div class="v252-ended-sep">תרומות / פרויקטים שהסתיימו</div>'; ended.forEach(function(d){html+=row(d,m);});}
     div.innerHTML=html+'</div></div></div>';
   };
-  /* מנגנון בדיקת תת-ניצול 80% */
-  function checkUnderUtilization(m){
-    var alerts=[];
-    if(!S.wdw||!S.wdw.donors)return alerts;
-    S.wdw.donors.forEach(function(d){
-      if(!d||d.status==='inactive'||d.status==='ended'||d.status==='review')return;
-      var ws=(d.workers||[]).filter(function(w){
-        if(!w||w.active===false)return false;
-        var st=String(w.startMonth||w.startDate||'').substring(0,7);
-        var en=String(w.endMonth||w.endDate||'').substring(0,7);
-        if(st&&m<st)return false; if(en&&m>en)return false; return true;
-      });
-      var totalPct=ws.reduce(function(s,w){
-        var base=w.valueType==='percent'?parseFloat(w.value||0):0;
-        return s+base;
-      },0);
-      if(totalPct<80&&ws.length>0){
-        alerts.push({donor:d.name,pct:Math.round(totalPct*10)/10,missing:Math.round((80-totalPct)*10)/10,flexible:d.flexible,strategy:d.utilizationStrategy||'even'});
-      }
-    });
-    return alerts;
-  }
   window.wdwImportEmployerCost = function(){
     var inp = document.createElement('input');
     inp.type = 'file';
