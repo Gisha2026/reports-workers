@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v255CH | גישה</title>
+<title>Reports_Workers v254CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v255CH</span>
+      <span class="topbar-title">Reports_Workers v254CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5282,171 +5282,13 @@ window.wdwResetNewWorkerForm = function(did) {
 })();
 </script>
 
-
-
-<script>
-/* ===== v255CH FINAL: תורם קשיח/גמיש — לוגיקה לפי אפיון מאושר =====
-   קשיח = אחוז קבוע לאורך השנה/החוזה.
-   גמיש = אחוזים משתנים לפי חודשים/תקופות, ללא העברת אחוזים בין עובדים.
-   החלפות עובדים נשארות מנגנון נפרד ואינן משנות את אחוז הבסיס.
-*/
-(function(){
-  function init(){try{if(typeof initWDW==='function')initWDW();}catch(e){} if(!window.S) return; if(!S.wdw)S.wdw={donors:[]}; if(!Array.isArray(S.wdw.donors))S.wdw.donors=[];}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function num(v){var n=parseFloat(String(v==null?'':v).replace(/,/g,''));return isNaN(n)?0:n;}
-  function monthKeys(){var y=S.year||new Date().getFullYear();return Array.from({length:12},function(_,i){return y+'-'+String(i+1).padStart(2,'0');});}
-  function donorById(id){init();return (S.wdw.donors||[]).find(function(d){return String(d.id)===String(id);});}
-  function modeOf(d){var v=String((d&& (d.fundingMode||d.flexibleFunding))||'rigid').toLowerCase(); if(v==='fixed'||v==='rigid'||v==='קשיח')return 'rigid'; if(v==='flexible'||v==='גמיש')return 'flexible'; return 'rigid';}
-  function setMode(d,mode){if(!d)return; d.fundingMode=(mode==='flexible'?'flexible':'rigid'); d.flexibleFunding=d.fundingMode;}
-  function basePctFromInputs(pfx){return num((document.getElementById(pfx+'-pct')||{}).value);}
-  function collectMonthlyInputs(pfx){var out={};monthKeys().forEach(function(m){var el=document.getElementById(pfx+'-mp-'+m);if(el&&String(el.value||'').trim()!=='')out[m]=num(el.value);});return out;}
-  function hasMonthlyDiff(monthly,base){for(var k in (monthly||{})){if(Math.abs(num(monthly[k])-num(base))>0.0001)return true;}return false;}
-  function monthlySummary(monthly){var keys=Object.keys(monthly||{}).sort(); if(!keys.length)return 'לא הוזנו אחוזים חודשיים'; return keys.map(function(k){return k+': '+monthly[k]+'%';}).join(', ');}
-  function validateRigidInputs(d,pfx,context){
-    if(modeOf(d)!=='rigid')return true;
-    var base=basePctFromInputs(pfx), monthly=collectMonthlyInputs(pfx);
-    if(!Object.keys(monthly).length)return true;
-    if(hasMonthlyDiff(monthly,base)){
-      alert('תורם קשיח מחייב אחוז קבוע לאורך כל השנה/החוזה.\n\n'+
-            'לא ניתן לשמור אחוזים חודשיים שונים עבור עובד בתורם קשיח.\n\n'+
-            'אחוז בסיס: '+base+'%\n'+monthlySummary(monthly)+'\n\n'+
-            'אם האחוז צריך להשתנות בין חודשים — שנה את סוג המימון של התורם ל״גמיש — אחוזים משתנים לפי חודשים״.');
-      return false;
-    }
-    return true;
-  }
-  function normalizeRigidDonor(d){
-    if(!d)return; setMode(d,modeOf(d));
-    if(modeOf(d)!=='rigid')return;
-    (d.workers||[]).forEach(function(w){
-      if(!w)return;
-      var base=(w.valueType==='percent')?num(w.value):0;
-      var mp=w.monthlyPct||{};
-      if(!mp||!Object.keys(mp).length){w.monthlyPct={};return;}
-      // בתורם קשיח אין ערך עסקי לשכפול אותו אחוז בכל חודש; שומרים רק basePct כדי למנוע drift.
-      if(!hasMonthlyDiff(mp,base)){w.monthlyPct={};}
-      else {w._rigidPctWarning=true;}
-    });
-  }
-  function normalizeAll(){init();(S.wdw.donors||[]).forEach(normalizeRigidDonor);}
-  function saveAll(){try{if(typeof saveLocally==='function')saveLocally();}catch(e){} try{if(typeof saveData==='function')saveData();}catch(e){}}
-  function patchFundingSelects(root){
-    root=root||document;
-    root.querySelectorAll('select[id^="v217-ed-flexible-"],select[id^="ed-flexible-"],select[id="wdw-new-donor-flexible"]').forEach(function(sel){
-      var id=sel.id||'', did=id.replace(/^v217-ed-flexible-/,'').replace(/^ed-flexible-/,'');
-      var d=did&&did!==id?donorById(did):null;
-      var current=d?modeOf(d):(String(sel.value||'').toLowerCase()==='flexible'?'flexible':'rigid');
-      sel.innerHTML='<option value="rigid">קשיח — אחוז קבוע לאורך השנה/החוזה</option><option value="flexible">גמיש — אחוזים משתנים לפי חודשים</option>';
-      sel.value=current;
-    });
-  }
-  function patchMonthlyEditors(root){
-    root=root||document;
-    // מזהה טפסי עובד לפי prefix של שדות חודשיים: nw-<donor>, ew-<donor>-<worker>
-    var seen={};
-    root.querySelectorAll('input[id*="-mp-"]').forEach(function(inp){
-      var id=inp.id, m=id.match(/^(.*)-mp-\d{4}-\d{2}$/); if(!m)return; var pfx=m[1]; if(seen[pfx])return; seen[pfx]=1;
-      var did=(pfx.match(/^nw-(.+)$/)||pfx.match(/^ew-([^-]+)-/)||[])[1];
-      var d=donorById(did); if(!d)return;
-      var mode=modeOf(d);
-      var box=inp.closest('div');
-      // השארת השדות גלויים גם בקשיח, אבל עם חסימה ברורה; אם יש ערך זהה לבסיס הוא ינוקה בשמירה.
-      root.querySelectorAll('input[id^="'+CSS.escape(pfx)+'-mp-"]').forEach(function(el){
-        if(mode==='rigid'){
-          el.title='בתורם קשיח אחוזי חודשים חייבים להיות זהים לאחוז הבסיס';
-          el.style.borderColor='#f59e0b';
-          el.style.background='#fff7ed';
-        }else{
-          el.title='בתורם גמיש ניתן להזין אחוז שונה לכל חודש עבור אותו עובד בלבד';
-          el.style.borderColor='#90caf9';
-          el.style.background='#fff';
-        }
-      });
-      var parent=inp.closest('.v238-section')||inp.parentElement&&inp.parentElement.parentElement;
-      if(parent && !parent.querySelector('.v255-funding-note')){
-        var note=document.createElement('div'); note.className='v255-funding-note';
-        note.style.cssText='margin-top:6px;padding:7px 9px;border-radius:8px;font-size:12px;font-weight:700;line-height:1.5;'+(mode==='rigid'?'background:#fff7ed;color:#9a3412;border:1px solid #fed7aa':'background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe');
-        note.textContent=mode==='rigid'?'תורם קשיח: אחוז קבוע לאורך השנה/החוזה. אין שינויי אחוזים בין חודשים.':'תורם גמיש: ניתן לשנות את אחוז אותו עובד לפי חודשים. אין העברת אחוזים בין עובדים.';
-        parent.appendChild(note);
-      }
-    });
-  }
-  function patchDOM(){patchFundingSelects(document); patchMonthlyEditors(document);}
-
-  // שמירת תורם: שומר גם fundingMode וגם flexibleFunding, ומנרמל קשיח.
-  var oldSaveDonor217=window.wdwSaveDonor217;
-  window.wdwSaveDonor217=function(id){
-    var d=donorById(id);
-    var sel=document.getElementById('v217-ed-flexible-'+id)||document.getElementById('ed-flexible-'+id);
-    if(d&&sel)setMode(d,sel.value==='flexible'?'flexible':'rigid');
-    var res=oldSaveDonor217?oldSaveDonor217.apply(this,arguments):undefined;
-    d=donorById(id); if(d&&sel)setMode(d,sel.value==='flexible'?'flexible':'rigid');
-    if(d)normalizeRigidDonor(d);
-    saveAll();
-    setTimeout(patchDOM,0);
-    return res;
-  };
-
-  // שמירת עובד חדש: בתורם קשיח חוסמים אחוזים חודשיים שונים; לאחר שמירה מנקים monthlyPct מיותר.
-  var oldSaveNewWorker=window.wdwSaveNewWorker;
-  window.wdwSaveNewWorker=function(did){
-    var d=donorById(did); var pfx='nw-'+did;
-    if(d&&!validateRigidInputs(d,pfx,'new'))return;
-    var before=d&&d.workers?d.workers.length:0;
-    var res=oldSaveNewWorker?oldSaveNewWorker.apply(this,arguments):undefined;
-    d=donorById(did); if(d){normalizeRigidDonor(d); saveAll();}
-    setTimeout(patchDOM,0);
-    return res;
-  };
-
-  // שמירת עובד בעריכה: אותה אכיפה.
-  var oldSaveEditWorker=window.wdwSaveEditWorker;
-  window.wdwSaveEditWorker=function(did,wid){
-    var d=donorById(did); var pfx='ew-'+did+'-'+wid;
-    if(d&&!validateRigidInputs(d,pfx,'edit'))return;
-    var res=oldSaveEditWorker?oldSaveEditWorker.apply(this,arguments):undefined;
-    d=donorById(did); if(d){normalizeRigidDonor(d); saveAll();}
-    setTimeout(patchDOM,0);
-    return res;
-  };
-
-  // קיימות שכבות עם wdwSaveNewWorker234 / wdwSaveWorkerFromForm; מכסה גם אותן אם הן נקראות ישירות.
-  if(window.wdwSaveNewWorker234){
-    var old234=window.wdwSaveNewWorker234;
-    window.wdwSaveNewWorker234=function(did){var d=donorById(did),pfx='nw-'+did;if(d&&!validateRigidInputs(d,pfx,'new234'))return;var r=old234.apply(this,arguments);d=donorById(did);if(d){normalizeRigidDonor(d);saveAll();}setTimeout(patchDOM,0);return r;};
-  }
-
-  // חישוב עזר פומבי: אחוז בסיס לפי מצב תורם. קשיח מתעלם מ-monthlyPct; גמיש משתמש בו.
-  window.wdwV255BasePct=function(worker,donor,m){
-    if(!worker)return 0;
-    if(donor&&modeOf(donor)==='flexible'&&worker.monthlyPct&&worker.monthlyPct[m]!=null&&worker.monthlyPct[m]!==''&&!isNaN(num(worker.monthlyPct[m])))return num(worker.monthlyPct[m]);
-    return worker.valueType==='percent'?num(worker.value):0;
-  };
-  window.wdwV255FundingMode=function(donorOrId){var d=typeof donorOrId==='string'?donorById(donorOrId):donorOrId;return modeOf(d);};
-
-  // עוטף רינדורים כדי שהטקסט וההתנהגות יהיו עקביים גם אחרי render מחדש.
-  ['renderWDWInput','renderWDWDonor','renderWDWWorker','switchWDW'].forEach(function(fn){
-    if(typeof window[fn]==='function'){
-      var old=window[fn];
-      window[fn]=function(){normalizeAll();var r=old.apply(this,arguments);setTimeout(function(){normalizeAll();patchDOM();},0);return r;};
-    }
-  });
-
-  // תיקון נתונים קיימים וגרסה.
-  try{if(S){S.version='v255CH';}}catch(e){}
-  document.addEventListener('DOMContentLoaded',function(){normalizeAll();patchDOM();saveAll();});
-  setTimeout(function(){normalizeAll();patchDOM();saveAll();},0);
-  var st=document.createElement('style'); st.id='v255ch-funding-style'; st.textContent='\n.v255-funding-note{direction:rtl}.v255-mode-chip{display:inline-flex;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;border:1px solid #cbd5e1;background:#f8fafc;color:#334155}\n'; document.head.appendChild(st);
-})();
-</script>
-
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v255CH | גישה</title>
+<title>Reports_Workers v254CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5701,7 +5543,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v255CH</span>
+      <span class="topbar-title">Reports_Workers v254CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11647,163 +11489,5 @@ window.wdwResetNewWorkerForm = function(did) {
   };
 })();
 </script>
-
-
-<script>
-/* ===== v255CH FINAL: תורם קשיח/גמיש — לוגיקה לפי אפיון מאושר =====
-   קשיח = אחוז קבוע לאורך השנה/החוזה.
-   גמיש = אחוזים משתנים לפי חודשים/תקופות, ללא העברת אחוזים בין עובדים.
-   החלפות עובדים נשארות מנגנון נפרד ואינן משנות את אחוז הבסיס.
-*/
-(function(){
-  function init(){try{if(typeof initWDW==='function')initWDW();}catch(e){} if(!window.S) return; if(!S.wdw)S.wdw={donors:[]}; if(!Array.isArray(S.wdw.donors))S.wdw.donors=[];}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function num(v){var n=parseFloat(String(v==null?'':v).replace(/,/g,''));return isNaN(n)?0:n;}
-  function monthKeys(){var y=S.year||new Date().getFullYear();return Array.from({length:12},function(_,i){return y+'-'+String(i+1).padStart(2,'0');});}
-  function donorById(id){init();return (S.wdw.donors||[]).find(function(d){return String(d.id)===String(id);});}
-  function modeOf(d){var v=String((d&& (d.fundingMode||d.flexibleFunding))||'rigid').toLowerCase(); if(v==='fixed'||v==='rigid'||v==='קשיח')return 'rigid'; if(v==='flexible'||v==='גמיש')return 'flexible'; return 'rigid';}
-  function setMode(d,mode){if(!d)return; d.fundingMode=(mode==='flexible'?'flexible':'rigid'); d.flexibleFunding=d.fundingMode;}
-  function basePctFromInputs(pfx){return num((document.getElementById(pfx+'-pct')||{}).value);}
-  function collectMonthlyInputs(pfx){var out={};monthKeys().forEach(function(m){var el=document.getElementById(pfx+'-mp-'+m);if(el&&String(el.value||'').trim()!=='')out[m]=num(el.value);});return out;}
-  function hasMonthlyDiff(monthly,base){for(var k in (monthly||{})){if(Math.abs(num(monthly[k])-num(base))>0.0001)return true;}return false;}
-  function monthlySummary(monthly){var keys=Object.keys(monthly||{}).sort(); if(!keys.length)return 'לא הוזנו אחוזים חודשיים'; return keys.map(function(k){return k+': '+monthly[k]+'%';}).join(', ');}
-  function validateRigidInputs(d,pfx,context){
-    if(modeOf(d)!=='rigid')return true;
-    var base=basePctFromInputs(pfx), monthly=collectMonthlyInputs(pfx);
-    if(!Object.keys(monthly).length)return true;
-    if(hasMonthlyDiff(monthly,base)){
-      alert('תורם קשיח מחייב אחוז קבוע לאורך כל השנה/החוזה.\n\n'+
-            'לא ניתן לשמור אחוזים חודשיים שונים עבור עובד בתורם קשיח.\n\n'+
-            'אחוז בסיס: '+base+'%\n'+monthlySummary(monthly)+'\n\n'+
-            'אם האחוז צריך להשתנות בין חודשים — שנה את סוג המימון של התורם ל״גמיש — אחוזים משתנים לפי חודשים״.');
-      return false;
-    }
-    return true;
-  }
-  function normalizeRigidDonor(d){
-    if(!d)return; setMode(d,modeOf(d));
-    if(modeOf(d)!=='rigid')return;
-    (d.workers||[]).forEach(function(w){
-      if(!w)return;
-      var base=(w.valueType==='percent')?num(w.value):0;
-      var mp=w.monthlyPct||{};
-      if(!mp||!Object.keys(mp).length){w.monthlyPct={};return;}
-      // בתורם קשיח אין ערך עסקי לשכפול אותו אחוז בכל חודש; שומרים רק basePct כדי למנוע drift.
-      if(!hasMonthlyDiff(mp,base)){w.monthlyPct={};}
-      else {w._rigidPctWarning=true;}
-    });
-  }
-  function normalizeAll(){init();(S.wdw.donors||[]).forEach(normalizeRigidDonor);}
-  function saveAll(){try{if(typeof saveLocally==='function')saveLocally();}catch(e){} try{if(typeof saveData==='function')saveData();}catch(e){}}
-  function patchFundingSelects(root){
-    root=root||document;
-    root.querySelectorAll('select[id^="v217-ed-flexible-"],select[id^="ed-flexible-"],select[id="wdw-new-donor-flexible"]').forEach(function(sel){
-      var id=sel.id||'', did=id.replace(/^v217-ed-flexible-/,'').replace(/^ed-flexible-/,'');
-      var d=did&&did!==id?donorById(did):null;
-      var current=d?modeOf(d):(String(sel.value||'').toLowerCase()==='flexible'?'flexible':'rigid');
-      sel.innerHTML='<option value="rigid">קשיח — אחוז קבוע לאורך השנה/החוזה</option><option value="flexible">גמיש — אחוזים משתנים לפי חודשים</option>';
-      sel.value=current;
-    });
-  }
-  function patchMonthlyEditors(root){
-    root=root||document;
-    // מזהה טפסי עובד לפי prefix של שדות חודשיים: nw-<donor>, ew-<donor>-<worker>
-    var seen={};
-    root.querySelectorAll('input[id*="-mp-"]').forEach(function(inp){
-      var id=inp.id, m=id.match(/^(.*)-mp-\d{4}-\d{2}$/); if(!m)return; var pfx=m[1]; if(seen[pfx])return; seen[pfx]=1;
-      var did=(pfx.match(/^nw-(.+)$/)||pfx.match(/^ew-([^-]+)-/)||[])[1];
-      var d=donorById(did); if(!d)return;
-      var mode=modeOf(d);
-      var box=inp.closest('div');
-      // השארת השדות גלויים גם בקשיח, אבל עם חסימה ברורה; אם יש ערך זהה לבסיס הוא ינוקה בשמירה.
-      root.querySelectorAll('input[id^="'+CSS.escape(pfx)+'-mp-"]').forEach(function(el){
-        if(mode==='rigid'){
-          el.title='בתורם קשיח אחוזי חודשים חייבים להיות זהים לאחוז הבסיס';
-          el.style.borderColor='#f59e0b';
-          el.style.background='#fff7ed';
-        }else{
-          el.title='בתורם גמיש ניתן להזין אחוז שונה לכל חודש עבור אותו עובד בלבד';
-          el.style.borderColor='#90caf9';
-          el.style.background='#fff';
-        }
-      });
-      var parent=inp.closest('.v238-section')||inp.parentElement&&inp.parentElement.parentElement;
-      if(parent && !parent.querySelector('.v255-funding-note')){
-        var note=document.createElement('div'); note.className='v255-funding-note';
-        note.style.cssText='margin-top:6px;padding:7px 9px;border-radius:8px;font-size:12px;font-weight:700;line-height:1.5;'+(mode==='rigid'?'background:#fff7ed;color:#9a3412;border:1px solid #fed7aa':'background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe');
-        note.textContent=mode==='rigid'?'תורם קשיח: אחוז קבוע לאורך השנה/החוזה. אין שינויי אחוזים בין חודשים.':'תורם גמיש: ניתן לשנות את אחוז אותו עובד לפי חודשים. אין העברת אחוזים בין עובדים.';
-        parent.appendChild(note);
-      }
-    });
-  }
-  function patchDOM(){patchFundingSelects(document); patchMonthlyEditors(document);}
-
-  // שמירת תורם: שומר גם fundingMode וגם flexibleFunding, ומנרמל קשיח.
-  var oldSaveDonor217=window.wdwSaveDonor217;
-  window.wdwSaveDonor217=function(id){
-    var d=donorById(id);
-    var sel=document.getElementById('v217-ed-flexible-'+id)||document.getElementById('ed-flexible-'+id);
-    if(d&&sel)setMode(d,sel.value==='flexible'?'flexible':'rigid');
-    var res=oldSaveDonor217?oldSaveDonor217.apply(this,arguments):undefined;
-    d=donorById(id); if(d&&sel)setMode(d,sel.value==='flexible'?'flexible':'rigid');
-    if(d)normalizeRigidDonor(d);
-    saveAll();
-    setTimeout(patchDOM,0);
-    return res;
-  };
-
-  // שמירת עובד חדש: בתורם קשיח חוסמים אחוזים חודשיים שונים; לאחר שמירה מנקים monthlyPct מיותר.
-  var oldSaveNewWorker=window.wdwSaveNewWorker;
-  window.wdwSaveNewWorker=function(did){
-    var d=donorById(did); var pfx='nw-'+did;
-    if(d&&!validateRigidInputs(d,pfx,'new'))return;
-    var before=d&&d.workers?d.workers.length:0;
-    var res=oldSaveNewWorker?oldSaveNewWorker.apply(this,arguments):undefined;
-    d=donorById(did); if(d){normalizeRigidDonor(d); saveAll();}
-    setTimeout(patchDOM,0);
-    return res;
-  };
-
-  // שמירת עובד בעריכה: אותה אכיפה.
-  var oldSaveEditWorker=window.wdwSaveEditWorker;
-  window.wdwSaveEditWorker=function(did,wid){
-    var d=donorById(did); var pfx='ew-'+did+'-'+wid;
-    if(d&&!validateRigidInputs(d,pfx,'edit'))return;
-    var res=oldSaveEditWorker?oldSaveEditWorker.apply(this,arguments):undefined;
-    d=donorById(did); if(d){normalizeRigidDonor(d); saveAll();}
-    setTimeout(patchDOM,0);
-    return res;
-  };
-
-  // קיימות שכבות עם wdwSaveNewWorker234 / wdwSaveWorkerFromForm; מכסה גם אותן אם הן נקראות ישירות.
-  if(window.wdwSaveNewWorker234){
-    var old234=window.wdwSaveNewWorker234;
-    window.wdwSaveNewWorker234=function(did){var d=donorById(did),pfx='nw-'+did;if(d&&!validateRigidInputs(d,pfx,'new234'))return;var r=old234.apply(this,arguments);d=donorById(did);if(d){normalizeRigidDonor(d);saveAll();}setTimeout(patchDOM,0);return r;};
-  }
-
-  // חישוב עזר פומבי: אחוז בסיס לפי מצב תורם. קשיח מתעלם מ-monthlyPct; גמיש משתמש בו.
-  window.wdwV255BasePct=function(worker,donor,m){
-    if(!worker)return 0;
-    if(donor&&modeOf(donor)==='flexible'&&worker.monthlyPct&&worker.monthlyPct[m]!=null&&worker.monthlyPct[m]!==''&&!isNaN(num(worker.monthlyPct[m])))return num(worker.monthlyPct[m]);
-    return worker.valueType==='percent'?num(worker.value):0;
-  };
-  window.wdwV255FundingMode=function(donorOrId){var d=typeof donorOrId==='string'?donorById(donorOrId):donorOrId;return modeOf(d);};
-
-  // עוטף רינדורים כדי שהטקסט וההתנהגות יהיו עקביים גם אחרי render מחדש.
-  ['renderWDWInput','renderWDWDonor','renderWDWWorker','switchWDW'].forEach(function(fn){
-    if(typeof window[fn]==='function'){
-      var old=window[fn];
-      window[fn]=function(){normalizeAll();var r=old.apply(this,arguments);setTimeout(function(){normalizeAll();patchDOM();},0);return r;};
-    }
-  });
-
-  // תיקון נתונים קיימים וגרסה.
-  try{if(S){S.version='v255CH';}}catch(e){}
-  document.addEventListener('DOMContentLoaded',function(){normalizeAll();patchDOM();saveAll();});
-  setTimeout(function(){normalizeAll();patchDOM();saveAll();},0);
-  var st=document.createElement('style'); st.id='v255ch-funding-style'; st.textContent='\n.v255-funding-note{direction:rtl}.v255-mode-chip{display:inline-flex;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;border:1px solid #cbd5e1;background:#f8fafc;color:#334155}\n'; document.head.appendChild(st);
-})();
-</script>
-
 </body>
 </html>
