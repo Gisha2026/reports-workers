@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v262CL | גישה</title>
+<title>Reports_Workers v263CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -258,7 +258,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v262CL</span>
+      <span class="topbar-title">Reports_Workers v263CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5282,7 +5282,7 @@ window.wdwResetNewWorkerForm = function(did) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v262CL | גישה</title>
+<title>Reports_Workers v263CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5537,7 +5537,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v262CL</span>
+      <span class="topbar-title">Reports_Workers v263CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11474,13 +11474,50 @@ window.wdwResetNewWorkerForm = function(did) {
     if(window.WDW_ADD_DONOR_MODE && typeof previousRender==='function'){previousRender(); return;}
     var m=month();
     var html=(typeof wdwHeader==='function'?wdwHeader('WDW — ניהול','ניהול תורמים ושיוכי עובדים. שורת הפרויקט מציגה סטטוס חישוב, חריגות עובדים, החלפות וסיום פרויקט.'): '<div class="wdw-shell">')+(typeof wdwKpis==='function'?wdwKpis():'');
-    html+='<div class="v252-wrap"><div class="v252-panel"><div class="v252-panel-h"><div><div class="v252-title">תורמים / פרויקטים לניהול</div><div class="v252-note">תצוגת חודש: <b>'+esc(mLabel(m))+'</b>. הנתונים בשורה הם ניהוליים בלבד; עריכה נפתחת מתוך הפרויקט.</div></div><button class="v252-add" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';
+    html+='<div class="v252-wrap"><div class="v252-panel"><div class="v252-panel-h"><div><div class="v252-title">תורמים / פרויקטים לניהול</div><div class="v252-note">תצוגת חודש: <b>'+esc(mLabel(m))+'</b>. הנתונים בשורה הם ניהוליים בלבד; עריכה נפתחת מתוך הפרויקט.</div></div><button class="v252-add" onclick="wdwShowAddDonor217()">+ הוסף תורם</button><button class="v252-add" style="margin-right:8px" onclick="wdwImportEmployerCost()">ייבא עלויות מעביד</button></div>';
     var active=donors().filter(function(d){return d.status!==WDW_STATUS.ENDED&&d.status!==WDW_STATUS.INACTIVE;});
     var ended=donors().filter(function(d){return d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE;});
     if(!active.length) html+='<div class="v252-empty">אין תורמים פעילים.</div>'; else active.forEach(function(d){html+=row(d,m);});
     if(ended.length){html+='<div class="v252-ended-sep">תרומות / פרויקטים שהסתיימו</div>'; ended.forEach(function(d){html+=row(d,m);});}
     div.innerHTML=html+'</div></div></div>';
   };
+  window.wdwImportEmployerCost = function(){
+    var inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.xlsx,.xls';
+    inp.onchange = function(e){
+      var file = e.target.files[0]; if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        try{
+          var XL = window.XLSX;
+          if(!XL){ alert('ספריית Excel לא נטענה'); return; }
+          var wb = XL.read(ev.target.result, {type:'array'});
+          var ws = wb.Sheets[wb.SheetNames[0]];
+          var rows = XL.utils.sheet_to_json(ws, {header:1});
+          var imported = 0;
+          rows.forEach(function(row){
+            var name = row[16]; var cost = row[14];
+            if(!name || cost == null) return;
+            name = String(name).trim();
+            cost = parseFloat(String(cost).replace(/,/g,''));
+            if(isNaN(cost) || cost <= 0) return;
+            if(!S.wdw) S.wdw = {};
+            if(!S.wdw.employerCosts) S.wdw.employerCosts = {};
+            S.wdw.employerCosts[name] = cost;
+            imported++;
+          });
+          saveLocally();
+          alert('יובאו עלויות מעביד עבור ' + imported + ' עובדים');
+          if(typeof renderWDWWorker === 'function') renderWDWWorker();
+          if(typeof renderWDWInput === 'function') renderWDWInput();
+        }catch(err){ alert('שגיאה: ' + err.message); }
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    inp.click();
+  };
+
 })();
 </script>
 </body>
