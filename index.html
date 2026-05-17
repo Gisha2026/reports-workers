@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v303CL | גישה</title>
+<title>Reports_Workers v304CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v303CL</span>
+      <span class="topbar-title">Reports_Workers v304CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -708,6 +708,10 @@ function jumpYear(v){
   if(newYear===S.year) return;
   // שמירת נתוני השנה הנוכחית לפני המעבר
   saveLocally();
+  // שמירת התרומות לפני המעבר
+  const prevDonors=(S.wdw&&S.wdw.donors&&S.wdw.donors.length>0)?JSON.parse(JSON.stringify(S.wdw.donors)):null;
+  const prevEmployerCosts=(S.wdw&&S.wdw.employerCosts)?JSON.parse(JSON.stringify(S.wdw.employerCosts)):null;
+  const prevBudget=(S.wdw&&S.wdw.budget)?JSON.parse(JSON.stringify(S.wdw.budget)):null;
   // טעינת נתוני השנה החדשה
   const newKey=storeKey(newYear);
   const saved=localStorage.getItem(newKey);
@@ -725,6 +729,17 @@ function jumpYear(v){
   S.currentUser=user;
   S.year=newYear;
   S.holidays=allHols;
+  // העברת תרומות לשנה החדשה אם אין עדיין תרומות
+  if(!S.wdw) S.wdw={donors:[],budget:{},employerCosts:{}};
+  if((!S.wdw.donors||S.wdw.donors.length===0)&&prevDonors&&prevDonors.length>0){
+    S.wdw.donors=prevDonors;
+  }
+  if((!S.wdw.employerCosts||Object.keys(S.wdw.employerCosts).length===0)&&prevEmployerCosts){
+    S.wdw.employerCosts=prevEmployerCosts;
+  }
+  if((!S.wdw.budget||Object.keys(S.wdw.budget).length===0)&&prevBudget){
+    S.wdw.budget=prevBudget;
+  }
   document.getElementById('yearJump').value=newYear;
   refresh();
 }
@@ -5326,7 +5341,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v303CL | גישה</title>
+<title>Reports_Workers v304CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5581,7 +5596,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v303CL</span>
+      <span class="topbar-title">Reports_Workers v304CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6024,6 +6039,10 @@ function jumpYear(v){
   if(newYear===S.year) return;
   // שמירת נתוני השנה הנוכחית לפני המעבר
   saveLocally();
+  // שמירת התרומות לפני המעבר
+  const prevDonors=(S.wdw&&S.wdw.donors&&S.wdw.donors.length>0)?JSON.parse(JSON.stringify(S.wdw.donors)):null;
+  const prevEmployerCosts=(S.wdw&&S.wdw.employerCosts)?JSON.parse(JSON.stringify(S.wdw.employerCosts)):null;
+  const prevBudget=(S.wdw&&S.wdw.budget)?JSON.parse(JSON.stringify(S.wdw.budget)):null;
   // טעינת נתוני השנה החדשה
   const newKey=storeKey(newYear);
   const saved=localStorage.getItem(newKey);
@@ -6041,6 +6060,17 @@ function jumpYear(v){
   S.currentUser=user;
   S.year=newYear;
   S.holidays=allHols;
+  // העברת תרומות לשנה החדשה אם אין עדיין תרומות
+  if(!S.wdw) S.wdw={donors:[],budget:{},employerCosts:{}};
+  if((!S.wdw.donors||S.wdw.donors.length===0)&&prevDonors&&prevDonors.length>0){
+    S.wdw.donors=prevDonors;
+  }
+  if((!S.wdw.employerCosts||Object.keys(S.wdw.employerCosts).length===0)&&prevEmployerCosts){
+    S.wdw.employerCosts=prevEmployerCosts;
+  }
+  if((!S.wdw.budget||Object.keys(S.wdw.budget).length===0)&&prevBudget){
+    S.wdw.budget=prevBudget;
+  }
   document.getElementById('yearJump').value=newYear;
   refresh();
 }
