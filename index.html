@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v306CL | גישה</title>
+<title>Reports_Workers v307CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v306CL</span>
+      <span class="topbar-title">Reports_Workers v307CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3904,7 +3904,7 @@ function sendEmail(){
 
   window.wdwAddExtraReplace=function(pfx){var parts=pfx.split('-'), did=parts[1], wid=parts[2], d=(S.wdw.donors||[]).find(function(x){return x.id===did;}); if(!d)return; var w=wid?(d.workers||[]).find(function(x){return x.id===wid;}):null; if(w){if(!w.extraReplaces)w.extraReplaces=[]; w.extraReplaces.push({replaces:'',pct:'',amt:'',vacantName:'',startMonth:w.startMonth||d.startDate||'',endMonth:''}); saveLocally();} renderWDWInput();};
 
-  window.wdwSaveNewWorker=function(did){var d=(S.wdw.donors||[]).find(function(x){return x.id===did;}); if(!d)return; var pfx='nw-'+did, name=document.getElementById(pfx+'-name')?.value, pct=parseFloat(document.getElementById(pfx+'-pct')?.value)||0, amt=parseFloat(document.getElementById(pfx+'-amt')?.value)||0, valueType=pct?'percent':'amount', value=pct||amt; if(!name||!value){alert('נא לבחור עובד ולהזין אחוז או סכום');return;} var curMonth=wdwMonthKeyLocal(), repPctVal=parseFloat(document.getElementById(pfx+'-replaces-pct')?.value)||0, total=workerTotal(name,curMonth); if(valueType==='percent'&&total+value+repPctVal>100){if(!confirm('⚠ '+name+' יהיה ב-'+Math.round((total+value+repPctVal)*10)/10+'% — חריגה מ-100%!\nלהמשיך?'))return;} if(!d.workers)d.workers=[]; d.workers.push({id:wdwGenId('w'),name:name,valueType:valueType,value:value,fundingType:document.getElementById(pfx+'-ftype')?.value,startMonth:document.getElementById(pfx+'-start')?.value,endMonth:document.getElementById(pfx+'-end')?.value,cap:parseFloat(document.getElementById(pfx+'-cap')?.value)||null,replaces:document.getElementById(pfx+'-replaces')?.value||null,replacesPct:repPctVal||null,replacesAmt:parseFloat(document.getElementById(pfx+'-replaces-amt')?.value)||null,replaceStartMonth:document.getElementById(pfx+'-replaces-start')?.value||null,replaceEndMonth:document.getElementById(pfx+'-replaces-end')?.value||null,vacantName:document.getElementById(pfx+'-vacant-name')?.value||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&total+value+repPctVal>100,monthlyPct:wdwCollectMonthlyPct(pfx)}); saveLocally(); saveData();
+  window.wdwSaveNewWorker=async function(did){var d=(S.wdw.donors||[]).find(function(x){return x.id===did;}); if(!d)return; var pfx='nw-'+did, name=document.getElementById(pfx+'-name')?.value, pct=parseFloat(document.getElementById(pfx+'-pct')?.value)||0, amt=parseFloat(document.getElementById(pfx+'-amt')?.value)||0, valueType=pct?'percent':'amount', value=pct||amt; if(!name||!value){alert('נא לבחור עובד ולהזין אחוז או סכום');return;} var curMonth=wdwMonthKeyLocal(), repPctVal=parseFloat(document.getElementById(pfx+'-replaces-pct')?.value)||0, total=workerTotal(name,curMonth); if(valueType==='percent'&&total+value+repPctVal>100){if(!confirm('⚠ '+name+' יהיה ב-'+Math.round((total+value+repPctVal)*10)/10+'% — חריגה מ-100%!\nלהמשיך?'))return;} if(!d.workers)d.workers=[]; d.workers.push({id:wdwGenId('w'),name:name,valueType:valueType,value:value,fundingType:document.getElementById(pfx+'-ftype')?.value,startMonth:document.getElementById(pfx+'-start')?.value,endMonth:document.getElementById(pfx+'-end')?.value,cap:parseFloat(document.getElementById(pfx+'-cap')?.value)||null,replaces:document.getElementById(pfx+'-replaces')?.value||null,replacesPct:repPctVal||null,replacesAmt:parseFloat(document.getElementById(pfx+'-replaces-amt')?.value)||null,replaceStartMonth:document.getElementById(pfx+'-replaces-start')?.value||null,replaceEndMonth:document.getElementById(pfx+'-replaces-end')?.value||null,vacantName:document.getElementById(pfx+'-vacant-name')?.value||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&total+value+repPctVal>100,monthlyPct:wdwCollectMonthlyPct(pfx)}); saveLocally(); saveData();
     // לא מרנדרים מחדש — רק מעדכנים את רשימת העובדים ומנקים את הטופס
     wdwRefreshWorkerList(did);
     wdwResetNewWorkerForm(did);
@@ -4079,9 +4079,58 @@ function sendEmail(){
     },120);
   };
 
-  window.wdwDeleteDonor306=function(id,name){
-    if(!confirm('האם אתה בטוח שברצונך למחוק את התורם "'+name+'"?\n\nפעולה זו תמחק את כל העובדים המשויכים לתורם זה.')) return;
-    if(!confirm('אישור סופי: מחיקת התורם "'+name+'" היא בלתי הפיכה.\n\nלחץ אישור כדי למחוק.')) return;
+
+  function wdwShowPopup(opts){
+    var existing=document.getElementById('wdw-custom-popup');
+    if(existing) existing.remove();
+    var overlay=document.createElement('div');
+    overlay.id='wdw-custom-popup';
+    overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:99999;display:flex;align-items:center;justify-content:center;direction:rtl;';
+    var box=document.createElement('div');
+    box.style.cssText='background:#fff;border-radius:12px;padding:24px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);font-family:Arial,sans-serif;';
+    var icon=opts.type==='danger'?'⚠️':'⚠️';
+    var titleColor=opts.type==='danger'?'#c62828':'#e65100';
+    var html='<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">';
+    html+='<span style="font-size:22px;">'+icon+'</span>';
+    html+='<h3 style="margin:0;font-size:16px;color:'+titleColor+';">'+opts.title+'</h3></div>';
+    if(opts.message) html+='<p style="font-size:14px;color:#374151;margin:0 0 12px;line-height:1.6;">'+opts.message+'</p>';
+    if(opts.list&&opts.list.length>0){
+      html+='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;margin-bottom:14px;max-height:200px;overflow-y:auto;">';
+      opts.list.forEach(function(item){html+='<div style="font-size:13px;color:#991b1b;padding:3px 0;">'+item+'</div>';});
+      html+='</div>';
+    }
+    if(opts.note) html+='<p style="font-size:13px;color:#6b7280;margin:0 0 16px;">'+opts.note+'</p>';
+    html+='<div style="display:flex;gap:8px;justify-content:flex-end;">';
+    html+='<button id="wdw-popup-cancel" style="padding:8px 18px;border-radius:8px;border:1px solid #d1d5db;background:#fff;cursor:pointer;font-size:14px;">בטל</button>';
+    html+='<button id="wdw-popup-confirm" style="padding:8px 18px;border-radius:8px;border:none;background:'+(opts.type==='danger'?'#c62828':'#e65100')+';color:#fff;cursor:pointer;font-size:14px;">'+opts.confirmText+'</button>';
+    html+='</div>';
+    box.innerHTML=html;
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    return new Promise(function(resolve){
+      document.getElementById('wdw-popup-confirm').onclick=function(){overlay.remove();resolve(true);};
+      document.getElementById('wdw-popup-cancel').onclick=function(){overlay.remove();resolve(false);};
+      overlay.onclick=function(e){if(e.target===overlay){overlay.remove();resolve(false);}};
+    });
+  }
+  window.wdwShowPopup=wdwShowPopup;
+  window.wdwDeleteDonor306=async function(id,name){
+    var step1=await wdwShowPopup({
+      type:'danger',
+      title:'מחיקת תורם',
+      message:'האם אתה בטוח שברצונך למחוק את התורם "'+name+'"?',
+      note:'פעולה זו תמחק את כל העובדים המשויכים לתורם זה.',
+      confirmText:'כן, מחק'
+    });
+    if(!step1) return;
+    var step2=await wdwShowPopup({
+      type:'danger',
+      title:'אישור סופי',
+      message:'מחיקת התורם "'+name+'" היא בלתי הפיכה.',
+      note:'לחץ "מחק לצמיתות" כדי לאשר.',
+      confirmText:'מחק לצמיתות'
+    });
+    if(!step2) return;
     if(!S.wdw||!S.wdw.donors) return;
     S.wdw.donors=S.wdw.donors.filter(function(d){return d.id!==id;});
     try{saveLocally();saveData();}catch(e){}
@@ -5351,7 +5400,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v306CL | גישה</title>
+<title>Reports_Workers v307CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5606,7 +5655,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v306CL</span>
+      <span class="topbar-title">Reports_Workers v307CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11249,7 +11298,7 @@ window.wdwResetNewWorkerForm = function(did) {
     form.innerHTML=formHtml(did);form.style.display='block';setTimeout(function(){var e=document.getElementById('nw-'+did+'-name');if(e)e.focus();},0);try{form.scrollIntoView({block:'nearest'});}catch(e){}
   };
   window.wdwShowAddWorker=window.wdwShowAddWorker234;window.wdwShowAddWorker217=window.wdwShowAddWorker234;window.wdwShowAddWorker227=window.wdwShowAddWorker234;
-  window.wdwSaveNewWorker=function(did){
+  window.wdwSaveNewWorker=async function(did){
     try{init();var d=donor(did);if(!d){alert('לא נמצא תורם');return;}var p='nw-'+did;window.wdwV237RecalcILS(p);window.wdwV237CalcMonthly(p);
       var name=(document.getElementById(p+'-name')||{}).value||'';
       var pctVal=n((document.getElementById(p+'-pct')||{}).value);
@@ -11278,14 +11327,20 @@ window.wdwResetNewWorkerForm = function(did) {
       }
       if(overMonths.length>0){
         var HEB_MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-        var msg='⚠ חריגת מימון — '+name+'\n\nהוספת תורם זה תגרום לחריגה מ-100% בחודשים הבאים:\n\n';
-        overMonths.forEach(function(mo){
+        var list=overMonths.map(function(mo){
           var yr=mo.month.substring(0,4);
           var mn=parseInt(mo.month.substring(5,7))-1;
-          msg+=HEB_MONTHS[mn]+' '+yr+': '+mo.before+'% ← '+mo.after+'%\n';
+          return HEB_MONTHS[mn]+' '+yr+': '+mo.before+'% ← '+mo.after+'%';
         });
-        msg+='\nהאם להמשיך בכל זאת?';
-        if(!confirm(msg)) return;
+        var ok=await wdwShowPopup({
+          type:'warning',
+          title:'חריגת מימון — '+name,
+          message:'הוספת תורם זה תגרום לחריגה מ-100% בחודשים הבאים:',
+          list:list,
+          note:'ניתן להמשיך בכל זאת — החריגה תסומן ליד שם העובד.',
+          confirmText:'המשך בכל זאת'
+        });
+        if(!ok) return;
       }
       d.workers=d.workers||[];
       d.workers.push({id:id(),name:name,valueType:valueType,value:value,totalPeriodAmount:totalAmt||null,fundingType:valueType==='percent'?'אחוז קבוע':'סכום קבוע',startMonth:(document.getElementById(p+'-start')||{}).value||d.startDate||'',endMonth:(document.getElementById(p+'-end')||{}).value||d.endDate||'',replaces:(document.getElementById(p+'-replaces')||{}).value||null,replacesPct:replPct||null,replacesAmt:n((document.getElementById(p+'-replaces-amt')||{}).value)||null,replacementStartMonth:(document.getElementById(p+'-replace-start')||{}).value||null,replacementEndMonth:(document.getElementById(p+'-replace-end')||{}).value||d.endDate||null,vacantName:(document.getElementById(p+'-vacant-name')||{}).value||null,fxAmount:n((document.getElementById(p+'-fx-amt')||{}).value)||null,fxCurrency:(document.getElementById(p+'-fx-currency')||{}).value||null,fxRate:n((document.getElementById(p+'-fx-rate')||{}).value)||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&curTotal+value+replPct>100,monthlyPct:{}});
