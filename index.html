@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v304CL | גישה</title>
+<title>Reports_Workers v306CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v304CL</span>
+      <span class="topbar-title">Reports_Workers v306CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1718,12 +1718,12 @@ function renderWDWInput(){
       // רשימת עובדים קיימים
       activeW.forEach(w=>{
         const total=wdwWorkerTotalPct(w.name,curMonth);
-        const repLabel=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null;
+        const repLabel=(w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null);const allReplaces=[repLabel,...((w.extraReplaces||[]).map(r=>r.name||r.replaces||null).filter(Boolean))].filter(Boolean);const repDisplay=allReplaces.length>0?allReplaces.join(', '):null;
         html+=`<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden">
           <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f9fafb">
             <strong style="font-size:13px">${w.name}</strong>
             <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}${w.replacesPct?' + '+w.replacesPct+'%':''}</span>
-            ${repLabel?`<span style="font-size:12px;color:#6b7280">מחליף: ${repLabel}</span>`:''}
+            ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#6b7280">מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
             <span style="font-size:12px;color:#6b7280">${fmtMonth(w.startMonth||'')} — ${fmtMonth(w.endMonth||'')}</span>
             <span style="font-size:11px;background:${total>100?'#fee2e2':'#dcfce7'};color:${total>100?'#991b1b':'#166534'};padding:2px 8px;border-radius:20px">${total}%</span>
             <span style="flex:1"></span>
@@ -1874,7 +1874,7 @@ function wdwRenderWorkerBlock(w, d, hasBudget, curMonth, workerOpts){
   const alertText=totalPct>100?
     `${w.name} חורג מ-100% — ניצול כולל: ${totalPct}%`:
     `ניצול חודשי של ${w.name}: ${totalPct}% ${totalPct<=100?'— תקין ✓':''}`;
-  const repLabel=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null;
+  const repLabel=(w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null);const allReplaces=[repLabel,...((w.extraReplaces||[]).map(r=>r.name||r.replaces||null).filter(Boolean))].filter(Boolean);const repDisplay=allReplaces.length>0?allReplaces.join(', '):null;
 
   let html=`<div style="border:1px solid #c8e6c9;border-radius:8px;margin-bottom:10px;overflow:hidden">
     <div style="background:#f0f7f0;padding:9px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #c8e6c9">
@@ -1882,7 +1882,7 @@ function wdwRenderWorkerBlock(w, d, hasBudget, curMonth, workerOpts){
       <span style="font-size:12px;color:#555">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}</span>
       ${replacePct?`<span style="font-size:12px;color:#1565C0">+ ${replacePct}% החלפה</span>`:''}
       <span style="font-size:12px;color:#666">| ${w.startMonth?fmtMonth(w.startMonth):'?'} — ${w.endMonth?fmtMonth(w.endMonth):'?'}</span>
-      ${repLabel?`<span style="font-size:12px;color:#555">| מחליף: ${repLabel}</span>`:''}
+      ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#555">| מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
       <span style="flex:1"></span>
       <button onclick="wdwToggleWorkerEdit('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:12px;color:#555">✏ ערוך</button>
       <button onclick="wdwEndWorker('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #ef9a9a;border-radius:4px;cursor:pointer;font-size:12px;color:#e53935">סיים תפקיד</button>
@@ -4078,6 +4078,16 @@ function sendEmail(){
       }catch(e){console.warn('wdwAddDonor205/v206',e);}
     },120);
   };
+
+  window.wdwDeleteDonor306=function(id,name){
+    if(!confirm('האם אתה בטוח שברצונך למחוק את התורם "'+name+'"?\n\nפעולה זו תמחק את כל העובדים המשויכים לתורם זה.')) return;
+    if(!confirm('אישור סופי: מחיקת התורם "'+name+'" היא בלתי הפיכה.\n\nלחץ אישור כדי למחוק.')) return;
+    if(!S.wdw||!S.wdw.donors) return;
+    S.wdw.donors=S.wdw.donors.filter(function(d){return d.id!==id;});
+    try{saveLocally();saveData();}catch(e){}
+    if(typeof renderWDWInput==='function') renderWDWInput();
+    else if(typeof refreshPanel==='function') refreshPanel();
+  };
 })();
 </script>
 
@@ -5341,7 +5351,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v304CL | גישה</title>
+<title>Reports_Workers v306CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5596,7 +5606,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v304CL</span>
+      <span class="topbar-title">Reports_Workers v306CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7049,12 +7059,12 @@ function renderWDWInput(){
       // רשימת עובדים קיימים
       activeW.forEach(w=>{
         const total=wdwWorkerTotalPct(w.name,curMonth);
-        const repLabel=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null;
+        const repLabel=(w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null);const allReplaces=[repLabel,...((w.extraReplaces||[]).map(r=>r.name||r.replaces||null).filter(Boolean))].filter(Boolean);const repDisplay=allReplaces.length>0?allReplaces.join(', '):null;
         html+=`<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden">
           <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f9fafb">
             <strong style="font-size:13px">${w.name}</strong>
             <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}${w.replacesPct?' + '+w.replacesPct+'%':''}</span>
-            ${repLabel?`<span style="font-size:12px;color:#6b7280">מחליף: ${repLabel}</span>`:''}
+            ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#6b7280">מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
             <span style="font-size:12px;color:#6b7280">${fmtMonth(w.startMonth||'')} — ${fmtMonth(w.endMonth||'')}</span>
             <span style="font-size:11px;background:${total>100?'#fee2e2':'#dcfce7'};color:${total>100?'#991b1b':'#166534'};padding:2px 8px;border-radius:20px">${total}%</span>
             <span style="flex:1"></span>
@@ -7205,7 +7215,7 @@ function wdwRenderWorkerBlock(w, d, hasBudget, curMonth, workerOpts){
   const alertText=totalPct>100?
     `${w.name} חורג מ-100% — ניצול כולל: ${totalPct}%`:
     `ניצול חודשי של ${w.name}: ${totalPct}% ${totalPct<=100?'— תקין ✓':''}`;
-  const repLabel=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null;
+  const repLabel=(w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null);const allReplaces=[repLabel,...((w.extraReplaces||[]).map(r=>r.name||r.replaces||null).filter(Boolean))].filter(Boolean);const repDisplay=allReplaces.length>0?allReplaces.join(', '):null;
 
   let html=`<div style="border:1px solid #c8e6c9;border-radius:8px;margin-bottom:10px;overflow:hidden">
     <div style="background:#f0f7f0;padding:9px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #c8e6c9">
@@ -7213,7 +7223,7 @@ function wdwRenderWorkerBlock(w, d, hasBudget, curMonth, workerOpts){
       <span style="font-size:12px;color:#555">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}</span>
       ${replacePct?`<span style="font-size:12px;color:#1565C0">+ ${replacePct}% החלפה</span>`:''}
       <span style="font-size:12px;color:#666">| ${w.startMonth?fmtMonth(w.startMonth):'?'} — ${w.endMonth?fmtMonth(w.endMonth):'?'}</span>
-      ${repLabel?`<span style="font-size:12px;color:#555">| מחליף: ${repLabel}</span>`:''}
+      ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#555">| מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
       <span style="flex:1"></span>
       <button onclick="wdwToggleWorkerEdit('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:12px;color:#555">✏ ערוך</button>
       <button onclick="wdwEndWorker('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #ef9a9a;border-radius:4px;cursor:pointer;font-size:12px;color:#e53935">סיים תפקיד</button>
@@ -11249,7 +11259,34 @@ window.wdwResetNewWorkerForm = function(did) {
       if(!pctVal&&!amtVal&&!totalAmt){alert('נא להזין אחוז קבוע, סכום חודשי קבוע או סכום לכל התקופה');return;}
       var valueType=pctVal?'percent':'amount', value=pctVal||amtVal;
       var replPct=n((document.getElementById(p+'-replaces-pct')||{}).value), m=month(), curTotal=workerTotal(name,m);
-      if(valueType==='percent'&&curTotal+value+replPct>100){if(!confirm('⚠ '+name+' יהיה ב-'+(Math.round((curTotal+value+replPct)*10)/10)+'% — חריגה מ-100%. להמשיך?'))return;}
+      var startDate=(document.getElementById(p+'-start')||{}).value||d.startDate||'';
+      var endDate=(document.getElementById(p+'-end')||{}).value||d.endDate||'';
+      var startY=startDate?parseInt(startDate.substring(0,4)):S.year;
+      var startM=startDate?parseInt(startDate.substring(5,7))-1:0;
+      var endY=endDate?parseInt(endDate.substring(0,4)):S.year;
+      var endM=endDate?parseInt(endDate.substring(5,7))-1:11;
+      var overMonths=[];
+      for(var oy=startY;oy<=endY;oy++){
+        var m0=oy===startY?startM:0;
+        var m1=oy===endY?endM:11;
+        for(var om=m0;om<=m1;om++){
+          var mKey=oy+'-'+String(om+1).padStart(2,'0');
+          var mTotal=workerTotal(name,mKey);
+          var mNew=mTotal+(valueType==='percent'?value+replPct:0);
+          if(mNew>100) overMonths.push({month:mKey,before:Math.round(mTotal*10)/10,after:Math.round(mNew*10)/10});
+        }
+      }
+      if(overMonths.length>0){
+        var HEB_MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+        var msg='⚠ חריגת מימון — '+name+'\n\nהוספת תורם זה תגרום לחריגה מ-100% בחודשים הבאים:\n\n';
+        overMonths.forEach(function(mo){
+          var yr=mo.month.substring(0,4);
+          var mn=parseInt(mo.month.substring(5,7))-1;
+          msg+=HEB_MONTHS[mn]+' '+yr+': '+mo.before+'% ← '+mo.after+'%\n';
+        });
+        msg+='\nהאם להמשיך בכל זאת?';
+        if(!confirm(msg)) return;
+      }
       d.workers=d.workers||[];
       d.workers.push({id:id(),name:name,valueType:valueType,value:value,totalPeriodAmount:totalAmt||null,fundingType:valueType==='percent'?'אחוז קבוע':'סכום קבוע',startMonth:(document.getElementById(p+'-start')||{}).value||d.startDate||'',endMonth:(document.getElementById(p+'-end')||{}).value||d.endDate||'',replaces:(document.getElementById(p+'-replaces')||{}).value||null,replacesPct:replPct||null,replacesAmt:n((document.getElementById(p+'-replaces-amt')||{}).value)||null,replacementStartMonth:(document.getElementById(p+'-replace-start')||{}).value||null,replacementEndMonth:(document.getElementById(p+'-replace-end')||{}).value||d.endDate||null,vacantName:(document.getElementById(p+'-vacant-name')||{}).value||null,fxAmount:n((document.getElementById(p+'-fx-amt')||{}).value)||null,fxCurrency:(document.getElementById(p+'-fx-currency')||{}).value||null,fxRate:n((document.getElementById(p+'-fx-rate')||{}).value)||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&curTotal+value+replPct>100,monthlyPct:{}});
       save();window.WDW_EDIT_DONOR_ID=did;window.WDW_ADD_WORKER_FOR=did;if(typeof renderWDWInput==='function')renderWDWInput();setTimeout(function(){window.wdwShowAddWorker234(did);var f=document.getElementById('wdw-add-worker-'+did);if(f)f.insertAdjacentHTML('afterbegin','<div style="margin-bottom:8px;padding:7px 10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:5px;color:#2e7d32;font-size:12px;font-weight:700">✓ העובד נוסף. אפשר להוסיף עובד נוסף לאותה תרומה.</div>');},0);
@@ -11587,7 +11624,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div><div class="v252-label">עובדים</div><div class="v252-val">'+esc(workerText(d,m))+'</div></div>'+
       '<div><div class="v252-label">עובדים בחריגה</div>'+exceptionChip(d,m)+(top?'<div class="v252-meta">'+esc(top)+'</div>':'')+'</div>'+
       '<div><div class="v252-label">החלפה / סיום</div>'+replacementChip(d,m)+'<div style="height:6px"></div>'+endingChip(d,m)+'</div>'+
-      '<div class="v252-actions"><button onclick="wdwEditDonor217(\''+d.id+'\')">ערוך</button></div>'+
+      '<div class="v252-actions"><button onclick="wdwEditDonor217(\''+d.id+'\')">ערוך</button><button onclick="wdwDeleteDonor306(\''+d.id+'\',\''+esc(d.name||'תורם')+'\')" style="background:#fff;color:#c62828;border-color:#c62828;margin-right:6px">מחק תורם</button></div>'+
       '</div>';
     if(window.WDW_EDIT_DONOR_ID===d.id) html+=extractEditBody(d.id);
     return html+'</div>';
