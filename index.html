@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v321CL | גישה</title>
+<title>Reports_Workers v324CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v321CL</span>
+      <span class="topbar-title">Reports_Workers v324CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -392,22 +392,42 @@ async function initPyodide(){
   </div>
 
   <div class="tab-content" id="tab-settings">
-    <div class="s-sec">
-      <h3>עובדים</h3>
-      <div id="workerList"></div>
-      <div class="add-row">
-        <input type="text" id="newWorker" placeholder="שם עובד חדש">
-        <button onclick="addWorker()">הוסף</button>
+    <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
+      <button onclick="switchSettingsTab('workers')" id="stab-workers" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עובדים</button>
+      <button onclick="switchSettingsTab('roles')" id="stab-roles" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקידים</button>
+      <button onclick="switchSettingsTab('github')" id="stab-github" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">גיטהאב</button>
+    </div>
+    <div id="stab-content-workers">
+      <div class="s-sec">
+        <h3>עובדים</h3>
+        <div id="workerList"></div>
+        <div class="add-row">
+          <input type="text" id="newWorker" placeholder="שם עובד חדש">
+          <button onclick="addWorker()">הוסף</button>
+        </div>
       </div>
     </div>
-    <div class="s-sec">
-      <h3>חיבור לגיטהאב</h3>
-      <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
-      <div class="tok-row">
-        <input type="password" id="tokInput" placeholder="ghp_...">
-        <button onclick="saveToken()">שמור</button>
+    <div id="stab-content-roles" style="display:none;">
+      <div class="s-sec">
+        <h3>תפקידים</h3>
+        <p style="font-size:12px;color:#666;margin-bottom:12px;">רשימת התפקידים בעמותה. בעת הוספת עובד לתורם ניתן לבחור תפקיד מרשימה זו.</p>
+        <div id="rolesList" style="margin-bottom:12px;min-height:30px;"></div>
+        <div class="add-row">
+          <input type="text" id="newRoleInput" placeholder="שם תפקיד חדש" style="direction:rtl;">
+          <button onclick="addRole()">הוסף</button>
+        </div>
       </div>
-      <div id="tokStatus"></div>
+    </div>
+    <div id="stab-content-github" style="display:none;">
+      <div class="s-sec">
+        <h3>חיבור לגיטהאב</h3>
+        <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
+        <div class="tok-row">
+          <input type="password" id="tokInput" placeholder="ghp_...">
+          <button onclick="saveToken()">שמור</button>
+        </div>
+        <div id="tokStatus"></div>
+      </div>
     </div>
   </div>
 
@@ -1415,14 +1435,14 @@ function renderHolList(){
       <td style="padding:7px 12px;font-weight:bold;color:#333;width:100px;text-align:right;direction:rtl;">${h.name}</td>
       <td style="padding:7px 8px;color:#555;font-size:11px;width:160px;text-align:right;direction:rtl;">${dTxt}</td>
       <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;">${wTxt}</td>
-      <td style="padding:7px 8px;width:30px;text-align:center;"><button onclick="delHol(${i})" style="background:none;border:none;color:#e53935;cursor:pointer;font-size:16px;padding:0;">✕</button></td>
+      <td style="padding:7px 8px;width:120px;text-align:center;white-space:nowrap;"><button onclick="editHol(${i})" style="background:#e3f2fd;border:1px solid #1565c0;color:#1565c0;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;margin-left:6px;">עריכה</button><button onclick="delHol(${i})" style="background:#ffebee;border:1px solid #e53935;color:#e53935;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;">מחק</button></td>
     </tr>`;
   });
   html+='</table>';
   div.innerHTML=html;
 }
 
-function delHol(i){S.holidays.splice(i,1);renderHolList();renderTable();}
+function delHol(i){var hol=S.holidays[i];if(!hol)return;if(!confirm('למחוק את החג "'+hol.name+'"?'))return;S.holidays.splice(i,1);renderHolList();renderTable();saveData();}
 
 // ===== ANNUAL =====
 function renderAnnual(){
@@ -4137,6 +4157,70 @@ function sendEmail(){
     if(typeof renderWDWInput==='function') renderWDWInput();
     else if(typeof refreshPanel==='function') refreshPanel();
   };
+
+  // ===== תפקידים =====
+  function switchSettingsTab(name){
+    ['workers','roles','github'].forEach(function(t){
+      var btn=document.getElementById('stab-'+t);
+      var sec=document.getElementById('stab-content-'+t);
+      if(btn){btn.style.borderBottomColor=t===name?'#1B6B5A':'transparent';btn.style.color=t===name?'#1B6B5A':'#6b7280';btn.style.fontWeight=t===name?'bold':'normal';}
+      if(sec)sec.style.display=t===name?'':'none';
+    });
+    if(name==='roles') renderRolesList();
+  }
+
+  function renderRolesList(){
+    var div=document.getElementById('rolesList');
+    if(!div) return;
+    if(!S.roles||!S.roles.length){div.innerHTML='<p style="color:#999;font-size:12px;">אין תפקידים מוגדרים</p>';return;}
+    var html='<table style="width:100%;border-collapse:collapse;direction:rtl;font-size:13px;">';
+    S.roles.forEach(function(r,i){
+      html+='<tr style="border-bottom:1px solid #e5e7eb;">';
+      html+='<td style="padding:8px 12px;color:#374151;">'+r+'</td>';
+      html+='<td style="padding:8px;width:140px;text-align:center;white-space:nowrap;">';
+      html+='<button onclick="editRole('+i+')" style="background:#e3f2fd;border:1px solid #1565c0;color:#1565c0;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;margin-left:6px;">עריכה</button>';
+      html+='<button onclick="deleteRole('+i+')" style="background:#ffebee;border:1px solid #e53935;color:#e53935;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;">מחק</button>';
+      html+='</td></tr>';
+    });
+    html+='</table>';
+    div.innerHTML=html;
+  }
+
+  function addRole(){
+    var inp=document.getElementById('newRoleInput');
+    if(!inp) return;
+    var name=inp.value.trim();
+    if(!name){alert('נא להזין שם תפקיד');return;}
+    if(!S.roles) S.roles=[];
+    if(S.roles.indexOf(name)>=0){alert('תפקיד זה כבר קיים');return;}
+    S.roles.push(name);
+    inp.value='';
+    saveLocally();
+    saveData();
+    renderRolesList();
+  }
+
+  function editRole(i){
+    if(!S.roles||!S.roles[i]) return;
+    var newName=prompt('שם התפקיד:',S.roles[i]);
+    if(newName===null) return;
+    newName=newName.trim();
+    if(!newName){alert('שם התפקיד לא יכול להיות ריק');return;}
+    if(S.roles.indexOf(newName)>=0&&newName!==S.roles[i]){alert('תפקיד זה כבר קיים');return;}
+    S.roles[i]=newName;
+    saveLocally();
+    saveData();
+    renderRolesList();
+  }
+
+  function deleteRole(i){
+    if(!S.roles||!S.roles[i]) return;
+    if(!confirm('למחוק את התפקיד "'+S.roles[i]+'"?')) return;
+    S.roles.splice(i,1);
+    saveLocally();
+    saveData();
+    renderRolesList();
+  }
 })();
 </script>
 
@@ -4558,7 +4642,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function kpis(){var m=month(),funded=0,near=0,over=0,repl=0,activeDonors=0,review=0;officialNames().forEach(function(n){var t=workerTotal(n,m);if(t>0)funded++;if(t>=90&&t<=100)near++;if(t>100)over++;if(workerRows(n,m).some(function(r){return rowRepl(r.worker,m)>0;}))repl++;});donors().forEach(function(d){if(d.status==='review')review++;else if(calcDonor(d))activeDonors++;});return '<div class="wdw-kpis"><div class="wdw-kpi '+(over?'bad':'ok')+'"><div class="l">חריגות חודשיות</div><div class="n">'+over+'</div><div class="wdw-muted">עובדים מעל 100%</div></div><div class="wdw-kpi warn"><div class="l">קרובים ל־100%</div><div class="n">'+near+'</div><div class="wdw-muted">90%–100%</div></div><div class="wdw-kpi ok"><div class="l">עובדים ממומנים</div><div class="n">'+funded+'</div><div class="wdw-muted">בחודש התצוגה</div></div><div class="wdw-kpi ok"><div class="l">תורמים מחושבים</div><div class="n">'+activeDonors+'</div><div class="wdw-muted">פעיל/ממתין</div></div><div class="wdw-kpi warn"><div class="l">בבחינה</div><div class="n">'+review+'</div><div class="wdw-muted">לא מחושב</div></div></div>';}
   function refreshCurrent(){var p='org';['org','donor','worker','input'].forEach(function(x){var el=document.getElementById('wdw-'+x);if(el&&el.style.display!=='none')p=x;}); if(p==='donor')renderWDWDonor();else if(p==='worker')renderWDWWorker();else if(p==='input')renderWDWInput();else renderWDWOrg();}
   window.wdwSetViewMonth219=function(){var mo=document.getElementById('wdw-v219-month'),yr=document.getElementById('wdw-v219-year');if(!mo||!yr)return;setMonth(yr.value,mo.value);};
-  window.wdwMonthKey=function(){return month();};
+  window.wdwMonthKey=function(){if(S.wdw&&S.wdw.viewMonth) return S.wdw.viewMonth; return month();};
   window.wdwWorkerTotalPct=function(n,m){return workerTotal(n,m||month());};
   window.wdwWorkersList=function(){return officialNames();};
   window.wdwIsActiveInMonth=function(w,m){return rowActive(w,m||month());};
@@ -5400,7 +5484,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v321CL | גישה</title>
+<title>Reports_Workers v324CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5655,7 +5739,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v321CL</span>
+      <span class="topbar-title">Reports_Workers v324CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5782,22 +5866,42 @@ async function initPyodide(){
   </div>
 
   <div class="tab-content" id="tab-settings">
-    <div class="s-sec">
-      <h3>עובדים</h3>
-      <div id="workerList"></div>
-      <div class="add-row">
-        <input type="text" id="newWorker" placeholder="שם עובד חדש">
-        <button onclick="addWorker()">הוסף</button>
+    <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
+      <button onclick="switchSettingsTab('workers')" id="stab-workers" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עובדים</button>
+      <button onclick="switchSettingsTab('roles')" id="stab-roles" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקידים</button>
+      <button onclick="switchSettingsTab('github')" id="stab-github" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">גיטהאב</button>
+    </div>
+    <div id="stab-content-workers">
+      <div class="s-sec">
+        <h3>עובדים</h3>
+        <div id="workerList"></div>
+        <div class="add-row">
+          <input type="text" id="newWorker" placeholder="שם עובד חדש">
+          <button onclick="addWorker()">הוסף</button>
+        </div>
       </div>
     </div>
-    <div class="s-sec">
-      <h3>חיבור לגיטהאב</h3>
-      <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
-      <div class="tok-row">
-        <input type="password" id="tokInput" placeholder="ghp_...">
-        <button onclick="saveToken()">שמור</button>
+    <div id="stab-content-roles" style="display:none;">
+      <div class="s-sec">
+        <h3>תפקידים</h3>
+        <p style="font-size:12px;color:#666;margin-bottom:12px;">רשימת התפקידים בעמותה. בעת הוספת עובד לתורם ניתן לבחור תפקיד מרשימה זו.</p>
+        <div id="rolesList" style="margin-bottom:12px;min-height:30px;"></div>
+        <div class="add-row">
+          <input type="text" id="newRoleInput" placeholder="שם תפקיד חדש" style="direction:rtl;">
+          <button onclick="addRole()">הוסף</button>
+        </div>
       </div>
-      <div id="tokStatus"></div>
+    </div>
+    <div id="stab-content-github" style="display:none;">
+      <div class="s-sec">
+        <h3>חיבור לגיטהאב</h3>
+        <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
+        <div class="tok-row">
+          <input type="password" id="tokInput" placeholder="ghp_...">
+          <button onclick="saveToken()">שמור</button>
+        </div>
+        <div id="tokStatus"></div>
+      </div>
     </div>
   </div>
 
@@ -10760,7 +10864,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function kpis(){var m=month(),funded=0,near=0,over=0,repl=0,activeDonors=0,review=0;officialNames().forEach(function(n){var t=workerTotal(n,m);if(t>0)funded++;if(t>=90&&t<=100)near++;if(t>100)over++;if(workerRows(n,m).some(function(r){return rowRepl(r.worker,m)>0;}))repl++;});donors().forEach(function(d){if(d.status==='review')review++;else if(calcDonor(d))activeDonors++;});return '<div class="wdw-kpis"><div class="wdw-kpi '+(over?'bad':'ok')+'"><div class="l">חריגות חודשיות</div><div class="n">'+over+'</div><div class="wdw-muted">עובדים מעל 100%</div></div><div class="wdw-kpi warn"><div class="l">קרובים ל־100%</div><div class="n">'+near+'</div><div class="wdw-muted">90%–100%</div></div><div class="wdw-kpi ok"><div class="l">עובדים ממומנים</div><div class="n">'+funded+'</div><div class="wdw-muted">בחודש התצוגה</div></div><div class="wdw-kpi ok"><div class="l">תורמים מחושבים</div><div class="n">'+activeDonors+'</div><div class="wdw-muted">פעיל/ממתין</div></div><div class="wdw-kpi warn"><div class="l">בבחינה</div><div class="n">'+review+'</div><div class="wdw-muted">לא מחושב</div></div></div>';}
   function refreshCurrent(){var p='org';['org','donor','worker','input'].forEach(function(x){var el=document.getElementById('wdw-'+x);if(el&&el.style.display!=='none')p=x;}); if(p==='donor')renderWDWDonor();else if(p==='worker')renderWDWWorker();else if(p==='input')renderWDWInput();else renderWDWOrg();}
   window.wdwSetViewMonth219=function(){var mo=document.getElementById('wdw-v219-month'),yr=document.getElementById('wdw-v219-year');if(!mo||!yr)return;setMonth(yr.value,mo.value);};
-  window.wdwMonthKey=function(){return month();};
+  window.wdwMonthKey=function(){if(S.wdw&&S.wdw.viewMonth) return S.wdw.viewMonth; return month();};
   window.wdwWorkerTotalPct=function(n,m){return workerTotal(n,m||month());};
   window.wdwWorkersList=function(){return officialNames();};
   window.wdwIsActiveInMonth=function(w,m){return rowActive(w,m||month());};
