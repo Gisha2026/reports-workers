@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v324CL | גישה</title>
+<title>Reports_Workers v325CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v324CL</span>
+      <span class="topbar-title">Reports_Workers v325CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3834,7 +3834,21 @@ function sendEmail(){
   function refreshPanel(){var p=currentPanel(); if(p==='org') renderWDWOrg(); else if(p==='donor') renderWDWDonor(); else if(p==='worker') renderWDWWorker(); else renderWDWInput();}
   window.wdwWorkersList=function(){return officialWorkerNames();};
   window.wdwMonthKey=function(){initWDW(); var def=monthKeyFrom(S.year||2026, typeof curMI==='number'?curMI:0); if(!S.wdw.viewMonth) S.wdw.viewMonth=def; return S.wdw.viewMonth;};
-  window.wdwApplyView=function(){initWDW(); var selY=document.getElementById('wdw-view-year'); var selM=document.getElementById('wdw-view-month'); var y=selY?parseInt(selY.value)||S.year||2026:S.year||2026; var mi=selM?parseInt(selM.value)||0:0; if(!S.wdw)S.wdw={donors:[]}; S.wdw.viewMonth=monthKeyFrom(y,mi); saveLocally(); refreshPanel();};
+  window.wdwApplyView=function(){initWDW();
+    var allY=document.querySelectorAll('#wdw-view-year');
+    var allM=document.querySelectorAll('#wdw-view-month');
+    var selY=null,selM=null;
+    allY.forEach(function(el){if(el.offsetParent!==null)selY=el;});
+    allM.forEach(function(el){if(el.offsetParent!==null)selM=el;});
+    if(!selY)selY=allY[allY.length-1];
+    if(!selM)selM=allM[allM.length-1];
+    var y=selY?parseInt(selY.value)||S.year||2026:S.year||2026;
+    var mi=selM?parseInt(selM.value)||0:0;
+    if(!S.wdw)S.wdw={donors:[]};
+    S.wdw.viewMonth=monthKeyFrom(y,mi);
+    saveLocally();
+    refreshPanel();
+  };
   window.wdwHeader=function(title,sub){ensureStyle(); ensureWriteButton(); var mk=wdwMonthKey(), sp=splitMonthKey(mk); return '<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">'+title+'</div><div class="wdw-sub">'+sub+'</div></div><div class="wdw-view-controls"><div><label>חודש</label><select id="wdw-view-month">'+monthOptions(sp.month)+'</select></div><div><label>שנה</label><select id="wdw-view-year">'+yearOptions(sp.year)+'</select></div><button class="wdw-show-btn" onclick="wdwApplyView()">הצג</button></div></div>';};
   window.switchWDW=function(panel){ensureStyle(); ensureWriteButton(); ['org','donor','worker','input'].forEach(function(p){var d=document.getElementById('wdw-'+p); if(d) d.style.display=p===panel?'':'none'; var b=document.getElementById('wdw-btn-'+p); if(b)b.classList.toggle('active',p===panel);}); var box=document.querySelector('#tab-wdw .s-sec'); if(box){box.style.background='transparent';box.style.boxShadow='none';box.style.padding='0';} refreshPanel();};
   window.wdwWorkerTotalPct=function(name,month){return workerTotal(name,month);};
@@ -3903,7 +3917,21 @@ function sendEmail(){
   window.wdwReplacePct=function(w,month){return replPct(w,month||wdwMonthKeyLocal());};
   window.wdwReplacementText=function(w,month){return replacementText(w,month||wdwMonthKeyLocal());};
   window.wdwIsActiveInMonth=function(w,month){return rowActive(w,month||wdwMonthKeyLocal());};
-  window.wdwApplyView=function(){initWDW(); var selY=document.getElementById('wdw-view-year'); var selM=document.getElementById('wdw-view-month'); var y=selY?parseInt(selY.value)||S.year||2026:S.year||2026; var mi=selM?parseInt(selM.value)||0:0; if(!S.wdw)S.wdw={donors:[]}; S.wdw.viewMonth=monthKeyFrom(y,mi); saveLocally(); refreshPanel();};
+  window.wdwApplyView=function(){initWDW();
+    var allY=document.querySelectorAll('#wdw-view-year');
+    var allM=document.querySelectorAll('#wdw-view-month');
+    var selY=null,selM=null;
+    allY.forEach(function(el){if(el.offsetParent!==null)selY=el;});
+    allM.forEach(function(el){if(el.offsetParent!==null)selM=el;});
+    if(!selY)selY=allY[allY.length-1];
+    if(!selM)selM=allM[allM.length-1];
+    var y=selY?parseInt(selY.value)||S.year||2026:S.year||2026;
+    var mi=selM?parseInt(selM.value)||0:0;
+    if(!S.wdw)S.wdw={donors:[]};
+    S.wdw.viewMonth=monthKeyFrom(y,mi);
+    saveLocally();
+    refreshPanel();
+  };
 
   window.wdwWorkerFields=function(w,d,hasBudget,curMonth,workerOpts,isEdit){
     addStyle();
@@ -4161,10 +4189,14 @@ function sendEmail(){
   // ===== תפקידים =====
   function switchSettingsTab(name){
     ['workers','roles','github'].forEach(function(t){
-      var btn=document.getElementById('stab-'+t);
-      var sec=document.getElementById('stab-content-'+t);
-      if(btn){btn.style.borderBottomColor=t===name?'#1B6B5A':'transparent';btn.style.color=t===name?'#1B6B5A':'#6b7280';btn.style.fontWeight=t===name?'bold':'normal';}
-      if(sec)sec.style.display=t===name?'':'none';
+      document.querySelectorAll('#stab-'+t).forEach(function(btn){
+        btn.style.borderBottomColor=t===name?'#1B6B5A':'transparent';
+        btn.style.color=t===name?'#1B6B5A':'#6b7280';
+        btn.style.fontWeight=t===name?'bold':'normal';
+      });
+      document.querySelectorAll('#stab-content-'+t).forEach(function(sec){
+        sec.style.display=t===name?'':'none';
+      });
     });
     if(name==='roles') renderRolesList();
   }
@@ -5484,7 +5516,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v324CL | גישה</title>
+<title>Reports_Workers v325CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5739,7 +5771,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v324CL</span>
+      <span class="topbar-title">Reports_Workers v325CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6929,19 +6961,56 @@ function delHol(idx){
 function editHol(idx){
   var hol=S.holidays[idx];
   if(!hol) return;
-  var newName=prompt('שם החג:',hol.name);
-  if(newName===null) return;
-  newName=newName.trim();
-  if(!newName){alert('שם החג לא יכול להיות ריק');return;}
-  var newStart=prompt('תאריך התחלה (YYYY-MM-DD):',hol.start);
-  if(newStart===null) return;
-  var newEnd=prompt('תאריך סיום (YYYY-MM-DD):',hol.end||hol.start);
-  if(newEnd===null) return;
-  if(!newEnd) newEnd=newStart;
-  if(newEnd<newStart){alert('תאריך הסיום חייב להיות שווה או מאוחר מתאריך ההתחלה');return;}
-  S.holidays[idx].name=newName;
-  S.holidays[idx].start=newStart;
-  S.holidays[idx].end=newEnd;
+  var ex=document.getElementById('hol-edit-popup');
+  if(ex) ex.remove();
+  var allW=(S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';}).filter(Boolean);
+  var selW=hol.workers==='all'?[]:hol.workers;
+  var wHtml='';
+  allW.forEach(function(w){
+    var chk=hol.workers==='all'||selW.indexOf(w)>=0;
+    wHtml+='<label style="display:inline-block;margin-left:8px;font-size:12px;margin-top:4px;"><input type="checkbox" class="hol-edit-cb" value="'+w+'" '+(chk?'checked':'')+'>'+w+'</label>';
+  });
+  var overlay=document.createElement('div');
+  overlay.id='hol-edit-popup';
+  overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:99999;display:flex;align-items:center;justify-content:center;direction:rtl;';
+  overlay.innerHTML='<div style="background:#fff;border-radius:12px;padding:24px;max-width:500px;width:92%;box-shadow:0 8px 32px rgba(0,0,0,0.18);font-family:Arial,sans-serif;direction:rtl;">'
+    +'<h3 style="margin:0 0 16px;color:#1B6B5A;font-size:16px;">עריכת חג</h3>'
+    +'<div style="margin-bottom:12px;"><label style="font-size:13px;font-weight:bold;">שם החג</label><br>'
+    +'<input id="hol-edit-name" value="'+hol.name.replace(/"/g,"&quot;")+'" style="width:100%;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;margin-top:4px;box-sizing:border-box;direction:rtl;"></div>'
+    +'<div style="display:flex;gap:12px;margin-bottom:12px;">'
+    +'<div style="flex:1"><label style="font-size:13px;font-weight:bold;">תאריך התחלה</label><br>'
+    +'<input id="hol-edit-start" type="date" value="'+(hol.start||'')+'" style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;margin-top:4px;box-sizing:border-box;"></div>'
+    +'<div style="flex:1"><label style="font-size:13px;font-weight:bold;">תאריך סיום</label><br>'
+    +'<input id="hol-edit-end" type="date" value="'+(hol.end||hol.start||'')+'" style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;margin-top:4px;box-sizing:border-box;"></div></div>'
+    +'<div style="margin-bottom:16px;"><label style="font-size:13px;font-weight:bold;">עובדים</label><br>'
+    +'<label style="display:inline-block;margin-left:8px;font-size:12px;margin-top:6px;"><input type="checkbox" id="hol-edit-all" '+(hol.workers==='all'?'checked':'')+'>כל העובדים</label><br>'
+    +'<div id="hol-edit-workers" style="margin-top:6px;">'+wHtml+'</div></div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end;">'
+    +'<button onclick="document.getElementById('hol-edit-popup').remove()" style="padding:8px 18px;border-radius:8px;border:1px solid #d1d5db;background:#fff;cursor:pointer;font-size:14px;">ביטול</button>'
+    +'<button onclick="saveEditHol324('+idx+')" style="padding:8px 18px;border-radius:8px;border:none;background:#1B6B5A;color:#fff;cursor:pointer;font-size:14px;">שמור</button>'
+    +'</div></div>';
+  document.body.appendChild(overlay);
+  overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
+  document.getElementById('hol-edit-all').onchange=function(){
+    document.querySelectorAll('.hol-edit-cb').forEach(function(c){c.checked=this.checked;}.bind(this));
+  };
+}
+
+function saveEditHol324(idx){
+  var name=document.getElementById('hol-edit-name').value.trim();
+  if(!name){alert('שם החג לא יכול להיות ריק');return;}
+  var start=document.getElementById('hol-edit-start').value;
+  var end=document.getElementById('hol-edit-end').value||start;
+  if(!start){alert('נא למלא תאריך התחלה');return;}
+  if(end<start){alert('תאריך הסיום חייב להיות שווה או מאוחר מתאריך ההתחלה');return;}
+  var allCk=document.getElementById('hol-edit-all').checked;
+  var workers='all';
+  if(!allCk){
+    workers=Array.from(document.querySelectorAll('.hol-edit-cb:checked')).map(function(c){return c.value;});
+    if(!workers.length){alert('נא לבחור עובדים');return;}
+  }
+  S.holidays[idx]={name:name,start:start,end:end,workers:workers};
+  document.getElementById('hol-edit-popup').remove();
   renderHolList();
   renderTable();
   saveData();
@@ -10179,7 +10248,21 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   function refreshPanel(){var p=currentPanel(); if(p==='org') renderWDWOrg(); else if(p==='donor') renderWDWDonor(); else if(p==='worker') renderWDWWorker(); else renderWDWInput();}
   window.wdwWorkersList=function(){return officialWorkerNames();};
   window.wdwMonthKey=function(){initWDW(); var def=monthKeyFrom(S.year||2026, typeof curMI==='number'?curMI:0); if(!S.wdw.viewMonth) S.wdw.viewMonth=def; return S.wdw.viewMonth;};
-  window.wdwApplyView=function(){initWDW(); var selY=document.getElementById('wdw-view-year'); var selM=document.getElementById('wdw-view-month'); var y=selY?parseInt(selY.value)||S.year||2026:S.year||2026; var mi=selM?parseInt(selM.value)||0:0; if(!S.wdw)S.wdw={donors:[]}; S.wdw.viewMonth=monthKeyFrom(y,mi); saveLocally(); refreshPanel();};
+  window.wdwApplyView=function(){initWDW();
+    var allY=document.querySelectorAll('#wdw-view-year');
+    var allM=document.querySelectorAll('#wdw-view-month');
+    var selY=null,selM=null;
+    allY.forEach(function(el){if(el.offsetParent!==null)selY=el;});
+    allM.forEach(function(el){if(el.offsetParent!==null)selM=el;});
+    if(!selY)selY=allY[allY.length-1];
+    if(!selM)selM=allM[allM.length-1];
+    var y=selY?parseInt(selY.value)||S.year||2026:S.year||2026;
+    var mi=selM?parseInt(selM.value)||0:0;
+    if(!S.wdw)S.wdw={donors:[]};
+    S.wdw.viewMonth=monthKeyFrom(y,mi);
+    saveLocally();
+    refreshPanel();
+  };
   window.wdwHeader=function(title,sub){ensureStyle(); ensureWriteButton(); var mk=wdwMonthKey(), sp=splitMonthKey(mk); return '<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">'+title+'</div><div class="wdw-sub">'+sub+'</div></div><div class="wdw-view-controls wdw-v219-controls"><div><label>חודש</label><select id="wdw-view-month">'+monthOptions(sp.month)+'</select></div><div><label>שנה</label><select id="wdw-view-year">'+yearOptions(sp.year)+'</select></div><button class="wdw-show-btn" onclick="wdwApplyView()">הצג</button><button class="wdw-today-btn-225" onclick="wdwToday225()">היום</button></div><div class="wdw-current-month-label">חודש תצוגה: <b>'+(MONTHS&&MONTHS[sp.month]?MONTHS[sp.month]:(sp.month+1))+' '+sp.year+'</b></div></div>';};
   window.switchWDW=function(panel){ensureStyle(); ensureWriteButton(); ['org','donor','worker','input'].forEach(function(p){var d=document.getElementById('wdw-'+p); if(d) d.style.display=p===panel?'':'none'; var b=document.getElementById('wdw-btn-'+p); if(b)b.classList.toggle('active',p===panel);}); var box=document.querySelector('#tab-wdw .s-sec'); if(box){box.style.background='transparent';box.style.boxShadow='none';box.style.padding='0';} refreshPanel();};
   window.wdwWorkerTotalPct=function(name,month){return workerTotal(name,month);};
@@ -10248,7 +10331,21 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   window.wdwReplacePct=function(w,month){return replPct(w,month||wdwMonthKeyLocal());};
   window.wdwReplacementText=function(w,month){return replacementText(w,month||wdwMonthKeyLocal());};
   window.wdwIsActiveInMonth=function(w,month){return rowActive(w,month||wdwMonthKeyLocal());};
-  window.wdwApplyView=function(){initWDW(); var selY=document.getElementById('wdw-view-year'); var selM=document.getElementById('wdw-view-month'); var y=selY?parseInt(selY.value)||S.year||2026:S.year||2026; var mi=selM?parseInt(selM.value)||0:0; if(!S.wdw)S.wdw={donors:[]}; S.wdw.viewMonth=monthKeyFrom(y,mi); saveLocally(); refreshPanel();};
+  window.wdwApplyView=function(){initWDW();
+    var allY=document.querySelectorAll('#wdw-view-year');
+    var allM=document.querySelectorAll('#wdw-view-month');
+    var selY=null,selM=null;
+    allY.forEach(function(el){if(el.offsetParent!==null)selY=el;});
+    allM.forEach(function(el){if(el.offsetParent!==null)selM=el;});
+    if(!selY)selY=allY[allY.length-1];
+    if(!selM)selM=allM[allM.length-1];
+    var y=selY?parseInt(selY.value)||S.year||2026:S.year||2026;
+    var mi=selM?parseInt(selM.value)||0:0;
+    if(!S.wdw)S.wdw={donors:[]};
+    S.wdw.viewMonth=monthKeyFrom(y,mi);
+    saveLocally();
+    refreshPanel();
+  };
 
   window.wdwWorkerFields=function(w,d,hasBudget,curMonth,workerOpts,isEdit){
     addStyle();
