@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v326CL | גישה</title>
+<title>Reports_Workers v327CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v326CL</span>
+      <span class="topbar-title">Reports_Workers v327CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -395,7 +395,7 @@ async function initPyodide(){
     <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
       <button onclick="switchSettingsTab('workers')" id="stab-workers" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עובדים</button>
       <button onclick="switchSettingsTab('roles')" id="stab-roles" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקידים</button>
-      <button onclick="switchSettingsTab('github')" id="stab-github" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">גיטהאב</button>
+
     </div>
     <div id="stab-content-workers">
       <div class="s-sec">
@@ -405,6 +405,15 @@ async function initPyodide(){
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
         </div>
+      </div>
+      <div class="s-sec" style="margin-top:16px;">
+        <h3>חיבור לגיטהאב</h3>
+        <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
+        <div class="tok-row">
+          <input type="password" id="tokInput" placeholder="ghp_...">
+          <button onclick="saveToken()">שמור</button>
+        </div>
+        <div id="tokStatus"></div>
       </div>
     </div>
     <div id="stab-content-roles" style="display:none;">
@@ -418,17 +427,7 @@ async function initPyodide(){
         </div>
       </div>
     </div>
-    <div id="stab-content-github" style="display:none;">
-      <div class="s-sec">
-        <h3>חיבור לגיטהאב</h3>
-        <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
-        <div class="tok-row">
-          <input type="password" id="tokInput" placeholder="ghp_...">
-          <button onclick="saveToken()">שמור</button>
-        </div>
-        <div id="tokStatus"></div>
-      </div>
-    </div>
+
   </div>
 
   <div class="tab-content" id="tab-wdw">
@@ -4187,8 +4186,8 @@ function sendEmail(){
   };
 
   // ===== תפקידים =====
-  function switchSettingsTab(name){
-    ['workers','roles','github'].forEach(function(t){
+  window.switchSettingsTab=function(name){
+    ['workers','roles'].forEach(function(t){
       document.querySelectorAll('#stab-'+t).forEach(function(btn){
         btn.style.borderBottomColor=t===name?'#1B6B5A':'transparent';
         btn.style.color=t===name?'#1B6B5A':'#6b7280';
@@ -4201,7 +4200,7 @@ function sendEmail(){
     if(name==='roles') renderRolesList();
   }
 
-  function renderRolesList(){
+  window.renderRolesList=function(){
     var div=document.getElementById('rolesList');
     if(!div) return;
     if(!S.roles||!S.roles.length){div.innerHTML='<p style="color:#999;font-size:12px;">אין תפקידים מוגדרים</p>';return;}
@@ -4218,7 +4217,7 @@ function sendEmail(){
     div.innerHTML=html;
   }
 
-  function addRole(){
+  window.addRole=function(){
     var inp=document.getElementById('newRoleInput');
     if(!inp) return;
     var name=inp.value.trim();
@@ -4232,7 +4231,7 @@ function sendEmail(){
     renderRolesList();
   }
 
-  function editRole(i){
+  window.editRole=function(i){
     if(!S.roles||!S.roles[i]) return;
     var newName=prompt('שם התפקיד:',S.roles[i]);
     if(newName===null) return;
@@ -4245,7 +4244,7 @@ function sendEmail(){
     renderRolesList();
   }
 
-  function deleteRole(i){
+  window.deleteRole=function(i){
     if(!S.roles||!S.roles[i]) return;
     if(!confirm('למחוק את התפקיד "'+S.roles[i]+'"?')) return;
     S.roles.splice(i,1);
@@ -5516,7 +5515,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v326CL | גישה</title>
+<title>Reports_Workers v327CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5771,7 +5770,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v326CL</span>
+      <span class="topbar-title">Reports_Workers v327CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5901,7 +5900,7 @@ async function initPyodide(){
     <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
       <button onclick="switchSettingsTab('workers')" id="stab-workers" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עובדים</button>
       <button onclick="switchSettingsTab('roles')" id="stab-roles" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקידים</button>
-      <button onclick="switchSettingsTab('github')" id="stab-github" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">גיטהאב</button>
+
     </div>
     <div id="stab-content-workers">
       <div class="s-sec">
@@ -5911,6 +5910,15 @@ async function initPyodide(){
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
         </div>
+      </div>
+      <div class="s-sec" style="margin-top:16px;">
+        <h3>חיבור לגיטהאב</h3>
+        <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
+        <div class="tok-row">
+          <input type="password" id="tokInput" placeholder="ghp_...">
+          <button onclick="saveToken()">שמור</button>
+        </div>
+        <div id="tokStatus"></div>
       </div>
     </div>
     <div id="stab-content-roles" style="display:none;">
@@ -5924,17 +5932,7 @@ async function initPyodide(){
         </div>
       </div>
     </div>
-    <div id="stab-content-github" style="display:none;">
-      <div class="s-sec">
-        <h3>חיבור לגיטהאב</h3>
-        <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
-        <div class="tok-row">
-          <input type="password" id="tokInput" placeholder="ghp_...">
-          <button onclick="saveToken()">שמור</button>
-        </div>
-        <div id="tokStatus"></div>
-      </div>
-    </div>
+
   </div>
 
   <div class="tab-content" id="tab-wdw">
