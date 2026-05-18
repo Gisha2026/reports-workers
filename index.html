@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v321CL | גישה</title>
+<title>Reports_Workers v323CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v321CL</span>
+      <span class="topbar-title">Reports_Workers v323CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4558,7 +4558,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function kpis(){var m=month(),funded=0,near=0,over=0,repl=0,activeDonors=0,review=0;officialNames().forEach(function(n){var t=workerTotal(n,m);if(t>0)funded++;if(t>=90&&t<=100)near++;if(t>100)over++;if(workerRows(n,m).some(function(r){return rowRepl(r.worker,m)>0;}))repl++;});donors().forEach(function(d){if(d.status==='review')review++;else if(calcDonor(d))activeDonors++;});return '<div class="wdw-kpis"><div class="wdw-kpi '+(over?'bad':'ok')+'"><div class="l">חריגות חודשיות</div><div class="n">'+over+'</div><div class="wdw-muted">עובדים מעל 100%</div></div><div class="wdw-kpi warn"><div class="l">קרובים ל־100%</div><div class="n">'+near+'</div><div class="wdw-muted">90%–100%</div></div><div class="wdw-kpi ok"><div class="l">עובדים ממומנים</div><div class="n">'+funded+'</div><div class="wdw-muted">בחודש התצוגה</div></div><div class="wdw-kpi ok"><div class="l">תורמים מחושבים</div><div class="n">'+activeDonors+'</div><div class="wdw-muted">פעיל/ממתין</div></div><div class="wdw-kpi warn"><div class="l">בבחינה</div><div class="n">'+review+'</div><div class="wdw-muted">לא מחושב</div></div></div>';}
   function refreshCurrent(){var p='org';['org','donor','worker','input'].forEach(function(x){var el=document.getElementById('wdw-'+x);if(el&&el.style.display!=='none')p=x;}); if(p==='donor')renderWDWDonor();else if(p==='worker')renderWDWWorker();else if(p==='input')renderWDWInput();else renderWDWOrg();}
   window.wdwSetViewMonth219=function(){var mo=document.getElementById('wdw-v219-month'),yr=document.getElementById('wdw-v219-year');if(!mo||!yr)return;setMonth(yr.value,mo.value);};
-  window.wdwMonthKey=function(){return month();};
+  window.wdwMonthKey=function(){if(S.wdw&&S.wdw.viewMonth) return S.wdw.viewMonth; return month();};
   window.wdwWorkerTotalPct=function(n,m){return workerTotal(n,m||month());};
   window.wdwWorkersList=function(){return officialNames();};
   window.wdwIsActiveInMonth=function(w,m){return rowActive(w,m||month());};
@@ -5400,7 +5400,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v321CL | גישה</title>
+<title>Reports_Workers v323CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5655,7 +5655,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v321CL</span>
+      <span class="topbar-title">Reports_Workers v323CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6825,19 +6825,56 @@ function delHol(idx){
 function editHol(idx){
   var hol=S.holidays[idx];
   if(!hol) return;
-  var newName=prompt('שם החג:',hol.name);
-  if(newName===null) return;
-  newName=newName.trim();
-  if(!newName){alert('שם החג לא יכול להיות ריק');return;}
-  var newStart=prompt('תאריך התחלה (YYYY-MM-DD):',hol.start);
-  if(newStart===null) return;
-  var newEnd=prompt('תאריך סיום (YYYY-MM-DD):',hol.end||hol.start);
-  if(newEnd===null) return;
-  if(!newEnd) newEnd=newStart;
-  if(newEnd<newStart){alert('תאריך הסיום חייב להיות שווה או מאוחר מתאריך ההתחלה');return;}
-  S.holidays[idx].name=newName;
-  S.holidays[idx].start=newStart;
-  S.holidays[idx].end=newEnd;
+  var ex=document.getElementById('hol-edit-popup');
+  if(ex) ex.remove();
+  var allW=(S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';}).filter(Boolean);
+  var selW=hol.workers==='all'?[]:hol.workers;
+  var wHtml='';
+  allW.forEach(function(w){
+    var chk=hol.workers==='all'||selW.indexOf(w)>=0;
+    wHtml+='<label style="display:inline-block;margin-left:8px;font-size:12px;margin-top:4px;"><input type="checkbox" class="hol-edit-cb" value="'+w+'" '+(chk?'checked':'')+'>'+w+'</label>';
+  });
+  var overlay=document.createElement('div');
+  overlay.id='hol-edit-popup';
+  overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:99999;display:flex;align-items:center;justify-content:center;direction:rtl;';
+  overlay.innerHTML='<div style="background:#fff;border-radius:12px;padding:24px;max-width:500px;width:92%;box-shadow:0 8px 32px rgba(0,0,0,0.18);font-family:Arial,sans-serif;direction:rtl;">'
+    +'<h3 style="margin:0 0 16px;color:#1B6B5A;font-size:16px;">עריכת חג</h3>'
+    +'<div style="margin-bottom:12px;"><label style="font-size:13px;font-weight:bold;">שם החג</label><br>'
+    +'<input id="hol-edit-name" value="'+hol.name.replace(/"/g,"&quot;")+'" style="width:100%;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;margin-top:4px;box-sizing:border-box;direction:rtl;"></div>'
+    +'<div style="display:flex;gap:12px;margin-bottom:12px;">'
+    +'<div style="flex:1"><label style="font-size:13px;font-weight:bold;">תאריך התחלה</label><br>'
+    +'<input id="hol-edit-start" type="date" value="'+(hol.start||'')+'" style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;margin-top:4px;box-sizing:border-box;"></div>'
+    +'<div style="flex:1"><label style="font-size:13px;font-weight:bold;">תאריך סיום</label><br>'
+    +'<input id="hol-edit-end" type="date" value="'+(hol.end||hol.start||'')+'" style="width:100%;padding:6px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;margin-top:4px;box-sizing:border-box;"></div></div>'
+    +'<div style="margin-bottom:16px;"><label style="font-size:13px;font-weight:bold;">עובדים</label><br>'
+    +'<label style="display:inline-block;margin-left:8px;font-size:12px;margin-top:6px;"><input type="checkbox" id="hol-edit-all" '+(hol.workers==='all'?'checked':'')+'>כל העובדים</label><br>'
+    +'<div id="hol-edit-workers" style="margin-top:6px;">'+wHtml+'</div></div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end;">'
+    +'<button onclick="document.getElementById('hol-edit-popup').remove()" style="padding:8px 18px;border-radius:8px;border:1px solid #d1d5db;background:#fff;cursor:pointer;font-size:14px;">ביטול</button>'
+    +'<button onclick="saveEditHol323('+idx+')" style="padding:8px 18px;border-radius:8px;border:none;background:#1B6B5A;color:#fff;cursor:pointer;font-size:14px;">שמור</button>'
+    +'</div></div>';
+  document.body.appendChild(overlay);
+  overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
+  document.getElementById('hol-edit-all').onchange=function(){
+    document.querySelectorAll('.hol-edit-cb').forEach(function(c){c.checked=this.checked;}.bind(this));
+  };
+}
+
+function saveEditHol323(idx){
+  var name=document.getElementById('hol-edit-name').value.trim();
+  if(!name){alert('שם החג לא יכול להיות ריק');return;}
+  var start=document.getElementById('hol-edit-start').value;
+  var end=document.getElementById('hol-edit-end').value||start;
+  if(!start){alert('נא למלא תאריך התחלה');return;}
+  if(end<start){alert('תאריך הסיום חייב להיות שווה או מאוחר מתאריך ההתחלה');return;}
+  var allCk=document.getElementById('hol-edit-all').checked;
+  var workers='all';
+  if(!allCk){
+    workers=Array.from(document.querySelectorAll('.hol-edit-cb:checked')).map(function(c){return c.value;});
+    if(!workers.length){alert('נא לבחור עובדים');return;}
+  }
+  S.holidays[idx]={name:name,start:start,end:end,workers:workers};
+  document.getElementById('hol-edit-popup').remove();
   renderHolList();
   renderTable();
   saveData();
@@ -10760,7 +10797,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function kpis(){var m=month(),funded=0,near=0,over=0,repl=0,activeDonors=0,review=0;officialNames().forEach(function(n){var t=workerTotal(n,m);if(t>0)funded++;if(t>=90&&t<=100)near++;if(t>100)over++;if(workerRows(n,m).some(function(r){return rowRepl(r.worker,m)>0;}))repl++;});donors().forEach(function(d){if(d.status==='review')review++;else if(calcDonor(d))activeDonors++;});return '<div class="wdw-kpis"><div class="wdw-kpi '+(over?'bad':'ok')+'"><div class="l">חריגות חודשיות</div><div class="n">'+over+'</div><div class="wdw-muted">עובדים מעל 100%</div></div><div class="wdw-kpi warn"><div class="l">קרובים ל־100%</div><div class="n">'+near+'</div><div class="wdw-muted">90%–100%</div></div><div class="wdw-kpi ok"><div class="l">עובדים ממומנים</div><div class="n">'+funded+'</div><div class="wdw-muted">בחודש התצוגה</div></div><div class="wdw-kpi ok"><div class="l">תורמים מחושבים</div><div class="n">'+activeDonors+'</div><div class="wdw-muted">פעיל/ממתין</div></div><div class="wdw-kpi warn"><div class="l">בבחינה</div><div class="n">'+review+'</div><div class="wdw-muted">לא מחושב</div></div></div>';}
   function refreshCurrent(){var p='org';['org','donor','worker','input'].forEach(function(x){var el=document.getElementById('wdw-'+x);if(el&&el.style.display!=='none')p=x;}); if(p==='donor')renderWDWDonor();else if(p==='worker')renderWDWWorker();else if(p==='input')renderWDWInput();else renderWDWOrg();}
   window.wdwSetViewMonth219=function(){var mo=document.getElementById('wdw-v219-month'),yr=document.getElementById('wdw-v219-year');if(!mo||!yr)return;setMonth(yr.value,mo.value);};
-  window.wdwMonthKey=function(){return month();};
+  window.wdwMonthKey=function(){if(S.wdw&&S.wdw.viewMonth) return S.wdw.viewMonth; return month();};
   window.wdwWorkerTotalPct=function(n,m){return workerTotal(n,m||month());};
   window.wdwWorkersList=function(){return officialNames();};
   window.wdwIsActiveInMonth=function(w,m){return rowActive(w,m||month());};
