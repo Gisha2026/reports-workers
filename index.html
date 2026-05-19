@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v357CL | גישה</title>
+<title>Reports_Workers v359CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v357CL</span>
+      <span class="topbar-title">Reports_Workers v359CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -400,7 +400,7 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:100%;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
@@ -1434,7 +1434,7 @@ function renderHolList(){
   // שיטה 7: RTL מפורש על כל תא
   // שיטה 8: רוחב מפורש על כל עמודה
   // v181: הצגת רשימת החגים בסדר תאריכים יורד, בלי לשנות את סדר הנתונים השמור.
-  let html='<table style="width:100%;border-collapse:collapse;direction:rtl;font-size:12px;">';
+  let html='<table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">';
   const holsSorted=(S.holidays||[]).map((h,i)=>({h,i})).sort((a,b)=>String(b.h.start||'').localeCompare(String(a.h.start||'')));
   holsSorted.forEach(({h,i})=>{
     const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
@@ -3868,10 +3868,10 @@ function sendEmail(){
     const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↓</button>`:'<span></span>';
     r.innerHTML=`
       <td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap;">${esc(w.name)}</td>
-      <td style="padding:7px 8px;">${daysHtml}</td>
+      <td style="padding:7px 8px;"><span style="display:flex;gap:4px;">${daysHtml}</span></td>
       <td style="padding:7px 8px;text-align:center;">${statusHtml}</td>
       <td style="padding:7px 8px;text-align:center;">${daysAlert}</td>
-      <td style="padding:7px 8px;text-align:center;">${upBtn}${downBtn}</td>
+      <td style="padding:7px 8px;text-align:center;"><span style="display:flex;gap:3px;justify-content:center;">${upBtn}${downBtn}</span></td>
       <td style="padding:7px 8px;"><select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();" style="width:100%;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;"><option value="">— תפקיד קבוע —</option>${roleOpts}</select></td>
       <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
       <td style="padding:7px 8px;white-space:nowrap;">${btn}</td>
@@ -5476,7 +5476,7 @@ window.wdwResetNewWorkerForm = function(did) {
         +'<button onclick="wdwEndWorker(\''+d.id+'\',\''+w.id+'\')" style="font-size:12px;padding:4px 10px;border:0.5px solid #ef9a9a;border-radius:6px;background:var(--color-background-primary);color:#e53935;cursor:pointer;">סיים תפקיד</button>'
       +'</div>'
       +'<div style="overflow-x:auto;">'
-        +'<table style="width:100%;border-collapse:collapse;direction:rtl;">'
+        +'<table style="width:auto;border-collapse:collapse;direction:rtl;">'
           +'<thead><tr style="background:var(--color-background-secondary);">'
             +'<th style="'+thS+'">סוג</th>'
             +'<th style="'+thS+'">תפקיד בתרומה</th>'
@@ -6321,7 +6321,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v357CL | גישה</title>
+<title>Reports_Workers v359CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6576,7 +6576,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v357CL</span>
+      <span class="topbar-title">Reports_Workers v359CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6711,7 +6711,7 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:100%;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
@@ -7745,7 +7745,7 @@ function renderHolList(){
   // שיטה 7: RTL מפורש על כל תא
   // שיטה 8: רוחב מפורש על כל עמודה
   // v181: הצגת רשימת החגים בסדר תאריכים יורד, בלי לשנות את סדר הנתונים השמור.
-  let html='<table style="width:100%;border-collapse:collapse;direction:rtl;font-size:12px;">';
+  let html='<table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">';
   const holsSorted=(S.holidays||[]).map((h,i)=>({h,i})).sort((a,b)=>String(b.h.start||'').localeCompare(String(a.h.start||'')));
   holsSorted.forEach(({h,i})=>{
     const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
@@ -11088,10 +11088,10 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↓</button>`:'<span></span>';
     r.innerHTML=`
       <td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap;">${esc(w.name)}</td>
-      <td style="padding:7px 8px;">${daysHtml}</td>
+      <td style="padding:7px 8px;"><span style="display:flex;gap:4px;">${daysHtml}</span></td>
       <td style="padding:7px 8px;text-align:center;">${statusHtml}</td>
       <td style="padding:7px 8px;text-align:center;">${daysAlert}</td>
-      <td style="padding:7px 8px;text-align:center;">${upBtn}${downBtn}</td>
+      <td style="padding:7px 8px;text-align:center;"><span style="display:flex;gap:3px;justify-content:center;">${upBtn}${downBtn}</span></td>
       <td style="padding:7px 8px;"><select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();" style="width:100%;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;"><option value="">— תפקיד קבוע —</option>${roleOpts}</select></td>
       <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
       <td style="padding:7px 8px;white-space:nowrap;">${btn}</td>
@@ -11949,7 +11949,7 @@ window.wdwResetNewWorkerForm = function(did) {
         +'<button onclick="wdwEndWorker(\''+d.id+'\',\''+w.id+'\')" style="font-size:12px;padding:4px 10px;border:0.5px solid #ef9a9a;border-radius:6px;background:var(--color-background-primary);color:#e53935;cursor:pointer;">סיים תפקיד</button>'
       +'</div>'
       +'<div style="overflow-x:auto;">'
-        +'<table style="width:100%;border-collapse:collapse;direction:rtl;">'
+        +'<table style="width:auto;border-collapse:collapse;direction:rtl;">'
           +'<thead><tr style="background:var(--color-background-secondary);">'
             +'<th style="'+thS+'">סוג</th>'
             +'<th style="'+thS+'">תפקיד בתרומה</th>'
