@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v333CL | גישה</title>
+<title>Reports_Workers v335CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v333CL</span>
+      <span class="topbar-title">Reports_Workers v335CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1898,18 +1898,81 @@ function wdwRenderWorkerBlock(w, d, hasBudget, curMonth, workerOpts){
     `ניצול חודשי של ${w.name}: ${totalPct}% ${totalPct<=100?'— תקין ✓':''}`;
   const repLabel=(w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null);const allReplaces=[repLabel,...((w.extraReplaces||[]).map(r=>r.name||r.replaces||null).filter(Boolean))].filter(Boolean);const repDisplay=allReplaces.length>0?allReplaces.join(', '):null;
 
+  // בניית שורות נפרדות: בסיס + כל החלפה + סה"כ
+  const baseRole = w.roleInDonor||'—';
+  const basePctVal = w.valueType==='percent'?parseFloat(w.value)||0:0;
+  const baseAmt = w.valueType==='amount'?parseFloat(w.value)||0:0;
+  const basePeriod = `${w.startMonth?fmtMonth(w.startMonth):'?'} — ${w.endMonth?fmtMonth(w.endMonth):'?'}`;
+
+  const replRows = [];
+  if(replacePct||w.replaces){
+    const replRole = w.replaceRoleInDonor||baseRole;
+    const replWho = w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||'—';
+    const replPeriod = `${w.replaceStartMonth?fmtMonth(w.replaceStartMonth):(w.startMonth?fmtMonth(w.startMonth):'?')} — ${w.replaceEndMonth?fmtMonth(w.replaceEndMonth):'פתוח'}`;
+    replRows.push({role:replRole, pct:replacePct, who:replWho, period:replPeriod});
+  }
+  (w.extraReplaces||[]).forEach(r=>{
+    if(!r.pct&&!r.replaces) return;
+    const rRole = r.roleInDonor||baseRole;
+    const rWho = r.replaces==='__vacant__'?(r.vacantName||'משרה פנויה'):r.replaces||'—';
+    const rPeriod = `${r.startMonth?fmtMonth(r.startMonth):'?'} — ${r.endMonth?fmtMonth(r.endMonth):'פתוח'}`;
+    replRows.push({role:rRole, pct:parseFloat(r.pct)||0, who:rWho, period:rPeriod});
+  });
+
+  const thStyle = 'padding:5px 10px;font-size:11px;font-weight:600;color:#6b7280;border-bottom:1px solid #c8e6c9;text-align:right;';
+  const tdBase  = 'padding:6px 10px;font-size:12px;border-bottom:1px solid #e5e7eb;text-align:right;';
+  const tdNum   = 'padding:6px 10px;font-size:12px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:600;';
+
+  let rows = '';
+  rows += `<tr>
+    <td style="${tdBase}"><strong>${w.name}</strong></td>
+    <td style="${tdBase}">${baseRole}</td>
+    <td style="${tdBase}">בסיס</td>
+    <td style="${tdNum}">${w.valueType==='percent'?(basePctVal+'%'):('₪'+baseAmt.toLocaleString())}</td>
+    <td style="${tdBase}">—</td>
+    <td style="${tdBase}">${basePeriod}</td>
+  </tr>`;
+  replRows.forEach(r=>{
+    rows += `<tr style="background:#fff8e1;">
+      <td style="${tdBase}"><strong>${w.name}</strong></td>
+      <td style="${tdBase}">${r.role}</td>
+      <td style="${tdBase};color:#e65100;">מחליף</td>
+      <td style="${tdNum};color:#e65100;">${r.pct?r.pct+'%':'—'}</td>
+      <td style="${tdBase};color:#555;">${r.who}</td>
+      <td style="${tdBase}">${r.period}</td>
+    </tr>`;
+  });
+  if(replRows.length>0){
+    rows += `<tr style="background:#e8f5e9;">
+      <td style="${tdBase}"><strong>${w.name}</strong></td>
+      <td style="${tdBase}" colspan="2"><strong>סה"כ</strong></td>
+      <td style="${tdNum};color:${totalPct>100?'#c62828':'#1B6B5A'};font-size:13px;">${totalPct}%</td>
+      <td style="${tdBase}" colspan="2"></td>
+    </tr>`;
+  }
+
   let html=`<div style="border:1px solid #c8e6c9;border-radius:8px;margin-bottom:10px;overflow:hidden">
-    <div style="background:#f0f7f0;padding:9px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #c8e6c9">
-      <span style="font-weight:700;font-size:14px">${w.name}</span>
-      <span style="font-size:12px;color:#555">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}</span>
-      ${replacePct?`<span style="font-size:12px;color:#1565C0">+ ${replacePct}% החלפה</span>`:''}
-      <span style="font-size:12px;color:#666">| ${w.startMonth?fmtMonth(w.startMonth):'?'} — ${w.endMonth?fmtMonth(w.endMonth):'?'}</span>
-      ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#555">| מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
+    <div style="background:#f0f7f0;padding:7px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #c8e6c9">
+      <span style="font-weight:700;font-size:13px">${w.name}</span>
+      <span style="font-size:11px;background:${totalPct>100?'#fee2e2':'#dcfce7'};color:${totalPct>100?'#991b1b':'#166534'};padding:2px 8px;border-radius:20px">${totalPct}% כולל</span>
       <span style="flex:1"></span>
       <button onclick="wdwToggleWorkerEdit('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #ccc;border-radius:4px;cursor:pointer;font-size:12px;color:#555">✏ ערוך</button>
       <button onclick="wdwEndWorker('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #ef9a9a;border-radius:4px;cursor:pointer;font-size:12px;color:#e53935">סיים תפקיד</button>
     </div>
-    <div style="background:#fff8e1;border-bottom:1px solid ${alertBorder};padding:7px 14px;font-size:12px;color:${alertTextColor}">
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">
+        <thead><tr style="background:#f9fafb;">
+          <th style="${thStyle}">עובד</th>
+          <th style="${thStyle}">תפקיד בתרומה</th>
+          <th style="${thStyle}">סוג</th>
+          <th style="${thStyle};text-align:center;">אחוז</th>
+          <th style="${thStyle}">מחליף את</th>
+          <th style="${thStyle}">תקופה</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="background:#fff8e1;border-bottom:1px solid ${alertBorder};padding:6px 14px;font-size:12px;color:${alertTextColor}">
       ${alertIcon} ${alertText}
     </div>
     <div id="wdw-edit-worker-${d.id}-${w.id}" style="display:none;padding:14px;background:#fafafa">
@@ -4396,7 +4459,6 @@ window.wdwReportOrgRender = function(){
     {id:'positions', label:'משרות בתקופה'},
     {id:'workforce', label:'כוח אדם'},
     {id:'budget',    label:'תקציב'},
-    {id:'dist',      label:'פיזור תורמים'}
   ];
 
   var tabBtns = tabs.map(function(t,i){
@@ -4424,7 +4486,7 @@ window.wdwReportOrgRender = function(){
 };
 
 window.wdwOrgTab = function(tab){
-  ['donations','workers','changes','positions','workforce','budget','dist'].forEach(function(t){
+  ['donations','workers','changes','positions','workforce','budget'].forEach(function(t){
     var btn=document.getElementById('rpt-org-tab-'+t);
     if(btn){btn.style.borderBottomColor=t===tab?'#1B6B5A':'transparent';btn.style.color=t===tab?'#1B6B5A':'#6b7280';btn.style.fontWeight=t===tab?'bold':'normal';}
   });
@@ -4438,7 +4500,7 @@ window.wdwOrgTab = function(tab){
   var tbl = '';
   if(tab==='donations'){
     tbl = '<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      + '<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סטטוס</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
+      + '<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סטטוס</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
     donors.forEach(function(d){
       var st=String(d.startDate||'').substring(0,7), en=String(d.endDate||'').substring(0,7);
       var statusLabel={'active':'פעיל','pending':'ממתין','review':'בבחינה','ended':'הסתיים','inactive':'לא פעיל'}[d.status]||d.status||'';
@@ -4453,16 +4515,18 @@ window.wdwOrgTab = function(tab){
 
   } else if(tab==='workers'){
     tbl = '<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד בתרומה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">אחוז</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th></tr>';
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד בתרומה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">אחוז</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th></tr>';
     donors.forEach(function(d){
+      if(!(d.workers||[]).length) return;
+      tbl+='<tr style="background:#e8f5e9;"><td colspan="6" style="padding:7px 12px;border:1px solid #e5e7eb;font-weight:700;font-size:12px;color:#1B6B5A;">'+esc(d.name||'')+'</td></tr>';
       (d.workers||[]).forEach(function(w){
         var isRepl = (parseFloat(w.replacesPct)||0)>0;
         tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(w.name||'')+'</td>'
-          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;">'+esc(d.name||'')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;"></td>'
           +'<td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(w.roleInDonor||'—')+'</td>'
           +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(isRepl?'<span style="color:#e65100;">ממלא תפקיד</span>':'בעל תפקיד')+'</td>'
           +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(w.value||0)+'%</td>'
-          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(w.startMonth||'')+'—'+(w.endMonth||'')+'</td></tr>';
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(w.startMonth||from)+'—'+(w.endMonth||to)+'</td></tr>';
       });
     });
     tbl+='</table>';
@@ -4471,14 +4535,14 @@ window.wdwOrgTab = function(tab){
     var started=window._rptOrgStarted||[], ended=window._rptOrgEnded||[];
     tbl='<div style="font-weight:bold;font-size:12px;margin-bottom:8px;color:#1B6B5A;">תרומות שהתחילו</div>'
       +'<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;margin-bottom:16px;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תאריך התחלה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תאריך התחלה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
     if(!started.length) tbl+='<tr><td colspan="4" style="padding:8px 12px;border:1px solid #e5e7eb;color:#9ca3af;text-align:center;">אין תרומות שהתחילו בתקופה</td></tr>';
     started.forEach(function(d){
       tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(d.name||'')+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+String(d.startDate||'').substring(0,7)+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">₪'+rptFmt(d.totalBudget||0)+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(d.workers||[]).length+'</td></tr>';
     });
     tbl+='</table><div style="font-weight:bold;font-size:12px;margin-bottom:8px;color:#e53935;">תרומות שהסתיימו</div>'
       +'<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תאריך סיום</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תאריך סיום</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
     if(!ended.length) tbl+='<tr><td colspan="4" style="padding:8px 12px;border:1px solid #e5e7eb;color:#9ca3af;text-align:center;">אין תרומות שהסתיימו בתקופה</td></tr>';
     ended.forEach(function(d){
       tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(d.name||'')+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+String(d.endDate||'').substring(0,7)+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">₪'+rptFmt(d.totalBudget||0)+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(d.workers||[]).length+'</td></tr>';
@@ -4487,16 +4551,18 @@ window.wdwOrgTab = function(tab){
 
   } else if(tab==='positions'){
     tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סוג</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סטטוס</th></tr>';
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סוג</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סטטוס</th></tr>';
     donors.forEach(function(d){
+      if(!(d.workers||[]).length) return;
+      tbl+='<tr style="background:#e8f5e9;"><td colspan="6" style="padding:7px 12px;border:1px solid #e5e7eb;font-weight:700;font-size:12px;color:#1B6B5A;">'+esc(d.name||'')+'</td></tr>';
       (d.workers||[]).forEach(function(w){
         var isEmpty = !w.name;
         var isRepl = (parseFloat(w.replacesPct)||0)>0;
         tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(w.roleInDonor||'—')+'</td>'
-          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;">'+esc(d.name||'')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;"></td>'
           +'<td style="padding:8px 12px;border:1px solid #e5e7eb;">'+(isEmpty?'<span style="color:#e53935;">— פנוי —</span>':esc(w.name||''))+'</td>'
           +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(isRepl?'<span style="color:#e65100;">ממלא</span>':'ראשי')+'</td>'
-          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(w.startMonth||'')+'—'+(w.endMonth||'')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(w.startMonth||from)+'—'+(w.endMonth||to)+'</td>'
           +'<td style="padding:8px 12px;border:1px solid #e5e7eb;"><span style="color:'+(isEmpty?'#e53935':'#1B6B5A')+'">'+(isEmpty?'פנוי':'מאויש')+'</span></td></tr>';
       });
     });
@@ -4504,7 +4570,7 @@ window.wdwOrgTab = function(tab){
 
   } else if(tab==='workforce'){
     tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד קבוע</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורמים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול כ"א</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">יתרה</th></tr>';
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד קבוע</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורמים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">% בתרומות</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">פנוי</th></tr>';
     var wMap={};
     donors.forEach(function(d){
       (d.workers||[]).forEach(function(w){
@@ -4530,7 +4596,7 @@ window.wdwOrgTab = function(tab){
   } else if(tab==='budget'){
     var totalB=0, totalU=0;
     tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">נוצל</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול תקציבי</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול כ"א</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">יתרה</th></tr>';
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">נוצל</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול תקציבי</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">יתרה</th></tr>';
     donors.forEach(function(d){
       var budget=parseFloat(d.totalBudget||d.budget||0);
       var used=0, totalPct=0;
@@ -4547,7 +4613,6 @@ window.wdwOrgTab = function(tab){
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(budget)+'</td>'
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(used)+'</td>'
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+budgetPct+'%</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+Math.round(totalPct)+'%</td>'
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#1B6B5A;">₪'+rptFmt(budget-used)+'</td></tr>';
     });
     var totBudgetPct = totalB>0?Math.round(totalU/totalB*100):0;
@@ -4555,35 +4620,9 @@ window.wdwOrgTab = function(tab){
       +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(totalB)+'</td>'
       +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(totalU)+'</td>'
       +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+totBudgetPct+'%</td>'
-      +'<td style="padding:8px 12px;border:1px solid #e5e7eb;"></td>'
       +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#1B6B5A;">₪'+rptFmt(totalB-totalU)+'</td></tr>'
       +'</table>';
 
-  } else if(tab==='dist'){
-    var totalB2=donors.reduce(function(s,d){return s+parseFloat(d.totalBudget||d.budget||0);},0);
-    tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">% מסך הכל</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול תקציבי</th></tr>';
-    donors.forEach(function(d){
-      var budget=parseFloat(d.totalBudget||d.budget||0);
-      var pctOfAll=totalB2>0?Math.round(budget/totalB2*100):0;
-      var used=0;
-      (d.workers||[]).forEach(function(w){
-        var cost=rptWorkerCost(w.name);
-        var pct=parseFloat(w.value||0)/100;
-        var months=rptMonthsInRange(w.startMonth||from,w.endMonth||to).filter(function(m){return m>=from&&m<=to;}).length;
-        used+=cost/12*pct*months;
-      });
-      var budgetPct=budget>0?Math.round(used/budget*100):0;
-      tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(d.name||'')+'</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(budget)+'</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;">'
-        +'<div style="display:flex;align-items:center;gap:8px;">'
-        +'<div style="flex:1;height:4px;background:#e5e7eb;border-radius:2px;"><div style="height:4px;background:#1B6B5A;border-radius:2px;width:'+pctOfAll+'%;"></div></div>'
-        +'<span>'+pctOfAll+'%</span></div></td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(d.workers||[]).length+'</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+budgetPct+'%</td></tr>';
-    });
-    tbl+='</table>';
   }
 
   tc.innerHTML = tbl;
@@ -6126,7 +6165,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v333CL | גישה</title>
+<title>Reports_Workers v335CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6381,7 +6420,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v333CL</span>
+      <span class="topbar-title">Reports_Workers v335CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
