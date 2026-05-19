@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v330CL | גישה</title>
+<title>Reports_Workers v331CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v330CL</span>
+      <span class="topbar-title">Reports_Workers v331CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -437,11 +437,14 @@ async function initPyodide(){
         <button onclick="switchWDW('donor')" id="wdw-btn-donor" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">תורמים</button>
         <button onclick="switchWDW('worker')" id="wdw-btn-worker" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
         <button onclick="switchWDW('input')" id="wdw-btn-input" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">ניהול</button>
+        <button onclick="switchWDW('reports')" id="wdw-btn-reports" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">דוחות</button>
       </div>
       <div id="wdw-input"></div>
       <div id="wdw-org" style="display:none;"></div>
       <div id="wdw-donor" style="display:none;"></div>
       <div id="wdw-worker" style="display:none;"></div>
+
+      <div id="wdw-reports" style="display:none;"></div>
     </div>
   </div>
 
@@ -4252,6 +4255,613 @@ function sendEmail(){
     saveData();
     renderRolesList();
   }
+// קוד הדוחות - v331CL
+window.renderWDWReports = function(){
+  var div = document.getElementById('wdw-reports');
+  if(!div) return;
+  var m = window.wdwMonthKey ? window.wdwMonthKey() : '2026-01';
+  var yr = m.substring(0,4);
+
+  div.innerHTML = '<div style="direction:rtl;font-family:Arial,sans-serif;">'
+
+    // בחירת רמה
+    + '<div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:2px solid #e5e7eb;padding-bottom:0;direction:rtl;">'
+    + '<button onclick="wdwReportLevel(\'org\')" id="rpt-btn-org" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עמותה</button>'
+    + '<button onclick="wdwReportLevel(\'donor\')" id="rpt-btn-donor" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תורם</button>'
+    + '<button onclick="wdwReportLevel(\'worker\')" id="rpt-btn-worker" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">עובד</button>'
+    + '<button onclick="wdwReportLevel(\'role\')" id="rpt-btn-role" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקיד</button>'
+    + '</div>'
+
+    // תוכן הדוח
+    + '<div id="rpt-content"></div>'
+
+    + '</div>';
+
+  // הצגת רמת עמותה כברירת מחדל
+  window.wdwReportLevel('org');
+};
+
+window.wdwReportLevel = function(level){
+  ['org','donor','worker','role'].forEach(function(l){
+    var btn = document.getElementById('rpt-btn-'+l);
+    if(btn){
+      btn.style.borderBottomColor = l===level ? '#1B6B5A' : 'transparent';
+      btn.style.color = l===level ? '#1B6B5A' : '#6b7280';
+      btn.style.fontWeight = l===level ? 'bold' : 'normal';
+    }
+  });
+  var content = document.getElementById('rpt-content');
+  if(!content) return;
+  if(level==='org') window.wdwReportOrg(content);
+  else if(level==='donor') window.wdwReportDonor(content);
+  else if(level==='worker') window.wdwReportWorker(content);
+  else if(level==='role') window.wdwReportRole(content);
+};
+
+// עזרים
+function rptMonths(){ return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; }
+function rptMonthsHe(){ return ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']; }
+function rptFmt(n){ return n?Math.round(n).toLocaleString('he-IL'):'0'; }
+function rptPeriodInputs(fromId, toId, defaultFrom, defaultTo){
+  return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">'
+    + '<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">מ</label>'
+    + '<input type="month" id="'+fromId+'" value="'+defaultFrom+'" style="font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:6px;"></div>'
+    + '<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">עד</label>'
+    + '<input type="month" id="'+toId+'" value="'+defaultTo+'" style="font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:6px;"></div>'
+    + '</div>';
+}
+function rptKpi(label, value, color){
+  return '<div style="background:#f9fafb;border-radius:8px;padding:12px;text-align:center;">'
+    + '<div style="font-size:11px;color:#6b7280;margin-bottom:4px;">'+label+'</div>'
+    + '<div style="font-size:20px;font-weight:500;'+(color?'color:'+color:'')+'">'+(value||'0')+'</div></div>';
+}
+function rptKpiRow(items){
+  return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px;">'
+    + items.map(function(i){return rptKpi(i.label,i.value,i.color);}).join('')+'</div>';
+}
+function rptActiveDonors(from, to){
+  return (S.wdw&&S.wdw.donors||[]).filter(function(d){
+    if(d.status==='inactive') return false;
+    var st=String(d.startDate||'').substring(0,7);
+    var en=String(d.endDate||'').substring(0,7);
+    if(en && en < from) return false;
+    if(st && st > to) return false;
+    return true;
+  });
+}
+function rptWorkerCost(wName){ return S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[wName]||0; }
+function rptMonthsInRange(from, to){
+  var months=[];
+  var cur=from;
+  while(cur<=to){
+    months.push(cur);
+    var y=parseInt(cur.substring(0,4)), m=parseInt(cur.substring(5,7));
+    m++; if(m>12){m=1;y++;}
+    cur=y+'-'+String(m).padStart(2,'0');
+  }
+  return months;
+}
+
+// ===== רמת עמותה =====
+window.wdwReportOrg = function(container){
+  var yr = new Date().getFullYear();
+  var from = yr+'-01', to = yr+'-12';
+  container.innerHTML = rptPeriodInputs('rpt-org-from','rpt-org-to', from, to)
+    + '<button onclick="wdwReportOrgRender()" style="padding:6px 16px;background:#1B6B5A;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;margin-bottom:16px;">הצג דוח</button>'
+    + '<div id="rpt-org-body"></div>';
+  window.wdwReportOrgRender();
+};
+
+window.wdwReportOrgRender = function(){
+  var from = (document.getElementById('rpt-org-from')||{}).value || new Date().getFullYear()+'-01';
+  var to   = (document.getElementById('rpt-org-to')||{}).value   || new Date().getFullYear()+'-12';
+  var body = document.getElementById('rpt-org-body');
+  if(!body) return;
+
+  var donors = rptActiveDonors(from, to);
+  var months = rptMonthsInRange(from, to);
+  var allWorkers = new Set();
+  var totalBudget = 0, totalUsed = 0;
+  var startedDonors = [], endedDonors = [];
+  var workerSet = new Set();
+  var replCount = 0;
+
+  donors.forEach(function(d){
+    var st=String(d.startDate||'').substring(0,7);
+    var en=String(d.endDate||'').substring(0,7);
+    if(st>=from && st<=to) startedDonors.push(d);
+    if(en>=from && en<=to) endedDonors.push(d);
+    (d.workers||[]).forEach(function(w){
+      if(w.name) workerSet.add(w.name);
+      var cost = rptWorkerCost(w.name);
+      var wPct = parseFloat(w.value||0)/100;
+      if(cost && wPct){
+        var wMonths = rptMonthsInRange(w.startMonth||from, w.endMonth||to).filter(function(m){return m>=from&&m<=to;});
+        totalUsed += cost/12 * wPct * wMonths.length;
+      }
+      if((parseFloat(w.replacesPct)||0)>0) replCount++;
+    });
+    var ec = parseFloat((S.wdw&&S.wdw.employerCosts)||0);
+    totalBudget += parseFloat(d.totalBudget||d.budget||0);
+  });
+
+  var pctUsed = totalBudget>0 ? Math.round(totalUsed/totalBudget*100) : 0;
+
+  // טאבים פנימיים
+  var tabs = [
+    {id:'donations', label:'תרומות בתקופה'},
+    {id:'workers',   label:'עובדים משויכים'},
+    {id:'changes',   label:'התחלות וסיומים'},
+    {id:'positions', label:'משרות בתקופה'},
+    {id:'workforce', label:'כוח אדם'},
+    {id:'budget',    label:'תקציב'},
+    {id:'dist',      label:'פיזור תורמים'}
+  ];
+
+  var tabBtns = tabs.map(function(t,i){
+    return '<button onclick="wdwOrgTab(\''+t.id+'\')" id="rpt-org-tab-'+t.id+'" style="padding:6px 12px;border:none;border-bottom:2px solid '+(i===0?'#1B6B5A':'transparent')+';background:none;cursor:pointer;font-size:12px;color:'+(i===0?'#1B6B5A':'#6b7280')+';font-weight:'+(i===0?'bold':'normal')+';margin-bottom:-1px;">'+t.label+'</button>';
+  }).join('');
+
+  body.innerHTML = rptKpiRow([
+    {label:'תרומות פעילות', value:donors.length},
+    {label:'עובדים מאוישים', value:workerSet.size},
+    {label:'החלפות פעילות', value:replCount},
+    {label:'ניצול תקציבי', value:pctUsed+'%', color:pctUsed>80?'#e53935':'#e65100'},
+    {label:'יתרה', value:'₪'+rptFmt(totalBudget-totalUsed), color:'#1B6B5A'}
+  ])
+  + '<div style="display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid #e5e7eb;flex-wrap:wrap;">'
+  + tabBtns + '</div>'
+  + '<div id="rpt-org-tabcontent"></div>';
+
+  window.wdwOrgTab('donations');
+  window._rptOrgDonors = donors;
+  window._rptOrgWorkers = Array.from(workerSet);
+  window._rptOrgStarted = startedDonors;
+  window._rptOrgEnded = endedDonors;
+  window._rptOrgFrom = from;
+  window._rptOrgTo = to;
+};
+
+window.wdwOrgTab = function(tab){
+  ['donations','workers','changes','positions','workforce','budget','dist'].forEach(function(t){
+    var btn=document.getElementById('rpt-org-tab-'+t);
+    if(btn){btn.style.borderBottomColor=t===tab?'#1B6B5A':'transparent';btn.style.color=t===tab?'#1B6B5A':'#6b7280';btn.style.fontWeight=t===tab?'bold':'normal';}
+  });
+  var tc = document.getElementById('rpt-org-tabcontent');
+  if(!tc) return;
+  var donors = window._rptOrgDonors||[];
+  var workers = window._rptOrgWorkers||[];
+  var from = window._rptOrgFrom||'';
+  var to   = window._rptOrgTo||'';
+
+  var tbl = '';
+  if(tab==='donations'){
+    tbl = '<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
+      + '<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סטטוס</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
+    donors.forEach(function(d){
+      var st=String(d.startDate||'').substring(0,7), en=String(d.endDate||'').substring(0,7);
+      var statusLabel={'active':'פעיל','pending':'ממתין','review':'בבחינה','ended':'הסתיים','inactive':'לא פעיל'}[d.status]||d.status||'';
+      var statusColor=d.status==='active'?'#1B6B5A':d.status==='ended'?'#e53935':'#e65100';
+      tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(d.name||'')+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;color:'+statusColor+';">'+statusLabel+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;">'+st+' — '+en+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;">₪'+rptFmt(d.totalBudget||d.budget||0)+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(d.workers||[]).length+'</td></tr>';
+    });
+    tbl += '</table>';
+
+  } else if(tab==='workers'){
+    tbl = '<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד בתרומה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">אחוז</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th></tr>';
+    donors.forEach(function(d){
+      (d.workers||[]).forEach(function(w){
+        var isRepl = (parseFloat(w.replacesPct)||0)>0;
+        tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(w.name||'')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;">'+esc(d.name||'')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(w.roleInDonor||'—')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(isRepl?'<span style="color:#e65100;">ממלא תפקיד</span>':'בעל תפקיד')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(w.value||0)+'%</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(w.startMonth||'')+'—'+(w.endMonth||'')+'</td></tr>';
+      });
+    });
+    tbl+='</table>';
+
+  } else if(tab==='changes'){
+    var started=window._rptOrgStarted||[], ended=window._rptOrgEnded||[];
+    tbl='<div style="font-weight:bold;font-size:12px;margin-bottom:8px;color:#1B6B5A;">תרומות שהתחילו</div>'
+      +'<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;margin-bottom:16px;">'
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תאריך התחלה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
+    if(!started.length) tbl+='<tr><td colspan="4" style="padding:8px 12px;border:1px solid #e5e7eb;color:#9ca3af;text-align:center;">אין תרומות שהתחילו בתקופה</td></tr>';
+    started.forEach(function(d){
+      tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(d.name||'')+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+String(d.startDate||'').substring(0,7)+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">₪'+rptFmt(d.totalBudget||0)+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(d.workers||[]).length+'</td></tr>';
+    });
+    tbl+='</table><div style="font-weight:bold;font-size:12px;margin-bottom:8px;color:#e53935;">תרומות שהסתיימו</div>'
+      +'<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תאריך סיום</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th></tr>';
+    if(!ended.length) tbl+='<tr><td colspan="4" style="padding:8px 12px;border:1px solid #e5e7eb;color:#9ca3af;text-align:center;">אין תרומות שהסתיימו בתקופה</td></tr>';
+    ended.forEach(function(d){
+      tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(d.name||'')+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+String(d.endDate||'').substring(0,7)+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">₪'+rptFmt(d.totalBudget||0)+'</td><td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(d.workers||[]).length+'</td></tr>';
+    });
+    tbl+='</table>';
+
+  } else if(tab==='positions'){
+    tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סוג</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקופה</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">סטטוס</th></tr>';
+    donors.forEach(function(d){
+      (d.workers||[]).forEach(function(w){
+        var isEmpty = !w.name;
+        var isRepl = (parseFloat(w.replacesPct)||0)>0;
+        tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(w.roleInDonor||'—')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;">'+esc(d.name||'')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;">'+(isEmpty?'<span style="color:#e53935;">— פנוי —</span>':esc(w.name||''))+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(isRepl?'<span style="color:#e65100;">ממלא</span>':'ראשי')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(w.startMonth||'')+'—'+(w.endMonth||'')+'</td>'
+          +'<td style="padding:8px 12px;border:1px solid #e5e7eb;"><span style="color:'+(isEmpty?'#e53935':'#1B6B5A')+'">'+(isEmpty?'פנוי':'מאויש')+'</span></td></tr>';
+      });
+    });
+    tbl+='</table>';
+
+  } else if(tab==='workforce'){
+    tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד קבוע</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורמים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול כ"א</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">יתרה</th></tr>';
+    var wMap={};
+    donors.forEach(function(d){
+      (d.workers||[]).forEach(function(w){
+        if(!w.name) return;
+        if(!wMap[w.name]) wMap[w.name]={donors:0,pct:0,repl:false};
+        wMap[w.name].donors++;
+        wMap[w.name].pct += parseFloat(w.value||0);
+        if((parseFloat(w.replacesPct)||0)>0) wMap[w.name].repl=true;
+      });
+    });
+    Object.keys(wMap).forEach(function(name){
+      var d=wMap[name];
+      var pct=Math.round(d.pct);
+      tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(name)+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;">—</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(d.repl?'<span style="color:#e65100;">ממלא תפקיד</span>':'בעל תפקיד')+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+d.donors+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>100?'#e53935':'#374151')+'">'+pct+'%</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>=100?'#e53935':'#1B6B5A')+'">'+(100-pct)+'%</td></tr>';
+    });
+    tbl+='</table>';
+
+  } else if(tab==='budget'){
+    var totalB=0, totalU=0;
+    tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">נוצל</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול תקציבי</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול כ"א</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">יתרה</th></tr>';
+    donors.forEach(function(d){
+      var budget=parseFloat(d.totalBudget||d.budget||0);
+      var used=0, totalPct=0;
+      (d.workers||[]).forEach(function(w){
+        var cost=rptWorkerCost(w.name);
+        var pct=parseFloat(w.value||0)/100;
+        var months=rptMonthsInRange(w.startMonth||from,w.endMonth||to).filter(function(m){return m>=from&&m<=to;}).length;
+        used+=cost/12*pct*months;
+        totalPct+=parseFloat(w.value||0);
+      });
+      totalB+=budget; totalU+=used;
+      var budgetPct=budget>0?Math.round(used/budget*100):0;
+      tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(d.name||'')+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(budget)+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(used)+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+budgetPct+'%</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+Math.round(totalPct)+'%</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#1B6B5A;">₪'+rptFmt(budget-used)+'</td></tr>';
+    });
+    var totBudgetPct = totalB>0?Math.round(totalU/totalB*100):0;
+    tbl+='<tr style="background:#f9fafb;font-weight:bold;"><td style="padding:8px 12px;border:1px solid #e5e7eb;">סה"כ</td>'
+      +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(totalB)+'</td>'
+      +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(totalU)+'</td>'
+      +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+totBudgetPct+'%</td>'
+      +'<td style="padding:8px 12px;border:1px solid #e5e7eb;"></td>'
+      +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#1B6B5A;">₪'+rptFmt(totalB-totalU)+'</td></tr>'
+      +'</table>';
+
+  } else if(tab==='dist'){
+    var totalB2=donors.reduce(function(s,d){return s+parseFloat(d.totalBudget||d.budget||0);},0);
+    tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תורם</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תקציב</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">% מסך הכל</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">עובדים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ניצול תקציבי</th></tr>';
+    donors.forEach(function(d){
+      var budget=parseFloat(d.totalBudget||d.budget||0);
+      var pctOfAll=totalB2>0?Math.round(budget/totalB2*100):0;
+      var used=0;
+      (d.workers||[]).forEach(function(w){
+        var cost=rptWorkerCost(w.name);
+        var pct=parseFloat(w.value||0)/100;
+        var months=rptMonthsInRange(w.startMonth||from,w.endMonth||to).filter(function(m){return m>=from&&m<=to;}).length;
+        used+=cost/12*pct*months;
+      });
+      var budgetPct=budget>0?Math.round(used/budget*100):0;
+      tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(d.name||'')+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">₪'+rptFmt(budget)+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;">'
+        +'<div style="display:flex;align-items:center;gap:8px;">'
+        +'<div style="flex:1;height:4px;background:#e5e7eb;border-radius:2px;"><div style="height:4px;background:#1B6B5A;border-radius:2px;width:'+pctOfAll+'%;"></div></div>'
+        +'<span>'+pctOfAll+'%</span></div></td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+(d.workers||[]).length+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+budgetPct+'%</td></tr>';
+    });
+    tbl+='</table>';
+  }
+
+  tc.innerHTML = tbl;
+};
+
+// ===== רמת תורם =====
+window.wdwReportDonor = function(container){
+  var yr = new Date().getFullYear();
+  var donors = (S.wdw&&S.wdw.donors||[]);
+  var donorOpts = donors.map(function(d){return '<option value="'+esc(d.id||d.name||'')+'">'+esc(d.name||'')+'</option>';}).join('');
+  container.innerHTML = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">'
+    +'<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">תורם</label>'
+    +'<select id="rpt-donor-sel" style="font-size:12px;padding:5px 10px;border:1px solid #d1d5db;border-radius:6px;direction:rtl;">'+donorOpts+'</select></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">מ</label>'
+    +'<input type="month" id="rpt-donor-from" value="'+yr+'-01" style="font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:6px;"></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">עד</label>'
+    +'<input type="month" id="rpt-donor-to" value="'+yr+'-12" style="font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:6px;"></div>'
+    +'<button onclick="wdwReportDonorRender()" style="padding:6px 16px;background:#1B6B5A;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;">הצג דוח</button>'
+    +'</div>'
+    +'<div id="rpt-donor-body"></div>';
+};
+
+window.wdwReportDonorRender = function(){
+  var selEl = document.getElementById('rpt-donor-sel');
+  var from  = (document.getElementById('rpt-donor-from')||{}).value||'';
+  var to    = (document.getElementById('rpt-donor-to')||{}).value||'';
+  var body  = document.getElementById('rpt-donor-body');
+  if(!body||!selEl) return;
+
+  var donorId = selEl.value;
+  var donor = (S.wdw&&S.wdw.donors||[]).find(function(d){return (d.id||d.name||'')=== donorId;});
+  if(!donor){body.innerHTML='<p style="color:#9ca3af;">לא נמצא תורם</p>';return;}
+
+  var months = rptMonthsInRange(from, to);
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // קבוצת תפקידים
+  var roleMap = {};
+  (donor.workers||[]).forEach(function(w){
+    var role = w.roleInDonor||w.name||'—';
+    if(!roleMap[role]) roleMap[role]=[];
+    roleMap[role].push(w);
+  });
+
+  var html = '<div style="overflow-x:auto;">';
+  html += '<table style="border-collapse:collapse;font-size:11px;min-width:900px;">';
+  
+  // כותרת עמודות
+  html += '<thead><tr style="background:#f9fafb;">'
+    +'<th style="padding:8px 10px;text-align:left;border:1px solid #e5e7eb;min-width:150px;">Role / Employee</th>';
+  months.forEach(function(m){
+    var mi = parseInt(m.substring(5,7))-1;
+    html += '<th style="padding:8px 4px;text-align:center;border:1px solid #e5e7eb;min-width:52px;">'+MONTHS[mi]+'<br><span style="font-weight:normal;font-size:9px;">'+m.substring(0,4)+'</span></th>';
+  });
+  html += '<th style="padding:8px 4px;text-align:center;border:1px solid #e5e7eb;min-width:70px;font-weight:bold;">Avg/Total</th></tr></thead><tbody>';
+
+  Object.keys(roleMap).forEach(function(role){
+    // שורת כותרת תפקיד
+    html += '<tr style="background:#f0fdf4;"><td colspan="'+(months.length+2)+'" style="padding:6px 10px;border:1px solid #e5e7eb;font-weight:600;font-size:11px;color:#1B6B5A;">'+esc(role)+'</td></tr>';
+
+    roleMap[role].forEach(function(w){
+      var cost = rptWorkerCost(w.name)||0;
+      var totalPct=0, totalAmt=0, cnt=0;
+
+      // שורת אחוז
+      html += '<tr><td style="padding:6px 10px;border:1px solid #e5e7eb;font-size:11px;">'+esc(w.name||'')+'<br><span style="font-size:9px;color:#6b7280;">%</span></td>';
+      months.forEach(function(m){
+        var active = (!w.startMonth||m>=w.startMonth) && (!w.endMonth||m<=w.endMonth);
+        var pct = active ? parseFloat(w.value||0) : 0;
+        if(active){totalPct+=pct;cnt++;}
+        html += '<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;'+(pct===0&&active?'background:#fff8e1;color:#e65100;':'')+'">'+(active?(pct+'%'):'—')+'</td>';
+      });
+      var avgPct = cnt>0?Math.round(totalPct/months.length*10)/10:0;
+      html += '<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-weight:600;">'+avgPct+'%</td></tr>';
+
+      // שורת סכום
+      html += '<tr style="background:#f9fafb;"><td style="padding:6px 10px;border:1px solid #e5e7eb;font-size:10px;color:#6b7280;">ILS</td>';
+      months.forEach(function(m){
+        var active = (!w.startMonth||m>=w.startMonth) && (!w.endMonth||m<=w.endMonth);
+        var pct = active ? parseFloat(w.value||0)/100 : 0;
+        var amt = cost>0 ? Math.round(cost/12*pct) : 0;
+        if(active) totalAmt+=amt;
+        html += '<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px;'+(amt===0&&active?'background:#fff8e1;color:#e65100;':'')+'">'+(active?(amt||'0'):'—')+'</td>';
+      });
+      html += '<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px;font-weight:600;">'+rptFmt(totalAmt)+'</td></tr>';
+    });
+  });
+
+  // שורת סיכום
+  html += '<tr style="background:#f9fafb;font-weight:bold;"><td style="padding:7px 10px;border:1px solid #e5e7eb;">Total %</td>';
+  var monthTotals = {};
+  months.forEach(function(m){
+    var tot=0;
+    (donor.workers||[]).forEach(function(w){
+      var active=(!w.startMonth||m>=w.startMonth)&&(!w.endMonth||m<=w.endMonth);
+      if(active) tot+=parseFloat(w.value||0);
+    });
+    monthTotals[m]=tot;
+    html+='<td style="padding:7px 4px;text-align:center;border:1px solid #e5e7eb;">'+Math.round(tot)+'%</td>';
+  });
+  html+='<td style="padding:7px 4px;text-align:center;border:1px solid #e5e7eb;">—</td></tr>';
+
+  html += '<tr style="background:#f9fafb;font-weight:bold;"><td style="padding:7px 10px;border:1px solid #e5e7eb;">Total ILS</td>';
+  var grandTotal=0;
+  months.forEach(function(m){
+    var tot=0;
+    (donor.workers||[]).forEach(function(w){
+      var active=(!w.startMonth||m>=w.startMonth)&&(!w.endMonth||m<=w.endMonth);
+      if(active){
+        var cost=rptWorkerCost(w.name)||0;
+        tot+=Math.round(cost/12*(parseFloat(w.value||0)/100));
+      }
+    });
+    grandTotal+=tot;
+    html+='<td style="padding:7px 4px;text-align:center;border:1px solid #e5e7eb;">'+rptFmt(tot)+'</td>';
+  });
+  html+='<td style="padding:7px 4px;text-align:center;border:1px solid #e5e7eb;">'+rptFmt(grandTotal)+'</td></tr>';
+
+  html += '</tbody></table></div>';
+  body.innerHTML = html;
+};
+
+// ===== רמת עובד =====
+window.wdwReportWorker = function(container){
+  var yr = new Date().getFullYear();
+  var allWorkers = (S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';}).filter(Boolean);
+  var wOpts = allWorkers.map(function(w){return '<option>'+esc(w)+'</option>';}).join('');
+  container.innerHTML = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">'
+    +'<div style="display:flex;align-items:center;gap:6px;direction:rtl;"><label style="font-size:12px;color:#6b7280;">עובד</label>'
+    +'<select id="rpt-worker-sel" style="font-size:12px;padding:5px 10px;border:1px solid #d1d5db;border-radius:6px;direction:rtl;">'+wOpts+'</select></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">מ</label>'
+    +'<input type="month" id="rpt-worker-from" value="'+yr+'-01" style="font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:6px;"></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">עד</label>'
+    +'<input type="month" id="rpt-worker-to" value="'+yr+'-12" style="font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:6px;"></div>'
+    +'<button onclick="wdwReportWorkerRender()" style="padding:6px 16px;background:#1B6B5A;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;">הצג דוח</button>'
+    +'</div>'
+    +'<div id="rpt-worker-body"></div>';
+};
+
+window.wdwReportWorkerRender = function(){
+  var wName = (document.getElementById('rpt-worker-sel')||{}).value||'';
+  var from  = (document.getElementById('rpt-worker-from')||{}).value||'';
+  var to    = (document.getElementById('rpt-worker-to')||{}).value||'';
+  var body  = document.getElementById('rpt-worker-body');
+  if(!body) return;
+
+  var months = rptMonthsInRange(from, to);
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var donors = (S.wdw&&S.wdw.donors||[]);
+
+  var html = '<div style="overflow-x:auto;"><table style="border-collapse:collapse;font-size:11px;min-width:900px;">';
+  html += '<thead><tr style="background:#f9fafb;">'
+    +'<th style="padding:8px 10px;text-align:right;border:1px solid #e5e7eb;min-width:150px;direction:rtl;">תורם / תפקיד</th>';
+  months.forEach(function(m){
+    var mi=parseInt(m.substring(5,7))-1;
+    html+='<th style="padding:8px 4px;text-align:center;border:1px solid #e5e7eb;min-width:52px;">'+MONTHS[mi]+'<br><span style="font-weight:normal;font-size:9px;">'+m.substring(0,4)+'</span></th>';
+  });
+  html+='<th style="padding:8px 4px;text-align:center;border:1px solid #e5e7eb;min-width:70px;">Avg/Total</th></tr></thead><tbody>';
+
+  var grandTotal=0;
+  donors.forEach(function(d){
+    var wRows = (d.workers||[]).filter(function(w){return w.name===wName;});
+    if(!wRows.length) return;
+
+    html+='<tr style="background:#f0fdf4;"><td colspan="'+(months.length+2)+'" style="padding:6px 10px;border:1px solid #e5e7eb;font-weight:600;font-size:11px;color:#1B6B5A;">'+esc(d.name||'')+(wRows[0].roleInDonor?' — '+esc(wRows[0].roleInDonor):'')+'</td></tr>';
+
+    wRows.forEach(function(w){
+      var cost=rptWorkerCost(w.name)||0;
+      var totalPct=0,totalAmt=0;
+
+      html+='<tr><td style="padding:6px 10px;border:1px solid #e5e7eb;font-size:11px;direction:rtl;">'+esc(w.name||'')+'<br><span style="font-size:9px;color:#6b7280;">%</span></td>';
+      months.forEach(function(m){
+        var active=(!w.startMonth||m>=w.startMonth)&&(!w.endMonth||m<=w.endMonth);
+        var pct=active?parseFloat(w.value||0):0;
+        if(active) totalPct+=pct;
+        html+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;">'+(active?(pct+'%'):'—')+'</td>';
+      });
+      html+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-weight:600;">'+Math.round(totalPct/months.length*10)/10+'%</td></tr>';
+
+      html+='<tr style="background:#f9fafb;"><td style="padding:6px 10px;border:1px solid #e5e7eb;font-size:10px;color:#6b7280;">ILS</td>';
+      months.forEach(function(m){
+        var active=(!w.startMonth||m>=w.startMonth)&&(!w.endMonth||m<=w.endMonth);
+        var pct=active?parseFloat(w.value||0)/100:0;
+        var amt=cost>0?Math.round(cost/12*pct):0;
+        if(active){totalAmt+=amt;grandTotal+=amt;}
+        html+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px;">'+(active?(amt||'0'):'—')+'</td>';
+      });
+      html+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px;font-weight:600;">'+rptFmt(totalAmt)+'</td></tr>';
+    });
+  });
+
+  html+='<tr style="background:#f9fafb;font-weight:bold;"><td style="padding:7px 10px;border:1px solid #e5e7eb;direction:rtl;">Total ILS</td>';
+  months.forEach(function(m){
+    var tot=0;
+    donors.forEach(function(d){
+      (d.workers||[]).filter(function(w){return w.name===wName;}).forEach(function(w){
+        var active=(!w.startMonth||m>=w.startMonth)&&(!w.endMonth||m<=w.endMonth);
+        if(active){var cost=rptWorkerCost(w.name)||0;tot+=Math.round(cost/12*(parseFloat(w.value||0)/100));}
+      });
+    });
+    html+='<td style="padding:7px 4px;text-align:center;border:1px solid #e5e7eb;">'+rptFmt(tot)+'</td>';
+  });
+  html+='<td style="padding:7px 4px;text-align:center;border:1px solid #e5e7eb;">'+rptFmt(grandTotal)+'</td></tr>';
+  html+='</tbody></table></div>';
+  body.innerHTML=html;
+};
+
+// ===== רמת תפקיד =====
+window.wdwReportRole = function(container){
+  var yr = new Date().getFullYear();
+  var roles = S.roles||[];
+  var rOpts = roles.map(function(r){return '<option>'+esc(r)+'</option>';}).join('');
+  container.innerHTML = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">'
+    +'<div style="display:flex;align-items:center;gap:6px;direction:rtl;"><label style="font-size:12px;color:#6b7280;">תפקיד</label>'
+    +'<select id="rpt-role-sel" style="font-size:12px;padding:5px 10px;border:1px solid #d1d5db;border-radius:6px;direction:rtl;">'+rOpts+'</select></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">מ</label>'
+    +'<input type="month" id="rpt-role-from" value="'+yr+'-01" style="font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:6px;"></div>'
+    +'<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:12px;color:#6b7280;">עד</label>'
+    +'<input type="month" id="rpt-role-to" value="'+yr+'-12" style="font-size:12px;padding:5px 8px;border:1px solid #d1d5db;border-radius:6px;"></div>'
+    +'<button onclick="wdwReportRoleRender()" style="padding:6px 16px;background:#1B6B5A;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;">הצג דוח</button>'
+    +'</div>'
+    +'<div id="rpt-role-body"></div>';
+};
+
+window.wdwReportRoleRender = function(){
+  var roleName=(document.getElementById('rpt-role-sel')||{}).value||'';
+  var from=(document.getElementById('rpt-role-from')||{}).value||'';
+  var to=(document.getElementById('rpt-role-to')||{}).value||'';
+  var body=document.getElementById('rpt-role-body');
+  if(!body) return;
+
+  var months=rptMonthsInRange(from,to);
+  var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var donors=(S.wdw&&S.wdw.donors||[]);
+
+  var html='<div style="overflow-x:auto;"><table style="border-collapse:collapse;font-size:11px;min-width:900px;">';
+  html+='<thead><tr style="background:#f9fafb;">'
+    +'<th style="padding:8px 10px;text-align:right;border:1px solid #e5e7eb;min-width:150px;direction:rtl;">תורם / עובד</th>';
+  months.forEach(function(m){
+    var mi=parseInt(m.substring(5,7))-1;
+    html+='<th style="padding:8px 4px;text-align:center;border:1px solid #e5e7eb;min-width:52px;">'+MONTHS[mi]+'<br><span style="font-weight:normal;font-size:9px;">'+m.substring(0,4)+'</span></th>';
+  });
+  html+='<th style="padding:8px 4px;text-align:center;border:1px solid #e5e7eb;min-width:70px;">Avg/Total</th></tr></thead><tbody>';
+
+  donors.forEach(function(d){
+    var wRows=(d.workers||[]).filter(function(w){return w.roleInDonor===roleName;});
+    if(!wRows.length) return;
+
+    html+='<tr style="background:#f0fdf4;"><td colspan="'+(months.length+2)+'" style="padding:6px 10px;border:1px solid #e5e7eb;font-weight:600;font-size:11px;color:#1B6B5A;">'+esc(d.name||'')+'</td></tr>';
+
+    wRows.forEach(function(w){
+      var cost=rptWorkerCost(w.name)||0;
+      var totalPct=0,totalAmt=0;
+
+      html+='<tr><td style="padding:6px 10px;border:1px solid #e5e7eb;font-size:11px;direction:rtl;">'+(w.name?esc(w.name):'<span style="color:#e53935;">— פנוי —</span>')+'<br><span style="font-size:9px;color:#6b7280;">%</span></td>';
+      months.forEach(function(m){
+        var active=(!w.startMonth||m>=w.startMonth)&&(!w.endMonth||m<=w.endMonth);
+        var pct=active?parseFloat(w.value||0):0;
+        if(active) totalPct+=pct;
+        html+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;">'+(active?(pct+'%'):'—')+'</td>';
+      });
+      html+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-weight:600;">'+Math.round(totalPct/months.length*10)/10+'%</td></tr>';
+
+      html+='<tr style="background:#f9fafb;"><td style="padding:6px 10px;border:1px solid #e5e7eb;font-size:10px;color:#6b7280;">ILS</td>';
+      months.forEach(function(m){
+        var active=(!w.startMonth||m>=w.startMonth)&&(!w.endMonth||m<=w.endMonth);
+        var pct=active?parseFloat(w.value||0)/100:0;
+        var amt=cost>0?Math.round(cost/12*pct):0;
+        if(active) totalAmt+=amt;
+        html+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px;">'+(active?(amt||'0'):'—')+'</td>';
+      });
+      html+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px;font-weight:600;">'+rptFmt(totalAmt)+'</td></tr>';
+    });
+  });
+
+  html+='</tbody></table></div>';
+  body.innerHTML=html;
+};
+
 })();
 </script>
 
@@ -5515,7 +6125,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v330CL | גישה</title>
+<title>Reports_Workers v331CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5770,7 +6380,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v330CL</span>
+      <span class="topbar-title">Reports_Workers v331CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5942,11 +6552,14 @@ async function initPyodide(){
         <button onclick="switchWDW('donor')" id="wdw-btn-donor" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">תורמים</button>
         <button onclick="switchWDW('worker')" id="wdw-btn-worker" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
         <button onclick="switchWDW('input')" id="wdw-btn-input" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">ניהול</button>
+        <button onclick="switchWDW('reports')" id="wdw-btn-reports" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">דוחות</button>
       </div>
       <div id="wdw-input"></div>
       <div id="wdw-org" style="display:none;"></div>
       <div id="wdw-donor" style="display:none;"></div>
       <div id="wdw-worker" style="display:none;"></div>
+
+      <div id="wdw-reports" style="display:none;"></div>
     </div>
   </div>
 
@@ -10264,7 +10877,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     refreshPanel();
   };
   window.wdwHeader=function(title,sub){ensureStyle(); ensureWriteButton(); var mk=wdwMonthKey(), sp=splitMonthKey(mk); return '<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">'+title+'</div><div class="wdw-sub">'+sub+'</div></div><div class="wdw-view-controls wdw-v219-controls"><div><label>חודש</label><select id="wdw-view-month">'+monthOptions(sp.month)+'</select></div><div><label>שנה</label><select id="wdw-view-year">'+yearOptions(sp.year)+'</select></div><button class="wdw-show-btn" onclick="wdwApplyView()">הצג</button><button class="wdw-today-btn-225" onclick="wdwToday225()">היום</button></div><div class="wdw-current-month-label">חודש תצוגה: <b>'+(MONTHS&&MONTHS[sp.month]?MONTHS[sp.month]:(sp.month+1))+' '+sp.year+'</b></div></div>';};
-  window.switchWDW=function(panel){ensureStyle(); ensureWriteButton(); ['org','donor','worker','input'].forEach(function(p){var d=document.getElementById('wdw-'+p); if(d) d.style.display=p===panel?'':'none'; var b=document.getElementById('wdw-btn-'+p); if(b)b.classList.toggle('active',p===panel);}); var box=document.querySelector('#tab-wdw .s-sec'); if(box){box.style.background='transparent';box.style.boxShadow='none';box.style.padding='0';} refreshPanel();};
+  window.switchWDW=function(panel){ensureStyle(); ensureWriteButton(); ['org','donor','worker','input'].forEach(function(p){var d=document.getElementById('wdw-'+p); if(d) d.style.display=p===panel?'':'none'; var b=document.getElementById('wdw-btn-'+p); if(b)b.classList.toggle('active',p===panel);}); var box=document.querySelector('#tab-wdw .s-sec'); if(box){box.style.background='transparent';box.style.boxShadow='none';box.style.padding='0';} if(panel==='reports'&&typeof window.renderWDWReports==='function')window.renderWDWReports(); refreshPanel();};
   window.wdwWorkerTotalPct=function(name,month){return workerTotal(name,month);};
   window.wdwWorkerDonorRows=function(name,month){return workerRows(name,month);};
   window.wdwTotalRowPct=function(w,month){return rowPct(w,month);}; window.wdwBasePct=function(w,month){return basePct(w,month);}; window.wdwReplacePct=function(w,month){return replPct(w,month);}; window.wdwReplacementText=function(w){return replacementText(w);}; window.wdwDonorTypeChip=function(d){return donorTypeChip(d);}; window.wdwIsActiveInMonth=function(w,month){return inSelectedMonth(w,month);};
