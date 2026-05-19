@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v349CL | גישה</title>
+<title>Reports_Workers v350CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v349CL</span>
+      <span class="topbar-title">Reports_Workers v350CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3845,7 +3845,6 @@ function sendEmail(){
     S.workers.splice(i,1); saveLocally(); saveData(); renderWorkerList(); renderHolWorkers(); renderTable();
   };
   window.mkWRow=function(w,i){
-    var escFn=window.esc||function(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
     const r=document.createElement('div');
     r.className='w-row';
     const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
@@ -3862,13 +3861,13 @@ function sendEmail(){
       ?`<button class="end-btn" onclick="endWorker(${i})">סיום עבודה</button>`
       :`<button class="react-btn" onclick="reactivateWorker(${i})">החזרה לעבודה</button>`;
     const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
-    const roleOpts=(S.roles||[]).map(role=>`<option value="${escFn(role)}" ${w.role===role?'selected':''}>${escFn(role)}</option>`).join('');
+    const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
     const daysCount=wd.length;
     const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 5px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${daysCount} ימים</span>`:'';
     const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:24px;height:24px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px;padding:0;flex-shrink:0;">↑</button>`:'';
     const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:24px;height:24px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px;padding:0;flex-shrink:0;">↓</button>`:'';
     r.innerHTML=`
-      <span class="wname" style="flex-shrink:0;min-width:60px;">${escFn(w.name)}</span>
+      <span class="wname" style="flex-shrink:0;min-width:60px;">${esc(w.name)}</span>
       <span class="wdays-wrap" style="flex-shrink:0;">${daysHtml}</span>
       <span style="flex-shrink:0;">${statusHtml}</span>
       ${daysAlert}
@@ -3888,7 +3887,7 @@ function sendEmail(){
 
 /* ===== WDW v200CH final overrides — WDW only ===== */
 (function(){
-  function escFn(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
   function norm(x){return String(x||'').trim().replace(/\s+/g,' ');}
   function officialWorkerNames(){return (Array.isArray(S.workers)?S.workers.map(function(w){return w&&w.name;}).filter(Boolean):[]);}
   function officialSet(){return new Set(officialWorkerNames().map(norm));}
@@ -3920,7 +3919,7 @@ function sendEmail(){
     if(workers.some(function(w){return replPct(w,month)>0;})) return {cls:'info',label:'זמני',note:'כולל החלפת עובד/משרה'};
     return {cls:'ok',label:'תקין',note:'לא זוהתה חריגה'};
   }
-  function healthChip(h){var cls=h.cls==='bad'?'bad':h.cls==='info'?'repl':h.cls==='ok'?'budget':h.cls==='gray'?'gray':'warn'; return '<span class="wdw-chip '+cls+'">'+escFn(h.label)+'</span><div class="wdw-muted">'+escFn(h.note)+'</div>';}
+  function healthChip(h){var cls=h.cls==='bad'?'bad':h.cls==='info'?'repl':h.cls==='ok'?'budget':h.cls==='gray'?'gray':'warn'; return '<span class="wdw-chip '+cls+'">'+esc(h.label)+'</span><div class="wdw-muted">'+esc(h.note)+'</div>';}
   function statusClassPct(p){return p>100?'bad':p>=90?'warn':'ok';}
   function ensureStyle(){ if(document.getElementById('wdw-v200-style')) return; var st=document.createElement('style'); st.id='wdw-v200-style'; st.textContent=`
     .wdw-navbtn.active,#wdw-btn-org.active,#wdw-btn-donor.active,#wdw-btn-worker.active,#wdw-btn-input.active{background:#00695c!important;color:#fff!important;border-color:#00695c!important;box-shadow:0 1px 3px rgba(0,0,0,.16)!important;font-weight:800!important}
@@ -6326,7 +6325,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v349CL | גישה</title>
+<title>Reports_Workers v350CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6581,7 +6580,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v349CL</span>
+      <span class="topbar-title">Reports_Workers v350CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11070,7 +11069,6 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     S.workers.splice(i,1); saveLocally(); saveData(); renderWorkerList(); renderHolWorkers(); renderTable();
   };
   window.mkWRow=function(w,i){
-    var escFn=window.esc||function(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
     const r=document.createElement('div');
     r.className='w-row';
     const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
