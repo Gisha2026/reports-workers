@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v338CL | גישה</title>
+<title>Reports_Workers v339CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v338CL</span>
+      <span class="topbar-title">Reports_Workers v339CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3845,17 +3845,36 @@ function sendEmail(){
     S.workers.splice(i,1); saveLocally(); saveData(); renderWorkerList(); renderHolWorkers(); renderTable();
   };
   window.mkWRow=function(w,i){
-    const r=document.createElement('div'); r.className='w-row';
-    const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth)); const stCls=w.active?'wact':'wend';
-    const arrows=w.active?`<span><button class="ord-btn" onclick="moveW(${i},-1)">↑</button><button class="ord-btn" onclick="moveW(${i},1)">↓</button></span>`:'<span></span>';
-    const btn=w.active?`<button class="end-btn" onclick="openEnd(${i})">סיום עבודה</button>`:`<button class="end-btn" onclick="reactivate(${i})">החזר לפעיל</button>`;
-    const wd=w.workDays||[0,1,2,3,4]; const dayNames=['א','ב','ג','ד','ה'];
-    const daysHtml=dayNames.map((d,idx)=>`<button class="wday-btn ${wd.includes(idx)?'on':'off'}" onclick="toggleWorkDay(${i},${idx})" title="${wd.includes(idx)?'עובד':'לא עובד'}">${d}</button>`).join('');
-    const daysCount=(w.workDays!==undefined?w.workDays:[0,1,2,3,4]).length;
-    let statusHtml=`<span class="wst ${stCls}">${stTxt}</span>`; if(w.active&&daysCount<5) statusHtml+=` <span class="badge-days">${daysCount} ימים</span>`;
-    r.innerHTML=`<span class="wname">${w.name}</span>${arrows}<span class="wdays-wrap">${daysHtml}</span><span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span><button class="edit-btn" onclick="openEditWorker(${i})">עריכה</button>${btn}<button class="worker-delete-btn" onclick="deleteWorkerCompletely(${i})">מחק לחלוטין</button>`;
+    const r=document.createElement('div');
+    r.className='w-row';
+    const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
+    const stCls=w.active?'wact':'wend';
+    const arrows=w.active?`<span><button class="ord-btn" onclick="moveW(${i},-1)">↑</button><button class="ord-btn" onclick="moveW(${i},1)">↓</button></span>`:'';
+    const daysHtml=(DAYS_HE||['א','ב','ג','ד','ה']).map((d,di)=>{
+      const active=!w.offDays||!w.offDays.includes(di);
+      return `<button class="day-btn${active?' day-on':' day-off'}" onclick="toggleDay(${i},${di})">${d}</button>`;
+    }).join('');
+    const editBtn=`<button class="edit-btn" onclick="openEditWorker(${i})">עריכה</button>`;
+    const btn=w.active
+      ?`<button class="end-btn" onclick="endWorker(${i})">סיום עבודה</button>`
+      :`<button class="react-btn" onclick="reactivateWorker(${i})">החזרה לעבודה</button>`;
+    const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
+    const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
+    r.innerHTML=`
+      <span class="wname">${esc(w.name)}</span>
+      <select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();"
+        style="font-size:11px;padding:2px 6px;border:1px solid #ddd;border-radius:4px;max-width:160px;height:26px;">
+        <option value="">— תפקיד קבוע —</option>${roleOpts}
+      </select>
+      ${arrows}
+      <span class="wdays-wrap">${daysHtml}</span>
+      <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
+      ${editBtn}
+      ${btn}
+      <button class="worker-delete-btn" onclick="deleteWorkerPermanently(${i})" title="מחק לצמיתות" style="background:none;border:none;color:#e53935;cursor:pointer;font-size:14px;">✕</button>
+    `;
     return r;
-  };
+  }
 
 
 
@@ -6299,7 +6318,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v338CL | גישה</title>
+<title>Reports_Workers v339CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6554,7 +6573,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v338CL</span>
+      <span class="topbar-title">Reports_Workers v339CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11043,17 +11062,36 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     S.workers.splice(i,1); saveLocally(); saveData(); renderWorkerList(); renderHolWorkers(); renderTable();
   };
   window.mkWRow=function(w,i){
-    const r=document.createElement('div'); r.className='w-row';
-    const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth)); const stCls=w.active?'wact':'wend';
-    const arrows=w.active?`<span><button class="ord-btn" onclick="moveW(${i},-1)">↑</button><button class="ord-btn" onclick="moveW(${i},1)">↓</button></span>`:'<span></span>';
-    const btn=w.active?`<button class="end-btn" onclick="openEnd(${i})">סיום עבודה</button>`:`<button class="end-btn" onclick="reactivate(${i})">החזר לפעיל</button>`;
-    const wd=w.workDays||[0,1,2,3,4]; const dayNames=['א','ב','ג','ד','ה'];
-    const daysHtml=dayNames.map((d,idx)=>`<button class="wday-btn ${wd.includes(idx)?'on':'off'}" onclick="toggleWorkDay(${i},${idx})" title="${wd.includes(idx)?'עובד':'לא עובד'}">${d}</button>`).join('');
-    const daysCount=(w.workDays!==undefined?w.workDays:[0,1,2,3,4]).length;
-    let statusHtml=`<span class="wst ${stCls}">${stTxt}</span>`; if(w.active&&daysCount<5) statusHtml+=` <span class="badge-days">${daysCount} ימים</span>`;
-    r.innerHTML=`<span class="wname">${w.name}</span>${arrows}<span class="wdays-wrap">${daysHtml}</span><span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span><button class="edit-btn" onclick="openEditWorker(${i})">עריכה</button>${btn}<button class="worker-delete-btn" onclick="deleteWorkerCompletely(${i})">מחק לחלוטין</button>`;
+    const r=document.createElement('div');
+    r.className='w-row';
+    const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
+    const stCls=w.active?'wact':'wend';
+    const arrows=w.active?`<span><button class="ord-btn" onclick="moveW(${i},-1)">↑</button><button class="ord-btn" onclick="moveW(${i},1)">↓</button></span>`:'';
+    const daysHtml=(DAYS_HE||['א','ב','ג','ד','ה']).map((d,di)=>{
+      const active=!w.offDays||!w.offDays.includes(di);
+      return `<button class="day-btn${active?' day-on':' day-off'}" onclick="toggleDay(${i},${di})">${d}</button>`;
+    }).join('');
+    const editBtn=`<button class="edit-btn" onclick="openEditWorker(${i})">עריכה</button>`;
+    const btn=w.active
+      ?`<button class="end-btn" onclick="endWorker(${i})">סיום עבודה</button>`
+      :`<button class="react-btn" onclick="reactivateWorker(${i})">החזרה לעבודה</button>`;
+    const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
+    const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
+    r.innerHTML=`
+      <span class="wname">${esc(w.name)}</span>
+      <select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();"
+        style="font-size:11px;padding:2px 6px;border:1px solid #ddd;border-radius:4px;max-width:160px;height:26px;">
+        <option value="">— תפקיד קבוע —</option>${roleOpts}
+      </select>
+      ${arrows}
+      <span class="wdays-wrap">${daysHtml}</span>
+      <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
+      ${editBtn}
+      ${btn}
+      <button class="worker-delete-btn" onclick="deleteWorkerPermanently(${i})" title="מחק לצמיתות" style="background:none;border:none;color:#e53935;cursor:pointer;font-size:14px;">✕</button>
+    `;
     return r;
-  };
+  }
 })();
 
 
