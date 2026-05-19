@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v350CL | גישה</title>
+<title>Reports_Workers v352CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -81,7 +81,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl;}
+.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
 .wname{font-weight:500;font-size:13px;text-align:right}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px;text-align:center}
 .wact{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}.wend{background:#ffcdd2;color:#c62828;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v350CL</span>
+      <span class="topbar-title">Reports_Workers v352CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3863,22 +3863,22 @@ function sendEmail(){
     const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
     const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
     const daysCount=wd.length;
-    const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 5px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${daysCount} ימים</span>`:'';
-    const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:24px;height:24px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px;padding:0;flex-shrink:0;">↑</button>`:'';
-    const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:24px;height:24px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px;padding:0;flex-shrink:0;">↓</button>`:'';
+    const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 6px;border-radius:10px;">${daysCount} ימים</span>`:'<span></span>';
+    const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↑</button>`:'<span></span>';
+    const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↓</button>`:'<span></span>';
     r.innerHTML=`
-      <span class="wname" style="flex-shrink:0;min-width:60px;">${esc(w.name)}</span>
-      <span class="wdays-wrap" style="flex-shrink:0;">${daysHtml}</span>
-      <span style="flex-shrink:0;">${statusHtml}</span>
+      <span class="wname">${esc(w.name)}</span>
+      <span class="wdays-wrap">${daysHtml}</span>
+      ${statusHtml}
       ${daysAlert}
       ${upBtn}
       ${downBtn}
       <select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();"
-        style="font-size:11px;padding:1px 4px;border:1px solid #ccc;border-radius:4px;min-width:120px;max-width:180px;flex:1;height:26px;color:#333;background:#fff;">
+        style="font-size:11px;padding:1px 4px;border:1px solid #ccc;border-radius:4px;width:150px;height:26px;color:#333;background:#fff;">
         <option value="">— תפקיד קבוע —</option>${roleOpts}
       </select>
-      <span style="flex-shrink:0;">${editBtn}</span>
-      <span style="flex-shrink:0;">${btn}</span>
+      ${editBtn}
+      ${btn}
     `;
     return r;
   }
@@ -6325,7 +6325,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v350CL | גישה</title>
+<title>Reports_Workers v352CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6403,7 +6403,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl;}
+.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
 .wname{font-weight:500;font-size:13px;text-align:right}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px;text-align:center}
 .wact{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}.wend{background:#ffcdd2;color:#c62828;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}
@@ -6580,7 +6580,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v350CL</span>
+      <span class="topbar-title">Reports_Workers v352CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11087,22 +11087,22 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
     const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
     const daysCount=wd.length;
-    const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 5px;border-radius:10px;white-space:nowrap;flex-shrink:0;">${daysCount} ימים</span>`:'';
-    const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:24px;height:24px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px;padding:0;flex-shrink:0;">↑</button>`:'';
-    const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:24px;height:24px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px;padding:0;flex-shrink:0;">↓</button>`:'';
+    const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 6px;border-radius:10px;">${daysCount} ימים</span>`:'<span></span>';
+    const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↑</button>`:'<span></span>';
+    const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↓</button>`:'<span></span>';
     r.innerHTML=`
-      <span class="wname" style="flex-shrink:0;min-width:60px;">${esc(w.name)}</span>
-      <span class="wdays-wrap" style="flex-shrink:0;">${daysHtml}</span>
-      <span style="flex-shrink:0;">${statusHtml}</span>
+      <span class="wname">${esc(w.name)}</span>
+      <span class="wdays-wrap">${daysHtml}</span>
+      ${statusHtml}
       ${daysAlert}
       ${upBtn}
       ${downBtn}
       <select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();"
-        style="font-size:11px;padding:1px 4px;border:1px solid #ccc;border-radius:4px;min-width:120px;max-width:180px;flex:1;height:26px;color:#333;background:#fff;">
+        style="font-size:11px;padding:1px 4px;border:1px solid #ccc;border-radius:4px;width:150px;height:26px;color:#333;background:#fff;">
         <option value="">— תפקיד קבוע —</option>${roleOpts}
       </select>
-      <span style="flex-shrink:0;">${editBtn}</span>
-      <span style="flex-shrink:0;">${btn}</span>
+      ${editBtn}
+      ${btn}
     `;
     return r;
   }
