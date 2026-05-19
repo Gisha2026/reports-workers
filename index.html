@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v359CL | גישה</title>
+<title>Reports_Workers v360CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v359CL</span>
+      <span class="topbar-title">Reports_Workers v360CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5417,7 +5417,8 @@ window.wdwResetNewWorkerForm = function(did) {
     var basePct=parseFloat(w.value)||0;
     var basePeriod=(w.startMonth?fmtMonth(w.startMonth):'?')+' — '+(w.endMonth?fmtMonth(w.endMonth):'?');
     var replPct=parseFloat(w.replacesPct)||0;
-    var totalPct=Math.round(wdwWorkerTotalPct(w.name,curM)*10)/10;
+    var extraPct=(w.extraReplaces||[]).reduce(function(s,r){return s+(parseFloat(r.pct)||0);},0);
+    var totalPct=Math.round(((parseFloat(w.value)||0)+replPct+extraPct)*10)/10;
     var isOver=totalPct>100;
     var badge='<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:'+(isOver?'#fee2e2':'#e8f5e9')+';color:'+(isOver?'#991b1b':'#2e7d32')+';margin-right:4px;">'+totalPct+'% סה"כ'+(isOver?' ⚠':'  ✓')+'</span>';
 
@@ -6321,7 +6322,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v359CL | גישה</title>
+<title>Reports_Workers v360CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6576,7 +6577,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v359CL</span>
+      <span class="topbar-title">Reports_Workers v360CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11890,7 +11891,8 @@ window.wdwResetNewWorkerForm = function(did) {
     var basePct=parseFloat(w.value)||0;
     var basePeriod=(w.startMonth?fmtMonth(w.startMonth):'?')+' — '+(w.endMonth?fmtMonth(w.endMonth):'?');
     var replPct=parseFloat(w.replacesPct)||0;
-    var totalPct=Math.round(wdwWorkerTotalPct(w.name,curM)*10)/10;
+    var extraPct=(w.extraReplaces||[]).reduce(function(s,r){return s+(parseFloat(r.pct)||0);},0);
+    var totalPct=Math.round(((parseFloat(w.value)||0)+replPct+extraPct)*10)/10;
     var isOver=totalPct>100;
     var badge='<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:'+(isOver?'#fee2e2':'#e8f5e9')+';color:'+(isOver?'#991b1b':'#2e7d32')+';margin-right:4px;">'+totalPct+'% סה"כ'+(isOver?' ⚠':'  ✓')+'</span>';
 
