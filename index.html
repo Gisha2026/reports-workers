@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v340CL | גישה</title>
+<title>Reports_Workers v341CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v340CL</span>
+      <span class="topbar-title">Reports_Workers v341CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1288,6 +1288,9 @@ function saveEditWorker(){
   if(!newName) return;
   const oldName=S.workers[i].name;
   S.workers[i].name=newName;
+  // שמירת תפקיד קבוע
+  const roleEl=document.getElementById('editWorkerRole');
+  if(roleEl) S.workers[i].role=roleEl.value;
   // עדכון שם בכל הנתונים
   if(oldName!==newName){
     Object.values(S.months).forEach(md=>{
@@ -3862,12 +3865,9 @@ function sendEmail(){
       :`<button class="react-btn" onclick="reactivateWorker(${i})">החזרה לעבודה</button>`;
     const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
     const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
+    const roleTxt=w.role?`<span style="font-size:11px;color:#1B6B5A;background:#e8f5e9;padding:1px 7px;border-radius:10px;margin-inline-start:4px;">${esc(w.role)}</span>`:'';
     r.innerHTML=`
-      <span class="wname">${esc(w.name)}</span>
-      <select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();"
-        style="font-size:11px;padding:2px 6px;border:1px solid #ddd;border-radius:4px;max-width:160px;height:26px;">
-        <option value="">— תפקיד קבוע —</option>${roleOpts}
-      </select>
+      <span class="wname">${esc(w.name)}</span>${roleTxt}
       ${arrows}
       <span class="wdays-wrap">${daysHtml}</span>
       <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
@@ -6320,7 +6320,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v340CL | גישה</title>
+<title>Reports_Workers v341CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6575,7 +6575,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v340CL</span>
+      <span class="topbar-title">Reports_Workers v341CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7598,6 +7598,9 @@ function saveEditWorker(){
   if(!newName) return;
   const oldName=S.workers[i].name;
   S.workers[i].name=newName;
+  // שמירת תפקיד קבוע
+  const roleEl=document.getElementById('editWorkerRole');
+  if(roleEl) S.workers[i].role=roleEl.value;
   // עדכון שם בכל הנתונים
   if(oldName!==newName){
     Object.values(S.months).forEach(md=>{
@@ -11081,12 +11084,9 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       :`<button class="react-btn" onclick="reactivateWorker(${i})">החזרה לעבודה</button>`;
     const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
     const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
+    const roleTxt=w.role?`<span style="font-size:11px;color:#1B6B5A;background:#e8f5e9;padding:1px 7px;border-radius:10px;margin-inline-start:4px;">${esc(w.role)}</span>`:'';
     r.innerHTML=`
-      <span class="wname">${esc(w.name)}</span>
-      <select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();"
-        style="font-size:11px;padding:2px 6px;border:1px solid #ddd;border-radius:4px;max-width:160px;height:26px;">
-        <option value="">— תפקיד קבוע —</option>${roleOpts}
-      </select>
+      <span class="wname">${esc(w.name)}</span>${roleTxt}
       ${arrows}
       <span class="wdays-wrap">${daysHtml}</span>
       <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
