@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v370CL | גישה</title>
+<title>Reports_Workers v371CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v370CL</span>
+      <span class="topbar-title">Reports_Workers v371CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1234,7 +1234,7 @@ function renderWorkerList(){
   }
 }
 
-function escH(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'": '&#39;'}[m];});}
+function escH(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
 
 function mkWRow(w,i){
   const r=document.createElement('div');
@@ -6411,7 +6411,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v370CL | גישה</title>
+<title>Reports_Workers v371CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6666,7 +6666,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v370CL</span>
+      <span class="topbar-title">Reports_Workers v371CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8456,138 +8456,164 @@ function wdwRenderWorkerBlock(w, d, hasBudget, curMonth, workerOpts){
 
 function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
   const pfx=isEdit?`ew-${d.id}-${w.id}`:`nw-${d.id}`;
-  const cost=S.wdw.budget?parseFloat(S.wdw.budget[(w&&w.name)||'']||0):0;
+  const cost=S.wdw.employerCosts?parseFloat((S.wdw.employerCosts)[(w&&w.name)||'']||0):0;
   const defaultStart=d.startDate||S.year+'-01';
   const defaultEnd=d.endDate||S.year+'-12';
   const replacesVal=w&&w.replaces||'';
   const replacesIsVacant=replacesVal==='__vacant__';
+  const replStartVal=w&&w.replaceStartMonth||'';
+  const replEndVal=w&&w.replaceEndMonth||'';
   const repOpts=['<option value="">— לא רלוונטי —</option>',
     ...wdwWorkersList().map(x=>`<option value="${x}"${replacesVal===x?' selected':''}>${x}</option>`),
     `<option value="__vacant__"${replacesIsVacant?' selected':''}>משרה פנויה</option>`
   ].join('');
-  const fld=`padding:7px 9px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:100%;height:34px;box-sizing:border-box`;
-  const col=`display:flex;flex-direction:column;gap:4px`;
-  const lbl=`font-size:12px;color:#555;font-weight:500`;
-  const row=`display:grid;gap:10px;margin-bottom:10px;align-items:start`;
-  return `
-    <div style="${row};grid-template-columns:1fr 1fr">
+  const sec=`border:0.5px solid var(--color-border-tertiary);border-radius:8px;padding:12px 14px;margin-bottom:12px;direction:rtl;`;
+  const ttl=`font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:6px;margin-bottom:10px;`;
+  const fld=`padding:7px 9px;border:0.5px solid var(--color-border-secondary);border-radius:6px;font-size:13px;width:100%;height:34px;box-sizing:border-box;background:var(--color-background-primary);color:var(--color-text-primary);`;
+  const col=`display:flex;flex-direction:column;gap:4px;`;
+  const lbl=`font-size:12px;color:var(--color-text-secondary);font-weight:500;`;
+  const hint=`font-size:11px;color:var(--color-text-secondary);margin-top:2px;`;
+  const g2=`display:grid;gap:10px;grid-template-columns:1fr 1fr;`;
+  const g3=`display:grid;gap:10px;grid-template-columns:1fr 1fr 1fr;`;
+
+  const extraReplHTML=(w&&w.extraReplaces||[]).map((r,i)=>`
+    <div style="display:grid;gap:8px;grid-template-columns:1fr 80px 80px 80px 80px 32px;align-items:end;margin-bottom:8px;padding:8px;background:var(--color-background-secondary);border-radius:6px;" id="${pfx}-extra-row-${i}">
       <div style="${col}">
-        <label style="${lbl}">עובד</label>
-        <select id="${pfx}-name" style="${fld}" onchange="wdwUpdateWorkerCost('${pfx}')">
-          <option value=""${(!w||(w&&!w.name))?' selected':''}>— בחר עובד —</option>
-          ${wdwWorkersList().map(x=>`<option value="${x}"${w&&w.name===x?' selected':''}>${x}</option>`).join('')}
+        <label style="${lbl}">מחליף את</label>
+        <select id="${pfx}-extra-replaces-${i}" style="${fld}" onchange="wdwToggleVacantExtra('${pfx}',${i})">
+          <option value="">— לא רלוונטי —</option>
+          ${wdwWorkersList().map(x=>`<option value="${x}"${r.replaces===x?' selected':''}>${x}</option>`).join('')}
+          <option value="__vacant__"${r.replaces==='__vacant__'?' selected':''}>משרה פנויה</option>
         </select>
-        <div id="${pfx}-cost" style="font-size:11px;color:#2E7D32;margin-top:1px">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'}</div>
+        <div id="${pfx}-extra-vacant-wrap-${i}" style="${col};margin-top:4px;${r.replaces==='__vacant__'?'':'display:none'}">
+          <input id="${pfx}-extra-vacant-name-${i}" style="${fld}" type="text" value="${r.vacantName||''}" placeholder="שם המשרה">
+        </div>
       </div>
-      <div style="${col}">
-        <label style="${lbl}">תפקיד בתרומה</label>
-        <select id="${pfx}-roleInDonor" style="${fld}">
-          <option value="">— בחר תפקיד —</option>
-          ${(S.roles||[]).map(r=>`<option value="${r}"${w&&w.roleInDonor===r?' selected':''}>${r}</option>`).join('')}
-        </select>
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">סוג מימון</label>
-        <select id="${pfx}-ftype" style="${fld}">${WDW_FUNDING_TYPES.map(t=>`<option${w&&w.fundingType===t?' selected':''}>${t}</option>`).join('')}</select>
+      <div style="${col}"><label style="${lbl}">% אחוז</label><input id="${pfx}-extra-pct-${i}" style="${fld}" type="number" value="${r.pct||''}" placeholder="20"></div>
+      <div style="${col}"><label style="${lbl}">סכום ₪</label><input id="${pfx}-extra-amt-${i}" style="${fld}" type="number" value="${r.amt||''}" placeholder="—"></div>
+      <div style="${col}"><label style="${lbl}">מחודש</label><input id="${pfx}-extra-start-${i}" style="${fld}" type="month" value="${r.startMonth||''}"></div>
+      <div style="${col}"><label style="${lbl}">עד חודש</label><input id="${pfx}-extra-end-${i}" style="${fld}" type="month" value="${r.endMonth||''}"></div>
+      <div style="${col};justify-content:flex-end"><button onclick="wdwRemoveExtraReplace('${pfx}',${i})" style="height:34px;padding:0 10px;background:var(--color-background-primary);border:0.5px solid #F0997B;border-radius:6px;cursor:pointer;color:#993C1D;font-size:13px;">✕</button></div>
+    </div>`).join('');
+
+  return `<div style="direction:rtl;">
+    <div style="${sec}">
+      <div style="${ttl}">1. פרטי עובד</div>
+      <div style="${g2}">
+        <div style="${col}">
+          <label style="${lbl}">עובד <span style="color:#e53935">*</span></label>
+          <select id="${pfx}-name" style="${fld}" onchange="wdwUpdateWorkerCost('${pfx}')">
+            <option value=""${(!w||(w&&!w.name))?' selected':''}>— בחר עובד —</option>
+            ${wdwWorkersList().map(x=>`<option value="${x}"${w&&w.name===x?' selected':''}>${x}</option>`).join('')}
+          </select>
+          <div id="${pfx}-cost" style="${hint};color:#2E7D32;">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'}</div>
+        </div>
+        <div style="${col}">
+          <label style="${lbl}">תפקיד בתרומה <span style="color:#e53935">*</span></label>
+          <select id="${pfx}-roleInDonor" style="${fld}">
+            <option value="">— בחר תפקיד —</option>
+            ${(S.roles||[]).map(r=>`<option value="${r}"${w&&w.roleInDonor===r?' selected':''}>${r}</option>`).join('')}
+          </select>
+        </div>
       </div>
     </div>
-    <div style="${row};grid-template-columns:100px 140px 1fr">
-      <div style="${col}">
-        <label style="${lbl}">% אחוז</label>
-        <input id="${pfx}-pct" style="${fld}" type="number" value="${w&&w.valueType==='percent'?w.value:''}" placeholder="0" oninput="wdwCalcAmt('${pfx}')">
-        <div style="font-size:11px;color:#1565C0;font-weight:600;margin-top:1px">↕ מחושב</div>
-        <button type="button" onclick="wdwToggleMonthlyPct('${pfx}')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button>
-        <div id="${pfx}-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
+
+    <div style="${sec}">
+      <div style="${ttl}">2. תקופת עבודה על התרומה</div>
+      <div style="${g2}">
+        <div style="${col}">
+          <label style="${lbl}">מחודש</label>
+          <input id="${pfx}-start" style="${fld}" type="month" value="${w&&w.startMonth||defaultStart}">
+          <div style="${hint}">ברירת מחדל: תחילת התרומה</div>
+        </div>
+        <div style="${col}">
+          <label style="${lbl}">עד חודש</label>
+          <input id="${pfx}-end" style="${fld}" type="month" value="${w&&w.endMonth||defaultEnd}">
+        </div>
+      </div>
+    </div>
+
+    <div style="${sec}">
+      <div style="${ttl}">3. הקצאת עובד לתרומה</div>
+      <div style="${g3}">
+        <div style="${col}">
+          <label style="${lbl}">% אחוז קבוע</label>
+          <input id="${pfx}-pct" style="${fld}" type="number" value="${w&&w.valueType==='percent'?w.value:''}" placeholder="20" oninput="wdwCalcAmt('${pfx}')">
+          <div style="${hint}">מחושב אוטומטית מסכום</div>
+        </div>
+        <div style="${col}">
+          <label style="${lbl}">סכום ₪ חודשי</label>
+          <input id="${pfx}-amt" style="${fld}" type="number" value="${w&&w.valueType==='amount'?w.value:''}" placeholder="${hasBudget?'3,700':'—'}" ${!hasBudget?'disabled':''} oninput="wdwCalcPct('${pfx}')">
+          <div style="${hint}">מחושב אוטומטית מאחוז</div>
+        </div>
+        <div style="${col}">
+          <label style="${lbl}">סכום ₪ לכל התקופה</label>
+          <input id="${pfx}-total-amt" style="${fld}" type="number" value="${w&&w.totalPeriodAmount||''}" placeholder="50,000" oninput="wdwCalcFromPeriodAmt('${pfx}')">
+          <div style="${hint}">יחולק לחודשים פעילים</div>
+        </div>
+      </div>
+      <div style="${g2};margin-top:10px;">
+        <div style="${col}">
+          <label style="${lbl}">סוג מימון</label>
+          <select id="${pfx}-ftype" style="${fld}">${(typeof WDW_FUNDING_TYPES!=='undefined'?WDW_FUNDING_TYPES:['אחוז קבוע','סכום קבוע','מט"ח']).map(t=>`<option${w&&w.fundingType===t?' selected':''}>${t}</option>`).join('')}</select>
+        </div>
+        <div style="${col}">
+          <label style="${lbl}">מסגרת מקסימום ₪</label>
+          <input id="${pfx}-cap" style="${fld}" type="number" value="${w&&w.cap||''}" placeholder="ללא הגבלה">
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <div style="${col}">
+          <label style="${lbl}">סכום במט"ח</label>
+          <div style="display:grid;grid-template-columns:80px 1fr;gap:8px;">
+            <select id="${pfx}-fxcurr" style="${fld}">
+              <option value=""${!(w&&w.fxCurrency)?' selected':''}>—</option>
+              <option value="USD"${w&&w.fxCurrency==='USD'?' selected':''}>USD</option>
+              <option value="EUR"${w&&w.fxCurrency==='EUR'?' selected':''}>EUR</option>
+              <option value="GBP"${w&&w.fxCurrency==='GBP'?' selected':''}>GBP</option>
+            </select>
+            <input id="${pfx}-fxamt" style="${fld}" type="number" value="${w&&w.fxAmount||''}" placeholder="5,000">
+          </div>
+          <div style="${hint}">השקלים יחושבו לפי שער בנק ישראל</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <button type="button" onclick="wdwToggleMonthlyPct('${pfx}')" style="padding:4px 10px;background:var(--color-background-primary);border:0.5px dashed var(--color-border-secondary);border-radius:6px;cursor:pointer;color:var(--color-text-secondary);font-size:12px;">אחוזים לפי חודשים</button>
+        <div id="${pfx}-monthly-pct-wrap" style="display:none;margin-top:8px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:10px;background:var(--color-background-secondary);">
           ${(()=>{
             const mp=w&&w.monthlyPct||{};
             return MONTHS.map((mn,mi)=>{
               const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
-              return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'+
-                '<label style="font-size:11px;color:#555">'+mn+'</label>'+
-                '<input id="'+pfx+'-mp-'+mkey+'" type="number" value="'+( mp[mkey]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'+
+              return '<div style="display:grid;grid-template-columns:60px 80px;gap:6px;align-items:center;margin-bottom:4px;">'+
+                '<label style="font-size:12px;color:var(--color-text-secondary);">'+mn+'</label>'+
+                '<input id="'+pfx+'-mp-'+mkey+'" type="number" value="'+(mp[mkey]||'')+'" placeholder="0" style="padding:4px 6px;border:0.5px solid var(--color-border-secondary);border-radius:4px;font-size:12px;width:100%;background:var(--color-background-primary);color:var(--color-text-primary);">'+
                 '</div>';
             }).join('');
           })()}
         </div>
       </div>
-      <div style="${col}">
-        <label style="${lbl}">סכום ₪ חודשי</label>
-        <input id="${pfx}-amt" style="${fld}" type="number" value="${w&&w.valueType==='amount'?w.value:''}" placeholder="${hasBudget?'3700':'—'}" ${!hasBudget?'disabled':''} oninput="wdwCalcPct('${pfx}')">
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">סכום ₪ לכל התקופה</label>
-        <input id="${pfx}-total-amt" style="${fld}" type="number" value="${w&&w.totalPeriodAmount||''}" placeholder="לדוגמה: 50000" oninput="wdwCalcFromPeriodAmt('${pfx}')">
-        <div style="font-size:11px;color:#1565C0;margin-top:1px">יחולק אוטומטית לחודשים פעילים</div>
-        <div style="font-size:11px;color:#777;margin-top:1px">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():''}</div>
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">מסגרת מקסימום ₪</label>
-        <input id="${pfx}-cap" style="${fld}" type="number" value="${w&&w.cap||''}" placeholder="ללא הגבלה">
-      </div>
     </div>
-    <div style="${row};grid-template-columns:160px 160px">
-      <div style="${col}">
-        <label style="${lbl}">מחודש</label>
-        <input id="${pfx}-start" style="${fld}" type="month" value="${w&&w.startMonth||defaultStart}">
-        <div style="font-size:11px;color:#2E7D32;margin-top:1px">ברירת מחדל: משך התרומה</div>
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">עד חודש</label>
-        <input id="${pfx}-end" style="${fld}" type="month" value="${w&&w.endMonth||defaultEnd}">
-      </div>
-    </div>
-    <div style="margin-top:4px">
-      <label style="${lbl}">מחליף את</label>
-      <div id="${pfx}-replaces-rows" style="margin-top:6px">
-        <div style="${row};grid-template-columns:1fr 100px 100px 36px;align-items:end;margin-bottom:6px">
-          <div style="${col}">
-            <select id="${pfx}-replaces" style="${fld}" onchange="wdwToggleVacant('${pfx}')">
-              ${repOpts}
-            </select>
-            <div id="${pfx}-vacant-wrap" style="${col};margin-top:4px;${replacesIsVacant?'':'display:none'}">
-              <label style="${lbl}">שם המשרה <span style="color:#e53935">*</span></label>
-              <input id="${pfx}-vacant-name" style="${fld};${replacesIsVacant?'border-color:#e53935':''}" type="text" value="${w&&w.vacantName||''}" placeholder="לדוגמה: רכזת פניות">
-            </div>
-          </div>
-          <div style="${col}">
-            <label style="${lbl}">% אחוז</label>
-            <input id="${pfx}-replaces-pct" style="${fld}" type="number" value="${w&&w.replacesPct||''}" placeholder="20">
-          </div>
-          <div style="${col}">
-            <label style="${lbl}">סכום ₪</label>
-            <input id="${pfx}-replaces-amt" style="${fld}" type="number" value="${w&&w.replacesAmt||''}" placeholder="—">
-          </div>
-          <div style="${col};justify-content:flex-end">
-            <div style="height:34px"></div>
+
+    <div style="${sec}">
+      <div style="${ttl}">4. מחליף את — תקופה עצמאית</div>
+      <div style="display:grid;gap:8px;grid-template-columns:1fr 80px 80px 80px 80px;align-items:end;margin-bottom:8px;">
+        <div style="${col}">
+          <label style="${lbl}">מחליף את</label>
+          <select id="${pfx}-replaces" style="${fld}" onchange="wdwToggleVacant('${pfx}')">${repOpts}</select>
+          <div id="${pfx}-vacant-wrap" style="${col};margin-top:4px;${replacesIsVacant?'':'display:none'}">
+            <label style="${lbl}">שם המשרה <span style="color:#e53935">*</span></label>
+            <input id="${pfx}-vacant-name" style="${fld}" type="text" value="${w&&w.vacantName||''}" placeholder="לדוגמה: רכזת פניות">
           </div>
         </div>
-        ${(w&&w.extraReplaces||[]).map((r,i)=>`
-        <div style="${row};grid-template-columns:1fr 100px 100px 36px;align-items:end;margin-bottom:6px" id="${pfx}-extra-row-${i}">
-          <div style="${col}">
-            <select id="${pfx}-extra-replaces-${i}" style="${fld}" onchange="wdwToggleVacantExtra('${pfx}',${i})">
-              <option value="">— לא רלוונטי —</option>
-              ${wdwWorkersList().map(x=>`<option value="${x}"${r.replaces===x?' selected':''}>${x}</option>`).join('')}
-              <option value="__vacant__"${r.replaces==='__vacant__'?' selected':''}>משרה פנויה</option>
-            </select>
-            <div id="${pfx}-extra-vacant-wrap-${i}" style="${col};margin-top:4px;${r.replaces==='__vacant__'?'':'display:none'}">
-              <input id="${pfx}-extra-vacant-name-${i}" style="${fld}" type="text" value="${r.vacantName||''}" placeholder="לדוגמה: רכזת פניות">
-            </div>
-          </div>
-          <div style="${col}">
-            <label style="${lbl}">% אחוז</label>
-            <input id="${pfx}-extra-pct-${i}" style="${fld}" type="number" value="${r.pct||''}" placeholder="20">
-          </div>
-          <div style="${col}">
-            <label style="${lbl}">סכום ₪</label>
-            <input id="${pfx}-extra-amt-${i}" style="${fld}" type="number" value="${r.amt||''}" placeholder="—">
-          </div>
-          <div style="${col};justify-content:flex-end">
-            <button onclick="wdwRemoveExtraReplace('${pfx}',${i})" style="height:34px;padding:0 10px;background:#fff;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;color:#e53935;font-size:14px">✕</button>
-          </div>
-        </div>`).join('')}
+        <div style="${col}"><label style="${lbl}">% אחוז</label><input id="${pfx}-replaces-pct" style="${fld}" type="number" value="${w&&w.replacesPct||''}" placeholder="20"></div>
+        <div style="${col}"><label style="${lbl}">סכום ₪</label><input id="${pfx}-replaces-amt" style="${fld}" type="number" value="${w&&w.replacesAmt||''}" placeholder="—"></div>
+        <div style="${col}"><label style="${lbl}">מחודש</label><input id="${pfx}-replaces-start" style="${fld}" type="month" value="${replStartVal}"></div>
+        <div style="${col}"><label style="${lbl}">עד חודש</label><input id="${pfx}-replaces-end" style="${fld}" type="month" value="${replEndVal}"></div>
       </div>
-      <button onclick="wdwAddExtraReplace('${pfx}')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:2px">+ הוסף החלפה נוספת</button>
-    </div>`;
+      <div id="${pfx}-replaces-rows">${extraReplHTML}</div>
+      <button onclick="wdwAddExtraReplace('${pfx}')" style="margin-top:6px;padding:4px 12px;background:var(--color-background-primary);border:0.5px dashed #0F6E56;border-radius:6px;cursor:pointer;color:#0F6E56;font-size:12px;">+ הוסף החלפה נוספת</button>
+    </div>
+  </div>`;
 }
 
 function wdwNewWorkerForm(did, hasBudget, curMonth, workerOpts){
