@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v389CL | גישה</title>
+<title>Reports_Workers v390CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v389CL</span>
+      <span class="topbar-title">Reports_Workers v390CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6382,31 +6382,31 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 
 <script>
-/* ===== v389CL FX fields ===== */
+/* ===== v390CL FX fields ===== */
 window.addEventListener('load', function(){
   setTimeout(function(){
     var _orig = window.wdwWorkerFields;
     if(typeof _orig !== 'function') return;
     var fld = 'padding:7px 9px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:100%;height:34px;box-sizing:border-box';
 
-    function calcFX(pfx){
+    window.wdwCalcFXMonthly = function(pfx){
       var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
       var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
-      var start = (document.getElementById(pfx+'-start')||{}).value||'';
-      var end = (document.getElementById(pfx+'-end')||{}).value||'';
+      var s = (document.getElementById(pfx+'-start')||{}).value||'';
+      var e = (document.getElementById(pfx+'-end')||{}).value||'';
       if(!amt || !rate) return;
       var months = 1;
-      if(start && end){
-        var s = start.split('-'), e = end.split('-');
-        months = (parseInt(e[0])-parseInt(s[0]))*12 + (parseInt(e[1])-parseInt(s[1])) + 1;
+      if(s && e){
+        var sa=s.split('-'), ea=e.split('-');
+        months = (parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
         if(months < 1) months = 1;
       }
-      var monthly = Math.round((amt * rate / months) * 100) / 100;
+      var monthly = Math.round(amt*rate/months*100)/100;
       var amtEl = document.getElementById(pfx+'-amt');
       var pctEl = document.getElementById(pfx+'-pct');
       if(amtEl){ amtEl.value = monthly; amtEl.disabled = false; }
-      if(pctEl){ pctEl.value = ''; }
-    }
+      if(pctEl) pctEl.value = '';
+    };
 
     window.wdwWorkerFields = function(w,d,hasBudget,curMonth,workerOpts,isEdit){
       var html = _orig.call(this, w,d,hasBudget,curMonth,workerOpts,isEdit);
@@ -6423,9 +6423,9 @@ window.addEventListener('load', function(){
         + '<option value="CHF"'+(cur==='CHF'?' selected':'')+'>CHF</option>'
         + '</select></div>'
         + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">סכום מטח לתקופה</label>'
-        + '<input id="'+pfx+'-fx-amount" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" style="'+fld+'" oninput="(function(p){var amt=parseFloat((document.getElementById(p+'-fx-amount')||{}).value)||0;var rate=parseFloat((document.getElementById(p+'-fx-rate')||{}).value)||0;var s=(document.getElementById(p+'-start')||{}).value||'';var e=(document.getElementById(p+'-end')||{}).value||'';if(!amt||!rate)return;var m=1;if(s&&e){var sa=s.split('-'),ea=e.split('-');m=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;if(m<1)m=1;}var mo=Math.round(amt*rate/m*100)/100;var ae=document.getElementById(p+'-amt');var pe=document.getElementById(p+'-pct');if(ae){ae.value=mo;ae.disabled=false;}if(pe)pe.value='';})(''+pfx+'')"></div>'
+        + '<input id="'+pfx+'-fx-amount" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" style="'+fld+'" oninput="wdwCalcFXMonthly(''+pfx+'')"></div>'
         + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">שער ₪</label>'
-        + '<input id="'+pfx+'-fx-rate" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" style="'+fld+'" oninput="(function(p){var amt=parseFloat((document.getElementById(p+'-fx-amount')||{}).value)||0;var rate=parseFloat((document.getElementById(p+'-fx-rate')||{}).value)||0;var s=(document.getElementById(p+'-start')||{}).value||'';var e=(document.getElementById(p+'-end')||{}).value||'';if(!amt||!rate)return;var m=1;if(s&&e){var sa=s.split('-'),ea=e.split('-');m=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;if(m<1)m=1;}var mo=Math.round(amt*rate/m*100)/100;var ae=document.getElementById(p+'-amt');var pe=document.getElementById(p+'-pct');if(ae){ae.value=mo;ae.disabled=false;}if(pe)pe.value='';})(''+pfx+'')"></div>'
+        + '<input id="'+pfx+'-fx-rate" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" style="'+fld+'" oninput="wdwCalcFXMonthly(''+pfx+'')"></div>'
         + '</div></div>';
       return html + fxHtml;
     };
@@ -6436,12 +6436,6 @@ window.addEventListener('load', function(){
       var fxC = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
       var fxA = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
       var fxR = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-      // וודא שה-valueType הוא amount כשיש סכום
-      var amtEl = document.getElementById(pfx+'-amt');
-      var pctEl = document.getElementById(pfx+'-pct');
-      if(fxA && fxR && amtEl && amtEl.value && (!pctEl || !pctEl.value)){
-        if(pctEl) pctEl.value = '';
-      }
       if(typeof _origSaveNew === 'function') await _origSaveNew.call(this, did);
       var d = ((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d && d.workers && d.workers.length){
@@ -6449,10 +6443,7 @@ window.addEventListener('load', function(){
         if(fxC) w.fxCurrency = fxC;
         if(fxA) w.fxAmount = fxA;
         if(fxR) w.fxRate = fxR;
-        // תיקון valueType
-        if(fxA && fxR && w.value && w.valueType !== 'amount'){
-          w.valueType = 'amount';
-        }
+        if(fxA && fxR) w.valueType = 'amount';
         try{saveLocally();saveData();}catch(e){}
       }
     };
@@ -6468,15 +6459,13 @@ window.addEventListener('load', function(){
           w.fxCurrency = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
           w.fxAmount = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
           w.fxRate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-          if(w.fxAmount && w.fxRate && w.value && w.valueType !== 'amount'){
-            w.valueType = 'amount';
-          }
+          if(w.fxAmount && w.fxRate) w.valueType = 'amount';
           try{saveLocally();saveData();}catch(e){}
         }
       }
     };
 
-    console.log('v389CL: FX override loaded');
+    console.log('v390CL: FX override loaded');
   }, 500);
 });
 </script>
@@ -6486,7 +6475,7 @@ window.addEventListener('load', function(){
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v389CL | גישה</title>
+<title>Reports_Workers v390CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6741,7 +6730,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v389CL</span>
+      <span class="topbar-title">Reports_Workers v390CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -13136,7 +13125,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </script>
 
 <script>
-/* ===== v389CL FX fields ===== */
+/* ===== v390CL FX fields ===== */
 (function(){
   function waitFor(fn, cb, tries){
     tries = tries||0;
@@ -13209,7 +13198,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </script>
 
 <script>
-/* ===== v389CL FX fields — wraps after all scripts loaded ===== */
+/* ===== v390CL FX fields — wraps after all scripts loaded ===== */
 window.addEventListener('load', function(){
   setTimeout(function(){
     var _orig = window.wdwWorkerFields;
@@ -13236,7 +13225,7 @@ window.addEventListener('load', function(){
         + '</div></div>';
       return html + fxHtml;
     };
-    console.log('v389CL: wdwWorkerFields wrapped with FX fields');
+    console.log('v390CL: wdwWorkerFields wrapped with FX fields');
 
     var _origSaveNew = window.wdwSaveNewWorker;
     window.wdwSaveNewWorker = async function(did){
@@ -13275,31 +13264,31 @@ window.addEventListener('load', function(){
 </script>
 
 <script>
-/* ===== v389CL FX fields ===== */
+/* ===== v390CL FX fields ===== */
 window.addEventListener('load', function(){
   setTimeout(function(){
     var _orig = window.wdwWorkerFields;
     if(typeof _orig !== 'function') return;
     var fld = 'padding:7px 9px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:100%;height:34px;box-sizing:border-box';
 
-    function calcFX(pfx){
+    window.wdwCalcFXMonthly = function(pfx){
       var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
       var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
-      var start = (document.getElementById(pfx+'-start')||{}).value||'';
-      var end = (document.getElementById(pfx+'-end')||{}).value||'';
+      var s = (document.getElementById(pfx+'-start')||{}).value||'';
+      var e = (document.getElementById(pfx+'-end')||{}).value||'';
       if(!amt || !rate) return;
       var months = 1;
-      if(start && end){
-        var s = start.split('-'), e = end.split('-');
-        months = (parseInt(e[0])-parseInt(s[0]))*12 + (parseInt(e[1])-parseInt(s[1])) + 1;
+      if(s && e){
+        var sa=s.split('-'), ea=e.split('-');
+        months = (parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
         if(months < 1) months = 1;
       }
-      var monthly = Math.round((amt * rate / months) * 100) / 100;
+      var monthly = Math.round(amt*rate/months*100)/100;
       var amtEl = document.getElementById(pfx+'-amt');
       var pctEl = document.getElementById(pfx+'-pct');
       if(amtEl){ amtEl.value = monthly; amtEl.disabled = false; }
-      if(pctEl){ pctEl.value = ''; }
-    }
+      if(pctEl) pctEl.value = '';
+    };
 
     window.wdwWorkerFields = function(w,d,hasBudget,curMonth,workerOpts,isEdit){
       var html = _orig.call(this, w,d,hasBudget,curMonth,workerOpts,isEdit);
@@ -13316,9 +13305,9 @@ window.addEventListener('load', function(){
         + '<option value="CHF"'+(cur==='CHF'?' selected':'')+'>CHF</option>'
         + '</select></div>'
         + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">סכום מטח לתקופה</label>'
-        + '<input id="'+pfx+'-fx-amount" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" style="'+fld+'" oninput="(function(p){var amt=parseFloat((document.getElementById(p+'-fx-amount')||{}).value)||0;var rate=parseFloat((document.getElementById(p+'-fx-rate')||{}).value)||0;var s=(document.getElementById(p+'-start')||{}).value||'';var e=(document.getElementById(p+'-end')||{}).value||'';if(!amt||!rate)return;var m=1;if(s&&e){var sa=s.split('-'),ea=e.split('-');m=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;if(m<1)m=1;}var mo=Math.round(amt*rate/m*100)/100;var ae=document.getElementById(p+'-amt');var pe=document.getElementById(p+'-pct');if(ae){ae.value=mo;ae.disabled=false;}if(pe)pe.value='';})(''+pfx+'')"></div>'
+        + '<input id="'+pfx+'-fx-amount" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" style="'+fld+'" oninput="wdwCalcFXMonthly(''+pfx+'')"></div>'
         + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">שער ₪</label>'
-        + '<input id="'+pfx+'-fx-rate" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" style="'+fld+'" oninput="(function(p){var amt=parseFloat((document.getElementById(p+'-fx-amount')||{}).value)||0;var rate=parseFloat((document.getElementById(p+'-fx-rate')||{}).value)||0;var s=(document.getElementById(p+'-start')||{}).value||'';var e=(document.getElementById(p+'-end')||{}).value||'';if(!amt||!rate)return;var m=1;if(s&&e){var sa=s.split('-'),ea=e.split('-');m=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;if(m<1)m=1;}var mo=Math.round(amt*rate/m*100)/100;var ae=document.getElementById(p+'-amt');var pe=document.getElementById(p+'-pct');if(ae){ae.value=mo;ae.disabled=false;}if(pe)pe.value='';})(''+pfx+'')"></div>'
+        + '<input id="'+pfx+'-fx-rate" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" style="'+fld+'" oninput="wdwCalcFXMonthly(''+pfx+'')"></div>'
         + '</div></div>';
       return html + fxHtml;
     };
@@ -13329,12 +13318,6 @@ window.addEventListener('load', function(){
       var fxC = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
       var fxA = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
       var fxR = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-      // וודא שה-valueType הוא amount כשיש סכום
-      var amtEl = document.getElementById(pfx+'-amt');
-      var pctEl = document.getElementById(pfx+'-pct');
-      if(fxA && fxR && amtEl && amtEl.value && (!pctEl || !pctEl.value)){
-        if(pctEl) pctEl.value = '';
-      }
       if(typeof _origSaveNew === 'function') await _origSaveNew.call(this, did);
       var d = ((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d && d.workers && d.workers.length){
@@ -13342,10 +13325,7 @@ window.addEventListener('load', function(){
         if(fxC) w.fxCurrency = fxC;
         if(fxA) w.fxAmount = fxA;
         if(fxR) w.fxRate = fxR;
-        // תיקון valueType
-        if(fxA && fxR && w.value && w.valueType !== 'amount'){
-          w.valueType = 'amount';
-        }
+        if(fxA && fxR) w.valueType = 'amount';
         try{saveLocally();saveData();}catch(e){}
       }
     };
@@ -13361,15 +13341,13 @@ window.addEventListener('load', function(){
           w.fxCurrency = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
           w.fxAmount = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
           w.fxRate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-          if(w.fxAmount && w.fxRate && w.value && w.valueType !== 'amount'){
-            w.valueType = 'amount';
-          }
+          if(w.fxAmount && w.fxRate) w.valueType = 'amount';
           try{saveLocally();saveData();}catch(e){}
         }
       }
     };
 
-    console.log('v389CL: FX override loaded');
+    console.log('v390CL: FX override loaded');
   }, 500);
 });
 </script>
