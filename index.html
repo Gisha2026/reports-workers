@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v405CL | גישה</title>
+<title>Reports_Workers v406CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v405CL</span>
+      <span class="topbar-title">Reports_Workers v406CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6381,7 +6381,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 
 <script>
-/* ===== v405CL FX functions ===== */
+/* ===== v406CL FX functions ===== */
 window.wdwCalcFXMonthly = function(pfx){
   var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
   var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
@@ -6399,6 +6399,7 @@ window.wdwCalcFXMonthly = function(pfx){
   var pe = document.getElementById(pfx+'-pct');
   if(ae){ae.value=mo; ae.disabled=false;}
   if(pe) pe.value='';
+  return mo;
 };
 
 function fxCalcMonthly(fxA, fxR, startMonth, endMonth){
@@ -6414,20 +6415,39 @@ function fxCalcMonthly(fxA, fxR, startMonth, endMonth){
 
 window.addEventListener('load',function(){
   setTimeout(function(){
+    // עוטף wdwWorkerFields — מוסיף כפתור "חשב" ומחשב אוטומטית בפתיחה
     var _orig = window.wdwWorkerFields;
     if(typeof _orig === 'function'){
       window.wdwWorkerFields = function(w,d,hasBudget,curMonth,workerOpts,isEdit){
         var html = _orig.call(this, w,d,hasBudget,curMonth,workerOpts,isEdit);
+        var pfx = isEdit ? ('ew-'+(d&&d.id)+'-'+(w&&w.id)) : ('nw-'+(d&&d.id));
+        
+        // מוסיף כפתור "חשב" אחרי שדות המטח
+        var calcBtn = '<div style="margin-top:6px;text-align:left">'
+          + '<button type="button" onclick="wdwCalcFXMonthly(''+pfx+'')" '
+          + 'style="padding:7px 18px;background:#166534;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:700">'
+          + 'חשב סכום חודשי ₪'
+          + '</button></div>';
+        
+        // מחפש את מקום הכנסת הכפתור — אחרי שדות המטח
+        var fxMarker = 'id="'+pfx+'-fx-rate"';
+        var fxIdx = html.indexOf(fxMarker);
+        if(fxIdx > -1){
+          var divEnd = html.indexOf('</div>', fxIdx + fxMarker.length);
+          var blockEnd = html.indexOf('</div>', divEnd + 1) + '</div>'.length;
+          html = html.substring(0, blockEnd) + calcBtn + html.substring(blockEnd);
+        }
+        
+        // חישוב אוטומטי בפתיחה אם יש נתוני מטח
         if(w && w.fxAmount && w.fxRate){
-          var pfx = isEdit ? ('ew-'+(d&&d.id)+'-'+(w&&w.id)) : ('nw-'+(d&&d.id));
           var mo = fxCalcMonthly(w.fxAmount, w.fxRate, w.startMonth, w.endMonth);
           if(mo){
-            html += '<scr'+'ipt>setTimeout(function(){'+
-              'var ae=document.getElementById("'+pfx+'-amt");'+
-              'var pe=document.getElementById("'+pfx+'-pct");'+
-              'if(ae){ae.value='+mo+';ae.disabled=false;}'+
-              'if(pe)pe.value="";'+
-              '},50);</'+'script>';
+            html += '<scr'+'ipt>setTimeout(function(){'
+              + 'var ae=document.getElementById("'+pfx+'-amt");'
+              + 'var pe=document.getElementById("'+pfx+'-pct");'
+              + 'if(ae){ae.value='+mo+';ae.disabled=false;}'
+              + 'if(pe)pe.value="";'
+              + '},100);</'+'script>';
           }
         }
         return html;
@@ -6442,15 +6462,6 @@ window.addEventListener('load',function(){
       var fxR=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
       var startM=(document.getElementById(pfx+'-start')||{}).value||null;
       var endM=(document.getElementById(pfx+'-end')||{}).value||null;
-      if(fxA&&fxR){
-        var mo0=fxCalcMonthly(fxA,fxR,startM,endM);
-        if(mo0){
-          var ae0=document.getElementById(pfx+'-amt');
-          var pe0=document.getElementById(pfx+'-pct');
-          if(ae0){ae0.value=mo0; ae0.disabled=false;}
-          if(pe0) pe0.value='';
-        }
-      }
       await _sn.call(this,did);
       var d=((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d&&d.workers&&d.workers.length){
@@ -6474,15 +6485,6 @@ window.addEventListener('load',function(){
       var fxR=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
       var startM=(document.getElementById(pfx+'-start')||{}).value||null;
       var endM=(document.getElementById(pfx+'-end')||{}).value||null;
-      if(fxA&&fxR){
-        var mo=fxCalcMonthly(fxA,fxR,startM,endM);
-        if(mo){
-          var ae=document.getElementById(pfx+'-amt');
-          var pe=document.getElementById(pfx+'-pct');
-          if(ae){ae.value=mo; ae.disabled=false;}
-          if(pe) pe.value='';
-        }
-      }
       _se.call(this,did,wid);
       var d=((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d){
@@ -6499,16 +6501,18 @@ window.addEventListener('load',function(){
         }
       }
     };
+    console.log('v406CL: FX override loaded');
   },300);
 });
 </script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v405CL | גישה</title>
+<title>Reports_Workers v406CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6763,7 +6767,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v405CL</span>
+      <span class="topbar-title">Reports_Workers v406CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
