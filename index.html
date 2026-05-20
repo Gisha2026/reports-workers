@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v361CL | גישה</title>
+<title>Reports_Workers v362CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v361CL</span>
+      <span class="topbar-title">Reports_Workers v362CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2009,6 +2009,13 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
           ${wdwWorkersList().map(x=>`<option value="${x}"${w&&w.name===x?' selected':''}>${x}</option>`).join('')}
         </select>
         <div id="${pfx}-cost" style="font-size:11px;color:#2E7D32;margin-top:1px">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'}</div>
+      </div>
+      <div style="${col}">
+        <label style="${lbl}">תפקיד בתרומה</label>
+        <select id="${pfx}-roleInDonor" style="${fld}">
+          <option value="">— בחר תפקיד —</option>
+          ${(S.roles||[]).map(r=>`<option value="${r}"${w&&w.roleInDonor===r?' selected':''}>${r}</option>`).join('')}
+        </select>
       </div>
       <div style="${col}">
         <label style="${lbl}">סוג מימון</label>
@@ -5281,7 +5288,7 @@ window.wdwResetNewWorkerForm = function(did) {
   window.wdwSaveDonor217=function(id){var d=donors217().find(function(x){return x.id===id;}); if(!d)return; d.name=(document.getElementById('v217-ed-name-'+id)||{}).value||d.name; d.type=(document.getElementById('v217-ed-type-'+id)||{}).value||d.type; d.status=(document.getElementById('v217-ed-status-'+id)||{}).value||d.status; d.totalBudget=parseFloat((document.getElementById('v217-ed-budget-'+id)||{}).value)||0; d.startDate=(document.getElementById('v217-ed-start-'+id)||{}).value||''; d.endDate=(document.getElementById('v217-ed-end-'+id)||{}).value||''; d.code=(document.getElementById('v217-ed-code-'+id)||{}).value||''; d.address=(document.getElementById('v217-ed-address-'+id)||{}).value||''; var flexRadio=document.querySelector('input[name="v219-flex-'+id+'"]:checked');if(flexRadio)d.flexible=(flexRadio.value==='yes'); var stratEl=document.getElementById('v217-ed-strategy-'+id); if(stratEl) d.utilizationStrategy=stratEl.value||'even'; save217(); window.WDW_EDIT_DONOR_ID=id; window.renderWDWInput();};
 
   function collectWorker217(pfx,w){
-    w=w||{}; w.name=(document.getElementById(pfx+'-name')||{}).value||w.name||''; if(!w.name){alert('נא לבחור עובד');return null;} w.fundingType=(document.getElementById(pfx+'-ftype')||{}).value||w.fundingType; var pct=parseFloat((document.getElementById(pfx+'-pct')||{}).value)||0, amt=parseFloat((document.getElementById(pfx+'-amt')||{}).value)||0; w.valueType=pct?'percent':'amount'; w.value=pct||amt||0; w.startMonth=(document.getElementById(pfx+'-start')||{}).value||w.startMonth; w.endMonth=(document.getElementById(pfx+'-end')||{}).value||w.endMonth; w.cap=parseFloat((document.getElementById(pfx+'-cap')||{}).value)||null; w.replaces=(document.getElementById(pfx+'-replaces')||{}).value||null; w.vacantName=(document.getElementById(pfx+'-vacant-name')||{}).value||null; w.replacesPct=parseFloat((document.getElementById(pfx+'-replaces-pct')||{}).value)||null; w.replacesAmt=parseFloat((document.getElementById(pfx+'-replaces-amt')||{}).value)||null; w.monthlyPct=(typeof wdwCollectMonthlyPct==='function')?wdwCollectMonthlyPct(pfx):{}; return w;
+    w=w||{}; w.name=(document.getElementById(pfx+'-name')||{}).value||w.name||''; if(!w.name){alert('נא לבחור עובד');return null;} w.fundingType=(document.getElementById(pfx+'-ftype')||{}).value||w.fundingType; var pct=parseFloat((document.getElementById(pfx+'-pct')||{}).value)||0, amt=parseFloat((document.getElementById(pfx+'-amt')||{}).value)||0; w.valueType=pct?'percent':'amount'; w.value=pct||amt||0; w.startMonth=(document.getElementById(pfx+'-start')||{}).value||w.startMonth; w.endMonth=(document.getElementById(pfx+'-end')||{}).value||w.endMonth; w.cap=parseFloat((document.getElementById(pfx+'-cap')||{}).value)||null; w.replaces=(document.getElementById(pfx+'-replaces')||{}).value||null; w.vacantName=(document.getElementById(pfx+'-vacant-name')||{}).value||null; w.replacesPct=parseFloat((document.getElementById(pfx+'-replaces-pct')||{}).value)||null; w.replacesAmt=parseFloat((document.getElementById(pfx+'-replaces-amt')||{}).value)||null; w.monthlyPct=(typeof wdwCollectMonthlyPct==='function')?wdwCollectMonthlyPct(pfx):{}; var roleEl=document.getElementById(pfx+'-roleInDonor'); if(roleEl) w.roleInDonor=roleEl.value||w.roleInDonor||''; return w;
   }
   window.wdwSaveNewWorker=function(did){var d=donors217().find(function(x){return x.id===did;}); if(!d)return; var w=collectWorker217('nw-'+did,{id:(typeof wdwGenId==='function'?wdwGenId('w'):'w_'+Date.now()),active:true}); if(!w)return; d.workers=d.workers||[]; d.workers.push(w); save217(); window.WDW_EDIT_DONOR_ID=did; window.WDW_ADD_WORKER_FOR=did; window.renderWDWInput();};
   window.wdwSaveEditWorker217=function(did,wid){var d=donors217().find(function(x){return x.id===did;}); if(!d)return; var w=(d.workers||[]).find(function(x){return x.id===wid;}); if(!w)return; collectWorker217('ew-'+did+'-'+wid,w); save217(); window.WDW_EDIT_DONOR_ID=did; window.renderWDWInput();};
@@ -6325,7 +6332,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v361CL | גישה</title>
+<title>Reports_Workers v362CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6580,7 +6587,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v361CL</span>
+      <span class="topbar-title">Reports_Workers v362CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8392,6 +8399,13 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
           ${wdwWorkersList().map(x=>`<option value="${x}"${w&&w.name===x?' selected':''}>${x}</option>`).join('')}
         </select>
         <div id="${pfx}-cost" style="font-size:11px;color:#2E7D32;margin-top:1px">${cost>0?'עלות מעביד: ₪'+cost.toLocaleString():hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'}</div>
+      </div>
+      <div style="${col}">
+        <label style="${lbl}">תפקיד בתרומה</label>
+        <select id="${pfx}-roleInDonor" style="${fld}">
+          <option value="">— בחר תפקיד —</option>
+          ${(S.roles||[]).map(r=>`<option value="${r}"${w&&w.roleInDonor===r?' selected':''}>${r}</option>`).join('')}
+        </select>
       </div>
       <div style="${col}">
         <label style="${lbl}">סוג מימון</label>
@@ -11755,7 +11769,7 @@ window.wdwResetNewWorkerForm = function(did) {
   window.wdwSaveDonor217=function(id){var d=donors217().find(function(x){return x.id===id;}); if(!d)return; d.name=(document.getElementById('v217-ed-name-'+id)||{}).value||d.name; d.type=(document.getElementById('v217-ed-type-'+id)||{}).value||d.type; d.status=(document.getElementById('v217-ed-status-'+id)||{}).value||d.status; d.totalBudget=parseFloat((document.getElementById('v217-ed-budget-'+id)||{}).value)||0; d.startDate=(document.getElementById('v217-ed-start-'+id)||{}).value||''; d.endDate=(document.getElementById('v217-ed-end-'+id)||{}).value||''; d.code=(document.getElementById('v217-ed-code-'+id)||{}).value||''; d.address=(document.getElementById('v217-ed-address-'+id)||{}).value||''; var flexRadio=document.querySelector('input[name="v219-flex-'+id+'"]:checked');if(flexRadio)d.flexible=(flexRadio.value==='yes'); var stratEl=document.getElementById('v217-ed-strategy-'+id); if(stratEl) d.utilizationStrategy=stratEl.value||'even'; save217(); window.WDW_EDIT_DONOR_ID=id; window.renderWDWInput();};
 
   function collectWorker217(pfx,w){
-    w=w||{}; w.name=(document.getElementById(pfx+'-name')||{}).value||w.name||''; if(!w.name){alert('נא לבחור עובד');return null;} w.fundingType=(document.getElementById(pfx+'-ftype')||{}).value||w.fundingType; var pct=parseFloat((document.getElementById(pfx+'-pct')||{}).value)||0, amt=parseFloat((document.getElementById(pfx+'-amt')||{}).value)||0; w.valueType=pct?'percent':'amount'; w.value=pct||amt||0; w.startMonth=(document.getElementById(pfx+'-start')||{}).value||w.startMonth; w.endMonth=(document.getElementById(pfx+'-end')||{}).value||w.endMonth; w.cap=parseFloat((document.getElementById(pfx+'-cap')||{}).value)||null; w.replaces=(document.getElementById(pfx+'-replaces')||{}).value||null; w.vacantName=(document.getElementById(pfx+'-vacant-name')||{}).value||null; w.replacesPct=parseFloat((document.getElementById(pfx+'-replaces-pct')||{}).value)||null; w.replacesAmt=parseFloat((document.getElementById(pfx+'-replaces-amt')||{}).value)||null; w.monthlyPct=(typeof wdwCollectMonthlyPct==='function')?wdwCollectMonthlyPct(pfx):{}; return w;
+    w=w||{}; w.name=(document.getElementById(pfx+'-name')||{}).value||w.name||''; if(!w.name){alert('נא לבחור עובד');return null;} w.fundingType=(document.getElementById(pfx+'-ftype')||{}).value||w.fundingType; var pct=parseFloat((document.getElementById(pfx+'-pct')||{}).value)||0, amt=parseFloat((document.getElementById(pfx+'-amt')||{}).value)||0; w.valueType=pct?'percent':'amount'; w.value=pct||amt||0; w.startMonth=(document.getElementById(pfx+'-start')||{}).value||w.startMonth; w.endMonth=(document.getElementById(pfx+'-end')||{}).value||w.endMonth; w.cap=parseFloat((document.getElementById(pfx+'-cap')||{}).value)||null; w.replaces=(document.getElementById(pfx+'-replaces')||{}).value||null; w.vacantName=(document.getElementById(pfx+'-vacant-name')||{}).value||null; w.replacesPct=parseFloat((document.getElementById(pfx+'-replaces-pct')||{}).value)||null; w.replacesAmt=parseFloat((document.getElementById(pfx+'-replaces-amt')||{}).value)||null; w.monthlyPct=(typeof wdwCollectMonthlyPct==='function')?wdwCollectMonthlyPct(pfx):{}; var roleEl=document.getElementById(pfx+'-roleInDonor'); if(roleEl) w.roleInDonor=roleEl.value||w.roleInDonor||''; return w;
   }
   window.wdwSaveNewWorker=function(did){var d=donors217().find(function(x){return x.id===did;}); if(!d)return; var w=collectWorker217('nw-'+did,{id:(typeof wdwGenId==='function'?wdwGenId('w'):'w_'+Date.now()),active:true}); if(!w)return; d.workers=d.workers||[]; d.workers.push(w); save217(); window.WDW_EDIT_DONOR_ID=did; window.WDW_ADD_WORKER_FOR=did; window.renderWDWInput();};
   window.wdwSaveEditWorker217=function(did,wid){var d=donors217().find(function(x){return x.id===did;}); if(!d)return; var w=(d.workers||[]).find(function(x){return x.id===wid;}); if(!w)return; collectWorker217('ew-'+did+'-'+wid,w); save217(); window.WDW_EDIT_DONOR_ID=did; window.renderWDWInput();};
