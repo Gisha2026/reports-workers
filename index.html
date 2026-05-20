@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v391CL | גישה</title>
+<title>Reports_Workers v392CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v391CL</span>
+      <span class="topbar-title">Reports_Workers v392CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4047,6 +4047,7 @@ function sendEmail(){
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px"><div><label>עובד</label><select id="'+pfx+'-name" style="'+fld+'" onchange="wdwUpdateWorkerCost(\''+pfx+'\')"><option value="" '+(!w||!w.name?'selected':'')+'>— בחר עובד —</option>'+wdwWorkersList().map(function(x){return '<option value="'+esc(x)+'" '+(w&&w.name===x?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select><div id="'+pfx+'-cost" class="wdw-muted">'+(cost>0?'עלות מעביד: ₪'+cost.toLocaleString():(hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'))+'</div></div><div><label>סוג מימון</label><select id="'+pfx+'-ftype" style="'+fld+'">'+WDW_FUNDING_TYPES.map(function(t){return '<option '+(w&&w.fundingType===t?'selected':'')+'>'+esc(t)+'</option>';}).join('')+'</select></div></div>'+
       '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
       '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:12px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
+      '<div style="display:grid;grid-template-columns:110px 130px 110px;gap:10px;margin-bottom:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px"><div><label style="color:#166534;font-weight:700">מטבע</label><select id="\'+pfx+\'-fx-currency" style="\'+fld+\'"><option value="" \'+(!( w&&w.fxCurrency)?\'selected\':\'\')+'>— ללא —</option><option value="USD" \'+( w&&w.fxCurrency===\'USD\'?\'selected\':\'\')+'>USD</option><option value="EUR" \'+( w&&w.fxCurrency===\'EUR\'?\'selected\':\'\')+'>EUR</option><option value="GBP" \'+( w&&w.fxCurrency===\'GBP\'?\'selected\':\'\')+'>GBP</option><option value="CHF" \'+( w&&w.fxCurrency===\'CHF\'?\'selected\':\'\')+'>CHF</option></select></div><div><label style="color:#166534;font-weight:700">סכום מטח לתקופה</label><input id="\'+pfx+\'-fx-amount" style="\'+fld+\'" type="number" step="0.01" value="\'+esc( w&& w.fxAmount||\'\')+\'" placeholder="0" oninput="wdwCalcFXMonthly(\'\'+pfx+\'\')"></div><div><label style="color:#166534;font-weight:700">שער ₪</label><input id="\'+pfx+\'-fx-rate" style="\'+fld+\'" type="number" step="0.0001" value="\'+esc( w&& w.fxRate||\'\')+\'" placeholder="3.7" oninput="wdwCalcFXMonthly(\'\'+pfx+\'\')"></div></div>'+
       '<div style="margin-top:6px"><label>מחליף את — תקופת החלפה עצמאית</label><div class="wdw-repl-fields"><div><select id="'+pfx+'-replaces" style="'+fld+'" onchange="wdwToggleVacant(\''+pfx+'\')">'+repOpts+'</select><div id="'+pfx+'-vacant-wrap" style="margin-top:4px;'+(replacesIsVacant?'':'display:none')+'"><input id="'+pfx+'-vacant-name" style="'+fld+'" type="text" value="'+esc(w&&w.vacantName||'')+'" placeholder="לדוגמה: רכזת פניות"></div></div><div><label>% אחוז</label><input id="'+pfx+'-replaces-pct" style="'+fld+'" type="number" value="'+esc(w&&w.replacesPct||'')+'" placeholder="20"></div><div><label>סכום ₪</label><input id="'+pfx+'-replaces-amt" style="'+fld+'" type="number" value="'+esc(w&&w.replacesAmt||'')+'" placeholder="—"></div><div><label>מחודש</label><input id="'+pfx+'-replaces-start" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceStartMonth||w.replacesStartMonth) || w&&w.startMonth || defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-replaces-end" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceEndMonth||w.replacesEndMonth) || '')+'"><div class="wdw-muted">ריק = פתוח</div></div><div></div></div><div id="'+pfx+'-replaces-rows">'+extra+'</div><button onclick="wdwAddExtraReplace(\''+pfx+'\')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:2px">+ הוסף החלפה נוספת</button></div></div>';
   };
 
@@ -6379,85 +6380,50 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </script>
 
 
-
-
 <script>
-/* ===== v391CL FX fields ===== */
+/* ===== v392CL FX save functions ===== */
+window.wdwCalcFXMonthly = function(pfx){
+  var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
+  var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
+  var s = (document.getElementById(pfx+'-start')||{}).value||'';
+  var e = (document.getElementById(pfx+'-end')||{}).value||'';
+  if(!amt || !rate) return;
+  var months = 1;
+  if(s && e){
+    var sa=s.split('-'), ea=e.split('-');
+    months = (parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
+    if(months < 1) months = 1;
+  }
+  var monthly = Math.round(amt*rate/months*100)/100;
+  var amtEl = document.getElementById(pfx+'-amt');
+  var pctEl = document.getElementById(pfx+'-pct');
+  if(amtEl){ amtEl.value = monthly; amtEl.disabled = false; }
+  if(pctEl) pctEl.value = '';
+};
+
 window.addEventListener('load', function(){
   setTimeout(function(){
-    var _orig = window.wdwWorkerFields;
-    if(typeof _orig !== 'function') return;
-    var fld = 'padding:7px 9px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:100%;height:34px;box-sizing:border-box';
-
-    window.wdwCalcFXMonthly = function(pfx){
-      var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
-      var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
-      var s = (document.getElementById(pfx+'-start')||{}).value||'';
-      var e = (document.getElementById(pfx+'-end')||{}).value||'';
-      if(!amt || !rate) return;
-      var months = 1;
-      if(s && e){
-        var sa=s.split('-'), ea=e.split('-');
-        months = (parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
-        if(months < 1) months = 1;
-      }
-      var monthly = Math.round(amt*rate/months*100)/100;
-      var amtEl = document.getElementById(pfx+'-amt');
-      var pctEl = document.getElementById(pfx+'-pct');
-      if(amtEl){ amtEl.value = monthly; amtEl.disabled = false; }
-      if(pctEl) pctEl.value = '';
-    };
-
-    window.wdwWorkerFields = function(w,d,hasBudget,curMonth,workerOpts,isEdit){
-      var html = _orig.call(this, w,d,hasBudget,curMonth,workerOpts,isEdit);
-      var pfx = isEdit ? ('ew-'+(d&&d.id)+'-'+(w&&w.id)) : ('nw-'+(d&&d.id));
-      var cur = (w&&w.fxCurrency)||'';
-      var fxHtml = '<div style="margin-top:8px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px">'
-        + '<div style="display:grid;grid-template-columns:110px 130px 110px;gap:10px">'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">מטבע</label>'
-        + '<select id="'+pfx+'-fx-currency" style="'+fld+'">'
-        + '<option value=""'+(cur===''?' selected':'')+'>— ללא —</option>'
-        + '<option value="USD"'+(cur==='USD'?' selected':'')+'>USD</option>'
-        + '<option value="EUR"'+(cur==='EUR'?' selected':'')+'>EUR</option>'
-        + '<option value="GBP"'+(cur==='GBP'?' selected':'')+'>GBP</option>'
-        + '<option value="CHF"'+(cur==='CHF'?' selected':'')+'>CHF</option>'
-        + '</select></div>'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">סכום מטח לתקופה</label>'
-        + '<input id="'+pfx+'-fx-amount" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" style="'+fld+'" oninput="wdwCalcFXMonthly(''+pfx+'')"></div>'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">שער ₪</label>'
-        + '<input id="'+pfx+'-fx-rate" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" style="'+fld+'" oninput="wdwCalcFXMonthly(''+pfx+'')"></div>'
-        + '</div></div>';
-
-      // מכניס את שדות המטח לפני "מחליף את" ולא בסוף
-      var marker = '<div style="margin-top:6px"><label>מחליף את';
-      var idx = html.indexOf(marker);
-      if(idx > -1){
-        return html.slice(0, idx) + fxHtml + html.slice(idx);
-      }
-      return html + fxHtml;
-    };
-
     var _origSaveNew = window.wdwSaveNewWorker;
-    window.wdwSaveNewWorker = async function(did){
+    if(typeof _origSaveNew === 'function') window.wdwSaveNewWorker = async function(did){
       var pfx = 'nw-'+did;
       var fxC = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
       var fxA = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
       var fxR = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-      if(typeof _origSaveNew === 'function') await _origSaveNew.call(this, did);
+      await _origSaveNew.call(this, did);
       var d = ((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d && d.workers && d.workers.length){
         var w = d.workers[d.workers.length-1];
         if(fxC) w.fxCurrency = fxC;
         if(fxA) w.fxAmount = fxA;
         if(fxR) w.fxRate = fxR;
-        if(fxA && fxR) w.valueType = 'amount';
+        if(fxA && fxR){ w.valueType='amount'; }
         try{saveLocally();saveData();}catch(e){}
       }
     };
 
     var _origSaveEdit = window.wdwSaveEditWorker;
-    window.wdwSaveEditWorker = function(did,wid){
-      if(typeof _origSaveEdit === 'function') _origSaveEdit.call(this, did,wid);
+    if(typeof _origSaveEdit === 'function') window.wdwSaveEditWorker = function(did,wid){
+      _origSaveEdit.call(this, did,wid);
       var pfx = 'ew-'+did+'-'+wid;
       var d = ((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d){
@@ -6471,9 +6437,7 @@ window.addEventListener('load', function(){
         }
       }
     };
-
-    console.log('v391CL: FX override loaded');
-  }, 500);
+  }, 300);
 });
 </script>
 </body>
@@ -6482,7 +6446,7 @@ window.addEventListener('load', function(){
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v391CL | גישה</title>
+<title>Reports_Workers v392CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6737,7 +6701,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v391CL</span>
+      <span class="topbar-title">Reports_Workers v392CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11429,6 +11393,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px"><div><label>עובד</label><select id="'+pfx+'-name" style="'+fld+'" onchange="wdwUpdateWorkerCost(\''+pfx+'\')"><option value="" '+(!w||!w.name?'selected':'')+'>— בחר עובד —</option>'+wdwWorkersList().map(function(x){return '<option value="'+esc(x)+'" '+(w&&w.name===x?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select><div id="'+pfx+'-cost" class="wdw-muted">'+(cost>0?'עלות מעביד: ₪'+cost.toLocaleString():(hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'))+'</div></div><div><label>סוג מימון</label><select id="'+pfx+'-ftype" style="'+fld+'">'+WDW_FUNDING_TYPES.map(function(t){return '<option '+(w&&w.fundingType===t?'selected':'')+'>'+esc(t)+'</option>';}).join('')+'</select></div><div><label>תפקיד בתרומה</label><select id="'+pfx+'-roleInDonor" style="'+fld+'"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r){return '<option value="'+esc(r)+'" '+((w&&w.roleInDonor===r)?'selected':'')+'>'+esc(r)+'</option>';}).join(''))+'</select></div></div>'+
       '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
       '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:12px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
+      '<div style="display:grid;grid-template-columns:110px 130px 110px;gap:10px;margin-bottom:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px"><div><label style="color:#166534;font-weight:700">מטבע</label><select id="\'+pfx+\'-fx-currency" style="\'+fld+\'"><option value="" \'+(!( w&&w.fxCurrency)?\'selected\':\'\')+'>— ללא —</option><option value="USD" \'+( w&&w.fxCurrency===\'USD\'?\'selected\':\'\')+'>USD</option><option value="EUR" \'+( w&&w.fxCurrency===\'EUR\'?\'selected\':\'\')+'>EUR</option><option value="GBP" \'+( w&&w.fxCurrency===\'GBP\'?\'selected\':\'\')+'>GBP</option><option value="CHF" \'+( w&&w.fxCurrency===\'CHF\'?\'selected\':\'\')+'>CHF</option></select></div><div><label style="color:#166534;font-weight:700">סכום מטח לתקופה</label><input id="\'+pfx+\'-fx-amount" style="\'+fld+\'" type="number" step="0.01" value="\'+esc( w&& w.fxAmount||\'\')+\'" placeholder="0" oninput="wdwCalcFXMonthly(\'\'+pfx+\'\')"></div><div><label style="color:#166534;font-weight:700">שער ₪</label><input id="\'+pfx+\'-fx-rate" style="\'+fld+\'" type="number" step="0.0001" value="\'+esc( w&& w.fxRate||\'\')+\'" placeholder="3.7" oninput="wdwCalcFXMonthly(\'\'+pfx+\'\')"></div></div>'+
       '<div style="margin-top:6px"><label>מחליף את — תקופת החלפה עצמאית</label><div class="wdw-repl-fields"><div><select id="'+pfx+'-replaces" style="'+fld+'" onchange="wdwToggleVacant(\''+pfx+'\')">'+repOpts+'</select><div id="'+pfx+'-vacant-wrap" style="margin-top:4px;'+(replacesIsVacant?'':'display:none')+'"><select id="'+pfx+'-vacant-name" style="'+fld+'"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r){return '<option value="'+esc(r)+'" '+((w&&w.vacantName===r)?'selected':'')+'>'+esc(r)+'</option>';}).join(''))+'</select></div></div><div><label>% אחוז</label><input id="'+pfx+'-replaces-pct" style="'+fld+'" type="number" value="'+esc(w&&w.replacesPct||'')+'" placeholder="20"></div><div><label>סכום ₪</label><input id="'+pfx+'-replaces-amt" style="'+fld+'" type="number" value="'+esc(w&&w.replacesAmt||'')+'" placeholder="—"></div><div><label>מחודש</label><input id="'+pfx+'-replaces-start" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceStartMonth||w.replacesStartMonth) || w&&w.startMonth || defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-replaces-end" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceEndMonth||w.replacesEndMonth) || '')+'"><div class="wdw-muted">ריק = פתוח</div></div><div></div></div><div id="'+pfx+'-replaces-rows">'+extra+'</div><button onclick="wdwAddExtraReplace(\''+pfx+'\')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:2px">+ הוסף החלפה נוספת</button></div></div>';
   };
 
@@ -13132,221 +13097,49 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </script>
 
 <script>
-/* ===== v391CL FX fields ===== */
-(function(){
-  function waitFor(fn, cb, tries){
-    tries = tries||0;
-    if(tries>50) return;
-    try{ if(fn()) cb(); else setTimeout(function(){waitFor(fn,cb,tries+1);},200); }
-    catch(e){ setTimeout(function(){waitFor(fn,cb,tries+1);},200); }
+/* ===== v392CL FX save functions ===== */
+window.wdwCalcFXMonthly = function(pfx){
+  var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
+  var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
+  var s = (document.getElementById(pfx+'-start')||{}).value||'';
+  var e = (document.getElementById(pfx+'-end')||{}).value||'';
+  if(!amt || !rate) return;
+  var months = 1;
+  if(s && e){
+    var sa=s.split('-'), ea=e.split('-');
+    months = (parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
+    if(months < 1) months = 1;
   }
-  waitFor(
-    function(){ return typeof window.wdwWorkerFields === 'function'; },
-    function(){
-      var _orig = window.wdwWorkerFields;
-      window.wdwWorkerFields = function(w,d,hasBudget,curMonth,workerOpts,isEdit){
-        var html = _orig(w,d,hasBudget,curMonth,workerOpts,isEdit);
-        var pfx = isEdit ? ('ew-'+d.id+'-'+(w&&w.id)) : ('nw-'+d.id);
-        var fld = 'padding:7px 9px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:100%;height:34px;box-sizing:border-box';
-        var cur = w&&w.fxCurrency||'';
-        var fxHtml = '<div style="margin-top:8px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px">'
-          + '<div style="display:grid;grid-template-columns:110px 130px 110px;gap:10px">'
-          + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">מטבע</label>'
-          + '<select id="'+pfx+'-fx-currency" style="'+fld+'">'
-          + '<option value=""'+(cur===''?' selected':'')+'>— ללא —</option>'
-          + '<option value="USD"'+(cur==='USD'?' selected':'')+'>USD</option>'
-          + '<option value="EUR"'+(cur==='EUR'?' selected':'')+'>EUR</option>'
-          + '<option value="GBP"'+(cur==='GBP'?' selected':'')+'>GBP</option>'
-          + '<option value="CHF"'+(cur==='CHF'?' selected':'')+'>CHF</option>'
-          + '</select></div>'
-          + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">סכום מטח</label>'
-          + '<input id="'+pfx+'-fx-amount" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" style="'+fld+'"></div>'
-          + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">שער ₪</label>'
-          + '<input id="'+pfx+'-fx-rate" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" style="'+fld+'"></div>'
-          + '</div></div>';
-        return html + fxHtml;
-      };
+  var monthly = Math.round(amt*rate/months*100)/100;
+  var amtEl = document.getElementById(pfx+'-amt');
+  var pctEl = document.getElementById(pfx+'-pct');
+  if(amtEl){ amtEl.value = monthly; amtEl.disabled = false; }
+  if(pctEl) pctEl.value = '';
+};
 
-      var _origSaveNew = window.wdwSaveNewWorker;
-      window.wdwSaveNewWorker = async function(did){
-        var pfx = 'nw-'+did;
-        var fxC = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
-        var fxA = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
-        var fxR = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-        await _origSaveNew(did);
-        var d = ((S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
-        if(d && d.workers && d.workers.length){
-          var w = d.workers[d.workers.length-1];
-          if(fxC) w.fxCurrency = fxC;
-          if(fxA) w.fxAmount = fxA;
-          if(fxR) w.fxRate = fxR;
-          try{saveLocally();saveData();}catch(e){}
-        }
-      };
-
-      var _origSaveEdit = window.wdwSaveEditWorker;
-      window.wdwSaveEditWorker = function(did,wid){
-        _origSaveEdit(did,wid);
-        var pfx = 'ew-'+did+'-'+wid;
-        var d = ((S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
-        if(d){
-          var w = (d.workers||[]).find(function(x){return x.id===wid;});
-          if(w){
-            w.fxCurrency = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
-            w.fxAmount = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
-            w.fxRate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-            try{saveLocally();saveData();}catch(e){}
-          }
-        }
-      };
-    }
-  );
-})();
-</script>
-
-<script>
-/* ===== v391CL FX fields — wraps after all scripts loaded ===== */
 window.addEventListener('load', function(){
   setTimeout(function(){
-    var _orig = window.wdwWorkerFields;
-    if(typeof _orig !== 'function'){ console.warn('wdwWorkerFields not found'); return; }
-    var fld = 'padding:7px 9px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:100%;height:34px;box-sizing:border-box';
-    window.wdwWorkerFields = function(w,d,hasBudget,curMonth,workerOpts,isEdit){
-      var html = _orig.call(this, w,d,hasBudget,curMonth,workerOpts,isEdit);
-      var pfx = isEdit ? ('ew-'+(d&&d.id)+'-'+(w&&w.id)) : ('nw-'+(d&&d.id));
-      var cur = (w&&w.fxCurrency)||'';
-      var fxHtml = '<div style="margin-top:8px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px">'
-        + '<div style="display:grid;grid-template-columns:110px 130px 110px;gap:10px">'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">מטבע</label>'
-        + '<select id="'+pfx+'-fx-currency" style="'+fld+'">'
-        + '<option value=""'+(cur===''?' selected':'')+'>— ללא —</option>'
-        + '<option value="USD"'+(cur==='USD'?' selected':'')+'>USD</option>'
-        + '<option value="EUR"'+(cur==='EUR'?' selected':'')+'>EUR</option>'
-        + '<option value="GBP"'+(cur==='GBP'?' selected':'')+'>GBP</option>'
-        + '<option value="CHF"'+(cur==='CHF'?' selected':'')+'>CHF</option>'
-        + '</select></div>'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">סכום מטח</label>'
-        + '<input id="'+pfx+'-fx-amount" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" style="'+fld+'"></div>'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">שער ₪</label>'
-        + '<input id="'+pfx+'-fx-rate" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" style="'+fld+'"></div>'
-        + '</div></div>';
-      return html + fxHtml;
-    };
-    console.log('v391CL: wdwWorkerFields wrapped with FX fields');
-
     var _origSaveNew = window.wdwSaveNewWorker;
-    window.wdwSaveNewWorker = async function(did){
+    if(typeof _origSaveNew === 'function') window.wdwSaveNewWorker = async function(did){
       var pfx = 'nw-'+did;
       var fxC = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
       var fxA = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
       var fxR = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-      if(typeof _origSaveNew === 'function') await _origSaveNew.call(this, did);
+      await _origSaveNew.call(this, did);
       var d = ((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d && d.workers && d.workers.length){
         var w = d.workers[d.workers.length-1];
         if(fxC) w.fxCurrency = fxC;
         if(fxA) w.fxAmount = fxA;
         if(fxR) w.fxRate = fxR;
+        if(fxA && fxR){ w.valueType='amount'; }
         try{saveLocally();saveData();}catch(e){}
       }
     };
 
     var _origSaveEdit = window.wdwSaveEditWorker;
-    window.wdwSaveEditWorker = function(did,wid){
-      if(typeof _origSaveEdit === 'function') _origSaveEdit.call(this, did,wid);
-      var pfx = 'ew-'+did+'-'+wid;
-      var d = ((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
-      if(d){
-        var w = (d.workers||[]).find(function(x){return x.id===wid;});
-        if(w){
-          w.fxCurrency = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
-          w.fxAmount = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
-          w.fxRate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-          try{saveLocally();saveData();}catch(e){}
-        }
-      }
-    };
-  }, 500);
-});
-</script>
-
-<script>
-/* ===== v391CL FX fields ===== */
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var _orig = window.wdwWorkerFields;
-    if(typeof _orig !== 'function') return;
-    var fld = 'padding:7px 9px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:100%;height:34px;box-sizing:border-box';
-
-    window.wdwCalcFXMonthly = function(pfx){
-      var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
-      var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
-      var s = (document.getElementById(pfx+'-start')||{}).value||'';
-      var e = (document.getElementById(pfx+'-end')||{}).value||'';
-      if(!amt || !rate) return;
-      var months = 1;
-      if(s && e){
-        var sa=s.split('-'), ea=e.split('-');
-        months = (parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
-        if(months < 1) months = 1;
-      }
-      var monthly = Math.round(amt*rate/months*100)/100;
-      var amtEl = document.getElementById(pfx+'-amt');
-      var pctEl = document.getElementById(pfx+'-pct');
-      if(amtEl){ amtEl.value = monthly; amtEl.disabled = false; }
-      if(pctEl) pctEl.value = '';
-    };
-
-    window.wdwWorkerFields = function(w,d,hasBudget,curMonth,workerOpts,isEdit){
-      var html = _orig.call(this, w,d,hasBudget,curMonth,workerOpts,isEdit);
-      var pfx = isEdit ? ('ew-'+(d&&d.id)+'-'+(w&&w.id)) : ('nw-'+(d&&d.id));
-      var cur = (w&&w.fxCurrency)||'';
-      var fxHtml = '<div style="margin-top:8px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px">'
-        + '<div style="display:grid;grid-template-columns:110px 130px 110px;gap:10px">'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">מטבע</label>'
-        + '<select id="'+pfx+'-fx-currency" style="'+fld+'">'
-        + '<option value=""'+(cur===''?' selected':'')+'>— ללא —</option>'
-        + '<option value="USD"'+(cur==='USD'?' selected':'')+'>USD</option>'
-        + '<option value="EUR"'+(cur==='EUR'?' selected':'')+'>EUR</option>'
-        + '<option value="GBP"'+(cur==='GBP'?' selected':'')+'>GBP</option>'
-        + '<option value="CHF"'+(cur==='CHF'?' selected':'')+'>CHF</option>'
-        + '</select></div>'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">סכום מטח לתקופה</label>'
-        + '<input id="'+pfx+'-fx-amount" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" style="'+fld+'" oninput="wdwCalcFXMonthly(''+pfx+'')"></div>'
-        + '<div><label style="color:#166534;font-weight:700;font-size:12px;display:block;margin-bottom:3px">שער ₪</label>'
-        + '<input id="'+pfx+'-fx-rate" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" style="'+fld+'" oninput="wdwCalcFXMonthly(''+pfx+'')"></div>'
-        + '</div></div>';
-
-      // מכניס את שדות המטח לפני "מחליף את" ולא בסוף
-      var marker = '<div style="margin-top:6px"><label>מחליף את';
-      var idx = html.indexOf(marker);
-      if(idx > -1){
-        return html.slice(0, idx) + fxHtml + html.slice(idx);
-      }
-      return html + fxHtml;
-    };
-
-    var _origSaveNew = window.wdwSaveNewWorker;
-    window.wdwSaveNewWorker = async function(did){
-      var pfx = 'nw-'+did;
-      var fxC = (document.getElementById(pfx+'-fx-currency')||{}).value||null;
-      var fxA = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
-      var fxR = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-      if(typeof _origSaveNew === 'function') await _origSaveNew.call(this, did);
-      var d = ((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
-      if(d && d.workers && d.workers.length){
-        var w = d.workers[d.workers.length-1];
-        if(fxC) w.fxCurrency = fxC;
-        if(fxA) w.fxAmount = fxA;
-        if(fxR) w.fxRate = fxR;
-        if(fxA && fxR) w.valueType = 'amount';
-        try{saveLocally();saveData();}catch(e){}
-      }
-    };
-
-    var _origSaveEdit = window.wdwSaveEditWorker;
-    window.wdwSaveEditWorker = function(did,wid){
-      if(typeof _origSaveEdit === 'function') _origSaveEdit.call(this, did,wid);
+    if(typeof _origSaveEdit === 'function') window.wdwSaveEditWorker = function(did,wid){
+      _origSaveEdit.call(this, did,wid);
       var pfx = 'ew-'+did+'-'+wid;
       var d = ((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d){
@@ -13360,9 +13153,7 @@ window.addEventListener('load', function(){
         }
       }
     };
-
-    console.log('v391CL: FX override loaded');
-  }, 500);
+  }, 300);
 });
 </script>
 </body>
