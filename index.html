@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v379CL | גישה</title>
+<title>Reports_Workers v380CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v379CL</span>
+      <span class="topbar-title">Reports_Workers v380CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2046,27 +2046,6 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
         <input id="${pfx}-amt" style="${fld}" type="number" value="${w&&w.valueType==='amount'?w.value:''}" placeholder="${hasBudget?'3700':'—'}" ${!hasBudget?'disabled':''} oninput="wdwCalcPct('${pfx}')">
       </div>
       <div style="${col}">
-        <label style="${lbl}">מטבע חוץ</label>
-        <select id="${pfx}-fxcurr" style="${fld}">
-          <option value=""${!(w&&w.fxCurrency)?' selected':''}>—</option>
-          <option value="USD"${w&&w.fxCurrency==='USD'?' selected':''}>USD</option>
-          <option value="EUR"${w&&w.fxCurrency==='EUR'?' selected':''}>EUR</option>
-          <option value="GBP"${w&&w.fxCurrency==='GBP'?' selected':''}>GBP</option>
-        </select>
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">סכום במט"ח</label>
-        <input id="${pfx}-fxamt" style="${fld}" type="number" value="${w&&w.fxAmount||''}" placeholder="5000" oninput="wdwCalcFX364('${pfx}')">
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">שער חליפין</label>
-        <input id="${pfx}-fxrate" style="${fld}" type="number" value="${w&&w.fxRate||''}" placeholder="3.70" step="0.01" oninput="wdwCalcFX364('${pfx}')">
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">סכום ₪ מחושב</label>
-        <input id="${pfx}-fxnis" style="${fld};background:#f5f5f5" type="number" value="${w&&w.fxNis||''}" placeholder="18500" disabled>
-      </div>
-      <div style="${col}">
         <label style="${lbl}">סכום ₪ לכל התקופה</label>
         <input id="${pfx}-total-amt" style="${fld}" type="number" value="${w&&w.totalPeriodAmount||''}" placeholder="לדוגמה: 50000" oninput="wdwCalcFromPeriodAmt('${pfx}')">
         <div style="font-size:11px;color:#1565C0;margin-top:1px">יחולק אוטומטית לחודשים פעילים</div>
@@ -2108,14 +2087,6 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
           <div style="${col}">
             <label style="${lbl}">סכום ₪</label>
             <input id="${pfx}-replaces-amt" style="${fld}" type="number" value="${w&&w.replacesAmt||''}" placeholder="—">
-          </div>
-          <div style="${col}">
-            <label style="${lbl}">מחודש</label>
-            <input id="${pfx}-replaces-start" style="${fld}" type="month" value="${w&&w.replaceStartMonth||''}">
-          </div>
-          <div style="${col}">
-            <label style="${lbl}">עד חודש</label>
-            <input id="${pfx}-replaces-end" style="${fld}" type="month" value="${w&&w.replaceEndMonth||''}">
           </div>
           <div style="${col};justify-content:flex-end">
             <div style="height:34px"></div>
@@ -3881,6 +3852,7 @@ function sendEmail(){
     S.workers.splice(i,1); saveLocally(); saveData(); renderWorkerList(); renderHolWorkers(); renderTable();
   };
   window.mkWRow=function(w,i){
+  var esc=function(x){return String(x==null?'':x);};
     const r=document.createElement('tr');
     r.style.borderBottom='1px solid #f0f0f0';
     const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
@@ -3897,7 +3869,7 @@ function sendEmail(){
       ?`<button class="end-btn" onclick="endWorker(${i})">סיום עבודה</button>`
       :`<button class="react-btn" onclick="reactivateWorker(${i})">החזרה לעבודה</button>`;
     const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
-    const roleOpts=(S.roles||[]).map(role=>`<option value="${String(role||'')}" ${w.role===role?'selected':''}>${String(role||'')}</option>`).join('');
+    const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
     const daysCount=wd.length;
     const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 6px;border-radius:10px;">${daysCount} ימים</span>`:'<span></span>';
     const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↑</button>`:'<span></span>';
@@ -4080,7 +4052,7 @@ function sendEmail(){
 
   window.wdwAddExtraReplace=function(pfx){var parts=pfx.split('-'), did=parts[1], wid=parts[2], d=(S.wdw.donors||[]).find(function(x){return x.id===did;}); if(!d)return; var w=wid?(d.workers||[]).find(function(x){return x.id===wid;}):null; if(w){if(!w.extraReplaces)w.extraReplaces=[]; w.extraReplaces.push({replaces:'',pct:'',amt:'',vacantName:'',startMonth:w.startMonth||d.startDate||'',endMonth:''}); saveLocally();} renderWDWInput();};
 
-  window.wdwSaveNewWorker=async function(did){var d=(S.wdw.donors||[]).find(function(x){return x.id===did;}); if(!d)return; var pfx='nw-'+did, name=document.getElementById(pfx+'-name')?.value, pct=parseFloat(document.getElementById(pfx+'-pct')?.value)||0, amt=parseFloat(document.getElementById(pfx+'-amt')?.value)||0, valueType=pct?'percent':'amount', value=pct||amt; if(!name||!value){alert('נא לבחור עובד ולהזין אחוז או סכום');return;} var curMonth=wdwMonthKeyLocal(), repPctVal=parseFloat(document.getElementById(pfx+'-replaces-pct')?.value)||0, total=workerTotal(name,curMonth); if(valueType==='percent'&&total+value+repPctVal>100){if(!confirm('⚠ '+name+' יהיה ב-'+Math.round((total+value+repPctVal)*10)/10+'% — חריגה מ-100%!\nלהמשיך?'))return;} if(!d.workers)d.workers=[]; d.workers.push({id:wdwGenId('w'),name:name,valueType:valueType,value:value,fundingType:document.getElementById(pfx+'-ftype')?.value,startMonth:document.getElementById(pfx+'-start')?.value,endMonth:document.getElementById(pfx+'-end')?.value,cap:parseFloat(document.getElementById(pfx+'-cap')?.value)||null,replaces:document.getElementById(pfx+'-replaces')?.value||null,replacesPct:repPctVal||null,replacesAmt:parseFloat(document.getElementById(pfx+'-replaces-amt')?.value)||null,replaceStartMonth:document.getElementById(pfx+'-replaces-start')?.value||null,replaceEndMonth:document.getElementById(pfx+'-replaces-end')?.value||null,vacantName:document.getElementById(pfx+'-vacant-name')?.value||null,fxCurrency:document.getElementById(pfx+'-fxcurr')?.value||null,fxAmount:parseFloat(document.getElementById(pfx+'-fxamt')?.value)||null,fxRate:parseFloat(document.getElementById(pfx+'-fxrate')?.value)||null,fxNis:parseFloat(document.getElementById(pfx+'-fxnis')?.value)||null,replaceStartMonth:document.getElementById(pfx+'-replaces-start')?.value||null,replaceEndMonth:document.getElementById(pfx+'-replaces-end')?.value||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&total+value+repPctVal>100,monthlyPct:wdwCollectMonthlyPct(pfx)}); saveLocally(); saveData();
+  window.wdwSaveNewWorker=async function(did){var d=(S.wdw.donors||[]).find(function(x){return x.id===did;}); if(!d)return; var pfx='nw-'+did, name=document.getElementById(pfx+'-name')?.value, pct=parseFloat(document.getElementById(pfx+'-pct')?.value)||0, amt=parseFloat(document.getElementById(pfx+'-amt')?.value)||0, valueType=pct?'percent':'amount', value=pct||amt; if(!name||!value){alert('נא לבחור עובד ולהזין אחוז או סכום');return;} var curMonth=wdwMonthKeyLocal(), repPctVal=parseFloat(document.getElementById(pfx+'-replaces-pct')?.value)||0, total=workerTotal(name,curMonth); if(valueType==='percent'&&total+value+repPctVal>100){if(!confirm('⚠ '+name+' יהיה ב-'+Math.round((total+value+repPctVal)*10)/10+'% — חריגה מ-100%!\nלהמשיך?'))return;} if(!d.workers)d.workers=[]; d.workers.push({id:wdwGenId('w'),name:name,valueType:valueType,value:value,fundingType:document.getElementById(pfx+'-ftype')?.value,startMonth:document.getElementById(pfx+'-start')?.value,endMonth:document.getElementById(pfx+'-end')?.value,cap:parseFloat(document.getElementById(pfx+'-cap')?.value)||null,replaces:document.getElementById(pfx+'-replaces')?.value||null,replacesPct:repPctVal||null,replacesAmt:parseFloat(document.getElementById(pfx+'-replaces-amt')?.value)||null,replaceStartMonth:document.getElementById(pfx+'-replaces-start')?.value||null,replaceEndMonth:document.getElementById(pfx+'-replaces-end')?.value||null,vacantName:document.getElementById(pfx+'-vacant-name')?.value||null,extraReplaces:[],active:true,overLimit:valueType==='percent'&&total+value+repPctVal>100,monthlyPct:wdwCollectMonthlyPct(pfx)}); saveLocally(); saveData();
     // לא מרנדרים מחדש — רק מעדכנים את רשימת העובדים ומנקים את הטופס
     wdwRefreshWorkerList(did);
     wdwResetNewWorkerForm(did);
@@ -6412,7 +6384,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v379CL | גישה</title>
+<title>Reports_Workers v380CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6667,7 +6639,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v379CL</span>
+      <span class="topbar-title">Reports_Workers v380CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8516,27 +8488,6 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
         <input id="${pfx}-amt" style="${fld}" type="number" value="${w&&w.valueType==='amount'?w.value:''}" placeholder="${hasBudget?'3700':'—'}" ${!hasBudget?'disabled':''} oninput="wdwCalcPct('${pfx}')">
       </div>
       <div style="${col}">
-        <label style="${lbl}">מטבע חוץ</label>
-        <select id="${pfx}-fxcurr" style="${fld}">
-          <option value=""${!(w&&w.fxCurrency)?' selected':''}>—</option>
-          <option value="USD"${w&&w.fxCurrency==='USD'?' selected':''}>USD</option>
-          <option value="EUR"${w&&w.fxCurrency==='EUR'?' selected':''}>EUR</option>
-          <option value="GBP"${w&&w.fxCurrency==='GBP'?' selected':''}>GBP</option>
-        </select>
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">סכום במט"ח</label>
-        <input id="${pfx}-fxamt" style="${fld}" type="number" value="${w&&w.fxAmount||''}" placeholder="5000" oninput="wdwCalcFX364('${pfx}')">
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">שער חליפין</label>
-        <input id="${pfx}-fxrate" style="${fld}" type="number" value="${w&&w.fxRate||''}" placeholder="3.70" step="0.01" oninput="wdwCalcFX364('${pfx}')">
-      </div>
-      <div style="${col}">
-        <label style="${lbl}">סכום ₪ מחושב</label>
-        <input id="${pfx}-fxnis" style="${fld};background:#f5f5f5" type="number" value="${w&&w.fxNis||''}" placeholder="18500" disabled>
-      </div>
-      <div style="${col}">
         <label style="${lbl}">סכום ₪ לכל התקופה</label>
         <input id="${pfx}-total-amt" style="${fld}" type="number" value="${w&&w.totalPeriodAmount||''}" placeholder="לדוגמה: 50000" oninput="wdwCalcFromPeriodAmt('${pfx}')">
         <div style="font-size:11px;color:#1565C0;margin-top:1px">יחולק אוטומטית לחודשים פעילים</div>
@@ -8578,14 +8529,6 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
           <div style="${col}">
             <label style="${lbl}">סכום ₪</label>
             <input id="${pfx}-replaces-amt" style="${fld}" type="number" value="${w&&w.replacesAmt||''}" placeholder="—">
-          </div>
-          <div style="${col}">
-            <label style="${lbl}">מחודש</label>
-            <input id="${pfx}-replaces-start" style="${fld}" type="month" value="${w&&w.replaceStartMonth||''}">
-          </div>
-          <div style="${col}">
-            <label style="${lbl}">עד חודש</label>
-            <input id="${pfx}-replaces-end" style="${fld}" type="month" value="${w&&w.replaceEndMonth||''}">
           </div>
           <div style="${col};justify-content:flex-end">
             <div style="height:34px"></div>
@@ -11192,6 +11135,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     S.workers.splice(i,1); saveLocally(); saveData(); renderWorkerList(); renderHolWorkers(); renderTable();
   };
   window.mkWRow=function(w,i){
+  var esc=function(x){return String(x==null?'':x);};
     const r=document.createElement('tr');
     r.style.borderBottom='1px solid #f0f0f0';
     const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
@@ -11208,7 +11152,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       ?`<button class="end-btn" onclick="endWorker(${i})">סיום עבודה</button>`
       :`<button class="react-btn" onclick="reactivateWorker(${i})">החזרה לעבודה</button>`;
     const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
-    const roleOpts=(S.roles||[]).map(role=>`<option value="${String(role||'')}" ${w.role===role?'selected':''}>${String(role||'')}</option>`).join('');
+    const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
     const daysCount=wd.length;
     const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 6px;border-radius:10px;">${daysCount} ימים</span>`:'<span></span>';
     const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↑</button>`:'<span></span>';
@@ -11226,15 +11170,6 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     return r;
   }
 })();
-
-function wdwCalcFX364(pfx){
-  try{
-    var amt=parseFloat(document.getElementById(pfx+'-fxamt')?.value)||0;
-    var rate=parseFloat(document.getElementById(pfx+'-fxrate')?.value)||0;
-    var nisEl=document.getElementById(pfx+'-fxnis');
-    if(nisEl&&amt&&rate) nisEl.value=Math.round(amt*rate);
-  }catch(e){}
-}
 
 
 
