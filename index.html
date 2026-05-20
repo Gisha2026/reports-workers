@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v360CL | גישה</title>
+<title>Reports_Workers v361CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v360CL</span>
+      <span class="topbar-title">Reports_Workers v361CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4461,6 +4461,7 @@ window.wdwReportOrgRender = function(){
     var st=String(d.startDate||'').substring(0,7);
     var en=String(d.endDate||'').substring(0,7);
     if(st>=from && st<=to) startedDonors.push(d);
+    else if(st<from && (!en || en>=from)) startedDonors.push(d);
     var today=new Date().toISOString().substring(0,7);
     if(en && en<today) endedDonors.push(d);
     (d.workers||[]).forEach(function(w){
@@ -4632,7 +4633,7 @@ window.wdwOrgTab = function(tab){
 
   } else if(tab==='workforce'){
     tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד קבוע</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">ממלא תפקיד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תורמים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">% בתרומות</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">פנוי</th></tr>';
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד קבוע</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">תורמים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">% ניצול</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">% פנוי</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">יתרה ₪</th></tr>';
     var wMap={};
     donors.forEach(function(d){
       (d.workers||[]).forEach(function(w){
@@ -4648,12 +4649,14 @@ window.wdwOrgTab = function(tab){
       var pct=Math.round(d.pct);
       var wObj337=(S.workers||[]).find(function(x){return (typeof x==='object'?x.name:x)===name;});
         var permRole337=(wObj337&&typeof wObj337==='object'&&wObj337.role)||'—';
+        var empCost361=parseFloat((S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[name])||0);
         tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(name)+'</td>'
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;">'+esc(permRole337)+'</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;">'+(d.repl?'<span style="color:#e65100;">ממלא תפקיד</span>':'בעל תפקיד')+'</td>'
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+d.donors+'</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>100?'#e53935':'#374151')+'">'+pct+'%</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>=100?'#e53935':'#1B6B5A')+'">'+(100-pct)+'%</td></tr>';
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>100?'#e53935':'#e65100')+'">'+pct+'%</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>=100?'#e53935':'#1B6B5A')+'">'+(100-pct)+'%</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#1B6B5A;">'+(empCost361>0?'₪'+Math.round(empCost361*(100-pct)/100).toLocaleString():'—')+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>=100?'#e53935':'#1B6B5A')+'">'+wfCost+'</td></tr>';
     });
     tbl+='</table>';
 
@@ -6322,7 +6325,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v360CL | גישה</title>
+<title>Reports_Workers v361CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6577,7 +6580,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v360CL</span>
+      <span class="topbar-title">Reports_Workers v361CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
