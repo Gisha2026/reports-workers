@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v364CL | גישה</title>
+<title>Reports_Workers v366CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v364CL</span>
+      <span class="topbar-title">Reports_Workers v366CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2434,6 +2434,13 @@ function wdwEndWorker(did,wid){
   if(!d) return;
   const w=(d.workers||[]).find(x=>x.id===wid);
   if(w) w.active=false;
+  saveLocally();saveData();renderWDWInput();
+}
+
+function wdwDeleteWorker(did,wid){
+  const d=(S.wdw.donors||[]).find(x=>x.id===did);
+  if(!d) return;
+  d.workers=(d.workers||[]).filter(x=>x.id!==wid);
   saveLocally();saveData();renderWDWInput();
 }
 
@@ -5488,24 +5495,32 @@ window.wdwResetNewWorkerForm = function(did) {
     var tdS='padding:8px 14px;font-size:12px;border-bottom:0.5px solid var(--color-border-tertiary);text-align:right;';
     var tdN='padding:8px 14px;font-size:12px;font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary);text-align:center;';
 
+    var btnStyle='font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;';
+    var btnEdit='<button onclick="wdwToggleWorkerEdit(\''+d.id+'\',\''+w.id+'\')" style="'+btnStyle+'border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);margin-left:4px;">עריכה</button>';
+    var btnEnd='<button onclick="wdwEndWorker(\''+d.id+'\',\''+w.id+'\')" style="'+btnStyle+'border:0.5px solid #F0997B;background:var(--color-background-primary);color:#993C1D;margin-left:4px;">סיים תפקיד</button>';
+    var btnDel='<button onclick="if(confirm(\'למחוק עובד זה מהתרומה?\'))wdwDeleteWorker(\''+d.id+'\',\''+w.id+'\')" style="'+btnStyle+'border:0.5px solid #fecaca;background:var(--color-background-primary);color:#b91c1c;">מחק</button>';
     var rows='<tr>'
-      +'<td style="'+tdS+'">בסיס</td>'
+      +'<td style="'+tdS+';font-weight:500;">'+esc(w.name)+'</td>'
       +'<td style="'+tdS+'">'+esc(baseRole)+'</td>'
+      +'<td style="'+tdS+'"><span style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:#E1F5EE;color:#0F6E56;">בסיס</span></td>'
       +'<td style="'+tdN+'">'+basePct+'%</td>'
       +'<td style="'+tdS+';color:var(--color-text-secondary);">—</td>'
-      +'<td style="'+tdS+';color:var(--color-text-secondary);">'+esc(basePeriod)+'</td>'
+      +'<td style="'+tdS+';color:var(--color-text-secondary);font-size:12px;">'+esc(basePeriod)+'</td>'
+      +'<td style="'+tdS+';text-align:left;">'+btnEdit+btnEnd+btnDel+'</td>'
       +'</tr>';
 
     if(replPct||w.replaces){
       var replRole=esc(w.replaceRoleInDonor||baseRole);
       var replWho=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||'—';
       var replPeriod=(w.replaceStartMonth?fmtMonth(w.replaceStartMonth):(w.startMonth?fmtMonth(w.startMonth):'?'))+' — '+(w.replaceEndMonth?fmtMonth(w.replaceEndMonth):'פתוח');
-      rows+='<tr style="background:var(--color-background-secondary);">'
-        +'<td style="'+tdS+';color:var(--color-text-secondary);font-style:italic;">מחליף</td>'
+      rows+='<tr style="background:#FAEEDA22;">'
+        +'<td style="'+tdS+';font-weight:500;">'+esc(w.name)+'</td>'
         +'<td style="'+tdS+'">'+replRole+'</td>'
+        +'<td style="'+tdS+'"><span style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:#FAEEDA;color:#854F0B;">ממלא מקום</span></td>'
         +'<td style="'+tdN+';color:#e65100;">'+replPct+'%</td>'
         +'<td style="'+tdS+';color:var(--color-text-secondary);">'+esc(replWho)+'</td>'
-        +'<td style="'+tdS+';color:var(--color-text-secondary);">'+esc(replPeriod)+'</td>'
+        +'<td style="'+tdS+';color:var(--color-text-secondary);font-size:12px;">'+esc(replPeriod)+'</td>'
+        +'<td style="'+tdS+';text-align:left;">'+btnEdit+btnEnd+btnDel+'</td>'
         +'</tr>';
     }
     (w.extraReplaces||[]).forEach(function(r){
@@ -5522,9 +5537,10 @@ window.wdwResetNewWorkerForm = function(did) {
     });
     if(replPct||(w.extraReplaces&&w.extraReplaces.length)){
       rows+='<tr style="background:var(--color-background-info);">'
-        +'<td colspan="2" style="'+tdS+';font-weight:500;">סה"כ '+esc(w.name)+'</td>'
-        +'<td style="'+tdN+';color:var(--color-text-info);font-size:13px;">'+totalPct+'%</td>'
-        +'<td colspan="2"></td>'
+        +'<td colspan="2" style="'+tdS+';font-weight:500;color:var(--color-text-info);">סה"כ '+esc(w.name)+'</td>'
+        +'<td></td>'
+        +'<td style="'+tdN+';color:var(--color-text-info);font-size:13px;font-weight:500;">'+totalPct+'%</td>'
+        +'<td colspan="3"></td>'
         +'</tr>';
     }
 
@@ -6385,7 +6401,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v364CL | גישה</title>
+<title>Reports_Workers v366CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6640,7 +6656,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v364CL</span>
+      <span class="topbar-title">Reports_Workers v366CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8877,6 +8893,13 @@ function wdwEndWorker(did,wid){
   if(!d) return;
   const w=(d.workers||[]).find(x=>x.id===wid);
   if(w) w.active=false;
+  saveLocally();saveData();renderWDWInput();
+}
+
+function wdwDeleteWorker(did,wid){
+  const d=(S.wdw.donors||[]).find(x=>x.id===did);
+  if(!d) return;
+  d.workers=(d.workers||[]).filter(x=>x.id!==wid);
   saveLocally();saveData();renderWDWInput();
 }
 
@@ -11971,24 +11994,32 @@ window.wdwResetNewWorkerForm = function(did) {
     var tdS='padding:8px 14px;font-size:12px;border-bottom:0.5px solid var(--color-border-tertiary);text-align:right;';
     var tdN='padding:8px 14px;font-size:12px;font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary);text-align:center;';
 
+    var btnStyle='font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;';
+    var btnEdit='<button onclick="wdwToggleWorkerEdit(\''+d.id+'\',\''+w.id+'\')" style="'+btnStyle+'border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);margin-left:4px;">עריכה</button>';
+    var btnEnd='<button onclick="wdwEndWorker(\''+d.id+'\',\''+w.id+'\')" style="'+btnStyle+'border:0.5px solid #F0997B;background:var(--color-background-primary);color:#993C1D;margin-left:4px;">סיים תפקיד</button>';
+    var btnDel='<button onclick="if(confirm(\'למחוק עובד זה מהתרומה?\'))wdwDeleteWorker(\''+d.id+'\',\''+w.id+'\')" style="'+btnStyle+'border:0.5px solid #fecaca;background:var(--color-background-primary);color:#b91c1c;">מחק</button>';
     var rows='<tr>'
-      +'<td style="'+tdS+'">בסיס</td>'
+      +'<td style="'+tdS+';font-weight:500;">'+esc(w.name)+'</td>'
       +'<td style="'+tdS+'">'+esc(baseRole)+'</td>'
+      +'<td style="'+tdS+'"><span style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:#E1F5EE;color:#0F6E56;">בסיס</span></td>'
       +'<td style="'+tdN+'">'+basePct+'%</td>'
       +'<td style="'+tdS+';color:var(--color-text-secondary);">—</td>'
-      +'<td style="'+tdS+';color:var(--color-text-secondary);">'+esc(basePeriod)+'</td>'
+      +'<td style="'+tdS+';color:var(--color-text-secondary);font-size:12px;">'+esc(basePeriod)+'</td>'
+      +'<td style="'+tdS+';text-align:left;">'+btnEdit+btnEnd+btnDel+'</td>'
       +'</tr>';
 
     if(replPct||w.replaces){
       var replRole=esc(w.replaceRoleInDonor||baseRole);
       var replWho=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||'—';
       var replPeriod=(w.replaceStartMonth?fmtMonth(w.replaceStartMonth):(w.startMonth?fmtMonth(w.startMonth):'?'))+' — '+(w.replaceEndMonth?fmtMonth(w.replaceEndMonth):'פתוח');
-      rows+='<tr style="background:var(--color-background-secondary);">'
-        +'<td style="'+tdS+';color:var(--color-text-secondary);font-style:italic;">מחליף</td>'
+      rows+='<tr style="background:#FAEEDA22;">'
+        +'<td style="'+tdS+';font-weight:500;">'+esc(w.name)+'</td>'
         +'<td style="'+tdS+'">'+replRole+'</td>'
+        +'<td style="'+tdS+'"><span style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:#FAEEDA;color:#854F0B;">ממלא מקום</span></td>'
         +'<td style="'+tdN+';color:#e65100;">'+replPct+'%</td>'
         +'<td style="'+tdS+';color:var(--color-text-secondary);">'+esc(replWho)+'</td>'
-        +'<td style="'+tdS+';color:var(--color-text-secondary);">'+esc(replPeriod)+'</td>'
+        +'<td style="'+tdS+';color:var(--color-text-secondary);font-size:12px;">'+esc(replPeriod)+'</td>'
+        +'<td style="'+tdS+';text-align:left;">'+btnEdit+btnEnd+btnDel+'</td>'
         +'</tr>';
     }
     (w.extraReplaces||[]).forEach(function(r){
@@ -12005,9 +12036,10 @@ window.wdwResetNewWorkerForm = function(did) {
     });
     if(replPct||(w.extraReplaces&&w.extraReplaces.length)){
       rows+='<tr style="background:var(--color-background-info);">'
-        +'<td colspan="2" style="'+tdS+';font-weight:500;">סה"כ '+esc(w.name)+'</td>'
-        +'<td style="'+tdN+';color:var(--color-text-info);font-size:13px;">'+totalPct+'%</td>'
-        +'<td colspan="2"></td>'
+        +'<td colspan="2" style="'+tdS+';font-weight:500;color:var(--color-text-info);">סה"כ '+esc(w.name)+'</td>'
+        +'<td></td>'
+        +'<td style="'+tdN+';color:var(--color-text-info);font-size:13px;font-weight:500;">'+totalPct+'%</td>'
+        +'<td colspan="3"></td>'
         +'</tr>';
     }
 
