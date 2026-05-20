@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v395CL | גישה</title>
+<title>Reports_Workers v396CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v395CL</span>
+      <span class="topbar-title">Reports_Workers v396CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6381,7 +6381,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 
 <script>
-/* ===== v395CL FX functions ===== */
+/* ===== v396CL FX functions ===== */
 window.wdwCalcFXMonthly = function(pfx){
   var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
   var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
@@ -6400,6 +6400,18 @@ window.wdwCalcFXMonthly = function(pfx){
   if(ae){ae.value=mo; ae.disabled=false;}
   if(pe) pe.value='';
 };
+
+function fxCalcMonthly(fxA, fxR, startMonth, endMonth){
+  if(!fxA || !fxR) return null;
+  var months = 1;
+  if(startMonth && endMonth){
+    var sa=startMonth.split('-'), ea=endMonth.split('-');
+    months=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
+    if(months<1) months=1;
+  }
+  return Math.round(fxA*fxR/months*100)/100;
+}
+
 window.addEventListener('load',function(){
   setTimeout(function(){
     var _sn=window.wdwSaveNewWorker;
@@ -6408,6 +6420,8 @@ window.addEventListener('load',function(){
       var fxC=(document.getElementById(pfx+'-fx-currency')||{}).value||null;
       var fxA=parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
       var fxR=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
+      var startM=(document.getElementById(pfx+'-start')||{}).value||null;
+      var endM=(document.getElementById(pfx+'-end')||{}).value||null;
       await _sn.call(this,did);
       var d=((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d&&d.workers&&d.workers.length){
@@ -6415,22 +6429,33 @@ window.addEventListener('load',function(){
         if(fxC) w.fxCurrency=fxC;
         if(fxA) w.fxAmount=fxA;
         if(fxR) w.fxRate=fxR;
-        if(fxA&&fxR) w.valueType='amount';
+        if(fxA&&fxR){
+          var mo=fxCalcMonthly(fxA,fxR,startM||w.startMonth,endM||w.endMonth);
+          if(mo){ w.value=mo; w.valueType='amount'; }
+        }
         try{saveLocally();saveData();}catch(e){}
       }
     };
     var _se=window.wdwSaveEditWorker;
     if(typeof _se==='function') window.wdwSaveEditWorker=function(did,wid){
-      _se.call(this,did,wid);
       var pfx='ew-'+did+'-'+wid;
+      var fxC=(document.getElementById(pfx+'-fx-currency')||{}).value||null;
+      var fxA=parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
+      var fxR=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
+      var startM=(document.getElementById(pfx+'-start')||{}).value||null;
+      var endM=(document.getElementById(pfx+'-end')||{}).value||null;
+      _se.call(this,did,wid);
       var d=((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
       if(d){
         var w=(d.workers||[]).find(function(x){return x.id===wid;});
         if(w){
-          w.fxCurrency=(document.getElementById(pfx+'-fx-currency')||{}).value||null;
-          w.fxAmount=parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
-          w.fxRate=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-          if(w.fxAmount&&w.fxRate) w.valueType='amount';
+          if(fxC) w.fxCurrency=fxC;
+          if(fxA) w.fxAmount=fxA;
+          if(fxR) w.fxRate=fxR;
+          if(fxA&&fxR){
+            var mo=fxCalcMonthly(fxA,fxR,startM||w.startMonth,endM||w.endMonth);
+            if(mo){ w.value=mo; w.valueType='amount'; }
+          }
           try{saveLocally();saveData();}catch(e){}
         }
       }
@@ -6438,13 +6463,14 @@ window.addEventListener('load',function(){
   },300);
 });
 </script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v395CL | גישה</title>
+<title>Reports_Workers v396CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6699,7 +6725,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v395CL</span>
+      <span class="topbar-title">Reports_Workers v396CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
