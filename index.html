@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v369CL | גישה</title>
+<title>Reports_Workers v370CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v369CL</span>
+      <span class="topbar-title">Reports_Workers v370CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1233,6 +1233,8 @@ function renderWorkerList(){
     end.forEach(w=>div.appendChild(mkWRow(w,S.workers.indexOf(w))));
   }
 }
+
+function escH(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'": '&#39;'}[m];});}
 
 function mkWRow(w,i){
   const r=document.createElement('div');
@@ -3894,13 +3896,13 @@ function sendEmail(){
       ?`<button class="end-btn" onclick="endWorker(${i})">סיום עבודה</button>`
       :`<button class="react-btn" onclick="reactivateWorker(${i})">החזרה לעבודה</button>`;
     const statusHtml=`<span class="${stCls}">${stTxt}</span>`;
-    const roleOpts=(S.roles||[]).map(role=>`<option value="${esc(role)}" ${w.role===role?'selected':''}>${esc(role)}</option>`).join('');
+    const roleOpts=(S.roles||[]).map(role=>`<option value="${escH(role)}" ${w.role===role?'selected':''}>${escH(role)}</option>`).join('');
     const daysCount=wd.length;
     const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 6px;border-radius:10px;">${daysCount} ימים</span>`:'<span></span>';
     const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↑</button>`:'<span></span>';
     const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↓</button>`:'<span></span>';
     r.innerHTML=`
-      <td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap;">${esc(w.name)}</td>
+      <td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap;">${escH(w.name)}</td>
       <td style="padding:7px 8px;"><span style="display:flex;gap:4px;">${daysHtml}</span></td>
       <td style="padding:7px 8px;text-align:center;">${statusHtml}</td>
       <td style="padding:7px 8px;text-align:center;">${daysAlert}</td>
@@ -6409,7 +6411,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v369CL | גישה</title>
+<title>Reports_Workers v370CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6664,7 +6666,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v369CL</span>
+      <span class="topbar-title">Reports_Workers v370CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
