@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v415CL | גישה</title>
+<title>Reports_Workers v416CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v415CL</span>
+      <span class="topbar-title">Reports_Workers v416CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5339,7 +5339,7 @@ window.wdwResetNewWorkerForm = function(did) {
     if(window.WDW_ADD_DONOR_MODE){div.innerHTML=html+addDonorForm217()+'</div>'; setTimeout(function(){var el=document.getElementById('v217-new-name'); if(el) el.focus();},0); return;}
     var ds=donors217(), active=ds.filter(function(d){return d.status!==WDW_STATUS.ENDED&&d.status!==WDW_STATUS.INACTIVE;}), ended=ds.filter(function(d){return d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE;});
     html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">לחיצה על ערוך פותחת תורם אחד בלבד. אין פתיחת כל הרשימה.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';
-    function row(d){var h=donorHealth217(d,month217()); var ws=(d.workers||[]).filter(function(w){return isActive217(w,month217());}); var out='<div class="wdw-mgmt-row"><div class="wdw-mgmt-summary v217-summary"><div><b>'+esc217(d.name)+'</b><div class="wdw-muted">'+esc217(d.code||'אין כתובת ידועה')+' · '+fmtM217(d.startDate)+'–'+fmtM217(d.endDate)+'</div></div><div>'+type217(d)+'</div><div><span class="wdw-chip '+h.cls+'">'+h.label+'</span></div><div class="wdw-num">'+ws.length+' עובדים</div><div class="wdw-muted">'+esc217(h.note)+'</div><div class="wdw-actions"><button onclick="wdwEditDonor217(\''+d.id+'\')">ערוך</button></div></div>'; if(window.WDW_EDIT_DONOR_ID===d.id) out+=donorEditPanel217(d); return out+'</div>';}
+    function row(d){var h=donorHealth217(d,month217()); var ws=(d.workers||[]).filter(function(w){return isActive217(w,month217());}); var hBadge='<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:'+(h.cls==='bad'?'#fef2f2':h.cls==='warn'?'#fffbeb':'#f0fdf4')+';color:'+(h.cls==='bad'?'#b91c1c':h.cls==='warn'?'#92400e':'#166534')+'">'+h.label+'</span>'; var out='<div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:8px"><div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:14px;font-weight:500">'+esc217(d.name)+'</span>'+type217(d)+hBadge+'</div><div style="font-size:11px;color:var(--color-text-secondary)">'+fmtM217(d.startDate)+' — '+fmtM217(d.endDate)+' · '+ws.length+' עובדים</div></div><div style="display:flex;gap:6px"><button onclick="wdwEditDonor217(\''+d.id+'\')" style="padding:5px 12px;background:#fff;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:12px;cursor:pointer">עריכה</button><button onclick="if(confirm(\'למחוק?\'))wdwDeleteDonor217(\''+d.id+'\')" style="padding:5px 12px;background:#fff;border:0.5px solid #fca5a5;color:#b91c1c;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer">מחק</button></div></div>'; if(window.WDW_EDIT_DONOR_ID===d.id) out+=donorEditPanel217(d); return out;}
     active.forEach(function(d){html+=row(d);});
     if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>'; ended.forEach(function(d){html+=row(d);});}
     div.innerHTML=html+'</div></div>';
@@ -5354,7 +5354,7 @@ window.wdwResetNewWorkerForm = function(did) {
   window.wdwSaveDonor217=function(id){var d=donors217().find(function(x){return x.id===id;}); if(!d)return; d.name=(document.getElementById('v217-ed-name-'+id)||{}).value||d.name; d.type=(document.getElementById('v217-ed-type-'+id)||{}).value||d.type; d.status=(document.getElementById('v217-ed-status-'+id)||{}).value||d.status; d.totalBudget=parseFloat((document.getElementById('v217-ed-budget-'+id)||{}).value)||0; d.startDate=(document.getElementById('v217-ed-start-'+id)||{}).value||''; d.endDate=(document.getElementById('v217-ed-end-'+id)||{}).value||''; d.code=(document.getElementById('v217-ed-code-'+id)||{}).value||''; d.address=(document.getElementById('v217-ed-address-'+id)||{}).value||''; var flexRadio=document.querySelector('input[name="v219-flex-'+id+'"]:checked');if(flexRadio)d.flexible=(flexRadio.value==='yes'); var stratEl=document.getElementById('v217-ed-strategy-'+id); if(stratEl) d.utilizationStrategy=stratEl.value||'even'; save217(); window.WDW_EDIT_DONOR_ID=id; window.renderWDWInput();};
 
   function collectWorker217(pfx,w){
-    w=w||{}; w.name=(document.getElementById(pfx+'-name')||{}).value||w.name||''; if(!w.name){alert('נא לבחור עובד');return null;} w.fundingType=(document.getElementById(pfx+'-ftype')||{}).value||w.fundingType; var pct=parseFloat((document.getElementById(pfx+'-pct')||{}).value)||0, amt=parseFloat((document.getElementById(pfx+'-amt')||{}).value)||0; w.valueType=pct?'percent':'amount'; w.value=pct||amt||0; w.startMonth=(document.getElementById(pfx+'-start')||{}).value||w.startMonth; w.endMonth=(document.getElementById(pfx+'-end')||{}).value||w.endMonth; w.cap=parseFloat((document.getElementById(pfx+'-cap')||{}).value)||null; w.replaces=(document.getElementById(pfx+'-replaces')||{}).value||null; w.vacantName=(document.getElementById(pfx+'-vacant-name')||{}).value||null; w.replacesPct=parseFloat((document.getElementById(pfx+'-replaces-pct')||{}).value)||null; w.replacesAmt=parseFloat((document.getElementById(pfx+'-replaces-amt')||{}).value)||null; w.monthlyPct=(typeof wdwCollectMonthlyPct==='function')?wdwCollectMonthlyPct(pfx):{}; var roleEl=document.getElementById(pfx+'-roleInDonor'); if(roleEl) w.roleInDonor=roleEl.value||w.roleInDonor||''; return w;
+    w=w||{}; w.name=(document.getElementById(pfx+'-name')||{}).value||w.name||''; if(!w.name){alert('נא לבחור עובד');return null;} w.fundingType=(document.getElementById(pfx+'-ftype')||{}).value||w.fundingType; var pct=parseFloat((document.getElementById(pfx+'-pct')||{}).value)||0, amt=parseFloat((document.getElementById(pfx+'-amt')||{}).value)||0, fxC=(document.getElementById(pfx+'-fx-currency')||{}).value||null, fxA=parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null, fxR=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null, startM=(document.getElementById(pfx+'-start')||{}).value||w.startMonth||null, endM=(document.getElementById(pfx+'-end')||{}).value||w.endMonth||null; w.fxCurrency=fxC||null; w.fxAmount=fxA||null; w.fxRate=fxR||null; if(fxA&&fxR&&startM&&endM){var fxMs=(parseInt(endM.split('-')[0])-parseInt(startM.split('-')[0]))*12+(parseInt(endM.split('-')[1])-parseInt(startM.split('-')[1]))+1; if(fxMs<1)fxMs=1; amt=Math.round(fxA*fxR/fxMs*100)/100; pct=0;} w.valueType=pct?'percent':'amount'; w.value=pct||amt||0; w.startMonth=(document.getElementById(pfx+'-start')||{}).value||w.startMonth; w.endMonth=(document.getElementById(pfx+'-end')||{}).value||w.endMonth; w.cap=parseFloat((document.getElementById(pfx+'-cap')||{}).value)||null; w.replaces=(document.getElementById(pfx+'-replaces')||{}).value||null; w.vacantName=(document.getElementById(pfx+'-vacant-name')||{}).value||null; w.replacesPct=parseFloat((document.getElementById(pfx+'-replaces-pct')||{}).value)||null; w.replacesAmt=parseFloat((document.getElementById(pfx+'-replaces-amt')||{}).value)||null; w.monthlyPct=(typeof wdwCollectMonthlyPct==='function')?wdwCollectMonthlyPct(pfx):{}; var roleEl=document.getElementById(pfx+'-roleInDonor'); if(roleEl) w.roleInDonor=roleEl.value||w.roleInDonor||''; return w;
   }
   window.wdwSaveNewWorker=function(did){var d=donors217().find(function(x){return x.id===did;}); if(!d)return; var w=collectWorker217('nw-'+did,{id:(typeof wdwGenId==='function'?wdwGenId('w'):'w_'+Date.now()),active:true}); if(!w)return; d.workers=d.workers||[]; d.workers.push(w); save217(); window.WDW_EDIT_DONOR_ID=did; window.WDW_ADD_WORKER_FOR=did; window.renderWDWInput();};
   window.wdwSaveEditWorker217=function(did,wid){var d=donors217().find(function(x){return x.id===did;}); if(!d)return; var w=(d.workers||[]).find(function(x){return x.id===wid;}); if(!w)return; collectWorker217('ew-'+did+'-'+wid,w); save217(); window.WDW_EDIT_DONOR_ID=did; window.renderWDWInput();};
@@ -6394,7 +6394,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 
 <script>
-/* ===== v415CL FX functions ===== */
+/* ===== v416CL FX functions ===== */
 window.wdwCalcFXMonthly = function(pfx){
   var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
   var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
@@ -6514,14 +6514,14 @@ window.addEventListener('load',function(){
         }
       }
     };
-    console.log('v415CL: FX override loaded');
+    console.log('v416CL: FX override loaded');
   },300);
 });
 </script>
 
 
 <script>
-/* ===== v415CL FX global functions ===== */
+/* ===== v416CL FX global functions ===== */
 window.wdwCalcFXMonthly = function(pfx){
   var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
   var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
@@ -6549,7 +6549,7 @@ window.wdwClearFX = function(pfx){
   if(fa) fa.value='';
   if(fr) fr.value='';
 };
-console.log('v415CL ready');
+console.log('v416CL ready');
 </script>
 </body>
 </htmlYPE html>
@@ -6557,7 +6557,7 @@ console.log('v415CL ready');
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v415CL | גישה</title>
+<title>Reports_Workers v416CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6812,7 +6812,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v415CL</span>
+      <span class="topbar-title">Reports_Workers v416CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11993,7 +11993,7 @@ window.wdwResetNewWorkerForm = function(did) {
     if(window.WDW_ADD_DONOR_MODE){div.innerHTML=html+addDonorForm217()+'</div>'; setTimeout(function(){var el=document.getElementById('v217-new-name'); if(el) el.focus();},0); return;}
     var ds=donors217(), active=ds.filter(function(d){return d.status!==WDW_STATUS.ENDED&&d.status!==WDW_STATUS.INACTIVE;}), ended=ds.filter(function(d){return d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE;});
     html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">לחיצה על ערוך פותחת תורם אחד בלבד. אין פתיחת כל הרשימה.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';
-    function row(d){var h=donorHealth217(d,month217()); var ws=(d.workers||[]).filter(function(w){return isActive217(w,month217());}); var out='<div class="wdw-mgmt-row"><div class="wdw-mgmt-summary v217-summary"><div><b>'+esc217(d.name)+'</b><div class="wdw-muted">'+esc217(d.code||'אין כתובת ידועה')+' · '+fmtM217(d.startDate)+'–'+fmtM217(d.endDate)+'</div></div><div>'+type217(d)+'</div><div><span class="wdw-chip '+h.cls+'">'+h.label+'</span></div><div class="wdw-num">'+ws.length+' עובדים</div><div class="wdw-muted">'+esc217(h.note)+'</div><div class="wdw-actions"><button onclick="wdwEditDonor217(\''+d.id+'\')">ערוך</button></div></div>'; if(window.WDW_EDIT_DONOR_ID===d.id) out+=donorEditPanel217(d); return out+'</div>';}
+    function row(d){var h=donorHealth217(d,month217()); var ws=(d.workers||[]).filter(function(w){return isActive217(w,month217());}); var hBadge='<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:'+(h.cls==='bad'?'#fef2f2':h.cls==='warn'?'#fffbeb':'#f0fdf4')+';color:'+(h.cls==='bad'?'#b91c1c':h.cls==='warn'?'#92400e':'#166534')+'">'+h.label+'</span>'; var out='<div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:8px"><div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:14px;font-weight:500">'+esc217(d.name)+'</span>'+type217(d)+hBadge+'</div><div style="font-size:11px;color:var(--color-text-secondary)">'+fmtM217(d.startDate)+' — '+fmtM217(d.endDate)+' · '+ws.length+' עובדים</div></div><div style="display:flex;gap:6px"><button onclick="wdwEditDonor217(\''+d.id+'\')" style="padding:5px 12px;background:#fff;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:12px;cursor:pointer">עריכה</button><button onclick="if(confirm(\'למחוק?\'))wdwDeleteDonor217(\''+d.id+'\')" style="padding:5px 12px;background:#fff;border:0.5px solid #fca5a5;color:#b91c1c;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer">מחק</button></div></div>'; if(window.WDW_EDIT_DONOR_ID===d.id) out+=donorEditPanel217(d); return out;}
     active.forEach(function(d){html+=row(d);});
     if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>'; ended.forEach(function(d){html+=row(d);});}
     div.innerHTML=html+'</div></div>';
@@ -12008,7 +12008,7 @@ window.wdwResetNewWorkerForm = function(did) {
   window.wdwSaveDonor217=function(id){var d=donors217().find(function(x){return x.id===id;}); if(!d)return; d.name=(document.getElementById('v217-ed-name-'+id)||{}).value||d.name; d.type=(document.getElementById('v217-ed-type-'+id)||{}).value||d.type; d.status=(document.getElementById('v217-ed-status-'+id)||{}).value||d.status; d.totalBudget=parseFloat((document.getElementById('v217-ed-budget-'+id)||{}).value)||0; d.startDate=(document.getElementById('v217-ed-start-'+id)||{}).value||''; d.endDate=(document.getElementById('v217-ed-end-'+id)||{}).value||''; d.code=(document.getElementById('v217-ed-code-'+id)||{}).value||''; d.address=(document.getElementById('v217-ed-address-'+id)||{}).value||''; var flexRadio=document.querySelector('input[name="v219-flex-'+id+'"]:checked');if(flexRadio)d.flexible=(flexRadio.value==='yes'); var stratEl=document.getElementById('v217-ed-strategy-'+id); if(stratEl) d.utilizationStrategy=stratEl.value||'even'; save217(); window.WDW_EDIT_DONOR_ID=id; window.renderWDWInput();};
 
   function collectWorker217(pfx,w){
-    w=w||{}; w.name=(document.getElementById(pfx+'-name')||{}).value||w.name||''; if(!w.name){alert('נא לבחור עובד');return null;} w.fundingType=(document.getElementById(pfx+'-ftype')||{}).value||w.fundingType; var pct=parseFloat((document.getElementById(pfx+'-pct')||{}).value)||0, amt=parseFloat((document.getElementById(pfx+'-amt')||{}).value)||0; w.valueType=pct?'percent':'amount'; w.value=pct||amt||0; w.startMonth=(document.getElementById(pfx+'-start')||{}).value||w.startMonth; w.endMonth=(document.getElementById(pfx+'-end')||{}).value||w.endMonth; w.cap=parseFloat((document.getElementById(pfx+'-cap')||{}).value)||null; w.replaces=(document.getElementById(pfx+'-replaces')||{}).value||null; w.vacantName=(document.getElementById(pfx+'-vacant-name')||{}).value||null; w.replacesPct=parseFloat((document.getElementById(pfx+'-replaces-pct')||{}).value)||null; w.replacesAmt=parseFloat((document.getElementById(pfx+'-replaces-amt')||{}).value)||null; w.monthlyPct=(typeof wdwCollectMonthlyPct==='function')?wdwCollectMonthlyPct(pfx):{}; var roleEl=document.getElementById(pfx+'-roleInDonor'); if(roleEl) w.roleInDonor=roleEl.value||w.roleInDonor||''; return w;
+    w=w||{}; w.name=(document.getElementById(pfx+'-name')||{}).value||w.name||''; if(!w.name){alert('נא לבחור עובד');return null;} w.fundingType=(document.getElementById(pfx+'-ftype')||{}).value||w.fundingType; var pct=parseFloat((document.getElementById(pfx+'-pct')||{}).value)||0, amt=parseFloat((document.getElementById(pfx+'-amt')||{}).value)||0, fxC=(document.getElementById(pfx+'-fx-currency')||{}).value||null, fxA=parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null, fxR=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null, startM=(document.getElementById(pfx+'-start')||{}).value||w.startMonth||null, endM=(document.getElementById(pfx+'-end')||{}).value||w.endMonth||null; w.fxCurrency=fxC||null; w.fxAmount=fxA||null; w.fxRate=fxR||null; if(fxA&&fxR&&startM&&endM){var fxMs=(parseInt(endM.split('-')[0])-parseInt(startM.split('-')[0]))*12+(parseInt(endM.split('-')[1])-parseInt(startM.split('-')[1]))+1; if(fxMs<1)fxMs=1; amt=Math.round(fxA*fxR/fxMs*100)/100; pct=0;} w.valueType=pct?'percent':'amount'; w.value=pct||amt||0; w.startMonth=(document.getElementById(pfx+'-start')||{}).value||w.startMonth; w.endMonth=(document.getElementById(pfx+'-end')||{}).value||w.endMonth; w.cap=parseFloat((document.getElementById(pfx+'-cap')||{}).value)||null; w.replaces=(document.getElementById(pfx+'-replaces')||{}).value||null; w.vacantName=(document.getElementById(pfx+'-vacant-name')||{}).value||null; w.replacesPct=parseFloat((document.getElementById(pfx+'-replaces-pct')||{}).value)||null; w.replacesAmt=parseFloat((document.getElementById(pfx+'-replaces-amt')||{}).value)||null; w.monthlyPct=(typeof wdwCollectMonthlyPct==='function')?wdwCollectMonthlyPct(pfx):{}; var roleEl=document.getElementById(pfx+'-roleInDonor'); if(roleEl) w.roleInDonor=roleEl.value||w.roleInDonor||''; return w;
   }
   window.wdwSaveNewWorker=function(did){var d=donors217().find(function(x){return x.id===did;}); if(!d)return; var w=collectWorker217('nw-'+did,{id:(typeof wdwGenId==='function'?wdwGenId('w'):'w_'+Date.now()),active:true}); if(!w)return; d.workers=d.workers||[]; d.workers.push(w); save217(); window.WDW_EDIT_DONOR_ID=did; window.WDW_ADD_WORKER_FOR=did; window.renderWDWInput();};
   window.wdwSaveEditWorker217=function(did,wid){var d=donors217().find(function(x){return x.id===did;}); if(!d)return; var w=(d.workers||[]).find(function(x){return x.id===wid;}); if(!w)return; collectWorker217('ew-'+did+'-'+wid,w); save217(); window.WDW_EDIT_DONOR_ID=did; window.renderWDWInput();};
@@ -13220,7 +13220,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </script>
 
 <script>
-/* ===== v415CL FX global functions ===== */
+/* ===== v416CL FX global functions ===== */
 window.wdwCalcFXMonthly = function(pfx){
   var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
   var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
@@ -13248,7 +13248,7 @@ window.wdwClearFX = function(pfx){
   if(fa) fa.value='';
   if(fr) fr.value='';
 };
-console.log('v415CL ready');
+console.log('v416CL ready');
 </script>
 </body>
 </html>
