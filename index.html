@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v417CL | גישה</title>
+<title>Reports_Workers v419CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -215,7 +215,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 #tab-wdw table{border-radius:0!important;}
 @media(max-width:1100px){#tab-wdw .wdw-kpis{grid-template-columns:repeat(2,minmax(160px,1fr))!important;}#tab-wdw .wdw-donor-name{font-size:20px!important;}}
 
-</style>
+.wdw-fx-calc-btn{display:inline-block;margin:6px 4px 6px 0;padding:6px 14px;background:#166534;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:500}.wdw-fx-clear-btn{display:inline-block;margin:6px 0 6px 4px;padding:6px 14px;background:#fff;color:#b91c1c;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;font-size:12px}</style>
 <script>
 var pyodide=null, pyReady=false;
 
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v417CL</span>
+      <span class="topbar-title">Reports_Workers v419CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4048,6 +4048,8 @@ function sendEmail(){
       '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
       '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:12px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
       '<div style="display:grid;grid-template-columns:110px 130px 110px;gap:10px;margin-bottom:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px"><div><label style="color:#166534;font-weight:700">מטבע</label><select id="'+pfx+'-fx-currency" style="'+fld+'"><option value="" '+(!(w&&w.fxCurrency)?'selected':'')+'>— ללא —</option><option value="USD" '+(w&&w.fxCurrency==='USD'?'selected':'')+'> USD</option><option value="EUR" '+(w&&w.fxCurrency==='EUR'?'selected':'')+'> EUR</option><option value="GBP" '+(w&&w.fxCurrency==='GBP'?'selected':'')+'> GBP</option><option value="CHF" '+(w&&w.fxCurrency==='CHF'?'selected':'')+'> CHF</option></select></div><div><label style="color:#166534;font-weight:700">סכום מטח לתקופה</label><input id="'+pfx+'-fx-amount" style="'+fld+'" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" oninput="wdwCalcFXMonthly('+pfx+')"></div><div><label style="color:#166534;font-weight:700">שער ₪</label><input id="'+pfx+'-fx-rate" style="'+fld+'" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" oninput="wdwCalcFXMonthly('+pfx+')"></div></div>'+
+      '<button type="button" data-pfx="'+pfx+'" onclick="wdwCalcFXMonthly(this.dataset.pfx)" class="wdw-fx-calc-btn">חשב סכום חודשי ₪</button>'+
+      '<button type="button" data-pfx="'+pfx+'" onclick="wdwClearFX(this.dataset.pfx)" class="wdw-fx-clear-btn">נקה מטח</button>'+
       '<div style="margin-top:6px"><label>מחליף את — תקופת החלפה עצמאית</label><div class="wdw-repl-fields"><div><select id="'+pfx+'-replaces" style="'+fld+'" onchange="wdwToggleVacant(\''+pfx+'\')">'+repOpts+'</select><div id="'+pfx+'-vacant-wrap" style="margin-top:4px;'+(replacesIsVacant?'':'display:none')+'"><input id="'+pfx+'-vacant-name" style="'+fld+'" type="text" value="'+esc(w&&w.vacantName||'')+'" placeholder="לדוגמה: רכזת פניות"></div></div><div><label>% אחוז</label><input id="'+pfx+'-replaces-pct" style="'+fld+'" type="number" value="'+esc(w&&w.replacesPct||'')+'" placeholder="20"></div><div><label>סכום ₪</label><input id="'+pfx+'-replaces-amt" style="'+fld+'" type="number" value="'+esc(w&&w.replacesAmt||'')+'" placeholder="—"></div><div><label>מחודש</label><input id="'+pfx+'-replaces-start" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceStartMonth||w.replacesStartMonth) || w&&w.startMonth || defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-replaces-end" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceEndMonth||w.replacesEndMonth) || '')+'"><div class="wdw-muted">ריק = פתוח</div></div><div></div></div><div id="'+pfx+'-replaces-rows">'+extra+'</div><button onclick="wdwAddExtraReplace(\''+pfx+'\')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:2px">+ הוסף החלפה נוספת</button></div></div>';
   };
 
@@ -6380,135 +6382,10 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </script>
 
 
-<script>
-/* ===== v417CL FX functions ===== */
-window.wdwCalcFXMonthly = function(pfx){
-  var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
-  var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
-  var s = (document.getElementById(pfx+'-start')||{}).value||'';
-  var e = (document.getElementById(pfx+'-end')||{}).value||'';
-  if(!amt || !rate) return;
-  var months = 1;
-  if(s && e){
-    var sa=s.split('-'), ea=e.split('-');
-    months=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
-    if(months<1) months=1;
-  }
-  var mo = Math.round(amt*rate/months*100)/100;
-  var ae = document.getElementById(pfx+'-amt');
-  var pe = document.getElementById(pfx+'-pct');
-  if(ae){ae.value=mo; ae.disabled=false;}
-  if(pe) pe.value='';
-  return mo;
-};
-
-function fxCalcMonthly(fxA, fxR, startMonth, endMonth){
-  if(!fxA || !fxR) return null;
-  var months = 1;
-  if(startMonth && endMonth){
-    var sa=startMonth.split('-'), ea=endMonth.split('-');
-    months=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;
-    if(months<1) months=1;
-  }
-  return Math.round(fxA*fxR/months*100)/100;
-}
-
-window.addEventListener('load',function(){
-  setTimeout(function(){
-    // עוטף wdwWorkerFields — מוסיף כפתור "חשב" ומחשב אוטומטית בפתיחה
-    var _orig = window.wdwWorkerFields;
-    if(typeof _orig === 'function'){
-      window.wdwWorkerFields = function(w,d,hasBudget,curMonth,workerOpts,isEdit){
-        var html = _orig.call(this, w,d,hasBudget,curMonth,workerOpts,isEdit);
-        var pfx = isEdit ? ('ew-'+(d&&d.id)+'-'+(w&&w.id)) : ('nw-'+(d&&d.id));
-        
-        // מוסיף כפתור "חשב" אחרי שדות המטח
-        var calcBtn = '<div style="margin-top:6px;text-align:left">'
-          + '<button type="button" onclick="wdwCalcFXMonthly(''+pfx+'')" '
-          + 'style="padding:7px 18px;background:#166534;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:700">'
-          + 'חשב סכום חודשי ₪'
-          + '</button></div>';
-        
-        // מחפש את מקום הכנסת הכפתור — אחרי שדות המטח
-        var fxMarker = 'id="'+pfx+'-fx-rate"';
-        var fxIdx = html.indexOf(fxMarker);
-        if(fxIdx > -1){
-          var divEnd = html.indexOf('</div>', fxIdx + fxMarker.length);
-          var blockEnd = html.indexOf('</div>', divEnd + 1) + '</div>'.length;
-          html = html.substring(0, blockEnd) + calcBtn + html.substring(blockEnd);
-        }
-        
-        // חישוב אוטומטי בפתיחה אם יש נתוני מטח
-        if(w && w.fxAmount && w.fxRate){
-          var mo = fxCalcMonthly(w.fxAmount, w.fxRate, w.startMonth, w.endMonth);
-          if(mo){
-            html += '<scr'+'ipt>setTimeout(function(){'
-              + 'var ae=document.getElementById("'+pfx+'-amt");'
-              + 'var pe=document.getElementById("'+pfx+'-pct");'
-              + 'if(ae){ae.value='+mo+';ae.disabled=false;}'
-              + 'if(pe)pe.value="";'
-              + '},100);</'+'script>';
-          }
-        }
-        return html;
-      };
-    }
-
-    var _sn=window.wdwSaveNewWorker;
-    if(typeof _sn==='function') window.wdwSaveNewWorker=async function(did){
-      var pfx='nw-'+did;
-      var fxC=(document.getElementById(pfx+'-fx-currency')||{}).value||null;
-      var fxA=parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
-      var fxR=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-      var startM=(document.getElementById(pfx+'-start')||{}).value||null;
-      var endM=(document.getElementById(pfx+'-end')||{}).value||null;
-      await _sn.call(this,did);
-      var d=((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
-      if(d&&d.workers&&d.workers.length){
-        var w=d.workers[d.workers.length-1];
-        if(fxC) w.fxCurrency=fxC;
-        if(fxA) w.fxAmount=fxA;
-        if(fxR) w.fxRate=fxR;
-        if(fxA&&fxR){
-          var mo=fxCalcMonthly(fxA,fxR,startM||w.startMonth,endM||w.endMonth);
-          if(mo){ w.value=mo; w.valueType='amount'; }
-        }
-        try{saveLocally();saveData();}catch(e){}
-      }
-    };
-
-    var _se=window.wdwSaveEditWorker;
-    if(typeof _se==='function') window.wdwSaveEditWorker=function(did,wid){
-      var pfx='ew-'+did+'-'+wid;
-      var fxC=(document.getElementById(pfx+'-fx-currency')||{}).value||null;
-      var fxA=parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||null;
-      var fxR=parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||null;
-      var startM=(document.getElementById(pfx+'-start')||{}).value||null;
-      var endM=(document.getElementById(pfx+'-end')||{}).value||null;
-      _se.call(this,did,wid);
-      var d=((typeof S!=='undefined'&&S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did;});
-      if(d){
-        var w=(d.workers||[]).find(function(x){return x.id===wid;});
-        if(w){
-          if(fxC) w.fxCurrency=fxC;
-          if(fxA) w.fxAmount=fxA;
-          if(fxR) w.fxRate=fxR;
-          if(fxA&&fxR){
-            var mo=fxCalcMonthly(fxA,fxR,startM||w.startMonth,endM||w.endMonth);
-            if(mo){ w.value=mo; w.valueType='amount'; }
-          }
-          try{saveLocally();saveData();}catch(e){}
-        }
-      }
-    };
-    console.log('v417CL: FX override loaded');
-  },300);
-});
-</script>
 
 
 <script>
-/* ===== v417CL FX functions ===== */
+/* ===== v419CL FX functions ===== */
 window.wdwCalcFXMonthly = function(pfx){
   var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
   var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
@@ -6535,7 +6412,95 @@ window.wdwClearFX = function(pfx){
   if(fa) fa.value='';
   if(fr) fr.value='';
 };
-console.log('v417CL ready');
+console.log('v419CL ready');
+</script>
+
+<script>
+(function() {
+  function getMonthsCount(startStr, endStr) {
+    if (!startStr || !endStr) return 1;
+    var sa = startStr.split('-'), ea = endStr.split('-');
+    var months = (parseInt(ea[0]) - parseInt(sa[0])) * 12 + (parseInt(ea[1]) - parseInt(sa[1])) + 1;
+    return months < 1 ? 1 : months;
+  }
+
+  window.wdwCalcFXMonthly = function(pfx) {
+    var amt = parseFloat((document.getElementById(pfx + '-fx-amount') || {}).value) || 0;
+    var rate = parseFloat((document.getElementById(pfx + '-fx-rate') || {}).value) || 0;
+    var startVal = (document.getElementById(pfx + '-start') || {}).value || '';
+    var endVal = (document.getElementById(pfx + '-end') || {}).value || '';
+    if (!amt || !rate) { alert('נא להזין סכום מטח ושער'); return; }
+    var months = getMonthsCount(startVal, endVal);
+    var monthlyILS = Math.round((amt * rate) / months * 100) / 100;
+    var amtInput = document.getElementById(pfx + '-amt');
+    var pctInput = document.getElementById(pfx + '-pct');
+    if (amtInput) { amtInput.value = monthlyILS; amtInput.disabled = false; }
+    if (pctInput) pctInput.value = '';
+  };
+
+  window.wdwClearFX = function(pfx) {
+    var fc = document.getElementById(pfx + '-fx-currency');
+    var fa = document.getElementById(pfx + '-fx-amount');
+    var fr = document.getElementById(pfx + '-fx-rate');
+    if (fc) fc.value = '';
+    if (fa) fa.value = '';
+    if (fr) fr.value = '';
+  };
+
+  // תיקון collectWorker217 — קריאת מטח לפני סגירת DOM
+  var origCollect = window.collectWorker217;
+  if (typeof origCollect === 'function') {
+    window.collectWorker217 = function(pfx, w) {
+      // קוראים מטח לפני קריאת הפונקציה המקורית
+      var fxC = (document.getElementById(pfx + '-fx-currency') || {}).value || null;
+      var fxA = parseFloat((document.getElementById(pfx + '-fx-amount') || {}).value) || null;
+      var fxR = parseFloat((document.getElementById(pfx + '-fx-rate') || {}).value) || null;
+      var startM = (document.getElementById(pfx + '-start') || {}).value || null;
+      var endM = (document.getElementById(pfx + '-end') || {}).value || null;
+
+      // אם יש מטח — מחשב ומזין לשדה amt לפני השמירה
+      if (fxA && fxR && startM && endM) {
+        var months = getMonthsCount(startM, endM);
+        var mo = Math.round(fxA * fxR / months * 100) / 100;
+        var ae = document.getElementById(pfx + '-amt');
+        var pe = document.getElementById(pfx + '-pct');
+        if (ae) { ae.value = mo; ae.disabled = false; }
+        if (pe) pe.value = '';
+      }
+
+      // קריאת הפונקציה המקורית
+      var result = origCollect.call(this, pfx, w);
+
+      // שמירת נתוני מטח על האובייקט
+      if (result) {
+        if (fxC) result.fxCurrency = fxC;
+        if (fxA) result.fxAmount = fxA;
+        if (fxR) result.fxRate = fxR;
+        if (fxA && fxR && startM && endM) {
+          var months2 = getMonthsCount(startM, endM);
+          result.value = Math.round(fxA * fxR / months2 * 100) / 100;
+          result.valueType = 'amount';
+        }
+      }
+      return result;
+    };
+  }
+
+  // תיקון basePct — מניעת אחוזים מעוותים לעובדי מטח
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      // מוצא את basePct בכל הגרסאות ועוטף
+      var origBasePct = window.basePct;
+      if (typeof origBasePct === 'function') {
+        window.basePct = function(w, month) {
+          if (w && w.fxAmount && w.fxRate) return 0;
+          return origBasePct.call(this, w, month);
+        };
+      }
+      console.log('v419CL: FX override ready');
+    }, 500);
+  });
+})();
 </script>
 </body>
 </htmlYPE html>
@@ -6543,7 +6508,7 @@ console.log('v417CL ready');
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v417CL | גישה</title>
+<title>Reports_Workers v419CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6798,7 +6763,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v417CL</span>
+      <span class="topbar-title">Reports_Workers v419CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11491,6 +11456,8 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
       '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:12px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
       '<div style="display:grid;grid-template-columns:110px 130px 110px;gap:10px;margin-bottom:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px"><div><label style="color:#166534;font-weight:700">מטבע</label><select id="'+pfx+'-fx-currency" style="'+fld+'"><option value="" '+(!(w&&w.fxCurrency)?'selected':'')+'>— ללא —</option><option value="USD" '+(w&&w.fxCurrency==='USD'?'selected':'')+'> USD</option><option value="EUR" '+(w&&w.fxCurrency==='EUR'?'selected':'')+'> EUR</option><option value="GBP" '+(w&&w.fxCurrency==='GBP'?'selected':'')+'> GBP</option><option value="CHF" '+(w&&w.fxCurrency==='CHF'?'selected':'')+'> CHF</option></select></div><div><label style="color:#166534;font-weight:700">סכום מטח לתקופה</label><input id="'+pfx+'-fx-amount" style="'+fld+'" type="number" step="0.01" value="'+(w&&w.fxAmount||'')+'" placeholder="0" oninput="wdwCalcFXMonthly('+pfx+')"></div><div><label style="color:#166534;font-weight:700">שער ₪</label><input id="'+pfx+'-fx-rate" style="'+fld+'" type="number" step="0.0001" value="'+(w&&w.fxRate||'')+'" placeholder="3.7" oninput="wdwCalcFXMonthly('+pfx+')"></div></div>'+
+      '<button type="button" data-pfx="'+pfx+'" onclick="wdwCalcFXMonthly(this.dataset.pfx)" class="wdw-fx-calc-btn">חשב סכום חודשי ₪</button>'+
+      '<button type="button" data-pfx="'+pfx+'" onclick="wdwClearFX(this.dataset.pfx)" class="wdw-fx-clear-btn">נקה מטח</button>'+
       '<div style="margin-top:6px"><label>מחליף את — תקופת החלפה עצמאית</label><div class="wdw-repl-fields"><div><select id="'+pfx+'-replaces" style="'+fld+'" onchange="wdwToggleVacant(\''+pfx+'\')">'+repOpts+'</select><div id="'+pfx+'-vacant-wrap" style="margin-top:4px;'+(replacesIsVacant?'':'display:none')+'"><select id="'+pfx+'-vacant-name" style="'+fld+'"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r){return '<option value="'+esc(r)+'" '+((w&&w.vacantName===r)?'selected':'')+'>'+esc(r)+'</option>';}).join(''))+'</select></div></div><div><label>% אחוז</label><input id="'+pfx+'-replaces-pct" style="'+fld+'" type="number" value="'+esc(w&&w.replacesPct||'')+'" placeholder="20"></div><div><label>סכום ₪</label><input id="'+pfx+'-replaces-amt" style="'+fld+'" type="number" value="'+esc(w&&w.replacesAmt||'')+'" placeholder="—"></div><div><label>מחודש</label><input id="'+pfx+'-replaces-start" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceStartMonth||w.replacesStartMonth) || w&&w.startMonth || defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-replaces-end" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceEndMonth||w.replacesEndMonth) || '')+'"><div class="wdw-muted">ריק = פתוח</div></div><div></div></div><div id="'+pfx+'-replaces-rows">'+extra+'</div><button onclick="wdwAddExtraReplace(\''+pfx+'\')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:2px">+ הוסף החלפה נוספת</button></div></div>';
   };
 
@@ -13194,7 +13161,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </script>
 
 <script>
-/* ===== v417CL FX functions ===== */
+/* ===== v419CL FX functions ===== */
 window.wdwCalcFXMonthly = function(pfx){
   var amt = parseFloat((document.getElementById(pfx+'-fx-amount')||{}).value)||0;
   var rate = parseFloat((document.getElementById(pfx+'-fx-rate')||{}).value)||0;
@@ -13221,7 +13188,95 @@ window.wdwClearFX = function(pfx){
   if(fa) fa.value='';
   if(fr) fr.value='';
 };
-console.log('v417CL ready');
+console.log('v419CL ready');
+</script>
+
+<script>
+(function() {
+  function getMonthsCount(startStr, endStr) {
+    if (!startStr || !endStr) return 1;
+    var sa = startStr.split('-'), ea = endStr.split('-');
+    var months = (parseInt(ea[0]) - parseInt(sa[0])) * 12 + (parseInt(ea[1]) - parseInt(sa[1])) + 1;
+    return months < 1 ? 1 : months;
+  }
+
+  window.wdwCalcFXMonthly = function(pfx) {
+    var amt = parseFloat((document.getElementById(pfx + '-fx-amount') || {}).value) || 0;
+    var rate = parseFloat((document.getElementById(pfx + '-fx-rate') || {}).value) || 0;
+    var startVal = (document.getElementById(pfx + '-start') || {}).value || '';
+    var endVal = (document.getElementById(pfx + '-end') || {}).value || '';
+    if (!amt || !rate) { alert('נא להזין סכום מטח ושער'); return; }
+    var months = getMonthsCount(startVal, endVal);
+    var monthlyILS = Math.round((amt * rate) / months * 100) / 100;
+    var amtInput = document.getElementById(pfx + '-amt');
+    var pctInput = document.getElementById(pfx + '-pct');
+    if (amtInput) { amtInput.value = monthlyILS; amtInput.disabled = false; }
+    if (pctInput) pctInput.value = '';
+  };
+
+  window.wdwClearFX = function(pfx) {
+    var fc = document.getElementById(pfx + '-fx-currency');
+    var fa = document.getElementById(pfx + '-fx-amount');
+    var fr = document.getElementById(pfx + '-fx-rate');
+    if (fc) fc.value = '';
+    if (fa) fa.value = '';
+    if (fr) fr.value = '';
+  };
+
+  // תיקון collectWorker217 — קריאת מטח לפני סגירת DOM
+  var origCollect = window.collectWorker217;
+  if (typeof origCollect === 'function') {
+    window.collectWorker217 = function(pfx, w) {
+      // קוראים מטח לפני קריאת הפונקציה המקורית
+      var fxC = (document.getElementById(pfx + '-fx-currency') || {}).value || null;
+      var fxA = parseFloat((document.getElementById(pfx + '-fx-amount') || {}).value) || null;
+      var fxR = parseFloat((document.getElementById(pfx + '-fx-rate') || {}).value) || null;
+      var startM = (document.getElementById(pfx + '-start') || {}).value || null;
+      var endM = (document.getElementById(pfx + '-end') || {}).value || null;
+
+      // אם יש מטח — מחשב ומזין לשדה amt לפני השמירה
+      if (fxA && fxR && startM && endM) {
+        var months = getMonthsCount(startM, endM);
+        var mo = Math.round(fxA * fxR / months * 100) / 100;
+        var ae = document.getElementById(pfx + '-amt');
+        var pe = document.getElementById(pfx + '-pct');
+        if (ae) { ae.value = mo; ae.disabled = false; }
+        if (pe) pe.value = '';
+      }
+
+      // קריאת הפונקציה המקורית
+      var result = origCollect.call(this, pfx, w);
+
+      // שמירת נתוני מטח על האובייקט
+      if (result) {
+        if (fxC) result.fxCurrency = fxC;
+        if (fxA) result.fxAmount = fxA;
+        if (fxR) result.fxRate = fxR;
+        if (fxA && fxR && startM && endM) {
+          var months2 = getMonthsCount(startM, endM);
+          result.value = Math.round(fxA * fxR / months2 * 100) / 100;
+          result.valueType = 'amount';
+        }
+      }
+      return result;
+    };
+  }
+
+  // תיקון basePct — מניעת אחוזים מעוותים לעובדי מטח
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      // מוצא את basePct בכל הגרסאות ועוטף
+      var origBasePct = window.basePct;
+      if (typeof origBasePct === 'function') {
+        window.basePct = function(w, month) {
+          if (w && w.fxAmount && w.fxRate) return 0;
+          return origBasePct.call(this, w, month);
+        };
+      }
+      console.log('v419CL: FX override ready');
+    }, 500);
+  });
+})();
 </script>
 </body>
 </html>
