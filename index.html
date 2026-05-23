@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v427CL | גישה</title>
+<title>Reports_Workers v430CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v427CL</span>
+      <span class="topbar-title">Reports_Workers v430CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4051,6 +4051,27 @@ function sendEmail(){
       +'<label style="display:block;font-size:12px;color:#475569;font-weight:700;margin-bottom:4px">הערה</label>'
       +'<textarea id="'+pfx+'-remark" style="'+fld+';height:60px;resize:vertical" placeholder="הערה חופשית">'+(w&&w.remark?esc(w.remark):'')+'</textarea>'
       +'</div>'+
+      '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px 12px;margin-bottom:10px">'+
+      '<div style="font-size:11px;font-weight:600;color:#166534;margin-bottom:8px">שדות עזר — חישוב מט״ח (לא נשמר)</div>'+
+      '<div style="display:grid;grid-template-columns:100px 1fr 1fr;gap:8px;margin-bottom:8px">'+
+      '<div><label style="font-size:11px;color:#475569;display:block;margin-bottom:3px">מטבע</label>'+
+      '<select id="'+pfx+'-helper-currency" style="'+fld+'">'+
+      '<option value="USD">USD</option>'+
+      '<option value="EUR">EUR</option>'+
+      '<option value="GBP">GBP</option>'+
+      '</select></div>'+
+      '<div><label style="font-size:11px;color:#475569;display:block;margin-bottom:3px">סכום מט״ח</label>'+
+      '<input type="number" id="'+pfx+'-helper-amount" style="'+fld+'" placeholder="0" step="any"></div>'+
+      '<div><label style="font-size:11px;color:#475569;display:block;margin-bottom:3px">שער → ₪</label>'+
+      '<input type="number" id="'+pfx+'-helper-rate" style="'+fld+'" placeholder="0" step="any"></div>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:flex-end">'+
+      '<div><label style="font-size:11px;color:#475569;display:block;margin-bottom:3px">תוצאה ₪/חודש</label>'+
+      '<input type="text" id="'+pfx+'-helper-result" style="'+fld+';background:#f0fdf4;font-weight:600;color:#166534" readonly placeholder="לחץ חשב"></div>'+
+      '<div>'+
+      '<button type="button" data-pfx="'+pfx+'" onclick="(function(p){var a=parseFloat(document.getElementById(p+\'-helper-amount\').value)||0;var r=parseFloat(document.getElementById(p+\'-helper-rate\').value)||0;var s=(document.getElementById(p+\'-start\')||{}).value||\'\';var e=(document.getElementById(p+\'-end\')||{}).value||\'\';var m=1;if(s&&e){var sa=s.split(\'-\'),ea=e.split(\'-\');m=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;if(m<1)m=1;}var res=a&&r?Math.round(a*r/m*100)/100:0;document.getElementById(p+\'-helper-result\').value=res?res.toLocaleString()+\' ₪\':\'0\'})(this.dataset.pfx)" style="width:100%;padding:6px;background:#166534;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600">חשב</button>'+
+      '</div></div>'+
+      '</div>'+
       '<div style="margin-top:6px"><label>מחליף את — תקופת החלפה עצמאית</label><div class="wdw-repl-fields"><div><select id="'+pfx+'-replaces" style="'+fld+'" onchange="wdwToggleVacant(\''+pfx+'\')">'+repOpts+'</select><div id="'+pfx+'-vacant-wrap" style="margin-top:4px;'+(replacesIsVacant?'':'display:none')+'"><input id="'+pfx+'-vacant-name" style="'+fld+'" type="text" value="'+esc(w&&w.vacantName||'')+'" placeholder="לדוגמה: רכזת פניות"></div></div><div><label>% אחוז</label><input id="'+pfx+'-replaces-pct" style="'+fld+'" type="number" value="'+esc(w&&w.replacesPct||'')+'" placeholder="20"></div><div><label>סכום ₪</label><input id="'+pfx+'-replaces-amt" style="'+fld+'" type="number" value="'+esc(w&&w.replacesAmt||'')+'" placeholder="—"></div><div><label>מחודש</label><input id="'+pfx+'-replaces-start" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceStartMonth||w.replacesStartMonth) || w&&w.startMonth || defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-replaces-end" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceEndMonth||w.replacesEndMonth) || '')+'"><div class="wdw-muted">ריק = פתוח</div></div><div></div></div><div id="'+pfx+'-replaces-rows">'+extra+'</div><button onclick="wdwAddExtraReplace(\''+pfx+'\')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:2px">+ הוסף החלפה נוספת</button></div></div>';
   };
 
@@ -6389,7 +6410,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v427CL | גישה</title>
+<title>Reports_Workers v430CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6644,7 +6665,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v427CL</span>
+      <span class="topbar-title">Reports_Workers v430CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11340,6 +11361,27 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       +'<label style="display:block;font-size:12px;color:#475569;font-weight:700;margin-bottom:4px">הערה</label>'
       +'<textarea id="'+pfx+'-remark" style="'+fld+';height:60px;resize:vertical" placeholder="הערה חופשית">'+(w&&w.remark?esc(w.remark):'')+'</textarea>'
       +'</div>'+
+      '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:10px 12px;margin-bottom:10px">'+
+      '<div style="font-size:11px;font-weight:600;color:#166534;margin-bottom:8px">שדות עזר — חישוב מט״ח (לא נשמר)</div>'+
+      '<div style="display:grid;grid-template-columns:100px 1fr 1fr;gap:8px;margin-bottom:8px">'+
+      '<div><label style="font-size:11px;color:#475569;display:block;margin-bottom:3px">מטבע</label>'+
+      '<select id="'+pfx+'-helper-currency" style="'+fld+'">'+
+      '<option value="USD">USD</option>'+
+      '<option value="EUR">EUR</option>'+
+      '<option value="GBP">GBP</option>'+
+      '</select></div>'+
+      '<div><label style="font-size:11px;color:#475569;display:block;margin-bottom:3px">סכום מט״ח</label>'+
+      '<input type="number" id="'+pfx+'-helper-amount" style="'+fld+'" placeholder="0" step="any"></div>'+
+      '<div><label style="font-size:11px;color:#475569;display:block;margin-bottom:3px">שער → ₪</label>'+
+      '<input type="number" id="'+pfx+'-helper-rate" style="'+fld+'" placeholder="0" step="any"></div>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:flex-end">'+
+      '<div><label style="font-size:11px;color:#475569;display:block;margin-bottom:3px">תוצאה ₪/חודש</label>'+
+      '<input type="text" id="'+pfx+'-helper-result" style="'+fld+';background:#f0fdf4;font-weight:600;color:#166534" readonly placeholder="לחץ חשב"></div>'+
+      '<div>'+
+      '<button type="button" data-pfx="'+pfx+'" onclick="(function(p){var a=parseFloat(document.getElementById(p+\'-helper-amount\').value)||0;var r=parseFloat(document.getElementById(p+\'-helper-rate\').value)||0;var s=(document.getElementById(p+\'-start\')||{}).value||\'\';var e=(document.getElementById(p+\'-end\')||{}).value||\'\';var m=1;if(s&&e){var sa=s.split(\'-\'),ea=e.split(\'-\');m=(parseInt(ea[0])-parseInt(sa[0]))*12+(parseInt(ea[1])-parseInt(sa[1]))+1;if(m<1)m=1;}var res=a&&r?Math.round(a*r/m*100)/100:0;document.getElementById(p+\'-helper-result\').value=res?res.toLocaleString()+\' ₪\':\'0\'})(this.dataset.pfx)" style="width:100%;padding:6px;background:#166534;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600">חשב</button>'+
+      '</div></div>'+
+      '</div>'+
       '<div style="margin-top:6px"><label>מחליף את — תקופת החלפה עצמאית</label><div class="wdw-repl-fields"><div><select id="'+pfx+'-replaces" style="'+fld+'" onchange="wdwToggleVacant(\''+pfx+'\')">'+repOpts+'</select><div id="'+pfx+'-vacant-wrap" style="margin-top:4px;'+(replacesIsVacant?'':'display:none')+'"><select id="'+pfx+'-vacant-name" style="'+fld+'"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r){return '<option value="'+esc(r)+'" '+((w&&w.vacantName===r)?'selected':'')+'>'+esc(r)+'</option>';}).join(''))+'</select></div></div><div><label>% אחוז</label><input id="'+pfx+'-replaces-pct" style="'+fld+'" type="number" value="'+esc(w&&w.replacesPct||'')+'" placeholder="20"></div><div><label>סכום ₪</label><input id="'+pfx+'-replaces-amt" style="'+fld+'" type="number" value="'+esc(w&&w.replacesAmt||'')+'" placeholder="—"></div><div><label>מחודש</label><input id="'+pfx+'-replaces-start" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceStartMonth||w.replacesStartMonth) || w&&w.startMonth || defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-replaces-end" style="'+fld+'" type="month" value="'+esc(w&& (w.replaceEndMonth||w.replacesEndMonth) || '')+'"><div class="wdw-muted">ריק = פתוח</div></div><div></div></div><div id="'+pfx+'-replaces-rows">'+extra+'</div><button onclick="wdwAddExtraReplace(\''+pfx+'\')" style="padding:5px 12px;background:#fff;border:1px dashed #00897B;border-radius:5px;cursor:pointer;color:#00897B;font-size:12px;margin-top:2px">+ הוסף החלפה נוספת</button></div></div>';
   };
 
