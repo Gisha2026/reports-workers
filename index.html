@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v431CL | גישה</title>
+<title>Reports_Workers v432CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v431CL</span>
+      <span class="topbar-title">Reports_Workers v432CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5340,7 +5340,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function workerListHtml217(d){
     var ws=(d.workers||[]).filter(function(w){return w.active!==false;});
     if(!ws.length) return '<div style="padding:10px;color:#9ca3af">אין עובדים בתרומה.</div>';
-    return ws.map(function(w){return '<div class="v217-worker-line"><b>'+esc217(w.name||'—')+'</b><span>'+fmtPct217(w.valueType==='percent'?w.value:0)+'</span><span>'+esc217(replText217(w,month217()))+'</span><span>'+fmtM217(w.startMonth)+' — '+fmtM217(w.endMonth)+'</span><button onclick="wdwToggleWorkerEdit(\''+d.id+'\',\''+w.id+'\')">ערוך</button><button class="danger" onclick="wdwEndWorker(\''+d.id+'\',\''+w.id+'\')">סיים תפקיד</button></div><div id="wdw-edit-worker-'+d.id+'-'+w.id+'" style="display:none;padding:12px;background:#fafafa;border-bottom:1px solid #e5e7eb">'+wdwWorkerFields(w,d,!!(S.wdw&&S.wdw.budget),month217(),workers217().map(function(x){return '<option value="'+esc217(x)+'">'+esc217(x)+'</option>';}).join(''),true)+'<div style="display:flex;gap:8px;margin-top:10px"><button class="wdw-primary" onclick="wdwSaveEditWorker217(\''+d.id+'\',\''+w.id+'\')">שמור עובד</button><button class="wdw-secondary" onclick="wdwToggleWorkerEdit(\''+d.id+'\',\''+w.id+'\')">בטל</button></div></div>';}).join('');
+    return ws.map(function(w){ var pctDisp=w.valueType==='percent'?fmtPct217(w.value):(w.value?'₪'+Math.round(w.value).toLocaleString()+'/ח':''); var remarkDisp=w.remark?'<span style="font-size:10px;color:#9ca3af;margin-right:4px">('+esc217(w.remark)+')</span>':''; return '<div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:8px 10px;background:#f9fafb;border-radius:6px;margin-bottom:5px"><div><span style="font-size:13px;font-weight:600">'+esc217(w.name||'—')+'</span>'+remarkDisp+'<span style="font-size:11px;color:#6b7280"> · '+esc217(w.roleInDonor||w.fundingType||'')+' · '+pctDisp+'</span><div style="font-size:11px;color:#9ca3af">'+fmtM217(w.startMonth)+' — '+fmtM217(w.endMonth)+'</div></div><div style="display:flex;gap:6px"><button onclick="wdwToggleWorkerEdit(''+d.id+'',''+w.id+'')" style="padding:4px 10px;background:#fff;border:1px solid #d1d5db;border-radius:5px;font-size:11px;cursor:pointer">עריכה</button><button onclick="wdwEndWorker(''+d.id+'',''+w.id+'')" style="padding:4px 10px;background:#fff;border:1px solid #d1d5db;border-radius:5px;font-size:11px;cursor:pointer">סיים תפקיד</button></div></div>';});
   }
 
   window.renderWDWInput=function(){
@@ -5350,7 +5350,7 @@ window.wdwResetNewWorkerForm = function(did) {
     if(window.WDW_ADD_DONOR_MODE){div.innerHTML=html+addDonorForm217()+'</div>'; setTimeout(function(){var el=document.getElementById('v217-new-name'); if(el) el.focus();},0); return;}
     var ds=donors217(), active=ds.filter(function(d){return d.status!==WDW_STATUS.ENDED&&d.status!==WDW_STATUS.INACTIVE;}), ended=ds.filter(function(d){return d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE;});
     html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">לחיצה על ערוך פותחת תורם אחד בלבד. אין פתיחת כל הרשימה.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';
-    function row(d){var h=donorHealth217(d,month217()); var ws=(d.workers||[]).filter(function(w){return isActive217(w,month217());}); var out='<div class="wdw-mgmt-row"><div class="wdw-mgmt-summary v217-summary"><div><b>'+esc217(d.name)+'</b><div class="wdw-muted">'+esc217(d.code||'אין כתובת ידועה')+' · '+fmtM217(d.startDate)+'–'+fmtM217(d.endDate)+'</div></div><div>'+type217(d)+'</div><div><span class="wdw-chip '+h.cls+'">'+h.label+'</span></div><div class="wdw-num">'+ws.length+' עובדים</div><div class="wdw-muted">'+esc217(h.note)+'</div><div class="wdw-actions"><button onclick="wdwEditDonor217(\''+d.id+'\')">ערוך</button></div></div>'; if(window.WDW_EDIT_DONOR_ID===d.id) out+=donorEditPanel217(d); return out+'</div>';}
+    function row(d){var h=donorHealth217(d,month217()); var ws=(d.workers||[]).filter(function(w){return isActive217(w,month217());}); var hBg=h.cls==='bad'?'#fef2f2':h.cls==='warn'?'#fffbeb':'#f0fdf4'; var hClr=h.cls==='bad'?'#b91c1c':h.cls==='warn'?'#92400e':'#166534'; var hBadge='<span style="font-size:11px;padding:2px 8px;border-radius:10px;background:'+hBg+';color:'+hClr+'">'+h.label+'</span>'; var out='<div style="background:#fff;border:0.5px solid #e5e7eb;border-radius:8px;padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:8px"><div><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:14px;font-weight:600">'+esc217(d.name)+'</span>'+type217(d)+hBadge+'</div><div style="font-size:11px;color:#6b7280">'+fmtM217(d.startDate)+' — '+fmtM217(d.endDate)+' · '+ws.length+' עובדים</div></div><div style="display:flex;gap:6px"><button onclick="wdwEditDonor217(''+d.id+'');" style="padding:5px 12px;background:#fff;border:1px solid #d1d5db;border-radius:5px;font-size:12px;cursor:pointer">עריכה</button><button onclick="if(confirm('למחוק?')){wdwConfirmDelete(''+d.id+'');}" style="padding:5px 12px;background:#fff;border:1px solid #fca5a5;color:#c62828;border-radius:5px;font-size:12px;cursor:pointer">מחק</button></div></div>'; if(window.WDW_EDIT_DONOR_ID===d.id) out+=donorEditPanel217(d); return out;}
     active.forEach(function(d){html+=row(d);});
     if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>'; ended.forEach(function(d){html+=row(d);});}
     div.innerHTML=html+'</div></div>';
@@ -6410,7 +6410,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v431CL | גישה</title>
+<title>Reports_Workers v432CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -6665,7 +6665,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v431CL</span>
+      <span class="topbar-title">Reports_Workers v432CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
