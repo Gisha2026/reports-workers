@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v447CH | גישה</title>
+<title>Reports_Workers v448CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v447CH</span>
+      <span class="topbar-title">Reports_Workers v448CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6408,7 +6408,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 
 
-<script id="v447CH-wdw-management-full-redesign">
+<script id="v448CH-wdw-management-full-redesign">
 (function(){
   function esc(x){
     return String(x==null?'':x).replace(/[&<>"']/g,function(m){
@@ -6795,7 +6795,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   };
 })();
 </script>
-<style id="v447CH-wdw-management-full-redesign-style">
+<style id="v448CH-wdw-management-full-redesign-style">
 #tab-wdw .v437-shell{background:#f5f7f9!important;padding:10px 0 36px!important;color:#111827}
 #tab-wdw .v437-top{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:14px 18px;margin-bottom:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}
 #tab-wdw .v437-top b{display:block;font-size:22px;color:#073f3d}
@@ -6842,7 +6842,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </style>
 
 
-<script id="v447CH-worker-extra-helper">
+<script id="v448CH-worker-extra-helper">
 window.wdw439AddExtraReplace=function(p){
   var wrap=document.getElementById(p+'-extra-replaces-wrap');
   if(!wrap) return;
@@ -6868,7 +6868,7 @@ window.wdw439AddExtraReplace=function(p){
 </script>
 
 
-<style id="v447CH-worker-sections-style">
+<style id="v448CH-worker-sections-style">
 #tab-wdw .v439-worker-form{padding:16px!important}
 #tab-wdw .v439-section{background:#fbfdff;border:1px solid #e5eaf0;border-radius:10px;padding:12px;margin-bottom:12px}
 #tab-wdw .v439-section-title{font-size:14px;font-weight:800;color:#073f3d;margin-bottom:10px;border-bottom:1px solid #e5eaf0;padding-bottom:6px}
@@ -6888,7 +6888,7 @@ window.wdw439AddExtraReplace=function(p){
 </style>
 
 
-<script id="v447CH-fx-project-total-helper">
+<script id="v448CH-fx-project-total-helper">
 window.wdw440CalcFX=function(p){
   var amt=document.getElementById(p+'-fxamt');
   var rate=document.getElementById(p+'-fxrate');
@@ -6921,8 +6921,8 @@ window.wdw440CalcFXHelper=function(p){
 </script>
 
 
-<style id="v447CH-wdw-management-table-alignment-only">
-/* v447CH — ONLY table alignment in WDW > ניהול */
+<style id="v448CH-wdw-management-table-alignment-only">
+/* v448CH — ONLY table alignment in WDW > ניהול */
 
 /* Donor list: header and data rows share the exact same columns */
 #tab-wdw .v437-donor-header,
@@ -7034,7 +7034,7 @@ window.wdw440CalcFXHelper=function(p){
 </style>
 
 
-<script id="v447CH-close-donor-edit-only">
+<script id="v448CH-close-donor-edit-only">
 window.wdw447CloseDonorEdit=function(){
   window.WDW_EDIT_DONOR_ID=null;
   window.WDW_ADD_WORKER_FOR=null;
@@ -7043,13 +7043,62 @@ window.wdw447CloseDonorEdit=function(){
 };
 </script>
 
+
+<style id="v448CH-annual-summary-ui-only">
+#annualYearBar{display:flex;align-items:center;gap:10px;margin:12px 0}
+#annualYearSelect{min-width:120px;padding:6px 10px}
+.v448-annual-summary-table{width:100%;border-collapse:collapse}
+.v448-annual-summary-table th,.v448-annual-summary-table td{padding:8px 10px;border-bottom:1px solid #e5e7eb;text-align:right}
+.v448-annual-summary-table th{background:#f8fafc;font-weight:700}
+.v448-detail-row{display:none;background:#fafafa}
+.v448-expand{cursor:pointer}
+</style>
+
+<script id="v448CH-annual-summary-ui-only-script">
+(function(){
+window.v448AnnualYear=(new Date()).getFullYear();
+
+function buildYearSelector(container){
+ if(!container || document.getElementById('annualYearSelect')) return;
+ var bar=document.createElement('div');
+ bar.id='annualYearBar';
+ var lbl=document.createElement('label');
+ lbl.textContent='שנת תצוגה:';
+ var sel=document.createElement('select');
+ sel.id='annualYearSelect';
+ for(var y=2024;y<=2035;y++){
+   var o=document.createElement('option');
+   o.value=y;o.textContent=y;
+   if(y===window.v448AnnualYear) o.selected=true;
+   sel.appendChild(o);
+ }
+ sel.onchange=function(){window.v448AnnualYear=parseInt(this.value,10); if(window.renderAnnual) renderAnnual();};
+ bar.appendChild(lbl);bar.appendChild(sel);
+ container.prepend(bar);
+}
+
+var orig=window.renderAnnual;
+if(typeof orig==='function'){
+ window.renderAnnual=function(){
+   orig.apply(this,arguments);
+
+   var tab=document.querySelector('#tab-annual,#annual-tab,[data-tab="annual"]');
+   if(tab) buildYearSelector(tab);
+
+   /* Presentation-only transformation can be refined later;
+      no calculation logic is modified. */
+ };
+}
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v447CH | גישה</title>
+<title>Reports_Workers v448CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7304,7 +7353,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v447CH</span>
+      <span class="topbar-title">Reports_Workers v448CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -13724,7 +13773,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 
 
-<script id="v447CH-wdw-management-full-redesign">
+<script id="v448CH-wdw-management-full-redesign">
 (function(){
   function esc(x){
     return String(x==null?'':x).replace(/[&<>"']/g,function(m){
@@ -14111,7 +14160,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   };
 })();
 </script>
-<style id="v447CH-wdw-management-full-redesign-style">
+<style id="v448CH-wdw-management-full-redesign-style">
 #tab-wdw .v437-shell{background:#f5f7f9!important;padding:10px 0 36px!important;color:#111827}
 #tab-wdw .v437-top{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:14px 18px;margin-bottom:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}
 #tab-wdw .v437-top b{display:block;font-size:22px;color:#073f3d}
@@ -14158,7 +14207,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </style>
 
 
-<script id="v447CH-worker-extra-helper">
+<script id="v448CH-worker-extra-helper">
 window.wdw439AddExtraReplace=function(p){
   var wrap=document.getElementById(p+'-extra-replaces-wrap');
   if(!wrap) return;
@@ -14184,7 +14233,7 @@ window.wdw439AddExtraReplace=function(p){
 </script>
 
 
-<style id="v447CH-worker-sections-style">
+<style id="v448CH-worker-sections-style">
 #tab-wdw .v439-worker-form{padding:16px!important}
 #tab-wdw .v439-section{background:#fbfdff;border:1px solid #e5eaf0;border-radius:10px;padding:12px;margin-bottom:12px}
 #tab-wdw .v439-section-title{font-size:14px;font-weight:800;color:#073f3d;margin-bottom:10px;border-bottom:1px solid #e5eaf0;padding-bottom:6px}
@@ -14204,7 +14253,7 @@ window.wdw439AddExtraReplace=function(p){
 </style>
 
 
-<script id="v447CH-fx-project-total-helper">
+<script id="v448CH-fx-project-total-helper">
 window.wdw440CalcFX=function(p){
   var amt=document.getElementById(p+'-fxamt');
   var rate=document.getElementById(p+'-fxrate');
@@ -14237,8 +14286,8 @@ window.wdw440CalcFXHelper=function(p){
 </script>
 
 
-<style id="v447CH-wdw-management-table-alignment-only">
-/* v447CH — ONLY table alignment in WDW > ניהול */
+<style id="v448CH-wdw-management-table-alignment-only">
+/* v448CH — ONLY table alignment in WDW > ניהול */
 
 /* Donor list: header and data rows share the exact same columns */
 #tab-wdw .v437-donor-header,
@@ -14350,13 +14399,62 @@ window.wdw440CalcFXHelper=function(p){
 </style>
 
 
-<script id="v447CH-close-donor-edit-only">
+<script id="v448CH-close-donor-edit-only">
 window.wdw447CloseDonorEdit=function(){
   window.WDW_EDIT_DONOR_ID=null;
   window.WDW_ADD_WORKER_FOR=null;
   window.WDW_EDIT_WORKER_ID=null;
   if(typeof renderWDWInput==='function') renderWDWInput();
 };
+</script>
+
+
+<style id="v448CH-annual-summary-ui-only">
+#annualYearBar{display:flex;align-items:center;gap:10px;margin:12px 0}
+#annualYearSelect{min-width:120px;padding:6px 10px}
+.v448-annual-summary-table{width:100%;border-collapse:collapse}
+.v448-annual-summary-table th,.v448-annual-summary-table td{padding:8px 10px;border-bottom:1px solid #e5e7eb;text-align:right}
+.v448-annual-summary-table th{background:#f8fafc;font-weight:700}
+.v448-detail-row{display:none;background:#fafafa}
+.v448-expand{cursor:pointer}
+</style>
+
+<script id="v448CH-annual-summary-ui-only-script">
+(function(){
+window.v448AnnualYear=(new Date()).getFullYear();
+
+function buildYearSelector(container){
+ if(!container || document.getElementById('annualYearSelect')) return;
+ var bar=document.createElement('div');
+ bar.id='annualYearBar';
+ var lbl=document.createElement('label');
+ lbl.textContent='שנת תצוגה:';
+ var sel=document.createElement('select');
+ sel.id='annualYearSelect';
+ for(var y=2024;y<=2035;y++){
+   var o=document.createElement('option');
+   o.value=y;o.textContent=y;
+   if(y===window.v448AnnualYear) o.selected=true;
+   sel.appendChild(o);
+ }
+ sel.onchange=function(){window.v448AnnualYear=parseInt(this.value,10); if(window.renderAnnual) renderAnnual();};
+ bar.appendChild(lbl);bar.appendChild(sel);
+ container.prepend(bar);
+}
+
+var orig=window.renderAnnual;
+if(typeof orig==='function'){
+ window.renderAnnual=function(){
+   orig.apply(this,arguments);
+
+   var tab=document.querySelector('#tab-annual,#annual-tab,[data-tab="annual"]');
+   if(tab) buildYearSelector(tab);
+
+   /* Presentation-only transformation can be refined later;
+      no calculation logic is modified. */
+ };
+}
+})();
 </script>
 
 </body>
