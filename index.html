@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v470CH | גישה</title>
+<title>Reports_Workers v471CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v470CH</span>
+      <span class="topbar-title">Reports_Workers v471CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1434,7 +1434,7 @@ function renderHolList(){
   const div=document.getElementById('holList');
   if(!div) return;
   if(!S.holidays.length){div.innerHTML='<p style="color:#999;font-size:11px;">אין חגים</p>';return;}
-  // v470CH: חלוקה לפי שנים
+  // v471CH: חלוקה לפי שנים
   const holsSorted=(S.holidays||[]).map((h,i)=>({h,i})).sort((a,b)=>String(b.h.start||'').localeCompare(String(a.h.start||'')));
   // קיבוץ לפי שנה
   const byYear={};
@@ -3994,7 +3994,7 @@ function sendEmail(){
     #wdw-write-top-btn{background:#004d99!important;color:#fff!important;border:1px solid #004d99!important;border-radius:10px!important;padding:8px 14px!important;font-weight:800!important;cursor:pointer!important;margin-inline-start:8px!important}
     .wdw-view-controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.wdw-view-controls label{font-size:11px;color:#64748b;font-weight:700;display:block;margin-bottom:3px}.wdw-view-controls select{border:1px solid #cbd5e1;border-radius:10px;background:#fff;padding:7px 10px;font-weight:700;color:#334155;min-width:120px}.wdw-show-btn{background:#00695c;color:#fff;border:0;border-radius:10px;padding:8px 16px;font-weight:800;cursor:pointer}.wdw-donor-summary{display:grid;grid-template-columns:130px 1.5fr 1fr 120px 150px 130px 110px;gap:10px;align-items:center;padding:13px 14px;border-bottom:1px solid #edf2f7;cursor:pointer}.wdw-donor-summary:hover{background:#f8fafc}.wdw-donor-body{padding:0 14px 14px}.wdw-ended-sep{border-top:2px dashed #cbd5e1;margin:18px 0 10px;padding-top:10px;color:#64748b;font-weight:800}.wdw-worker-card .wdw-table th,.wdw-worker-card .wdw-table td{vertical-align:middle!important}.wdw-table .period-cell{min-width:160px}.worker-delete-btn{border:1px solid #fecaca!important;color:#b91c1c!important;background:#fff!important;border-radius:6px!important;padding:5px 10px!important;cursor:pointer!important;font-size:12px!important}
   `; document.head.appendChild(st); }
-  function ensureWriteButton(){ /* v470CH: button is in HTML directly */ }
+  function ensureWriteButton(){ /* v471CH: button is in HTML directly */ }
   function refreshPanel(){var p=currentPanel(); if(p==='org') renderWDWOrg(); else if(p==='donor') renderWDWDonor(); else if(p==='worker') renderWDWWorker(); else renderWDWInput();}
   window.wdwWorkersList=function(){return officialWorkerNames();};
   window.wdwMonthKey=function(){initWDW(); var def=monthKeyFrom(S.year||2026, typeof curMI==='number'?curMI:0); if(!S.wdw.viewMonth) S.wdw.viewMonth=def; return S.wdw.viewMonth;};
@@ -4821,7 +4821,7 @@ window.wdwOrgTab = function(tab){
     tbl+='</table>';
 
   } else if(tab==='workforce'){
-    // v470CH: שימוש ב-wdwWorkerTotalPct שכולל בסיס + החלפות + extraReplaces
+    // v471CH: שימוש ב-wdwWorkerTotalPct שכולל בסיס + החלפות + extraReplaces
     var wfMonth = (window.wdwMonthKeyLocal && window.wdwMonthKeyLocal()) ||
                   (window.wdwMonthKey && window.wdwMonthKey()) || '';
     tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
@@ -6566,7 +6566,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 
 
-<script id="v470CH-wdw-management-full-redesign">
+<script id="v471CH-wdw-management-full-redesign">
 (function(){
   function esc(x){
     return String(x==null?'':x).replace(/[&<>"']/g,function(m){
@@ -6703,7 +6703,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
     else { d=donors().find(function(x){return x.id===id;}); if(!d){alert('לא נמצא תורם');return;} if(!d.workers)d.workers=[]; }
     d.name=val(p+'-name','').trim();
     if(!d.name){alert('נא להזין שם תורם');return;}
-    // v470CH: קריאת timesheetName ישירות מה-DOM לפני כל רנדור
+    // v471CH: קריאת timesheetName ישירות מה-DOM לפני כל רנדור
     var tsEl=document.getElementById(p+'-timesheet-name');
     d.timesheetName=tsEl?tsEl.value.trim():'';
     d.type=val(p+'-type','budget');
@@ -6958,7 +6958,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   };
 })();
 </script>
-<style id="v470CH-wdw-management-full-redesign-style">
+<style id="v471CH-wdw-management-full-redesign-style">
 #tab-wdw .v437-shell{background:#f5f7f9!important;padding:10px 0 36px!important;color:#111827}
 #tab-wdw .v437-top{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:14px 18px;margin-bottom:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}
 #tab-wdw .v437-top b{display:block;font-size:22px;color:#073f3d}
@@ -7005,7 +7005,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </style>
 
 
-<script id="v470CH-worker-extra-helper">
+<script id="v471CH-worker-extra-helper">
 window.wdw439AddExtraReplace=function(p){
   var wrap=document.getElementById(p+'-extra-replaces-wrap');
   if(!wrap) return;
@@ -7031,7 +7031,7 @@ window.wdw439AddExtraReplace=function(p){
 </script>
 
 
-<style id="v470CH-worker-sections-style">
+<style id="v471CH-worker-sections-style">
 #tab-wdw .v439-worker-form{padding:16px!important}
 #tab-wdw .v439-section{background:#fbfdff;border:1px solid #e5eaf0;border-radius:10px;padding:12px;margin-bottom:12px}
 #tab-wdw .v439-section-title{font-size:14px;font-weight:800;color:#073f3d;margin-bottom:10px;border-bottom:1px solid #e5eaf0;padding-bottom:6px}
@@ -7051,7 +7051,7 @@ window.wdw439AddExtraReplace=function(p){
 </style>
 
 
-<script id="v470CH-fx-project-total-helper">
+<script id="v471CH-fx-project-total-helper">
 window.wdw440CalcFX=function(p){
   var amt=document.getElementById(p+'-fxamt');
   var rate=document.getElementById(p+'-fxrate');
@@ -7084,8 +7084,8 @@ window.wdw440CalcFXHelper=function(p){
 </script>
 
 
-<style id="v470CH-wdw-management-table-alignment-only">
-/* v470CH — ONLY table alignment in WDW > ניהול */
+<style id="v471CH-wdw-management-table-alignment-only">
+/* v471CH — ONLY table alignment in WDW > ניהול */
 
 /* Donor list: header and data rows share the exact same columns */
 #tab-wdw .v437-donor-header,
@@ -7197,7 +7197,7 @@ window.wdw440CalcFXHelper=function(p){
 </style>
 
 
-<script id="v470CH-close-donor-edit-only">
+<script id="v471CH-close-donor-edit-only">
 window.wdw447CloseDonorEdit=function(){
   window.WDW_EDIT_DONOR_ID=null;
   window.WDW_ADD_WORKER_FOR=null;
@@ -7208,8 +7208,8 @@ window.wdw447CloseDonorEdit=function(){
 
 
 
-<style id="v470CH-annual-summary-display-only">
-/* v470CH — Annual summary display only. No data collection or calculation logic changed. */
+<style id="v471CH-annual-summary-display-only">
+/* v471CH — Annual summary display only. No data collection or calculation logic changed. */
 #tab-annual .v449-annual-head{
   display:flex;
   justify-content:space-between;
@@ -7321,7 +7321,7 @@ window.wdw447CloseDonorEdit=function(){
 
 
 
-<script id="v470CH-annual-summary-final-override">
+<script id="v471CH-annual-summary-final-override">
 (function(){
   function fmt(v){
     return v>0 ? (Number.isInteger(v) ? v : Number(v).toFixed(1)) : '—';
@@ -7443,7 +7443,7 @@ window.wdw447CloseDonorEdit=function(){
 })();
 </script>
 
-<style id="v470CH-annual-summary-final-style">
+<style id="v471CH-annual-summary-final-style">
 #tab-annual .v451-annual-head{
   display:flex;
   justify-content:space-between;
@@ -7478,7 +7478,7 @@ window.wdw447CloseDonorEdit=function(){
 </style>
 
 
-<script id="v470CH-donor-form-section-layout-only">
+<script id="v471CH-donor-form-section-layout-only">
 (function(){
   function groupDonorForm(){
     var forms=document.querySelectorAll('#tab-wdw .v437-form-card');
@@ -7550,7 +7550,7 @@ window.wdw447CloseDonorEdit=function(){
 })();
 </script>
 
-<style id="v470CH-donor-form-sections-and-timesheet-name">
+<style id="v471CH-donor-form-sections-and-timesheet-name">
 #tab-wdw .v452-donor-sectioned{
   padding:16px !important;
 }
@@ -7576,14 +7576,14 @@ window.wdw447CloseDonorEdit=function(){
 
 
 
-<style id="v470CH-timesheet-name-field-style">
+<style id="v471CH-timesheet-name-field-style">
 #tab-wdw input[id*="-timesheet-name"]{
   direction:ltr;
   text-align:left;
 }
 </style>
 
-<script id="v470CH-clean-timesheet-name-layout">
+<script id="v471CH-clean-timesheet-name-layout">
 (function(){
   function cleanTimesheetNameField(){
     document.querySelectorAll('#tab-wdw .v437-form-card').forEach(function(card){
@@ -7652,7 +7652,7 @@ window.wdw447CloseDonorEdit=function(){
 })();
 </script>
 
-<style id="v470CH-clean-timesheet-name-layout-style">
+<style id="v471CH-clean-timesheet-name-layout-style">
 #tab-wdw .v456-timesheet-field{
   display:block !important;
 }
@@ -7679,7 +7679,7 @@ window.wdw447CloseDonorEdit=function(){
 </style>
 
 
-<script id="v470CH-timesheet-writer">
+<script id="v471CH-timesheet-writer">
 (function(){
 window.wdwProcessTimesheetFile=function(arrayBuffer,rows,month,displayMode){
   if(typeof XLSX==='undefined'){
@@ -7829,13 +7829,173 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 };
 })();
 </script>
+
+<script id="v471CH-annual-summary-other-and-year-fix">
+(function(){
+  function fmtAnnual(v){
+    v = Number(v || 0);
+    return v > 0 ? (Number.isInteger(v) ? String(v) : v.toFixed(1)) : '—';
+  }
+
+  function getAnnualWorkers(){
+    if(!window.S || !Array.isArray(S.workers)) return [];
+    return [].concat(
+      S.workers.filter(function(w){ return w && w.active; }),
+      S.workers.filter(function(w){ return w && !w.active; })
+    );
+  }
+
+  function buildAnnualYearOptions(){
+    var curYear = (window.S && S.year) ? S.year : new Date().getFullYear();
+    var endYear = Math.max(new Date().getFullYear(), curYear) + 5;
+    var out = '';
+    for(var y = 2026; y <= endYear; y++){
+      out += '<option value="'+y+'" '+(y === curYear ? 'selected' : '')+'>'+y+'</option>';
+    }
+    return out;
+  }
+
+  window.v471ToggleAnnualDetail = function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = (el.style.display === 'table-row') ? 'none' : 'table-row';
+  };
+
+  window.v471AnnualChangeYear = function(value){
+    var newYear = parseInt(value, 10);
+    if(!newYear || !window.S) return;
+
+    if(typeof saveLocally === 'function') {
+      try { saveLocally(); } catch(e) {}
+    }
+
+    // Keep the same annual-data loading behavior as the app's jumpYear,
+    // but guarantee the annual tab is redrawn after the year changes.
+    if(typeof jumpYear === 'function'){
+      try { jumpYear(newYear); } catch(e) { S.year = newYear; }
+    } else {
+      S.year = newYear;
+    }
+
+    setTimeout(function(){
+      if(typeof window.renderAnnual === 'function') window.renderAnnual();
+    }, 0);
+  };
+
+  window.renderAnnual = function(){
+    var div = document.getElementById('annualContent');
+    if(!div) return;
+
+    var curYear = (window.S && S.year) ? S.year : new Date().getFullYear();
+    var workers = getAnnualWorkers();
+
+    var html = '';
+    html += '<div class="v471-annual-head">';
+    html += '<div class="v471-year-control"><label>שנת תצוגה</label>';
+    html += '<select id="annualYearSelect" onchange="v471AnnualChangeYear(this.value)">'+buildAnnualYearOptions()+'</select></div>';
+    html += '<div><h3 class="ann-h3" style="margin:0">סיכום שנתי</h3>';
+    html += '<div class="v471-annual-note">חופש, מחלה, חג ואחר/אבל. שינוי תצוגה בלבד.</div></div>';
+    html += '</div>';
+
+    html += '<div class="v471-annual-wrap"><table class="ann-table v471-annual-table">';
+    html += '<thead><tr>';
+    html += '<th>עובד</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר / אבל</th><th>סה״כ</th>';
+    html += '</tr></thead><tbody>';
+
+    if(!workers.length){
+      html += '<tr><td colspan="6" class="v471-empty">לא נמצאו עובדים להצגה</td></tr>';
+    }
+
+    var sepAdded = false;
+    workers.forEach(function(w, idx){
+      if(!w.active && !sepAdded){
+        html += '<tr class="ann-esep"><td colspan="6">עובדים שסיימו</td></tr>';
+        sepAdded = true;
+      }
+
+      var tv = 0, ts = 0, th = 0, to = 0;
+      var detail = '';
+
+      MONTHS.forEach(function(m){
+        var s = calcSumEffective(getAnnualRows(m), w.name);
+        var vac = (s.v || 0) + ((s.hv || 0) * 0.5);
+        var sick = (s.s || 0) + ((s.hs || 0) * 0.5);
+        var hol = (s.h || 0);
+        var other = (s.o || 0); // אחר + אבל are already centralized here by calcSumEffective/getAnnualRows
+        tv += vac;
+        ts += sick;
+        th += hol;
+        to += other;
+        detail += '<tr><td>'+m+'</td><td>'+fmtAnnual(vac)+'</td><td>'+fmtAnnual(sick)+'</td><td>'+fmtAnnual(hol)+'</td><td>'+fmtAnnual(other)+'</td></tr>';
+      });
+
+      var total = tv + ts + th + to;
+      var cls = w.active ? '' : 'ew';
+      var rowId = 'v471AnnualDetail_' + idx;
+
+      html += '<tr class="'+cls+' v471-main-row" onclick="v471ToggleAnnualDetail(\''+rowId+'\')">';
+      html += '<td class="wc">'+w.name+'</td>';
+      html += '<td>'+fmtAnnual(tv)+'</td>';
+      html += '<td>'+fmtAnnual(ts)+'</td>';
+      html += '<td>'+fmtAnnual(th)+'</td>';
+      html += '<td>'+fmtAnnual(to)+'</td>';
+      html += '<td class="tot">'+fmtAnnual(total)+'</td>';
+      html += '</tr>';
+
+      html += '<tr id="'+rowId+'" class="v471-detail-row '+cls+'" style="display:none">';
+      html += '<td colspan="6"><div class="v471-detail-box">';
+      html += '<div class="v471-detail-title">'+w.name+' — פירוט חודשי '+curYear+'</div>';
+      html += '<table class="v471-detail-table"><thead><tr><th>חודש</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר / אבל</th></tr></thead><tbody>';
+      html += detail;
+      html += '</tbody></table></div></td></tr>';
+    });
+
+    html += '</tbody></table></div>';
+    div.innerHTML = html;
+  };
+})();
+</script>
+
+<style id="v471CH-annual-summary-other-and-year-fix-style">
+#tab-annual .v471-annual-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:16px;
+  background:#fff;
+  border:1px solid #dfe6ee;
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:14px;
+  box-shadow:0 1px 4px rgba(15,23,42,.05);
+}
+#tab-annual .v471-annual-note{font-size:12px;color:#64748b;margin-top:4px}
+#tab-annual .v471-year-control{display:flex;flex-direction:column;gap:4px;min-width:150px}
+#tab-annual .v471-year-control label{font-size:12px;color:#475569;font-weight:700}
+#tab-annual #annualYearSelect{height:34px;border:1px solid #cbd5e1;border-radius:7px;padding:5px 9px;background:#fff;font-size:13px}
+#tab-annual .v471-annual-wrap{background:#fff;border:1px solid #dfe6ee;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(15,23,42,.05)}
+#tab-annual .v471-annual-table{width:100%;box-shadow:none;border-radius:0}
+#tab-annual .v471-annual-table th,#tab-annual .v471-annual-table td{font-size:13px;padding:9px 12px;text-align:right}
+#tab-annual .v471-annual-table th{background:#f8fafc;color:#475569;font-weight:800;border-bottom:1px solid #e2e8f0}
+#tab-annual .v471-main-row{cursor:pointer}
+#tab-annual .v471-main-row:hover td{background:#f8fafc!important}
+#tab-annual .v471-detail-row>td{padding:0 12px 12px 12px!important;background:#fbfcfd!important}
+#tab-annual .v471-detail-box{border:1px solid #e5e7eb;border-radius:10px;background:#fff;padding:10px}
+#tab-annual .v471-detail-title{font-size:12px;font-weight:800;color:#073f3d;margin-bottom:8px}
+#tab-annual .v471-detail-table{width:100%;border-collapse:collapse;box-shadow:none}
+#tab-annual .v471-detail-table th,#tab-annual .v471-detail-table td{font-size:12px;padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right}
+#tab-annual .v471-detail-table th{background:#f8fafc;color:#64748b}
+#tab-annual .v471-empty{text-align:center!important;color:#64748b;padding:20px!important}
+@media(max-width:800px){#tab-annual .v471-annual-head{flex-direction:column;align-items:stretch}}
+</style>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v470CH | גישה</title>
+<title>Reports_Workers v471CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8090,7 +8250,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v470CH</span>
+      <span class="topbar-title">Reports_Workers v471CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9259,7 +9419,7 @@ function renderHolList(){
   const div=document.getElementById('holList');
   if(!div) return;
   if(!S.holidays.length){div.innerHTML='<p style="color:#999;font-size:11px;">אין חגים</p>';return;}
-  // v470CH: חלוקה לפי שנים
+  // v471CH: חלוקה לפי שנים
   const holsSorted=(S.holidays||[]).map((h,i)=>({h,i})).sort((a,b)=>String(b.h.start||'').localeCompare(String(a.h.start||'')));
   // קיבוץ לפי שנה
   const byYear={};
@@ -9364,74 +9524,61 @@ function renderAnnual(){
   const div=document.getElementById('annualContent');
   if(!div) return;
 
-  const fmt=v=>v>0?(Number.isInteger(v)?v:v.toFixed(1)):'—';
+  // טבלת סיכום מצטבר מתחילת השנה
   const allWorkers=[...S.workers.filter(w=>w.active),...S.workers.filter(w=>!w.active)];
-
-  // תצוגת סיכום שנתית מצומצמת בלבד: חופש, מחלה, חג, אחר/אבל, סה"כ.
-  let html='<h3 class="ann-h3">סיכום שנתי</h3>';
-  html+='<div class="v449-annual-head"><div class="v449-year-control"><label>שנת תצוגה</label><select id="annualYearSelect" onchange="jumpYear(this.value)">';
-  const curYear=S.year||new Date().getFullYear();
-  const endYear=Math.max(new Date().getFullYear(), curYear)+5;
-  for(let y=2026;y<=endYear;y++){
-    html+=`<option value="${y}" ${y===curYear?'selected':''}>${y}</option>`;
-  }
-  html+='</select></div><div><h3 class="ann-h3" style="margin:0">סיכום שנתי</h3><div class="v449-annual-note">חופש, מחלה, חג ואחר/אבל. שינוי תצוגה בלבד.</div></div></div>';
-
-  html+='<div style="overflow-x:auto"><table class="ann-table"><thead><tr>';
-  html+='<th>עובד</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר / אבל</th><th>סה״כ</th></tr></thead><tbody>';
-
+  let sumHtml='<h3 class="ann-h3">סיכום מצטבר מתחילת השנה</h3>';
+  sumHtml+='<div style="overflow-x:auto"><table class="ann-table"><thead><tr>';
+  sumHtml+='<th>עובד</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר</th></tr></thead><tbody>';
   let sepAdded=false;
-  allWorkers.forEach((w,idx)=>{
+  allWorkers.forEach(w=>{
     if(!w.active&&!sepAdded){
-      html+=`<tr class="ann-esep"><td colspan="6">עובדים שסיימו</td></tr>`;
+      sumHtml+=`<tr class="ann-esep"><td colspan="5">עובדים שסיימו</td></tr>`;
       sepAdded=true;
     }
-
     let tv=0,ts=0,th=0,to=0;
-    let detailRows='';
     MONTHS.forEach(m=>{
       const s=calcSumEffective(getAnnualRows(m),w.name);
-      const vac=s.v+(s.hv||0)*0.5;
-      const sick=s.s+(s.hs||0)*0.5;
-      const hol=s.h||0;
-      const other=s.o||0;
-      tv+=vac; ts+=sick; th+=hol; to+=other;
-      detailRows+=`<tr><td>${m}</td><td>${fmt(vac)}</td><td>${fmt(sick)}</td><td>${fmt(hol)}</td><td>${fmt(other)}</td></tr>`;
+      tv+=s.v+(s.hv||0)*0.5;
+      ts+=s.s+(s.hs||0)*0.5;
+      th+=s.h;
+      to+=s.o;
     });
-
-    const total=tv+ts+th+to;
     const cls=w.active?'':'ew';
-    const rowId='annDetail_'+idx;
-
-    html+=`<tr class="${cls} v449-main-row" onclick="v449ToggleAnnualRow('${rowId}')">
-      <td class="wc">${w.name}</td>
-      <td>${fmt(tv)}</td>
-      <td>${fmt(ts)}</td>
-      <td>${fmt(th)}</td>
-      <td>${fmt(to)}</td>
-      <td class="tot">${fmt(total)}</td>
-    </tr>
-    <tr id="${rowId}" class="v449-detail-row ${cls}" style="display:none">
-      <td colspan="6">
-        <div class="v449-detail-box">
-          <div class="v449-detail-title">${w.name} — פירוט חודשי ${curYear}</div>
-          <table class="v449-detail-table">
-            <thead><tr><th>חודש</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר / אבל</th></tr></thead>
-            <tbody>${detailRows}</tbody>
-          </table>
-        </div>
-      </td>
-    </tr>`;
+    const fmt=v=>v>0?(Number.isInteger(v)?v:v.toFixed(1)):'—';
+    sumHtml+=`<tr class="${cls}"><td class="wc">${w.name}</td><td>${fmt(tv)}</td><td>${fmt(ts)}</td><td>${fmt(th)}</td><td>${fmt(to)}</td></tr>`;
   });
+  sumHtml+='</tbody></table></div>';
 
-  html+='</tbody></table></div>';
+  const cats=[
+    {label:'ימי חופש',fn:s=>s.v},
+    {label:'ימי מחלה',fn:s=>s.s},
+    {label:'ימי חג/אבל',fn:s=>s.h+s.o}
+  ];
+  const act=S.workers.filter(w=>w.active);
+  const end=S.workers.filter(w=>!w.active);
+  let html=sumHtml;
+  cats.forEach(cat=>{
+    html+=`<h3 class="ann-h3">${cat.label}</h3><div style="overflow-x:auto"><table class="ann-table"><thead><tr><th>עובד</th>`;
+    MONTHS.forEach(m=>html+=`<th>${m.slice(0,3)}</th>`);
+    html+=`<th>סה"כ</th></tr></thead><tbody>`;
+    [...act,...(end.length?[{_sep:true}]:end),...end].forEach(w=>{
+      if(w._sep){
+        html+=`<tr class="ann-esep"><td colspan="${MONTHS.length+2}">עובדים שסיימו</td></tr>`;
+        return;
+      }
+      const cls=w.active?'':'ew';
+      html+=`<tr class="${cls}"><td class="wc">${w.name}</td>`;
+      let tot=0;
+      MONTHS.forEach(m=>{
+        const s=calcSumEffective(getAnnualRows(m),w.name);
+        const v=cat.fn(s); tot+=v;
+        html+=`<td>${v>0?v:'—'}</td>`;
+      });
+      html+=`<td class="tot">${tot>0?tot:'—'}</td></tr>`;
+    });
+    html+='</tbody></table></div>';
+  });
   div.innerHTML=html;
-}
-
-function v449ToggleAnnualRow(id){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.style.display=el.style.display==='table-row'?'none':'table-row';
 }
 
 // ===== WDW =====
@@ -12694,7 +12841,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     #wdw-write-top-btn{background:#004d99!important;color:#fff!important;border:1px solid #004d99!important;border-radius:10px!important;padding:8px 14px!important;font-weight:800!important;cursor:pointer!important;margin-inline-start:8px!important}
     .wdw-view-controls{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.wdw-view-controls label{font-size:11px;color:#64748b;font-weight:700;display:block;margin-bottom:3px}.wdw-view-controls select{border:1px solid #cbd5e1;border-radius:10px;background:#fff;padding:7px 10px;font-weight:700;color:#334155;min-width:120px}.wdw-show-btn{background:#00695c;color:#fff;border:0;border-radius:10px;padding:8px 16px;font-weight:800;cursor:pointer}.wdw-donor-summary{display:grid;grid-template-columns:130px 1.5fr 1fr 120px 150px 130px 110px;gap:10px;align-items:center;padding:13px 14px;border-bottom:1px solid #edf2f7;cursor:pointer}.wdw-donor-summary:hover{background:#f8fafc}.wdw-donor-body{padding:0 14px 14px}.wdw-ended-sep{border-top:2px dashed #cbd5e1;margin:18px 0 10px;padding-top:10px;color:#64748b;font-weight:800}.wdw-worker-card .wdw-table th,.wdw-worker-card .wdw-table td{vertical-align:middle!important}.wdw-table .period-cell{min-width:160px}.worker-delete-btn{border:1px solid #fecaca!important;color:#b91c1c!important;background:#fff!important;border-radius:6px!important;padding:5px 10px!important;cursor:pointer!important;font-size:12px!important}
   `; document.head.appendChild(st); }
-  function ensureWriteButton(){ /* v470CH: button is in HTML directly */ }
+  function ensureWriteButton(){ /* v471CH: button is in HTML directly */ }
   function refreshPanel(){var p=currentPanel(); if(p==='org') renderWDWOrg(); else if(p==='donor') renderWDWDonor(); else if(p==='worker') renderWDWWorker(); else if(p==='reports'){if(typeof window.renderWDWReports==='function')window.renderWDWReports();} else renderWDWInput();}
   window.wdwWorkersList=function(){return officialWorkerNames();};
   window.wdwMonthKey=function(){initWDW(); var def=monthKeyFrom(S.year||2026, typeof curMI==='number'?curMI:0); if(!S.wdw.viewMonth) S.wdw.viewMonth=def; return S.wdw.viewMonth;};
@@ -14628,7 +14775,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 
 
-<script id="v470CH-wdw-management-full-redesign">
+<script id="v471CH-wdw-management-full-redesign">
 (function(){
   function esc(x){
     return String(x==null?'':x).replace(/[&<>"']/g,function(m){
@@ -14764,7 +14911,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
     else { d=donors().find(function(x){return x.id===id;}); if(!d){alert('לא נמצא תורם');return;} if(!d.workers)d.workers=[]; }
     d.name=val(p+'-name','').trim();
     if(!d.name){alert('נא להזין שם תורם');return;}
-    // v470CH: קריאת timesheetName ישירות מה-DOM לפני כל רנדור
+    // v471CH: קריאת timesheetName ישירות מה-DOM לפני כל רנדור
     var tsEl=document.getElementById(p+'-timesheet-name');
     d.timesheetName=tsEl?tsEl.value.trim():'';
     d.type=val(p+'-type','budget');
@@ -15019,7 +15166,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   };
 })();
 </script>
-<style id="v470CH-wdw-management-full-redesign-style">
+<style id="v471CH-wdw-management-full-redesign-style">
 #tab-wdw .v437-shell{background:#f5f7f9!important;padding:10px 0 36px!important;color:#111827}
 #tab-wdw .v437-top{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:14px 18px;margin-bottom:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}
 #tab-wdw .v437-top b{display:block;font-size:22px;color:#073f3d}
@@ -15066,7 +15213,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </style>
 
 
-<script id="v470CH-worker-extra-helper">
+<script id="v471CH-worker-extra-helper">
 window.wdw439AddExtraReplace=function(p){
   var wrap=document.getElementById(p+'-extra-replaces-wrap');
   if(!wrap) return;
@@ -15092,7 +15239,7 @@ window.wdw439AddExtraReplace=function(p){
 </script>
 
 
-<style id="v470CH-worker-sections-style">
+<style id="v471CH-worker-sections-style">
 #tab-wdw .v439-worker-form{padding:16px!important}
 #tab-wdw .v439-section{background:#fbfdff;border:1px solid #e5eaf0;border-radius:10px;padding:12px;margin-bottom:12px}
 #tab-wdw .v439-section-title{font-size:14px;font-weight:800;color:#073f3d;margin-bottom:10px;border-bottom:1px solid #e5eaf0;padding-bottom:6px}
@@ -15112,7 +15259,7 @@ window.wdw439AddExtraReplace=function(p){
 </style>
 
 
-<script id="v470CH-fx-project-total-helper">
+<script id="v471CH-fx-project-total-helper">
 window.wdw440CalcFX=function(p){
   var amt=document.getElementById(p+'-fxamt');
   var rate=document.getElementById(p+'-fxrate');
@@ -15145,8 +15292,8 @@ window.wdw440CalcFXHelper=function(p){
 </script>
 
 
-<style id="v470CH-wdw-management-table-alignment-only">
-/* v470CH — ONLY table alignment in WDW > ניהול */
+<style id="v471CH-wdw-management-table-alignment-only">
+/* v471CH — ONLY table alignment in WDW > ניהול */
 
 /* Donor list: header and data rows share the exact same columns */
 #tab-wdw .v437-donor-header,
@@ -15258,7 +15405,7 @@ window.wdw440CalcFXHelper=function(p){
 </style>
 
 
-<script id="v470CH-close-donor-edit-only">
+<script id="v471CH-close-donor-edit-only">
 window.wdw447CloseDonorEdit=function(){
   window.WDW_EDIT_DONOR_ID=null;
   window.WDW_ADD_WORKER_FOR=null;
@@ -15269,8 +15416,8 @@ window.wdw447CloseDonorEdit=function(){
 
 
 
-<style id="v470CH-annual-summary-display-only">
-/* v470CH — Annual summary display only. No data collection or calculation logic changed. */
+<style id="v471CH-annual-summary-display-only">
+/* v471CH — Annual summary display only. No data collection or calculation logic changed. */
 #tab-annual .v449-annual-head{
   display:flex;
   justify-content:space-between;
@@ -15382,7 +15529,7 @@ window.wdw447CloseDonorEdit=function(){
 
 
 
-<script id="v470CH-annual-summary-final-override">
+<script id="v471CH-annual-summary-final-override">
 (function(){
   function fmt(v){
     return v>0 ? (Number.isInteger(v) ? v : Number(v).toFixed(1)) : '—';
@@ -15504,7 +15651,7 @@ window.wdw447CloseDonorEdit=function(){
 })();
 </script>
 
-<style id="v470CH-annual-summary-final-style">
+<style id="v471CH-annual-summary-final-style">
 #tab-annual .v451-annual-head{
   display:flex;
   justify-content:space-between;
@@ -15539,7 +15686,7 @@ window.wdw447CloseDonorEdit=function(){
 </style>
 
 
-<script id="v470CH-donor-form-section-layout-only">
+<script id="v471CH-donor-form-section-layout-only">
 (function(){
   function groupDonorForm(){
     var forms=document.querySelectorAll('#tab-wdw .v437-form-card');
@@ -15611,7 +15758,7 @@ window.wdw447CloseDonorEdit=function(){
 })();
 </script>
 
-<style id="v470CH-donor-form-sections-and-timesheet-name">
+<style id="v471CH-donor-form-sections-and-timesheet-name">
 #tab-wdw .v452-donor-sectioned{
   padding:16px !important;
 }
@@ -15637,14 +15784,14 @@ window.wdw447CloseDonorEdit=function(){
 
 
 
-<style id="v470CH-timesheet-name-field-style">
+<style id="v471CH-timesheet-name-field-style">
 #tab-wdw input[id*="-timesheet-name"]{
   direction:ltr;
   text-align:left;
 }
 </style>
 
-<script id="v470CH-clean-timesheet-name-layout">
+<script id="v471CH-clean-timesheet-name-layout">
 (function(){
   function cleanTimesheetNameField(){
     document.querySelectorAll('#tab-wdw .v437-form-card').forEach(function(card){
@@ -15713,7 +15860,7 @@ window.wdw447CloseDonorEdit=function(){
 })();
 </script>
 
-<style id="v470CH-clean-timesheet-name-layout-style">
+<style id="v471CH-clean-timesheet-name-layout-style">
 #tab-wdw .v456-timesheet-field{
   display:block !important;
 }
@@ -15737,6 +15884,166 @@ window.wdw447CloseDonorEdit=function(){
   text-align:right !important;
   box-sizing:border-box !important;
 }
+</style>
+
+
+<script id="v471CH-annual-summary-other-and-year-fix">
+(function(){
+  function fmtAnnual(v){
+    v = Number(v || 0);
+    return v > 0 ? (Number.isInteger(v) ? String(v) : v.toFixed(1)) : '—';
+  }
+
+  function getAnnualWorkers(){
+    if(!window.S || !Array.isArray(S.workers)) return [];
+    return [].concat(
+      S.workers.filter(function(w){ return w && w.active; }),
+      S.workers.filter(function(w){ return w && !w.active; })
+    );
+  }
+
+  function buildAnnualYearOptions(){
+    var curYear = (window.S && S.year) ? S.year : new Date().getFullYear();
+    var endYear = Math.max(new Date().getFullYear(), curYear) + 5;
+    var out = '';
+    for(var y = 2026; y <= endYear; y++){
+      out += '<option value="'+y+'" '+(y === curYear ? 'selected' : '')+'>'+y+'</option>';
+    }
+    return out;
+  }
+
+  window.v471ToggleAnnualDetail = function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = (el.style.display === 'table-row') ? 'none' : 'table-row';
+  };
+
+  window.v471AnnualChangeYear = function(value){
+    var newYear = parseInt(value, 10);
+    if(!newYear || !window.S) return;
+
+    if(typeof saveLocally === 'function') {
+      try { saveLocally(); } catch(e) {}
+    }
+
+    // Keep the same annual-data loading behavior as the app's jumpYear,
+    // but guarantee the annual tab is redrawn after the year changes.
+    if(typeof jumpYear === 'function'){
+      try { jumpYear(newYear); } catch(e) { S.year = newYear; }
+    } else {
+      S.year = newYear;
+    }
+
+    setTimeout(function(){
+      if(typeof window.renderAnnual === 'function') window.renderAnnual();
+    }, 0);
+  };
+
+  window.renderAnnual = function(){
+    var div = document.getElementById('annualContent');
+    if(!div) return;
+
+    var curYear = (window.S && S.year) ? S.year : new Date().getFullYear();
+    var workers = getAnnualWorkers();
+
+    var html = '';
+    html += '<div class="v471-annual-head">';
+    html += '<div class="v471-year-control"><label>שנת תצוגה</label>';
+    html += '<select id="annualYearSelect" onchange="v471AnnualChangeYear(this.value)">'+buildAnnualYearOptions()+'</select></div>';
+    html += '<div><h3 class="ann-h3" style="margin:0">סיכום שנתי</h3>';
+    html += '<div class="v471-annual-note">חופש, מחלה, חג ואחר/אבל. שינוי תצוגה בלבד.</div></div>';
+    html += '</div>';
+
+    html += '<div class="v471-annual-wrap"><table class="ann-table v471-annual-table">';
+    html += '<thead><tr>';
+    html += '<th>עובד</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר / אבל</th><th>סה״כ</th>';
+    html += '</tr></thead><tbody>';
+
+    if(!workers.length){
+      html += '<tr><td colspan="6" class="v471-empty">לא נמצאו עובדים להצגה</td></tr>';
+    }
+
+    var sepAdded = false;
+    workers.forEach(function(w, idx){
+      if(!w.active && !sepAdded){
+        html += '<tr class="ann-esep"><td colspan="6">עובדים שסיימו</td></tr>';
+        sepAdded = true;
+      }
+
+      var tv = 0, ts = 0, th = 0, to = 0;
+      var detail = '';
+
+      MONTHS.forEach(function(m){
+        var s = calcSumEffective(getAnnualRows(m), w.name);
+        var vac = (s.v || 0) + ((s.hv || 0) * 0.5);
+        var sick = (s.s || 0) + ((s.hs || 0) * 0.5);
+        var hol = (s.h || 0);
+        var other = (s.o || 0); // אחר + אבל are already centralized here by calcSumEffective/getAnnualRows
+        tv += vac;
+        ts += sick;
+        th += hol;
+        to += other;
+        detail += '<tr><td>'+m+'</td><td>'+fmtAnnual(vac)+'</td><td>'+fmtAnnual(sick)+'</td><td>'+fmtAnnual(hol)+'</td><td>'+fmtAnnual(other)+'</td></tr>';
+      });
+
+      var total = tv + ts + th + to;
+      var cls = w.active ? '' : 'ew';
+      var rowId = 'v471AnnualDetail_' + idx;
+
+      html += '<tr class="'+cls+' v471-main-row" onclick="v471ToggleAnnualDetail(\''+rowId+'\')">';
+      html += '<td class="wc">'+w.name+'</td>';
+      html += '<td>'+fmtAnnual(tv)+'</td>';
+      html += '<td>'+fmtAnnual(ts)+'</td>';
+      html += '<td>'+fmtAnnual(th)+'</td>';
+      html += '<td>'+fmtAnnual(to)+'</td>';
+      html += '<td class="tot">'+fmtAnnual(total)+'</td>';
+      html += '</tr>';
+
+      html += '<tr id="'+rowId+'" class="v471-detail-row '+cls+'" style="display:none">';
+      html += '<td colspan="6"><div class="v471-detail-box">';
+      html += '<div class="v471-detail-title">'+w.name+' — פירוט חודשי '+curYear+'</div>';
+      html += '<table class="v471-detail-table"><thead><tr><th>חודש</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר / אבל</th></tr></thead><tbody>';
+      html += detail;
+      html += '</tbody></table></div></td></tr>';
+    });
+
+    html += '</tbody></table></div>';
+    div.innerHTML = html;
+  };
+})();
+</script>
+
+<style id="v471CH-annual-summary-other-and-year-fix-style">
+#tab-annual .v471-annual-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:16px;
+  background:#fff;
+  border:1px solid #dfe6ee;
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:14px;
+  box-shadow:0 1px 4px rgba(15,23,42,.05);
+}
+#tab-annual .v471-annual-note{font-size:12px;color:#64748b;margin-top:4px}
+#tab-annual .v471-year-control{display:flex;flex-direction:column;gap:4px;min-width:150px}
+#tab-annual .v471-year-control label{font-size:12px;color:#475569;font-weight:700}
+#tab-annual #annualYearSelect{height:34px;border:1px solid #cbd5e1;border-radius:7px;padding:5px 9px;background:#fff;font-size:13px}
+#tab-annual .v471-annual-wrap{background:#fff;border:1px solid #dfe6ee;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(15,23,42,.05)}
+#tab-annual .v471-annual-table{width:100%;box-shadow:none;border-radius:0}
+#tab-annual .v471-annual-table th,#tab-annual .v471-annual-table td{font-size:13px;padding:9px 12px;text-align:right}
+#tab-annual .v471-annual-table th{background:#f8fafc;color:#475569;font-weight:800;border-bottom:1px solid #e2e8f0}
+#tab-annual .v471-main-row{cursor:pointer}
+#tab-annual .v471-main-row:hover td{background:#f8fafc!important}
+#tab-annual .v471-detail-row>td{padding:0 12px 12px 12px!important;background:#fbfcfd!important}
+#tab-annual .v471-detail-box{border:1px solid #e5e7eb;border-radius:10px;background:#fff;padding:10px}
+#tab-annual .v471-detail-title{font-size:12px;font-weight:800;color:#073f3d;margin-bottom:8px}
+#tab-annual .v471-detail-table{width:100%;border-collapse:collapse;box-shadow:none}
+#tab-annual .v471-detail-table th,#tab-annual .v471-detail-table td{font-size:12px;padding:6px 8px;border-bottom:1px solid #f1f5f9;text-align:right}
+#tab-annual .v471-detail-table th{background:#f8fafc;color:#64748b}
+#tab-annual .v471-empty{text-align:center!important;color:#64748b;padding:20px!important}
+@media(max-width:800px){#tab-annual .v471-annual-head{flex-direction:column;align-items:stretch}}
 </style>
 
 </body>
