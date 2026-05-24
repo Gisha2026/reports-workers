@@ -1433,23 +1433,33 @@ function renderHolList(){
   const div=document.getElementById('holList');
   if(!div) return;
   if(!S.holidays.length){div.innerHTML='<p style="color:#999;font-size:11px;">אין חגים</p>';return;}
-  // שיטה 6: טבלת HTML אמיתית
-  // שיטה 7: RTL מפורש על כל תא
-  // שיטה 8: רוחב מפורש על כל עמודה
-  // v181: הצגת רשימת החגים בסדר תאריכים יורד, בלי לשנות את סדר הנתונים השמור.
-  let html='<table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">';
+  // v457CL: חלוקה לפי שנים
   const holsSorted=(S.holidays||[]).map((h,i)=>({h,i})).sort((a,b)=>String(b.h.start||'').localeCompare(String(a.h.start||'')));
+  // קיבוץ לפי שנה
+  const byYear={};
   holsSorted.forEach(({h,i})=>{
-    const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
-    const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
-    html+=`<tr style="background:white;border-bottom:1px solid #e0e0e0;">
-      <td style="padding:7px 12px;font-weight:bold;color:#333;width:100px;text-align:right;direction:rtl;">${h.name}</td>
-      <td style="padding:7px 8px;color:#555;font-size:11px;width:160px;text-align:right;direction:rtl;">${dTxt}</td>
-      <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;">${wTxt}</td>
-      <td style="padding:7px 8px;width:120px;text-align:center;white-space:nowrap;"><button onclick="editHol(${i})" style="background:#e3f2fd;border:1px solid #1565c0;color:#1565c0;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;margin-left:6px;">עריכה</button><button onclick="delHol(${i})" style="background:#ffebee;border:1px solid #e53935;color:#e53935;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;">מחק</button></td>
-    </tr>`;
+    const yr=String(h.start||'').substring(0,4)||'—';
+    if(!byYear[yr]) byYear[yr]=[];
+    byYear[yr].push({h,i});
   });
-  html+='</table>';
+  const years=Object.keys(byYear).sort((a,b)=>b.localeCompare(a));
+  let html='';
+  years.forEach(yr=>{
+    html+=`<div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:800;color:#1B6B5A;padding:6px 0;border-bottom:2px solid #1B6B5A;margin-bottom:6px;direction:rtl;">${yr}</div>
+      <table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">`;
+    byYear[yr].forEach(({h,i})=>{
+      const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
+      const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
+      html+=`<tr style="background:white;border-bottom:1px solid #e0e0e0;">
+        <td style="padding:7px 12px;font-weight:bold;color:#333;width:100px;text-align:right;direction:rtl;">${h.name}</td>
+        <td style="padding:7px 8px;color:#555;font-size:11px;width:160px;text-align:right;direction:rtl;">${dTxt}</td>
+        <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;">${wTxt}</td>
+        <td style="padding:7px 8px;width:120px;text-align:center;white-space:nowrap;"><button onclick="editHol(${i})" style="background:#e3f2fd;border:1px solid #1565c0;color:#1565c0;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;margin-left:6px;">עריכה</button><button onclick="delHol(${i})" style="background:#ffebee;border:1px solid #e53935;color:#e53935;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;">מחק</button></td>
+      </tr>`;
+    });
+    html+='</table></div>';
+  });
   div.innerHTML=html;
 }
 
@@ -2345,6 +2355,7 @@ function wdwSaveNewDonorFull(){
     startDate:document.getElementById('nd-start')?.value||'',
     endDate:document.getElementById('nd-end')?.value||'',
     color:document.getElementById('nd-color')?.value||'#1565C0',
+    timesheetName:(document.getElementById('nd-timesheet-name')?.value||'').trim(),
     workers:[]
   };
   // איסוף עובדים
@@ -2536,6 +2547,7 @@ function wdwSaveEdit(did){
   d.fxAmount=parseFloat(document.getElementById('ed-fxamt-'+did)?.value)||null;
   d.fxRate=parseFloat(document.getElementById('ed-fxrate-'+did)?.value)||null;
   d.fxRate2=parseFloat(document.getElementById('ed-fxrate2-'+did)?.value)||null;
+  d.timesheetName=(document.getElementById('ed-'+did+'-timesheet-name')?.value||'').trim();
   saveLocally();saveData();renderWDWInput();
 }
 
@@ -4570,7 +4582,7 @@ window.wdwReportOrgRender = function(){
     {id:'workers',   label:'עובדים משויכים'},
     {id:'changes',   label:'התחלות וסיומים'},
     {id:'positions', label:'משרות בתקופה'},
-    {id:'workforce', label:'כוח אדם'},
+    {id:'workforce', label:'כח אדם'},
     {id:'budget',    label:'תקציב'},
   ];
 
@@ -4717,7 +4729,7 @@ window.wdwOrgTab = function(tab){
 
   } else if(tab==='workforce'){
     tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl;">'
-      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;">תפקיד קבוע</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">תורמים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">% ניצול</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">% פנוי</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">יתרה ₪</th></tr>';
+      +'<tr style="background:#f9fafb;"><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">עובד</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:right;">תפקיד קבוע</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">תורמים</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">% ניצול</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">% פנוי</th><th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">יתרה ₪</th></tr>';
     var wMap={};
     donors.forEach(function(d){
       (d.workers||[]).forEach(function(w){
@@ -4731,16 +4743,16 @@ window.wdwOrgTab = function(tab){
     Object.keys(wMap).forEach(function(name){
       var d=wMap[name];
       var pct=Math.round(d.pct);
-      var wObj337=(S.workers||[]).find(function(x){return (typeof x==='object'?x.name:x)===name;});
-        var permRole337=(wObj337&&typeof wObj337==='object'&&wObj337.role)||'—';
-        var empCost361=parseFloat((S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[name])||0);
-        tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(name)+'</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;">'+esc(permRole337)+'</td>'
+      var wObj=(S.workers||[]).find(function(x){return (typeof x==='object'?x.name:x)===name;});
+      var permRole=(wObj&&typeof wObj==='object'&&wObj.role)||'—';
+      var empCost=parseFloat((S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[name])||0);
+      var freeAmt=empCost>0?'₪'+Math.round(empCost*(100-pct)/100).toLocaleString():'—';
+      tbl+='<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;">'+esc(name)+'</td>'
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:11px;color:#6b7280;">'+esc(permRole)+'</td>'
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;">'+d.donors+'</td>'
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>100?'#e53935':'#e65100')+'">'+pct+'%</td>'
         +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>=100?'#e53935':'#1B6B5A')+'">'+(100-pct)+'%</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#1B6B5A;">'+(empCost361>0?'₪'+Math.round(empCost361*(100-pct)/100).toLocaleString():'—')+'</td>'
-        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:'+(pct>=100?'#e53935':'#1B6B5A')+'">'+wfCost+'</td></tr>';
+        +'<td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#1B6B5A;">'+freeAmt+'</td></tr>';
     });
     tbl+='</table>';
 
@@ -8994,23 +9006,33 @@ function renderHolList(){
   const div=document.getElementById('holList');
   if(!div) return;
   if(!S.holidays.length){div.innerHTML='<p style="color:#999;font-size:11px;">אין חגים</p>';return;}
-  // שיטה 6: טבלת HTML אמיתית
-  // שיטה 7: RTL מפורש על כל תא
-  // שיטה 8: רוחב מפורש על כל עמודה
-  // v181: הצגת רשימת החגים בסדר תאריכים יורד, בלי לשנות את סדר הנתונים השמור.
-  let html='<table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">';
+  // v457CL: חלוקה לפי שנים
   const holsSorted=(S.holidays||[]).map((h,i)=>({h,i})).sort((a,b)=>String(b.h.start||'').localeCompare(String(a.h.start||'')));
+  // קיבוץ לפי שנה
+  const byYear={};
   holsSorted.forEach(({h,i})=>{
-    const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
-    const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
-    html+=`<tr style="background:white;border-bottom:1px solid #e0e0e0;">
-      <td style="padding:7px 12px;font-weight:bold;color:#333;width:100px;text-align:right;direction:rtl;">${h.name}</td>
-      <td style="padding:7px 8px;color:#555;font-size:11px;width:160px;text-align:right;direction:rtl;">${dTxt}</td>
-      <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;">${wTxt}</td>
-      <td style="padding:7px 8px;width:120px;text-align:center;white-space:nowrap;"><button onclick="editHol(${i})" style="background:#e3f2fd;border:1px solid #1565c0;color:#1565c0;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;margin-left:6px;">עריכה</button><button onclick="delHol(${i})" style="background:#ffebee;border:1px solid #e53935;color:#e53935;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;">מחק</button></td>
-    </tr>`;
+    const yr=String(h.start||'').substring(0,4)||'—';
+    if(!byYear[yr]) byYear[yr]=[];
+    byYear[yr].push({h,i});
   });
-  html+='</table>';
+  const years=Object.keys(byYear).sort((a,b)=>b.localeCompare(a));
+  let html='';
+  years.forEach(yr=>{
+    html+=`<div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:800;color:#1B6B5A;padding:6px 0;border-bottom:2px solid #1B6B5A;margin-bottom:6px;direction:rtl;">${yr}</div>
+      <table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">`;
+    byYear[yr].forEach(({h,i})=>{
+      const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
+      const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
+      html+=`<tr style="background:white;border-bottom:1px solid #e0e0e0;">
+        <td style="padding:7px 12px;font-weight:bold;color:#333;width:100px;text-align:right;direction:rtl;">${h.name}</td>
+        <td style="padding:7px 8px;color:#555;font-size:11px;width:160px;text-align:right;direction:rtl;">${dTxt}</td>
+        <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;">${wTxt}</td>
+        <td style="padding:7px 8px;width:120px;text-align:center;white-space:nowrap;"><button onclick="editHol(${i})" style="background:#e3f2fd;border:1px solid #1565c0;color:#1565c0;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;margin-left:6px;">עריכה</button><button onclick="delHol(${i})" style="background:#ffebee;border:1px solid #e53935;color:#e53935;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;">מחק</button></td>
+      </tr>`;
+    });
+    html+='</table></div>';
+  });
   div.innerHTML=html;
 }
 
@@ -9926,6 +9948,7 @@ function wdwSaveNewDonorFull(){
     startDate:document.getElementById('nd-start')?.value||'',
     endDate:document.getElementById('nd-end')?.value||'',
     color:document.getElementById('nd-color')?.value||'#1565C0',
+    timesheetName:(document.getElementById('nd-timesheet-name')?.value||'').trim(),
     workers:[]
   };
   // איסוף עובדים
@@ -10117,6 +10140,7 @@ function wdwSaveEdit(did){
   d.fxAmount=parseFloat(document.getElementById('ed-fxamt-'+did)?.value)||null;
   d.fxRate=parseFloat(document.getElementById('ed-fxrate-'+did)?.value)||null;
   d.fxRate2=parseFloat(document.getElementById('ed-fxrate2-'+did)?.value)||null;
+  d.timesheetName=(document.getElementById('ed-'+did+'-timesheet-name')?.value||'').trim();
   saveLocally();saveData();renderWDWInput();
 }
 
