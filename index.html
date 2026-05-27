@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v513CH | גישה</title>
+<title>Reports_Workers v514CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -264,7 +264,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v513CH</span>
+      <span class="topbar-title">Reports_Workers v514CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11501,7 +11501,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 
 
-<script id="v513CH-targeted-fix-org-reports-allocation-defaults">
+<script id="v514CH-targeted-fix-org-reports-allocation-defaults">
 (function(){
   function showError(panel, err){
     var div=document.getElementById('wdw-'+panel);
@@ -11605,7 +11605,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 
 
-<script id="v513CH-targeted-fixes">
+<script id="v514CH-targeted-fixes">
 (function(){
   function n(x){ var v=parseFloat(String(x==null?'':x).replace(/,/g,'')); return isFinite(v)?v:0; }
   function val(id,def){ var el=document.getElementById(id); return el ? el.value : (def||''); }
@@ -11748,6 +11748,78 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   document.addEventListener('change', function(){ setTimeout(patchWorkerFormDom,0); }, true);
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', patchWorkerFormDom); else patchWorkerFormDom();
   setTimeout(patchWorkerFormDom,300); setTimeout(patchWorkerFormDom,1000);
+})();
+</script>
+
+
+<script id="v514CH-period-amount-and-cross-year-report-fix">
+(function(){
+  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function num(x){var n=parseFloat(String(x==null?'':x).replace(/,/g,''));return isFinite(n)?n:0;}
+  function fmt(n){return Math.round(num(n)).toLocaleString('he-IL');}
+  function pct(n){n=Math.round(num(n)*10)/10;return n?(Number.isInteger(n)?n:n.toFixed(1))+'%':'—';}
+  function ym(x){return String(x||'').substring(0,7);}
+  function monthsBetween(start,end){start=ym(start);end=ym(end);if(!start||!end||start>end)return 0;var sy=+start.slice(0,4),sm=+start.slice(5,7),ey=+end.slice(0,4),em=+end.slice(5,7);return (ey-sy)*12+(em-sm)+1;}
+  function monthsRange(start,end){var out=[];start=ym(start);end=ym(end);if(!start||!end||start>end)return out;var sy=+start.slice(0,4),sm=+start.slice(5,7),ey=+end.slice(0,4),em=+end.slice(5,7);for(var y=sy,m=sm;y<ey||(y===ey&&m<=em);m++){if(m>12){m=1;y++;}out.push(y+'-'+String(m).padStart(2,'0'));}return out;}
+  function active(w,m){var s=ym(w.startMonth||w.startDate),e=ym(w.endMonth||w.endDate);return (!s||m>=s)&&(!e||m<=e);}
+  function empCost(name){return num(S&&S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[name]);}
+  function isAmount(w){return w&&(w.valueType==='amount'||w.fundingType==='amount'||w.fundingType==='סכום לתקופה'||w.fundingType==='סכום קבוע'||w.fundingType==='מט״ח');}
+  function isPercent(w){return w&&!isAmount(w)&&(w.valueType==='percent'||!w.valueType||String(w.fundingType||'').indexOf('אחוז')>=0);}
+  function totalAmount(w){return num(w.totalPeriodAmount)||num(w.value);}
+  function basePct(w,m){
+    if(!w||!active(w,m))return 0;
+    if(w.monthlyPct&&w.monthlyPct[m]!=null&&w.monthlyPct[m]!==''&&!isNaN(parseFloat(w.monthlyPct[m])))return num(w.monthlyPct[m]);
+    if(isAmount(w)){var months=monthsBetween(w.startMonth||w.startDate,w.endMonth||w.endDate);var cost=empCost(w.name);if(!months||!cost)return 0;return Math.round((totalAmount(w)/months/cost)*1000)/10;}
+    return num(w.value);
+  }
+  function replPct(w,m){
+    var t=0;if(!w)return 0;
+    if(w.replacesPct){var s=ym(w.replaceStartMonth||w.replacementStartMonth||w.replacesStart),e=ym(w.replaceEndMonth||w.replacementEndMonth||w.replacesEnd);if((!s||m>=s)&&(!e||m<=e))t+=num(w.replacesPct);}
+    (w.extraReplaces||[]).forEach(function(r){var s=ym(r.startMonth||r.replaceStartMonth),e=ym(r.endMonth||r.replaceEndMonth);if((!s||m>=s)&&(!e||m<=e))t+=num(r.pct||r.percent);});
+    return t;
+  }
+  window.v514WorkerPct=function(w,m){return Math.round((basePct(w,m)+replPct(w,m))*10)/10;};
+  window.v514WorkerAmount=function(w,m){if(!w||!active(w,m))return 0;if(isAmount(w)){var months=monthsBetween(w.startMonth||w.startDate,w.endMonth||w.endDate);return months?Math.round(totalAmount(w)/months):0;}return Math.round(empCost(w.name)*(v514WorkerPct(w,m)/100));};
+  window.getWorkerFundingPct=function(workerName,month,mode){
+    var total=0;((S&&S.wdw&&S.wdw.donors)||[]).forEach(function(d){if(d.status==='inactive')return;(d.workers||[]).forEach(function(w){if(w.name!==workerName)return;if(mode==='annual'){var y=String(month||S.year||new Date().getFullYear()).substring(0,4);var ms=monthsRange(w.startMonth||d.startDate,w.endMonth||d.endDate).filter(function(mm){return mm.substring(0,4)===y;});if(ms.length){var sum=0;ms.forEach(function(mm){sum+=v514WorkerPct(w,mm);});total+=sum/12;}}else{total+=v514WorkerPct(w,month);}});});
+    return Math.round(total*10)/10;
+  };
+  window.wdwWorkerTotalPct=function(name,month){return window.getWorkerFundingPct(name,month||((S.year||2026)+'-01'),'monthly');};
+
+  function cleanWorkerForm(){
+    document.querySelectorAll('#tab-wdw label,.v437-form-card label').forEach(function(l){if((l.textContent||'').trim()==='סכום ₪ חודשי')l.textContent='סכום ₪ לתקופה';});
+    document.querySelectorAll('#tab-wdw input[id$="-total-amt"]').forEach(function(inp){var box=inp.closest('div'); if(box) box.style.display='none';});
+  }
+  var oldSave=window.wdw437SaveWorker;
+  if(typeof oldSave==='function'&&!oldSave.__v514){
+    window.wdw437SaveWorker=function(mode,did,wid){
+      var p='v437-worker-'+mode+'-'+did+'-'+wid;
+      var amt=document.getElementById(p+'-amt'), total=document.getElementById(p+'-total-amt');
+      if(total&&amt) total.value=amt.value;
+      var r=oldSave.apply(this,arguments);
+      var d=((S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return x.id===did});
+      if(d){(d.workers||[]).forEach(function(w){if((mode==='new'&&w.id)||w.id===wid){if(isAmount(w)){w.fundingType='סכום לתקופה';w.valueType='amount';w.totalPeriodAmount=num(w.value)||num(w.totalPeriodAmount);}}});}
+      try{saveLocally();}catch(e){}
+      return r;
+    };
+    window.wdw437SaveWorker.__v514=true;
+  }
+  setInterval(cleanWorkerForm,500);
+
+  window.wdwReportDonorRender=function(){
+    var sel=document.getElementById('rpt-donor-sel'), body=document.getElementById('rpt-donor-body');if(!sel||!body)return;
+    var d=((S&&S.wdw&&S.wdw.donors)||[]).find(function(x){return (x.id||x.name||'')===sel.value;});if(!d){body.innerHTML='לא נמצא תורם';return;}
+    var from=ym(d.startDate)||ym((document.getElementById('rpt-donor-from')||{}).value)||((S.year||2026)+'-01');
+    var to=ym(d.endDate)||ym((document.getElementById('rpt-donor-to')||{}).value)||((S.year||2026)+'-12');
+    var months=monthsRange(from,to);var en=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var roleMap={};(d.workers||[]).forEach(function(w){var role=w.roleInDonor||w.name||'—';(roleMap[role]=roleMap[role]||[]).push(w);});
+    var h='<div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:11px;min-width:900px"><thead><tr style="background:#f9fafb"><th style="padding:8px 10px;text-align:right;border:1px solid #e5e7eb;min-width:170px">Role / Employee</th>';
+    months.forEach(function(m){var mi=+m.slice(5,7)-1;h+='<th style="padding:8px 4px;text-align:center;border:1px solid #e5e7eb;min-width:58px">'+en[mi]+'<br><span style="font-weight:normal;font-size:9px">'+m.slice(0,4)+'</span></th>';});
+    h+='<th style="padding:8px 4px;text-align:center;border:1px solid #e5e7eb;min-width:78px;font-weight:bold">Avg/Total</th></tr></thead><tbody>';
+    Object.keys(roleMap).forEach(function(role){h+='<tr style="background:#f0fdf4"><td colspan="'+(months.length+2)+'" style="padding:6px 10px;border:1px solid #e5e7eb;font-weight:700;color:#1B6B5A">'+esc(role)+'</td></tr>';roleMap[role].forEach(function(w){var sumPct=0,cnt=0,sumAmt=0;h+='<tr><td style="padding:6px 10px;border:1px solid #e5e7eb">'+esc(w.name||'')+'<br><span style="font-size:9px;color:#6b7280">%</span></td>';months.forEach(function(m){var a=active(w,m),p=a?v514WorkerPct(w,m):0;if(a){sumPct+=p;cnt++;}h+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb">'+(a?pct(p):'—')+'</td>';});h+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-weight:700">'+pct(cnt?sumPct/months.length:0)+'</td></tr>';h+='<tr style="background:#f9fafb"><td style="padding:6px 10px;border:1px solid #e5e7eb;font-size:10px;color:#6b7280">ILS</td>';months.forEach(function(m){var a=active(w,m),amt=a?v514WorkerAmount(w,m):0;if(a)sumAmt+=amt;h+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px">'+(a?fmt(amt):'—')+'</td>';});h+='<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px;font-weight:700">'+fmt(sumAmt)+'</td></tr>';});});
+    h+='<tr style="background:#f9fafb;font-weight:bold"><td style="padding:7px 10px;border:1px solid #e5e7eb">Total ILS</td>';var grand=0;months.forEach(function(m){var tot=0;(d.workers||[]).forEach(function(w){if(active(w,m))tot+=v514WorkerAmount(w,m);});grand+=tot;h+='<td style="padding:7px 4px;text-align:center;border:1px solid #e5e7eb">'+fmt(tot)+'</td>';});h+='<td style="padding:7px 4px;text-align:center;border:1px solid #e5e7eb">'+fmt(grand)+'</td></tr></tbody></table></div>';
+    body.innerHTML=h;
+  };
 })();
 </script>
 
