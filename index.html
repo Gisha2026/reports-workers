@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v518CL | גישה</title>
+<title>Reports_Workers v519CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v518CL</span>
+      <span class="topbar-title">Reports_Workers v519CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6729,12 +6729,15 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   function field(label, control, cls){
     return '<div class="v437-field '+(cls||'')+'"><label>'+esc(label)+'</label>'+control+'</div>';
   }
-  function monthOptions(selected){
-    var y=(S&&S.year)||2026, out='<option value="">—</option>';
-    if(typeof MONTHS!=='undefined'){
+  function monthOptions(selected, startYear, endYear){
+    var MONTH_NAMES=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+    var mn=typeof MONTHS!=='undefined'?MONTHS:MONTH_NAMES;
+    var sy=startYear||2020, ey=endYear||2035;
+    var out='<option value="">—</option>';
+    for(var y=sy;y<=ey;y++){
       for(var m=1;m<=12;m++){
         var k=y+'-'+String(m).padStart(2,'0');
-        out+='<option value="'+k+'" '+(selected===k?'selected':'')+'>'+MONTHS[m-1]+' '+y+'</option>';
+        out+='<option value="'+k+'" '+(selected===k?'selected':'')+'>'+mn[m-1]+' '+y+'</option>';
       }
     }
     return out;
@@ -8785,7 +8788,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v518CL | גישה</title>
+<title>Reports_Workers v519CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9040,7 +9043,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v518CL</span>
+      <span class="topbar-title">Reports_Workers v519CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -15607,12 +15610,15 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   function field(label, control, cls){
     return '<div class="v437-field '+(cls||'')+'"><label>'+esc(label)+'</label>'+control+'</div>';
   }
-  function monthOptions(selected){
-    var y=(S&&S.year)||2026, out='<option value="">—</option>';
-    if(typeof MONTHS!=='undefined'){
+  function monthOptions(selected, startYear, endYear){
+    var MONTH_NAMES=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+    var mn=typeof MONTHS!=='undefined'?MONTHS:MONTH_NAMES;
+    var sy=startYear||2020, ey=endYear||2035;
+    var out='<option value="">—</option>';
+    for(var y=sy;y<=ey;y++){
       for(var m=1;m<=12;m++){
         var k=y+'-'+String(m).padStart(2,'0');
-        out+='<option value="'+k+'" '+(selected===k?'selected':'')+'>'+MONTHS[m-1]+' '+y+'</option>';
+        out+='<option value="'+k+'" '+(selected===k?'selected':'')+'>'+mn[m-1]+' '+y+'</option>';
       }
     }
     return out;
