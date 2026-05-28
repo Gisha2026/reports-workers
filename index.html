@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v537CL | גישה</title>
+<title>Reports_Workers v538CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v537CL</span>
+      <span class="topbar-title">Reports_Workers v538CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8806,7 +8806,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v537CL | גישה</title>
+<title>Reports_Workers v538CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9061,7 +9061,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v537CL</span>
+      <span class="topbar-title">Reports_Workers v538CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -17580,7 +17580,8 @@ window.isAmountFunding = isAmountFunding;
           if (typeof saveLocally === 'function') saveLocally();
           if (typeof saveData === 'function') saveData();
           if (typeof window.renderWDWOrg === 'function') window.renderWDWOrg();
-          alert('יובאו ' + imported + ' עלויות מעביד בהצלחה');
+          window.wdwRecalcAmountWorkers();
+          alert('יובאו ' + imported + ' עלויות מעביד בהצלחה. אחוזי עובדים בסכום עודכנו אוטומטית.');
         } catch(err) {
           alert('שגיאה בקריאת הקובץ: ' + err.message);
         }
@@ -17617,7 +17618,9 @@ window.wdwCalcMonthlyFromPeriod = function(pfx) {
   var startEl = document.getElementById(pfx+'-start');
   var endEl   = document.getElementById(pfx+'-end');
   var amtEl   = document.getElementById(pfx+'-amt');
-  if (!totalEl || !amtEl) return;
+  var pctEl   = document.getElementById(pfx+'-pct');
+  var nameEl  = document.getElementById(pfx+'-name');
+  if (!totalEl) return;
   var total = parseFloat(totalEl.value) || 0;
   if (!total) { alert('נא להזין סכום לתקופה'); return; }
   var start = startEl && startEl.value;
@@ -17627,9 +17630,47 @@ window.wdwCalcMonthlyFromPeriod = function(pfx) {
   var ey=parseInt(end.substring(0,4)),   em=parseInt(end.substring(5,7));
   var months = (ey-sy)*12 + (em-sm) + 1;
   if (months <= 0) { alert('תקופה לא תקינה'); return; }
-  var monthly = Math.round(total / months);
-  amtEl.value = monthly;
-  if (typeof wdwCalcPct === 'function') wdwCalcPct(pfx);
+  var monthly = Math.round(total / months * 100) / 100;
+  if (amtEl) amtEl.value = monthly;
+  // חישוב אחוז אם יש עלות מעביד
+  var workerName = nameEl ? nameEl.value : (pfx.indexOf('ew-') === 0 ? null : null);
+  if (!workerName && nameEl) workerName = nameEl.value || nameEl.options && nameEl.options[nameEl.selectedIndex] && nameEl.options[nameEl.selectedIndex].value;
+  var empCostAnnual = workerName && S && S.wdw && S.wdw.employerCosts && parseFloat(S.wdw.employerCosts[workerName]) || 0;
+  if (empCostAnnual > 0 && pctEl) {
+    var empCostMonthly = empCostAnnual / 12;
+    var pct = Math.round(monthly / empCostMonthly * 100 * 10) / 10;
+    pctEl.value = pct;
+    if (amtEl) amtEl.value = '';
+  }
+};
+
+// עדכון אחוזים אוטומטי אחרי ייבוא עלות מעביד
+window.wdwRecalcAmountWorkers = function() {
+  if (!S || !S.wdw || !S.wdw.donors) return;
+  var updated = 0;
+  S.wdw.donors.forEach(function(d) {
+    (d.workers || []).forEach(function(w) {
+      if (!w.totalPeriodAmount || !w.startMonth || !w.endMonth) return;
+      var empCostAnnual = parseFloat(S.wdw.employerCosts && S.wdw.employerCosts[w.name]) || 0;
+      if (empCostAnnual <= 0) return;
+      var sy=parseInt(w.startMonth.substring(0,4)), sm=parseInt(w.startMonth.substring(5,7));
+      var ey=parseInt(w.endMonth.substring(0,4)),   em=parseInt(w.endMonth.substring(5,7));
+      var months = (ey-sy)*12 + (em-sm) + 1;
+      if (months <= 0) return;
+      var monthly = w.totalPeriodAmount / months;
+      var empCostMonthly = empCostAnnual / 12;
+      var pct = Math.round(monthly / empCostMonthly * 100 * 10) / 10;
+      w.valueType = 'percent';
+      w.value = pct;
+      updated++;
+    });
+  });
+  if (updated > 0) {
+    if (typeof saveLocally === 'function') saveLocally();
+    if (typeof saveData === 'function') saveData();
+    if (typeof renderWDWInput === 'function') renderWDWInput();
+    console.log('עודכנו ' + updated + ' עובדים עם סכום לתקופה');
+  }
 };
 </script>
 
