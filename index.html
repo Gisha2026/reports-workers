@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v534CL | גישה</title>
+<title>Reports_Workers v535CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v534CL</span>
+      <span class="topbar-title">Reports_Workers v535CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6329,7 +6329,8 @@ window.wdwResetNewWorkerForm = function(did) {
       '<label>עובד<select id="'+p+'-name" class="wdw-inp"><option value="">בחר עובד</option>'+workerOptions()+'</select></label>'+ 
       '<label>אחוז חודשי<input id="'+p+'-pct" class="wdw-inp" type="number" step="0.01" placeholder="למשל 10"></label>'+ 
       '<label>סכום חודשי<input id="'+p+'-amt" class="wdw-inp" type="number" step="0.01" placeholder="יחושב או יוזן ידנית"></label>'+ 
-      '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000" oninput="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
+      '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000"></label>'+
+      '<button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+p+'\')" style="padding:5px 12px;background:#00897B;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;margin-top:4px">חשב סכום חודשי</button>'+ 
       '<label>תחילת פעילות<input id="'+p+'-start" class="wdw-inp" type="month" value="'+esc(d.startDate||cur)+'" onchange="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
       '<label>סיום פעילות<input id="'+p+'-end" class="wdw-inp" type="month" value="'+esc(d.endDate||'')+'" onchange="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
       '<label>סוג מימון<select id="'+p+'-ftype" class="wdw-inp"><option value="אחוז קבוע">אחוז קבוע</option><option value="סכום קבוע">סכום קבוע</option></select></label>'+ 
@@ -6399,7 +6400,8 @@ window.wdwResetNewWorkerForm = function(did) {
         '<label>או סכום חודשי קבוע<input id="'+p+'-amt" class="wdw-inp" type="number" step="0.01" placeholder="אם אין אחוז"></label>'+ 
       '</div><div class="v238-help">לעובד הראשי מזינים אחוז קבוע או סכום חודשי קבוע. החלפה אינה חלק מהשורה הזו.</div></div>'+ 
       '<div class="v238-section"><div class="v238-title">4. תקציב ש״ח</div><div class="v238-grid two">'+
-        '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000" oninput="wdwV237CalcMonthly(\''+p+'\')"></label>'+ 
+        '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000"></label>'+
+      '<button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+p+'\')" style="padding:5px 12px;background:#00897B;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;margin-top:4px">חשב סכום חודשי</button>'+ 
         '<label>סכום חודשי מחושב<input id="'+p+'-monthly-calc" class="wdw-inp" type="text" value="מתעדכן לפי התקופה" disabled></label>'+ 
       '</div><div class="v238-help">הסכום החודשי נשמר בשדה סכום חודשי קבוע למעלה, לפי מספר החודשים בתקופת העבודה.</div></div>'+ 
 '<div class="v238-section"><div class="v238-title">6. החלפת עובד</div><div class="v238-grid three">'+
@@ -6937,7 +6939,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div class="v439-section"><div class="v439-section-title">מימון והקצאה</div><div class="v437-form-grid">'+
         field('אחוז','<input id="'+p+'-pct" type="number" step="0.01" value="'+esc(w.valueType==='percent'?w.value:'')+'">')+
         field('סכום ₪ חודשי','<input id="'+p+'-amt" type="number" step="0.01" value="'+esc(w.valueType==='amount'?w.value:monthly)+'">')+
-        field('סכום ₪ לכל התקופה','<input id="'+p+'-total-amt" type="number" step="0.01" value="'+esc(w.totalPeriodAmount||'')+'" placeholder="יחולק לחודשים הפעילים">')+
+        field('סכום ₪ לכל התקופה','<input id="'+p+'-total-amt" type="number" step="0.01" value="'+esc(w.totalPeriodAmount||'')+'" placeholder="יחולק לחודשים הפעילים"><button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+p+'\'" style="padding:4px 10px;background:#00897B;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;margin-top:4px;display:block">חשב סכום חודשי</button>')+
         field('מסגרת מקסימום ₪','<input id="'+p+'-cap" type="number" step="0.01" value="'+esc(w.cap||'')+'" placeholder="ללא הגבלה">')+
       '</div><button type="button" class="v439-toggle" onclick="var x=document.getElementById(\''+p+'-monthly-wrap\'); if(x)x.style.display=x.style.display===\'none\'?\'grid\':\'none\';">אחוזים לפי חודשים</button><div id="'+p+'-monthly-wrap" class="v439-monthly-grid" style="display:'+(Object.keys(mp).length?'grid':'none')+'">'+monthPctInputs()+'</div></div>'+
 
@@ -8804,7 +8806,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v534CL | גישה</title>
+<title>Reports_Workers v535CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9059,7 +9061,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v534CL</span>
+      <span class="topbar-title">Reports_Workers v535CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -15049,7 +15051,8 @@ window.wdwResetNewWorkerForm = function(did) {
       '<label>עובד<select id="'+p+'-name" class="wdw-inp"><option value="">בחר עובד</option>'+workerOptions()+'</select></label>'+ 
       '<label>אחוז חודשי<input id="'+p+'-pct" class="wdw-inp" type="number" step="0.01" placeholder="למשל 10"></label>'+ 
       '<label>סכום חודשי<input id="'+p+'-amt" class="wdw-inp" type="number" step="0.01" placeholder="יחושב או יוזן ידנית"></label>'+ 
-      '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000" oninput="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
+      '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000"></label>'+
+      '<button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+p+'\')" style="padding:5px 12px;background:#00897B;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;margin-top:4px">חשב סכום חודשי</button>'+ 
       '<label>תחילת פעילות<input id="'+p+'-start" class="wdw-inp" type="month" value="'+esc(d.startDate||cur)+'" onchange="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
       '<label>סיום פעילות<input id="'+p+'-end" class="wdw-inp" type="month" value="'+esc(d.endDate||'')+'" onchange="wdwCalcFromPeriodAmt234(\''+p+'\')"></label>'+ 
       '<label>סוג מימון<select id="'+p+'-ftype" class="wdw-inp"><option value="אחוז קבוע">אחוז קבוע</option><option value="סכום קבוע">סכום קבוע</option></select></label>'+ 
@@ -15134,7 +15137,8 @@ window.wdwResetNewWorkerForm = function(did) {
         '<label>או סכום חודשי קבוע<input id="'+p+'-amt" class="wdw-inp" type="number" step="0.01" placeholder="אם אין אחוז"></label>'+ 
       '</div><div class="v238-help">לעובד הראשי מזינים אחוז קבוע או סכום חודשי קבוע. החלפה אינה חלק מהשורה הזו.</div></div>'+ 
       '<div class="v238-section"><div class="v238-title">4. תקציב ש״ח</div><div class="v238-grid two">'+
-        '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000" oninput="wdwV237CalcMonthly(\''+p+'\')"></label>'+ 
+        '<label>סכום ₪ לכל התקופה<input id="'+p+'-total-amt" class="wdw-inp" type="number" step="0.01" placeholder="למשל 50000"></label>'+
+      '<button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+p+'\')" style="padding:5px 12px;background:#00897B;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;margin-top:4px">חשב סכום חודשי</button>'+ 
         '<label>סכום חודשי מחושב<input id="'+p+'-monthly-calc" class="wdw-inp" type="text" value="מתעדכן לפי התקופה" disabled></label>'+ 
       '</div><div class="v238-help">הסכום החודשי נשמר בשדה סכום חודשי קבוע למעלה, לפי מספר החודשים בתקופת העבודה.</div></div>'+ 
       '<div class="v238-section"><div class="v238-title">6. החלפת עובד</div><div class="v238-grid three">'+
@@ -15824,7 +15828,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div class="v439-section"><div class="v439-section-title">מימון והקצאה</div><div class="v437-form-grid">'+
         field('אחוז','<input id="'+p+'-pct" type="number" step="0.01" value="'+esc(w.valueType==='percent'?w.value:'')+'">')+
         field('סכום ₪ חודשי','<input id="'+p+'-amt" type="number" step="0.01" value="'+esc(w.valueType==='amount'?w.value:monthly)+'">')+
-        field('סכום ₪ לכל התקופה','<input id="'+p+'-total-amt" type="number" step="0.01" value="'+esc(w.totalPeriodAmount||'')+'" placeholder="יחולק לחודשים הפעילים">')+
+        field('סכום ₪ לכל התקופה','<input id="'+p+'-total-amt" type="number" step="0.01" value="'+esc(w.totalPeriodAmount||'')+'" placeholder="יחולק לחודשים הפעילים"><button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+p+'\'" style="padding:4px 10px;background:#00897B;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;margin-top:4px;display:block">חשב סכום חודשי</button>')+
         field('מסגרת מקסימום ₪','<input id="'+p+'-cap" type="number" step="0.01" value="'+esc(w.cap||'')+'" placeholder="ללא הגבלה">')+
       '</div><button type="button" class="v439-toggle" onclick="var x=document.getElementById(\''+p+'-monthly-wrap\'); if(x)x.style.display=x.style.display===\'none\'?\'grid\':\'none\';">אחוזים לפי חודשים</button><div id="'+p+'-monthly-wrap" class="v439-monthly-grid" style="display:'+(Object.keys(mp).length?'grid':'none')+'">'+monthPctInputs()+'</div></div>'+
 
