@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v532CL | גישה</title>
+<title>Reports_Workers v533CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v532CL</span>
+      <span class="topbar-title">Reports_Workers v533CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1782,7 +1782,7 @@ window.getWorkerFundingPct = function(workerName, month, mode) {
         } else {
           basePct = parseFloat(w.value) || 0;
         }
-      } else if(w.valueType === 'amount' || w.fundingType === 'סכום קבוע') {
+      } else if(w.valueType === 'amount' || w.fundingType === 'סכום קבוע' || w.fundingType === 'סכום לתקופה' || w.fundingType === 'סכום חודשי') {
         // המרת סכום לאחוז: (סכום כולל ÷ חודשים פעילים) ÷ עלות מעביד × 100
         var totalAmount = parseFloat(w.value) || 0;
         if(totalAmount > 0 && empCostMonthly > 0) {
@@ -4092,6 +4092,15 @@ function sendEmail(){
   function periodKind(d){ if(!d||!d.startDate||!d.endDate) return 'לא הוגדר'; var sy=String(d.startDate).slice(0,4), ey=String(d.endDate).slice(0,4); var sm=String(d.startDate).slice(5,7), em=String(d.endDate).slice(5,7); return (sy===ey && sm==='01' && em==='12') ? 'שנה קלנדרית' : 'חוצה שנים/תקופה'; }
   function inSelectedMonth(w,month){ if(!w||w.active===false) return false; if(!isOfficialWorker(w.name)) return false; if(month){ if(w.startMonth&&month<w.startMonth) return false; if(w.endMonth&&month>w.endMonth) return false; } return true; }
   function activeWorkerRowsForDonor(d,month){ return (d.workers||[]).filter(function(w){return inSelectedMonth(w,month);}); }
+
+// ===== v533CL: isAmountFunding - מוגדרת לפני basePct =====
+function isAmountFunding(w){
+  return ['amount','סכום קבוע','סכום לתקופה','סכום חודשי'].includes(w&&w.valueType) ||
+         ['amount','סכום קבוע','סכום לתקופה','סכום חודשי'].includes(w&&w.fundingType);
+}
+window.isAmountFunding = isAmountFunding;
+// ===== סוף isAmountFunding =====
+
   function basePct(w,month){ if(!inSelectedMonth(w,month)) return 0; if(w.monthlyPct&&month&&w.monthlyPct[month]!=null&&w.monthlyPct[month]!=='') return parseFloat(w.monthlyPct[month])||0; if(w.valueType==='percent')return parseFloat(w.value)||0; var _amtPct=0;if(isAmountFunding(w)){var _cost=parseFloat((typeof S!=='undefined'&&S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[w.name])||0);if(_cost>0){var _total=parseFloat(w.value)||parseFloat(w.totalPeriodAmount)||0;var _wSt=String(w.startMonth||w.startDate||'').substring(0,7);var _wEn=String(w.endMonth||w.endDate||'').substring(0,7);var _months=0;if(_wSt&&_wEn&&_wSt<=_wEn){var _sy=parseInt(_wSt.substring(0,4)),_sm=parseInt(_wSt.substring(5,7));var _ey=parseInt(_wEn.substring(0,4)),_em=parseInt(_wEn.substring(5,7));_months=(_ey-_sy)*12+(_em-_sm)+1;}if(_months>0)_amtPct=Math.round((_total/_months/_cost)*100*10)/10;}} return _amtPct; }
   function replPct(w,month){ if(!inSelectedMonth(w,month)) return 0; var n=parseFloat(w.replacesPct)||0; (w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;}); return n; }
   function rowPct(w,month){return Math.round((basePct(w,month)+replPct(w,month))*10)/10;}
@@ -8794,7 +8803,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v532CL | גישה</title>
+<title>Reports_Workers v533CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9049,7 +9058,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v532CL</span>
+      <span class="topbar-title">Reports_Workers v533CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
