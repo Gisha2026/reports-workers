@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v550CL | גישה</title>
+<title>Reports_Workers v551CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v550CL</span>
+      <span class="topbar-title">Reports_Workers v551CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7060,127 +7060,7 @@ window.wdw447CloseDonorEdit=function(){
 
 
 
-<script id="v494CL-annual-summary-final-override">
-(function(){
-  function fmt(v){
-    return v>0 ? (Number.isInteger(v) ? v : Number(v).toFixed(1)) : '—';
-  }
 
-  function esc(s){
-    return String(s==null?'':s).replace(/[&<>"']/g,function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-  }
-
-  function annualYearOptions(){
-    var cur=S.year || new Date().getFullYear();
-    var end=Math.max(new Date().getFullYear(), cur)+5;
-    var out='';
-    for(var y=2026;y<=end;y++){
-      out+='<option value="'+y+'" '+(y===cur?'selected':'')+'>'+y+'</option>';
-    }
-    return out;
-  }
-
-  function collectAnnualWorkers(){
-    var map={};
-
-    function add(name, active){
-      name=String(name||'').trim();
-      if(!name) return;
-      if(!map[name]) map[name]={name:name,active:active!==false};
-      if(active===true) map[name].active=true;
-    }
-
-    if(Array.isArray(S.workers)){
-      S.workers.forEach(function(w){
-        if(typeof w==='string') add(w,true);
-        else add(w.name, w.active!==false);
-      });
-    }
-
-    // Fallback: collect names from the same annual rows used by the old summary.
-    try{
-      MONTHS.forEach(function(m){
-        var rows=getAnnualRows(m)||[];
-        rows.forEach(function(r){
-          add(r.name || r.worker || r.workerName || r.wname, true);
-        });
-      });
-    }catch(e){}
-
-    var arr=Object.keys(map).map(function(k){return map[k];});
-    arr.sort(function(a,b){
-      if(a.active!==b.active) return a.active ? -1 : 1;
-      return a.name.localeCompare(b.name,'he');
-    });
-    return arr;
-  }
-
-  window.v451ToggleAnnualRow=function(id){
-    var el=document.getElementById(id);
-    if(!el) return;
-    el.style.display = el.style.display==='table-row' ? 'none' : 'table-row';
-  };
-
-  window.renderAnnual=function(){
-    var div=document.getElementById('annualContent');
-    if(!div) return;
-
-    var year=S.year || new Date().getFullYear();
-    var workers=collectAnnualWorkers();
-
-    var html='';
-    html+='<div class="v451-annual-head">';
-    html+='<div><h3 class="ann-h3" style="margin:0">סיכום שנתי</h3>';
-    html+='<div class="v451-annual-note">חופש, מחלה וחג בלבד. שינוי תצוגה בלבד.</div></div>';
-    html+='<div class="v451-year-control"><label>שנת תצוגה</label>';
-    html+='<select id="annualYearSelect" onchange="jumpYear(this.value)">'+annualYearOptions()+'</select>';
-    html+='</div></div>';
-
-    html+='<div class="v451-annual-wrap"><table class="ann-table v451-annual-table">';
-    html+='<thead><tr><th>עובד</th><th>חופש</th><th>מחלה</th><th>חג</th><th>סה״כ</th></tr></thead><tbody>';
-
-    if(!workers.length){
-      html+='<tr><td colspan="5" class="v451-empty">לא נמצאו עובדים להצגה בשנה זו</td></tr>';
-    }
-
-    var sepAdded=false;
-    workers.forEach(function(w,idx){
-      if(!w.active && !sepAdded){
-        html+='<tr class="ann-esep"><td colspan="5">עובדים שסיימו</td></tr>';
-        sepAdded=true;
-      }
-
-      var tv=0,ts=0,th=0;
-      var detail='';
-      MONTHS.forEach(function(m){
-        var s=calcSumEffective(getAnnualRows(m),w.name);
-        var vac=(s.v||0)+((s.hv||0)*0.5);
-        var sick=(s.s||0)+((s.hs||0)*0.5);
-        var hol=(s.h||0);
-        tv+=vac; ts+=sick; th+=hol;
-        detail+='<tr><td>'+esc(m)+'</td><td>'+fmt(vac)+'</td><td>'+fmt(sick)+'</td><td>'+fmt(hol)+'</td></tr>';
-      });
-
-      var total=tv+ts+th;
-      var cls=w.active?'':'ew';
-      var rowId='v451_ann_'+idx;
-
-      html+='<tr class="'+cls+' v451-main-row" onclick="v451ToggleAnnualRow(\''+rowId+'\')">';
-      html+='<td class="wc">'+esc(w.name)+'</td><td>'+fmt(tv)+'</td><td>'+fmt(ts)+'</td><td>'+fmt(th)+'</td><td class="tot">'+fmt(total)+'</td></tr>';
-
-      html+='<tr id="'+rowId+'" class="v451-detail-row '+cls+'"><td colspan="5">';
-      html+='<div class="v451-detail-box"><div class="v451-detail-title">'+esc(w.name)+' — פירוט חודשי '+year+'</div>';
-      html+='<table class="v451-detail-table"><thead><tr><th>חודש</th><th>חופש</th><th>מחלה</th><th>חג</th></tr></thead><tbody>'+detail+'</tbody></table>';
-      html+='</div></td></tr>';
-    });
-
-    html+='</tbody></table></div>';
-    div.innerHTML=html;
-  };
-})();
-</script>
 
 <style id="v494CL-annual-summary-final-style">
 #tab-annual .v451-annual-head{
@@ -7569,164 +7449,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 })();
 </script>
 
-<script id="v494CL-annual-summary-active-fix">
-(function(){
-  function fmtAnnual(v){
-    v = Number(v || 0);
-    return v > 0 ? (Number.isInteger(v) ? String(v) : v.toFixed(1)) : '—';
-  }
 
-  function escAnnual(s){
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-  }
-
-  function addWorkerToMap(map, name, active){
-    name = String(name || '').trim();
-    if(!name) return;
-    if(!map[name]) map[name] = {name:name, active: active !== false};
-    if(active === true) map[name].active = true;
-  }
-
-  function getAnnualWorkersRobust(){
-    var map = {};
-
-    // Source 1: configured employees.
-    var _S = window.S || (typeof S !== 'undefined' ? S : null);
-    if(_S && Array.isArray(_S.workers)){
-      _S.workers.forEach(function(w){
-        if(typeof w === 'string') addWorkerToMap(map, w, true);
-        else if(w) addWorkerToMap(map, w.name || w.worker || w.workerName, w.active !== false);
-      });
-    }
-
-    // Source 2: actual annual rows. This is the important fallback that preserves the old visible data.
-    try{
-      var _getAnnualRows = (typeof getAnnualRows === 'function') ? getAnnualRows : window.getAnnualRows;
-      if(typeof _getAnnualRows === 'function' && Array.isArray(MONTHS)){
-        MONTHS.forEach(function(m){
-          var rows = _getAnnualRows(m) || [];
-          rows.forEach(function(r){
-            addWorkerToMap(map, r.name || r.worker || r.workerName || r.wname, true);
-          });
-        });
-      }
-    }catch(e){}
-
-    var arr = Object.keys(map).map(function(k){return map[k];});
-    arr.sort(function(a,b){
-      if(a.active !== b.active) return a.active ? -1 : 1;
-      return a.name.localeCompare(b.name, 'he');
-    });
-    return arr;
-  }
-
-  function buildAnnualYearOptions(){
-    var _S = window.S || (typeof S !== 'undefined' ? S : null);
-    var curYear = (_S && _S.year) ? _S.year : new Date().getFullYear();
-    var endYear = Math.max(new Date().getFullYear(), curYear) + 5;
-    var out = '';
-    for(var y = 2026; y <= endYear; y++){
-      out += '<option value="'+y+'" '+(y === curYear ? 'selected' : '')+'>'+y+'</option>';
-    }
-    return out;
-  }
-
-  window.v472ToggleAnnualDetail = function(id){
-    var el = document.getElementById(id);
-    if(!el) return;
-    el.style.display = (el.style.display === 'table-row') ? 'none' : 'table-row';
-  };
-
-  window.v472AnnualChangeYear = function(value){
-    var newYear = parseInt(value, 10);
-    if(!newYear || !window.S) return;
-
-    if(typeof jumpYear === 'function'){
-      jumpYear(newYear);
-    } else {
-      S.year = newYear;
-      if(typeof saveLocally === 'function') {
-        try { saveLocally(); } catch(e) {}
-      }
-    }
-
-    setTimeout(function(){
-      if(typeof window.renderAnnual === 'function') window.renderAnnual();
-    }, 0);
-  };
-
-  window.renderAnnual = function(){
-    var div = document.getElementById('annualContent');
-    if(!div) return;
-
-    var _S = window.S || (typeof S !== 'undefined' ? S : null);
-    var curYear = (_S && _S.year) ? _S.year : new Date().getFullYear();
-    var workers = getAnnualWorkersRobust();
-
-    var html = '';
-    html += '<div class="v472-annual-head">';
-    html += '<div class="v472-year-control"><label>שנת תצוגה</label>';
-    html += '<select id="annualYearSelect" onchange="v472AnnualChangeYear(this.value)">'+buildAnnualYearOptions()+'</select></div>';
-    html += '<div><h3 class="ann-h3" style="margin:0">סיכום שנתי</h3>';
-    html += '<div class="v472-annual-note">חופש, מחלה, חג ואחר/אבל. שינוי תצוגה בלבד.</div></div>';
-    html += '</div>';
-
-    html += '<div class="v472-annual-wrap"><table class="ann-table v472-annual-table">';
-    html += '<thead><tr><th>עובד</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר / אבל</th><th>סה״כ</th></tr></thead><tbody>';
-
-    if(!workers.length){
-      html += '<tr><td colspan="6" class="v472-empty">לא נמצאו עובדים להצגה</td></tr>';
-    }
-
-    var sepAdded = false;
-    workers.forEach(function(w, idx){
-      if(!w.active && !sepAdded){
-        html += '<tr class="ann-esep"><td colspan="6">עובדים שסיימו</td></tr>';
-        sepAdded = true;
-      }
-
-      var tv = 0, ts = 0, th = 0, to = 0;
-      var detail = '';
-
-      (MONTHS || []).forEach(function(m){
-        var _gar=typeof getAnnualRows==='function'?getAnnualRows:window.getAnnualRows; var _cse=typeof calcSumEffective==='function'?calcSumEffective:window.calcSumEffective; var s = _cse(_gar(m), w.name);
-        var vac = (s.v || 0) + ((s.hv || 0) * 0.5);
-        var sick = (s.s || 0) + ((s.hs || 0) * 0.5);
-        var hol = (s.h || 0);
-        var other = (s.o || 0);
-        tv += vac; ts += sick; th += hol; to += other;
-
-        detail += '<tr><td>'+escAnnual(m)+'</td><td>'+fmtAnnual(vac)+'</td><td>'+fmtAnnual(sick)+'</td><td>'+fmtAnnual(hol)+'</td><td>'+fmtAnnual(other)+'</td></tr>';
-      });
-
-      var total = tv + ts + th + to;
-      var cls = w.active ? '' : 'ew';
-      var rowId = 'v472AnnualDetail_' + idx;
-
-      html += '<tr class="'+cls+' v472-main-row" onclick="v472ToggleAnnualDetail(\''+rowId+'\')">';
-      html += '<td class="wc">'+escAnnual(w.name)+'</td>';
-      html += '<td>'+fmtAnnual(tv)+'</td>';
-      html += '<td>'+fmtAnnual(ts)+'</td>';
-      html += '<td>'+fmtAnnual(th)+'</td>';
-      html += '<td>'+fmtAnnual(to)+'</td>';
-      html += '<td class="tot">'+fmtAnnual(total)+'</td>';
-      html += '</tr>';
-
-      html += '<tr id="'+rowId+'" class="v472-detail-row '+cls+'" style="display:none">';
-      html += '<td colspan="6"><div class="v472-detail-box">';
-      html += '<div class="v472-detail-title">'+escAnnual(w.name)+' — פירוט חודשי '+curYear+'</div>';
-      html += '<table class="v472-detail-table"><thead><tr><th>חודש</th><th>חופש</th><th>מחלה</th><th>חג</th><th>אחר / אבל</th></tr></thead><tbody>';
-      html += detail;
-      html += '</tbody></table></div></td></tr>';
-    });
-
-    html += '</tbody></table></div>';
-    div.innerHTML = html;
-  };
-})();
-</script>
 
 <style id="v494CL-annual-summary-active-fix-style">
 #tab-annual .v472-annual-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:14px 16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(15,23,42,.05)}
@@ -8396,7 +8119,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v550CL | גישה</title>
+<title>Reports_Workers v551CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8651,7 +8374,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v550CL</span>
+      <span class="topbar-title">Reports_Workers v551CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
