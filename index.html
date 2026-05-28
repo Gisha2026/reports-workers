@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v538CL | גישה</title>
+<title>Reports_Workers v539CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v538CL</span>
+      <span class="topbar-title">Reports_Workers v539CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -4312,7 +4312,8 @@ window.isAmountFunding = isAmountFunding;
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px"><div><label>עובד</label><select id="'+pfx+'-name" style="'+fld+'" onchange="wdwUpdateWorkerCost(\''+pfx+'\')"><option value="" '+(!w||!w.name?'selected':'')+'>— בחר עובד —</option>'+wdwWorkersList().map(function(x){return '<option value="'+esc(x)+'" '+(w&&w.name===x?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select><div id="'+pfx+'-cost" class="wdw-muted">'+(cost>0?'עלות מעביד: ₪'+cost.toLocaleString():(hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'))+'</div></div><div><label>סוג מימון</label><select id="'+pfx+'-ftype" style="'+fld+'">'+WDW_FUNDING_TYPES.map(function(t){return '<option '+(w&&w.fundingType===t?'selected':'')+'>'+esc(t)+'</option>';}).join('')+'</select></div></div>'+
       '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
       '<div style="margin-bottom:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px"><div style="font-size:12px;font-weight:600;color:#166534;margin-bottom:6px">חישוב מסכום לתקופה</div><div style="display:flex;gap:8px;align-items:center"><input id="'+pfx+'-total-amt" style="'+fld+';max-width:150px" type="number" value="'+esc(w&&w.totalPeriodAmount||'')+'" placeholder="סכום כולל ₪"><button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+pfx+'\')" style="padding:6px 12px;background:#00897B;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600">חשב סכום חודשי</button></div></div>'+
-      '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:12px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
+      '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:8px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
+      '<div style="margin-bottom:12px"><button type="button" onclick="wdwToggleBlockedMonths(\''+pfx+'\')" style="padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:6px;background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;font-size:12px">חודשים חסומים / אחוז קבוע</button><div id="'+pfx+'-blocked-wrap" style="display:none;margin-top:8px;padding:10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:8px"></div></div>'+
       '<div style="margin-bottom:10px">'
       +'<label style="display:block;font-size:12px;color:#475569;font-weight:700;margin-bottom:4px">הערה</label>'
       +'<textarea id="'+pfx+'-remark" style="'+fld+';height:60px;resize:vertical" placeholder="הערה חופשית">'+(w&&w.remark?esc(w.remark):'')+'</textarea>'
@@ -8806,7 +8807,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v538CL | גישה</title>
+<title>Reports_Workers v539CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9061,7 +9062,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v538CL</span>
+      <span class="topbar-title">Reports_Workers v539CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -13848,7 +13849,8 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px"><div><label>עובד</label><select id="'+pfx+'-name" style="'+fld+'" onchange="wdwUpdateWorkerCost(\''+pfx+'\')"><option value="" '+(!w||!w.name?'selected':'')+'>— בחר עובד —</option>'+wdwWorkersList().map(function(x){return '<option value="'+esc(x)+'" '+(w&&w.name===x?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select><div id="'+pfx+'-cost" class="wdw-muted">'+(cost>0?'עלות מעביד: ₪'+cost.toLocaleString():(hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'))+'</div></div><div><label>סוג מימון</label><select id="'+pfx+'-ftype" style="'+fld+'">'+WDW_FUNDING_TYPES.map(function(t){return '<option '+(w&&w.fundingType===t?'selected':'')+'>'+esc(t)+'</option>';}).join('')+'</select></div><div><label>תפקיד בתרומה</label><select id="'+pfx+'-roleInDonor" style="'+fld+'"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r){return '<option value="'+esc(r)+'" '+((w&&w.roleInDonor===r)?'selected':'')+'>'+esc(r)+'</option>';}).join(''))+'</select></div></div>'+
       '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
       '<div style="margin-bottom:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px"><div style="font-size:12px;font-weight:600;color:#166534;margin-bottom:6px">חישוב מסכום לתקופה</div><div style="display:flex;gap:8px;align-items:center"><input id="'+pfx+'-total-amt" style="'+fld+';max-width:150px" type="number" value="'+esc(w&&w.totalPeriodAmount||'')+'" placeholder="סכום כולל ₪"><button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+pfx+'\')" style="padding:6px 12px;background:#00897B;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600">חשב סכום חודשי</button></div></div>'+
-      '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:12px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
+      '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:8px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
+      '<div style="margin-bottom:12px"><button type="button" onclick="wdwToggleBlockedMonths(\''+pfx+'\')" style="padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:6px;background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;font-size:12px">חודשים חסומים / אחוז קבוע</button><div id="'+pfx+'-blocked-wrap" style="display:none;margin-top:8px;padding:10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:8px"></div></div>'+
       '<div style="margin-bottom:10px">'
       +'<label style="display:block;font-size:12px;color:#475569;font-weight:700;margin-bottom:4px">הערה</label>'
       +'<textarea id="'+pfx+'-remark" style="'+fld+';height:60px;resize:vertical" placeholder="הערה חופשית">'+(w&&w.remark?esc(w.remark):'')+'</textarea>'
@@ -17672,6 +17674,199 @@ window.wdwRecalcAmountWorkers = function() {
     console.log('עודכנו ' + updated + ' עובדים עם סכום לתקופה');
   }
 };
+</script>
+
+
+<script id="v539CL-blocked-months">
+(function(){
+
+// בניית רשימת חודשים בין שתי תקופות
+function monthsBetweenList(start, end) {
+  var out = [];
+  if (!start || !end) return out;
+  var sy=parseInt(start.substring(0,4)), sm=parseInt(start.substring(5,7));
+  var ey=parseInt(end.substring(0,4)),   em=parseInt(end.substring(5,7));
+  var HEB=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  while(sy<ey||(sy===ey&&sm<=em)){
+    var key=sy+'-'+String(sm).padStart(2,'0');
+    out.push({key:key, label:HEB[sm-1]+' '+sy});
+    sm++; if(sm>12){sm=1;sy++;}
+    if(out.length>60) break;
+  }
+  return out;
+}
+
+// הצגת פאנל חודשים חסומים
+window.wdwToggleBlockedMonths = function(pfx) {
+  var wrap = document.getElementById(pfx+'-blocked-wrap');
+  if (!wrap) return;
+  var isOpen = wrap.style.display !== 'none';
+  wrap.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) window.wdwRenderBlockedGrid(pfx);
+};
+
+// בניית גריד חודשים
+window.wdwRenderBlockedGrid = function(pfx) {
+  var wrap = document.getElementById(pfx+'-blocked-wrap');
+  if (!wrap) return;
+  var startEl = document.getElementById(pfx+'-start');
+  var endEl   = document.getElementById(pfx+'-end');
+  var start = startEl && startEl.value;
+  var end   = endEl   && endEl.value;
+  if (!start || !end) { wrap.innerHTML = '<div style="font-size:12px;color:var(--color-text-secondary)">נא למלא תקופת הקצאה קודם</div>'; return; }
+
+  var blocked  = (window._blockedMonths  && window._blockedMonths[pfx])  || {};
+  var fixed    = (window._fixedMonths    && window._fixedMonths[pfx])    || {};
+  var months   = monthsBetweenList(start, end);
+
+  var blockedCount = Object.keys(blocked).filter(function(k){return blocked[k];}).length;
+  var fixedCount   = Object.keys(fixed).filter(function(k){return fixed[k]!==undefined;}).length;
+  var normalCount  = months.length - blockedCount - fixedCount;
+
+  var html = '<div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:8px">לחץ פעם אחת = חסום | פעמיים = אחוז קבוע | שלוש = רגיל</div>';
+  html += '<div style="display:flex;gap:10px;font-size:11px;margin-bottom:8px">';
+  html += '<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:var(--color-background-danger);border:1px solid var(--color-border-danger);border-radius:2px;display:inline-block"></span>חסום</span>';
+  html += '<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:var(--color-background-info);border:1px solid var(--color-border-info);border-radius:2px;display:inline-block"></span>אחוז קבוע</span>';
+  html += '<span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:2px;display:inline-block"></span>רגיל</span>';
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px">';
+
+  months.forEach(function(mo) {
+    var isBlocked = blocked[mo.key];
+    var isFixed   = fixed[mo.key] !== undefined;
+    var mode = isBlocked ? 'blocked' : isFixed ? 'fixed' : 'normal';
+    var bg  = mode==='blocked' ? 'var(--color-background-danger)'   : mode==='fixed' ? 'var(--color-background-info)'   : 'var(--color-background-secondary)';
+    var col = mode==='blocked' ? 'var(--color-text-danger)'         : mode==='fixed' ? 'var(--color-text-info)'         : 'var(--color-text-primary)';
+    var brd = mode==='blocked' ? '1px solid var(--color-border-danger)' : mode==='fixed' ? '1px solid var(--color-border-info)' : '0.5px solid var(--color-border-tertiary)';
+    html += '<div style="border-radius:6px;overflow:hidden;border:'+brd+'">';
+    html += '<div onclick="wdwCycleMonth(\''+pfx+'\',\''+mo.key+'\')" style="font-size:10px;padding:4px 5px;cursor:pointer;background:'+bg+';color:'+col+';text-align:center">'+mo.label+'</div>';
+    if (mode==='fixed') {
+      html += '<input type="number" value="'+(fixed[mo.key]||'')+'" placeholder="%" onchange="wdwSetFixedPct(\''+pfx+'\',\''+mo.key+'\',this.value)" style="width:100%;box-sizing:border-box;border:none;border-top:0.5px solid var(--color-border-info);font-size:11px;padding:2px 5px;background:var(--color-background-primary);text-align:center">';
+    }
+    html += '</div>';
+  });
+
+  html += '</div>';
+  html += '<div style="font-size:11px;color:var(--color-text-secondary)">'+normalCount+' רגילים · '+blockedCount+' חסומים · '+fixedCount+' עם אחוז קבוע</div>';
+  wrap.innerHTML = html;
+};
+
+// מחזור מצב חודש
+window.wdwCycleMonth = function(pfx, key) {
+  if (!window._blockedMonths) window._blockedMonths = {};
+  if (!window._fixedMonths)   window._fixedMonths = {};
+  if (!window._blockedMonths[pfx]) window._blockedMonths[pfx] = {};
+  if (!window._fixedMonths[pfx])   window._fixedMonths[pfx]   = {};
+
+  var isBlocked = window._blockedMonths[pfx][key];
+  var isFixed   = window._fixedMonths[pfx][key] !== undefined;
+
+  if (!isBlocked && !isFixed) {
+    // רגיל → חסום
+    window._blockedMonths[pfx][key] = true;
+  } else if (isBlocked) {
+    // חסום → קבוע
+    delete window._blockedMonths[pfx][key];
+    window._fixedMonths[pfx][key] = 0;
+  } else {
+    // קבוע → רגיל
+    delete window._fixedMonths[pfx][key];
+  }
+  window.wdwRenderBlockedGrid(pfx);
+};
+
+// הגדרת אחוז קבוע לחודש
+window.wdwSetFixedPct = function(pfx, key, val) {
+  if (!window._fixedMonths) window._fixedMonths = {};
+  if (!window._fixedMonths[pfx]) window._fixedMonths[pfx] = {};
+  window._fixedMonths[pfx][key] = parseFloat(val) || 0;
+};
+
+// כפתור חשב - לוגיקה מלאה
+var _origCalc = window.wdwCalcMonthlyFromPeriod;
+window.wdwCalcMonthlyFromPeriod = function(pfx) {
+  var totalEl  = document.getElementById(pfx+'-total-amt');
+  var startEl  = document.getElementById(pfx+'-start');
+  var endEl    = document.getElementById(pfx+'-end');
+  var pctEl    = document.getElementById(pfx+'-pct');
+  var nameEl   = document.getElementById(pfx+'-name');
+  if (!totalEl) return;
+  var total = parseFloat(totalEl.value) || 0;
+  if (!total) { alert('נא להזין סכום לתקופה'); return; }
+  var start = startEl && startEl.value;
+  var end   = endEl   && endEl.value;
+  if (!start || !end) { alert('נא להזין תקופת הקצאה'); return; }
+
+  var months = monthsBetweenList(start, end);
+  var blocked = (window._blockedMonths && window._blockedMonths[pfx]) || {};
+  var fixed   = (window._fixedMonths   && window._fixedMonths[pfx])   || {};
+
+  var workerName = nameEl && (nameEl.value || (nameEl.options && nameEl.options[nameEl.selectedIndex] && nameEl.options[nameEl.selectedIndex].value));
+  var empCostAnnual = workerName && S && S.wdw && S.wdw.employerCosts && parseFloat(S.wdw.employerCosts[workerName]) || 0;
+  var empCostMonthly = empCostAnnual / 12;
+
+  // חישוב חודשים ועלות מוכתבת
+  var fixedCost = 0, normalCount = 0;
+  months.forEach(function(mo) {
+    if (blocked[mo.key]) return;
+    if (fixed[mo.key] !== undefined) {
+      if (empCostMonthly > 0) fixedCost += (fixed[mo.key]/100) * empCostMonthly;
+    } else {
+      normalCount++;
+    }
+  });
+
+  var remaining = total - fixedCost * Object.keys(fixed).filter(function(k){return !blocked[k];}).length;
+  if (normalCount <= 0) { alert('אין חודשים רגילים לחלוקה'); return; }
+
+  var monthlyNormal = remaining / normalCount;
+  var pct = empCostMonthly > 0 ? Math.round(monthlyNormal / empCostMonthly * 100 * 10) / 10 : 0;
+
+  if (pctEl) pctEl.value = pct;
+
+  // שמירת blockedMonths ו-fixedMonths על העובד
+  window._pendingBlockedMonths = Object.keys(blocked[pfx]||{}).filter(function(k){return blocked[pfx]&&blocked[pfx][k];});
+  window._pendingFixedMonths   = fixed[pfx] || {};
+};
+
+// עדכון אוטומטי בייבוא - גרסה מורחבת
+var _origRecalc = window.wdwRecalcAmountWorkers;
+window.wdwRecalcAmountWorkers = function() {
+  if (!S || !S.wdw || !S.wdw.donors) return;
+  var updated = 0;
+  S.wdw.donors.forEach(function(d) {
+    (d.workers || []).forEach(function(w) {
+      if (!w.totalPeriodAmount || !w.startMonth || !w.endMonth) return;
+      var empCostAnnual = parseFloat(S.wdw.employerCosts && S.wdw.employerCosts[w.name]) || 0;
+      if (empCostAnnual <= 0) return;
+      var empCostMonthly = empCostAnnual / 12;
+      var months = monthsBetweenList(w.startMonth, w.endMonth);
+      var blocked = w.blockedMonths || [];
+      var fixedM  = w.fixedMonths  || {};
+      var blockedSet = new Set(blocked);
+      var fixedCost = 0, normalCount = 0;
+      months.forEach(function(mo) {
+        if (blockedSet.has(mo.key)) return;
+        if (fixedM[mo.key] !== undefined) fixedCost += (fixedM[mo.key]/100)*empCostMonthly;
+        else normalCount++;
+      });
+      var remaining = w.totalPeriodAmount - fixedCost * Object.keys(fixedM).filter(function(k){return !blockedSet.has(k);}).length;
+      if (normalCount <= 0) return;
+      var monthly = remaining / normalCount;
+      var pct = Math.round(monthly / empCostMonthly * 100 * 10) / 10;
+      w.valueType = 'percent';
+      w.value = pct;
+      updated++;
+    });
+  });
+  if (updated > 0) {
+    if (typeof saveLocally === 'function') saveLocally();
+    if (typeof saveData === 'function') saveData();
+    if (typeof renderWDWInput === 'function') renderWDWInput();
+  }
+};
+
+})();
 </script>
 
 </body>
