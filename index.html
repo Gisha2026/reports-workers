@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v552CL | גישה</title>
+<title>Reports_Workers v553CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v552CL</span>
+      <span class="topbar-title">Reports_Workers v553CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6790,37 +6790,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 </style>
 
 
-<script id="v494CL-fx-project-total-helper">
-window.wdw440CalcFX=function(p){
-  var amt=document.getElementById(p+'-fxamt');
-  var rate=document.getElementById(p+'-fxrate');
-  var total=document.getElementById(p+'-fx-total-ils');
-  var monthly=document.getElementById(p+'-fxmonthly');
-  var start=document.getElementById(p+'-start');
-  var end=document.getElementById(p+'-end');
-  var a=parseFloat((amt&&amt.value)||0)||0;
-  var r=parseFloat((rate&&rate.value)||0)||0;
-  var t=a*r;
-  if(total) total.value=t?Math.round(t*100)/100:'';
-  if(monthly){
-    var months=1;
-    if(start&&end&&start.value&&end.value){
-      var s=start.value.split('-'), e=end.value.split('-');
-      months=(parseInt(e[0])-parseInt(s[0]))*12+(parseInt(e[1])-parseInt(s[1]))+1;
-      if(!months||months<1) months=1;
-    }
-    monthly.value=t?Math.round((t/months)*100)/100:'';
-  }
-};
-window.wdw440CalcFXHelper=function(p){
-  var amt=document.getElementById(p+'-fx-helper-amount');
-  var rate=document.getElementById(p+'-fx-helper-rate');
-  var total=document.getElementById(p+'-fx-helper-total');
-  var a=parseFloat((amt&&amt.value)||0)||0;
-  var r=parseFloat((rate&&rate.value)||0)||0;
-  if(total) total.value=(a&&r)?Math.round(a*r*100)/100:'';
-};
-</script>
+
 
 
 <style id="v494CL-wdw-management-table-alignment-only">
@@ -6936,14 +6906,7 @@ window.wdw440CalcFXHelper=function(p){
 </style>
 
 
-<script id="v494CL-close-donor-edit-only">
-window.wdw447CloseDonorEdit=function(){
-  window.WDW_EDIT_DONOR_ID=null;
-  window.WDW_ADD_WORKER_FOR=null;
-  window.WDW_EDIT_WORKER_ID=null;
-  if(typeof renderWDWInput==='function') renderWDWInput();
-};
-</script>
+
 
 
 
@@ -7097,77 +7060,7 @@ window.wdw447CloseDonorEdit=function(){
 </style>
 
 
-<script id="v494CL-donor-form-section-layout-only">
-(function(){
-  function groupDonorForm(){
-    var forms=document.querySelectorAll('#tab-wdw .v437-form-card');
-    forms.forEach(function(card){
-      var title=card.querySelector('.v437-form-title');
-      if(!title || title.textContent.indexOf('תורם')===-1) return;
-      if(card.classList.contains('v452-donor-sectioned')) return;
 
-      var grid=card.querySelector('.v437-form-grid');
-      var green=card.querySelector('.v437-green');
-      if(!grid) return;
-
-      card.classList.add('v452-donor-sectioned');
-
-      var fields=Array.from(grid.children);
-      function makeSection(label, nodes){
-        var sec=document.createElement('div');
-        sec.className='v452-form-section';
-        var h=document.createElement('div');
-        h.className='v452-section-title';
-        h.textContent=label;
-        sec.appendChild(h);
-        var g=document.createElement('div');
-        g.className='v437-form-grid';
-        nodes.forEach(function(n){g.appendChild(n);});
-        sec.appendChild(g);
-        return sec;
-      }
-
-      function labelOf(node){
-        var l=node.querySelector('label');
-        return l ? l.textContent.trim() : '';
-      }
-
-      var details=[], period=[], budget=[];
-      fields.forEach(function(f){
-        var l=labelOf(f);
-        if(['תחילת חוזה','סיום חוזה'].indexOf(l)>=0) period.push(f);
-        else if(['תקציב כולל ₪','מטבע','סכום במט"ח','שער','תקציב מחושב ₪'].indexOf(l)>=0) budget.push(f);
-        else details.push(f);
-      });
-
-      var parent=grid.parentNode;
-      if(details.length) parent.insertBefore(makeSection('פרטי תורם',details), grid);
-      if(period.length) parent.insertBefore(makeSection('תקופת חוזה',period), grid);
-      if(budget.length) parent.insertBefore(makeSection('תקציב ומט״ח',budget), grid);
-      grid.remove();
-
-      if(green){
-        var sec=document.createElement('div');
-        sec.className='v452-form-section';
-        var h=document.createElement('div');
-        h.className='v452-section-title';
-        h.textContent='גמישות והנחיות ניצול';
-        sec.appendChild(h);
-        green.parentNode.insertBefore(sec, green);
-        sec.appendChild(green);
-      }
-    });
-  }
-
-  var oldRender=window.renderWDWInput;
-  if(typeof oldRender==='function'){
-    window.renderWDWInput=function(){
-      oldRender.apply(this, arguments);
-      setTimeout(groupDonorForm,0);
-    };
-  }
-})();
-</script>
 
 <style id="v494CL-donor-form-sections-and-timesheet-name">
 #tab-wdw .v452-donor-sectioned{
@@ -7202,74 +7095,7 @@ window.wdw447CloseDonorEdit=function(){
 }
 </style>
 
-<script id="v494CL-clean-timesheet-name-layout">
-(function(){
-  function cleanTimesheetNameField(){
-    document.querySelectorAll('#tab-wdw .v437-form-card').forEach(function(card){
-      var title = card.querySelector('.v437-form-title');
-      if(!title || title.textContent.indexOf('תורם') === -1) return;
 
-      // Remove visible helper/subtitle text while keeping the title itself.
-      var spans = title.querySelectorAll('span');
-      spans.forEach(function(s){
-        if((s.textContent||'').indexOf('אותו טופס') >= 0) s.textContent = '';
-      });
-
-      var nameInput = card.querySelector('input[id$="-name"]:not([id*="timesheet-name"])');
-      if(!nameInput) return;
-
-      var tsId = nameInput.id.replace(/-name$/, '-timesheet-name');
-      var tsInput = document.getElementById(tsId);
-
-      // If the old fallback already made the field, reuse it. If not, create it.
-      var tsField;
-      if(tsInput){
-        tsField = tsInput.closest('.v437-field') || tsInput.parentElement;
-      } else {
-        tsField = document.createElement('div');
-        tsInput = document.createElement('input');
-        tsInput.id = tsId;
-        tsInput.placeholder = 'שם התורם כפי שיופיע ב-Timesheet';
-        tsField.appendChild(tsInput);
-      }
-
-      tsField.classList.add('v437-field','v456-timesheet-field');
-      var label = tsField.querySelector('label');
-      if(!label){
-        label = document.createElement('label');
-        tsField.insertBefore(label, tsInput);
-      }
-      label.textContent = 'Timesheet name';
-
-      // Move it immediately after the donor-name field, inside the same grid.
-      var nameField = nameInput.closest('.v437-field') || nameInput.parentElement;
-      if(nameField && nameField.parentElement){
-        nameField.parentElement.insertBefore(tsField, nameField.nextSibling);
-      }
-
-      // Load existing saved value when editing a donor.
-      try{
-        var m = nameInput.id.match(/v437-donor-(?:new|edit)-(.+)-name$/);
-        if(m && window.S && S.wdw && Array.isArray(S.wdw.donors)){
-          var donor = S.wdw.donors.find(function(d){ return d.id === m[1]; });
-          if(donor && donor.timesheetName && !tsInput.value) tsInput.value = donor.timesheetName;
-        }
-      }catch(e){}
-    });
-  }
-
-  var oldRender = window.renderWDWInput;
-  if(typeof oldRender === 'function'){
-    window.renderWDWInput = function(){
-      oldRender.apply(this, arguments);
-      setTimeout(cleanTimesheetNameField, 0);
-    };
-  }
-
-  // Also run once for already-rendered forms.
-  setTimeout(cleanTimesheetNameField, 0);
-})();
-</script>
 
 <style id="v494CL-clean-timesheet-name-layout-style">
 #tab-wdw .v456-timesheet-field{
@@ -7474,48 +7300,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 </style>
 
 
-<script id="v494CL-reports-design-only">
-(function(){
-  function enhanceReportsUI(){
-    var root=document.getElementById('wdw-reports');
-    if(!root) return;
-    root.classList.add('v477-reports-root');
 
-    root.querySelectorAll('table').forEach(function(t){
-      t.classList.add('v477-report-table');
-      if(t.parentElement) t.parentElement.classList.add('v477-table-wrap');
-    });
-    root.querySelectorAll('select,input,button').forEach(function(el){
-      el.classList.add('v477-report-control');
-    });
-    root.querySelectorAll('h3,h4').forEach(function(h){
-      h.classList.add('v477-report-heading');
-    });
-
-    if(!root.querySelector('.v477-report-intro')){
-      var intro=document.createElement('div');
-      intro.className='v477-report-intro';
-      intro.innerHTML='<div class="v477-report-intro-title">דוחות</div><div class="v477-report-intro-text">מרכז עבודה פנימי לניהול תרומות, תורמים, עובדים ותפקידים, ולסיוע בהכנת דוחות תורמים. כל השדות והחישובים נשמרים כפי שהם.</div>';
-      root.insertBefore(intro, root.firstChild);
-    }
-  }
-  function run(){setTimeout(enhanceReportsUI,0);setTimeout(enhanceReportsUI,150);}
-  ['renderWDWReports','wdwRenderReports','renderReports','switchWDW'].forEach(function(fn){
-    if(typeof window[fn]==='function' && !window[fn].__v477ReportsDesign){
-      var old=window[fn];
-      window[fn]=function(){var r=old.apply(this,arguments);run();return r;};
-      window[fn].__v477ReportsDesign=true;
-    }
-  });
-  document.addEventListener('click',function(ev){
-    if(ev.target && ev.target.closest && ev.target.closest('#wdw-btn-reports,#wdw-reports button')) run();
-  },true);
-  document.addEventListener('change',function(ev){
-    if(ev.target && ev.target.closest && ev.target.closest('#wdw-reports')) run();
-  },true);
-  run();
-})();
-</script>
 <style id="v494CL-reports-design-only-style">
 #tab-wdw #wdw-reports.v477-reports-root{direction:rtl;background:#f4f6f8;padding:0;color:#111827}
 #tab-wdw #wdw-reports .v477-report-intro{background:#fff;border:1px solid #d5dce3;border-radius:16px;padding:18px 22px;margin:0 0 16px;box-shadow:0 2px 10px rgba(15,23,42,.05)}
@@ -7537,146 +7322,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 #tab-wdw #wdw-reports .wdw-num,#tab-wdw #wdw-reports td[style*="direction:ltr"]{direction:ltr!important;text-align:left!important;font-weight:900!important;white-space:nowrap!important}
 </style>
 
-<script id="v494CL-annual-year-button-real-load-fix">
-(function(){
-  function keyForYear(y){
-    if(typeof storeKey === 'function') return storeKey(y);
-    return 'rw_gisha_data_' + y;
-  }
 
-  function renderAnnualScreen(){
-    try{ if(typeof fillMonthYearSelects === 'function') fillMonthYearSelects(); }catch(e){}
-    try{ if(typeof buildJumps === 'function'){} }catch(e){}
-    try{ if(typeof renderAnnual === 'function') renderAnnual(); }catch(e){}
-    setTimeout(enhanceAnnualLayout,0);
-  }
-
-  function loadAnnualYear(y){
-    if(!window.S && typeof S === 'undefined') return;
-    window.S = window.S || S;
-    var previousUser = S.currentUser || '';
-    var previousWdw = S.wdw ? JSON.parse(JSON.stringify(S.wdw)) : null;
-    var previousHolidays = Array.isArray(S.holidays) ? JSON.parse(JSON.stringify(S.holidays)) : [];
-
-    // Save current year before moving.
-    try{ if(typeof saveLocally === 'function') saveLocally(); }catch(e){}
-
-    var raw = null;
-    try{ raw = localStorage.getItem(keyForYear(y)); }catch(e){}
-    if(raw){
-      try{
-        S = JSON.parse(raw);
-      }catch(e){
-        S.year = y;
-      }
-    }else{
-      // If no saved record exists for that year, keep the current structure but change year.
-      S.year = y;
-    }
-
-    // Preserve cross-year WDW structures exactly like the app already expects.
-    if(!S.currentUser && previousUser) S.currentUser = previousUser;
-    if(previousWdw && (!S.wdw || !S.wdw.donors || !S.wdw.donors.length)){
-      S.wdw = previousWdw;
-    }
-    if((!S.holidays || !S.holidays.length) && previousHolidays.length){
-      S.holidays = previousHolidays;
-    }
-    S.year = y;
-
-    try{ if(typeof saveLocally === 'function') saveLocally(); }catch(e){}
-  }
-
-  function updateIndicator(text){
-    var indicator=document.getElementById('annualShownYear');
-    if(indicator) indicator.textContent=text;
-  }
-
-  function enhanceAnnualLayout(){
-    var root=document.getElementById('annualContent');
-    if(!root) return;
-
-    root.querySelectorAll('table.ann-table').forEach(function(table){
-      table.classList.add('v480-annual-table-fixed');
-    });
-
-    var sel=document.getElementById('annualYearSelect');
-    if(!sel) return;
-
-    sel.removeAttribute('onchange');
-    sel.onchange=function(){
-      var _S3 = window.S || (typeof S !== 'undefined' ? S : null);
-      updateIndicator('נבחרה שנה: '+sel.value+' | מוצגת כרגע: '+((_S3&&_S3.year)?_S3.year:''));
-    };
-
-    var holder=sel.closest('.v449-year-control,.v471-year-control,.v472-year-control,.v478-year-control,.v479-year-control,.v480-year-control')||sel.parentElement;
-    if(!holder) return;
-    holder.classList.add('v480-year-control');
-
-    var btn=document.getElementById('annualShowYearBtn');
-    if(!btn){
-      btn=document.createElement('button');
-      btn.id='annualShowYearBtn';
-      btn.type='button';
-      btn.textContent='הצג';
-      btn.className='v480-show-year-btn';
-      sel.insertAdjacentElement('afterend',btn);
-    }
-    btn.className='v480-show-year-btn';
-
-    var indicator=document.getElementById('annualShownYear');
-    if(!indicator){
-      indicator=document.createElement('div');
-      indicator.id='annualShownYear';
-      indicator.className='v480-shown-year';
-    }
-    indicator.className='v480-shown-year';
-
-    // Put indicator to the left of the button in RTL layout by placing it after the button.
-    if(btn.nextSibling !== indicator){
-      btn.insertAdjacentElement('afterend', indicator);
-    }
-
-    btn.onclick=function(ev){
-      if(ev) ev.preventDefault();
-      var y=parseInt(sel.value,10);
-      if(!y) return;
-      window.S = window.S || (typeof S !== 'undefined' ? S : null);
-      if(!window.S) return;
-
-      loadAnnualYear(y);
-      renderAnnualScreen();
-
-      setTimeout(function(){
-        var sel2=document.getElementById('annualYearSelect');
-        if(sel2) sel2.value=String(y);
-        updateIndicator('תצוגת שנת: '+y);
-      },0);
-    };
-
-    var _S2 = window.S || (typeof S !== 'undefined' ? S : null);
-    var shown=(_S2&&_S2.year)?_S2.year:sel.value;
-    if(sel.value !== String(shown)) sel.value=String(shown);
-    updateIndicator('תצוגת שנת: '+shown);
-  }
-
-  function run(){setTimeout(enhanceAnnualLayout,0);setTimeout(enhanceAnnualLayout,150);}
-
-  if(typeof window.renderAnnual==='function'&&!window.renderAnnual.__v480AnnualLayout){
-    var oldRenderAnnual=window.renderAnnual;
-    window.renderAnnual=function(){var r=oldRenderAnnual.apply(this,arguments);run();return r;};
-    window.renderAnnual.__v480AnnualLayout=true;
-  }
-
-  if(typeof window.switchTab==='function'&&!window.switchTab.__v480AnnualLayout){
-    var oldSwitchTab=window.switchTab;
-    window.switchTab=function(tab){var r=oldSwitchTab.apply(this,arguments);if(tab==='annual')run();return r;};
-    window.switchTab.__v480AnnualLayout=true;
-  }
-
-  run();
-})();
-</script>
 
 <style id="v494CL-annual-year-button-real-load-fix-style">
 #tab-annual .v480-year-control{
@@ -7782,109 +7428,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 </style>
 
 
-<script id="v494CL-monthly-percent-annual-column">
-(function(){
-  function annualPct(months){
-    months = Array.isArray(months) ? months : [];
-    var total = months.reduce(function(a,b){ return a + (parseFloat(b)||0); }, 0);
-    return Math.round((total / 12) * 10) / 10;
-  }
 
-  function addAnnualColumns(){
-    var root = document.getElementById('wdw-monthlypct');
-    if(!root) return;
-
-    // Main table: עובד/תפקיד | שנתי | ינואר...
-    root.querySelectorAll('table.v486-table').forEach(function(table){
-      if(table.classList.contains('v487-annual-added')) return;
-      var headRow = table.querySelector('thead tr');
-      if(!headRow) return;
-      var th = document.createElement('th');
-      th.textContent = 'שנתי';
-      th.className = 'v487-annual-th';
-      headRow.insertBefore(th, headRow.children[1] || null);
-
-      table.querySelectorAll('tbody > tr.v486-main-row').forEach(function(row){
-        var monthCells = Array.from(row.querySelectorAll('td.v486-pct'));
-        var nums = monthCells.slice(0,12).map(function(td){
-          var t = (td.textContent || '').replace('%','').replace('—','').trim();
-          return parseFloat(t) || 0;
-        });
-        var val = annualPct(nums);
-        var td = document.createElement('td');
-        td.className = 'v486-pct v487-annual-cell ' + (val > 100 ? 'bad' : val >= 90 ? 'warn' : val >= 50 ? 'ok' : val > 0 ? 'low' : 'empty');
-        td.textContent = val ? (Number.isInteger(val) ? val : val.toFixed(1)) + '%' : '—';
-        row.insertBefore(td, row.children[1] || null);
-      });
-
-      table.querySelectorAll('tbody > tr.v486-detail-row > td').forEach(function(td){
-        td.setAttribute('colspan', '14');
-      });
-
-      table.classList.add('v487-annual-added');
-    });
-
-    // Detail donor matrix: תורם | שנתי | ינואר...
-    root.querySelectorAll('table.v486-detail-matrix').forEach(function(table){
-      if(table.classList.contains('v487-annual-added')) return;
-      var headRow = table.querySelector('thead tr');
-      if(!headRow) return;
-      var th = document.createElement('th');
-      th.textContent = 'שנתי';
-      th.className = 'v487-annual-th';
-      headRow.insertBefore(th, headRow.children[1] || null);
-
-      table.querySelectorAll('tbody > tr').forEach(function(row){
-        var monthCells = Array.from(row.querySelectorAll('td.v486-pct'));
-        if(!monthCells.length) return;
-        var nums = monthCells.slice(0,12).map(function(td){
-          var t = (td.textContent || '').replace('%','').replace('—','').trim();
-          return parseFloat(t) || 0;
-        });
-        var val = annualPct(nums);
-        var td = document.createElement('td');
-        td.className = 'v486-pct v487-annual-cell ' + (val > 100 ? 'bad' : val >= 90 ? 'warn' : val >= 50 ? 'ok' : val > 0 ? 'low' : 'empty');
-        td.textContent = val ? (Number.isInteger(val) ? val : val.toFixed(1)) + '%' : '—';
-        row.insertBefore(td, row.children[1] || null);
-      });
-
-      table.classList.add('v487-annual-added');
-    });
-  }
-
-  function run(){
-    setTimeout(addAnnualColumns,0);
-    setTimeout(addAnnualColumns,150);
-  }
-
-  if(typeof window.v486RenderMonthlyPct === 'function' && !window.v486RenderMonthlyPct.__v487Annual){
-    var old = window.v486RenderMonthlyPct;
-    window.v486RenderMonthlyPct = function(){
-      var r = old.apply(this, arguments);
-      run();
-      return r;
-    };
-    window.v486RenderMonthlyPct.__v487Annual = true;
-  }
-
-  if(typeof window.v485RenderMonthlyPct === 'function') window.v485RenderMonthlyPct = window.v486RenderMonthlyPct;
-  if(typeof window.v484RenderMonthlyPct === 'function') window.v484RenderMonthlyPct = window.v486RenderMonthlyPct;
-
-  document.addEventListener('click', function(ev){
-    if(ev.target && ev.target.closest && ev.target.closest('#wdw-btn-monthlypct,#wdw-monthlypct button,.v486-main-row')){
-      run();
-    }
-  }, true);
-
-  document.addEventListener('change', function(ev){
-    if(ev.target && ev.target.closest && ev.target.closest('#wdw-monthlypct')){
-      run();
-    }
-  }, true);
-
-  run();
-})();
-</script>
 
 <style id="v494CL-monthly-percent-annual-column-style">
 #tab-wdw table.v486-table th.v487-annual-th,
@@ -7914,7 +7458,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v552CL | גישה</title>
+<title>Reports_Workers v553CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8169,7 +7713,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v552CL</span>
+      <span class="topbar-title">Reports_Workers v553CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
