@@ -9,7 +9,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v564CL | גישה</title>
+<title>Reports_Workers v565CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -256,9 +256,7 @@ async function initPyodide(){
     <div class="login-logo">ג</div>
     <h2>Reports_Workers</h2>
     <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <select id="loginName" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;" onchange="updateLoginUI()">
-      <option value="">— בחר שם —</option>
-    </select>
+    <input type="text" id="loginName" placeholder="הכנס את שמך" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;" autocomplete="username">
     <div id="passwordField" style="display:none;">
       <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password">
       <div style="text-align:right;margin-top:-6px;margin-bottom:12px;">
@@ -279,7 +277,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v564CL</span>
+      <span class="topbar-title">Reports_Workers v565CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -761,27 +759,31 @@ function updateLoginUI(){
 }
 
 function initLoginScreen(){
-  const sel=document.getElementById('loginName');
-  if(!sel) return;
-
   if(!window.AUTH_ENABLED){
-    // מצב כבוי — שדה טקסט רגיל
-    sel.outerHTML='<input type="text" id="loginName" placeholder="הכנס את שמך" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;">';
+    // מצב כבוי — input רגיל, ללא סיסמה
     return;
   }
 
-  // מצב פעיל — מלא את הרשימה רק מעובדים עם הרשאה
+  // מצב פעיל — החלף input ב-select עם שמות מורשים
+  const inp=document.getElementById('loginName');
+  if(!inp) return;
+
   const workers=(S&&S.workers)||[];
   const authorized=workers.filter(w=>w.accessLevel&&w.accessLevel!=='');
+
+  const sel=document.createElement('select');
+  sel.id='loginName';
+  sel.style.cssText='width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;';
   sel.innerHTML='<option value="">— בחר שם —</option>';
   authorized.forEach(w=>{
     const o=document.createElement('option');
     o.value=w.name; o.textContent=w.name;
     sel.appendChild(o);
   });
+  inp.replaceWith(sel);
 
   const pf=document.getElementById('passwordField');
-  if(pf) pf.style.display='none';
+  if(pf) pf.style.display='block';
 }
 
 // עמודת הרשאות בטבלת עובדים
@@ -7607,7 +7609,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v564CL | גישה</title>
+<title>Reports_Workers v565CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7847,9 +7849,7 @@ async function initPyodide(){
     <div class="login-logo">ג</div>
     <h2>Reports_Workers</h2>
     <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <select id="loginName" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;" onchange="updateLoginUI()">
-      <option value="">— בחר שם —</option>
-    </select>
+    <input type="text" id="loginName" placeholder="הכנס את שמך" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;" autocomplete="username">
     <div id="passwordField" style="display:none;">
       <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password">
       <div style="text-align:right;margin-top:-6px;margin-bottom:12px;">
@@ -7870,7 +7870,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v564CL</span>
+      <span class="topbar-title">Reports_Workers v565CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
