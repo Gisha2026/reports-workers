@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v555CL | גישה</title>
+<title>Reports_Workers v556CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v555CL</span>
+      <span class="topbar-title">Reports_Workers v556CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7458,7 +7458,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v555CL | גישה</title>
+<title>Reports_Workers v556CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7713,7 +7713,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v555CL</span>
+      <span class="topbar-title">Reports_Workers v556CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16486,6 +16486,120 @@ window.wdwRecalcAmountWorkers = function() {
 };
 
 })();
+</script>
+
+<script id="v556CL-calc-engine">
+// ===== v556CL: calcWorkerPct — מנוע חישוב מרכזי =====
+// Pure function — לא משנה שום אובייקט חיצוני
+// חתימה: calcWorkerPct(workerRow, monthKey)
+// workerRow = { worker: {...}, donor: {...} }
+// מחזיר: { base: number, replacement: number, total: number }
+
+window.calcWorkerPct = function(workerRow, monthKey) {
+  var res = { base: 0, replacement: 0, total: 0 };
+
+  if (!workerRow || !monthKey) return res;
+
+  var w = workerRow.worker;
+  var d = workerRow.donor;
+
+  if (!w || !d) return res;
+
+  // בדיקת סטטוס תורם
+  if (d.status === 'inactive' ||
+      (typeof WDW_STATUS !== 'undefined' && d.status === WDW_STATUS.INACTIVE)) {
+    return res;
+  }
+
+  // בדיקת טווח עובד
+  var wStart = String(w.startMonth || w.startDate || '').substring(0, 7);
+  var wEnd   = String(w.endMonth   || w.endDate   || '').substring(0, 7);
+  if (wStart && monthKey < wStart) return res;
+  if (wEnd   && monthKey > wEnd)   return res;
+
+  // ===== שלב 1: חודש חסום — יציאה מיידית, אפס על הכל =====
+  if (w.blockedMonths && w.blockedMonths.indexOf(monthKey) !== -1) {
+    return res;
+  }
+
+  // ===== שלב 2: monthlyPct override — hasOwnProperty (לא falsy check) =====
+  if (w.monthlyPct && Object.prototype.hasOwnProperty.call(w.monthlyPct, monthKey)) {
+    res.base = parseFloat(w.monthlyPct[monthKey]) || 0;
+  }
+
+  // ===== שלב 3+4: חישוב בסיס רגיל =====
+  else {
+    var _S = window.S || (typeof S !== 'undefined' ? S : null);
+    var empCosts = (_S && _S.wdw && _S.wdw.employerCosts) || {};
+    var empCostAnnual = parseFloat(empCosts[w.name]) || 0;
+
+    if (window.isAmountFunding && window.isAmountFunding(w)) {
+      // שלב 3: סכום לתקופה / סכום חודשי / סכום קבוע
+      if (empCostAnnual > 0) {
+        var totalAmount = parseFloat(w.totalPeriodAmount) || parseFloat(w.value) || 0;
+        var mStart = wStart || String(d.startDate || '').substring(0, 7);
+        var mEnd   = wEnd   || String(d.endDate   || '').substring(0, 7);
+
+        // חישוב חודשים פעילים (כולל הפחתת blockedMonths)
+        var activeMonths = 0;
+        if (mStart && mEnd && mStart <= mEnd) {
+          var sy = parseInt(mStart.substring(0, 4)), sm = parseInt(mStart.substring(5, 7));
+          var ey = parseInt(mEnd.substring(0, 4)),   em = parseInt(mEnd.substring(5, 7));
+          activeMonths = (ey - sy) * 12 + (em - sm) + 1;
+        }
+
+        // הפחתת חודשים חסומים מהמכנה
+        var blocked = (w.blockedMonths && Array.isArray(w.blockedMonths))
+          ? w.blockedMonths.length : 0;
+        activeMonths = Math.max(1, activeMonths - blocked);
+
+        var empCostMonthly = empCostAnnual / 12;
+        if (activeMonths > 0 && empCostMonthly > 0) {
+          // חישוב float מלא — עיגול רק בסוף
+          res.base = (totalAmount / activeMonths) / empCostMonthly * 100;
+        }
+      }
+    } else {
+      // שלב 4: אחוז קבוע
+      res.base = parseFloat(w.value) || 0;
+    }
+  }
+
+  // ===== שלב 5: replacement — תמיד (החודש אינו חסום, הגענו לכאן) =====
+  var repl = 0;
+
+  // replacesPct ראשי עם בדיקת תקופה
+  if (w.replacesPct) {
+    var replStart = String(w.replaceStartMonth || w.replacementStartMonth ||
+                           w.replacesStart     || w.replacementStart     || '').substring(0, 7);
+    var replEnd   = String(w.replaceEndMonth   || w.replacementEndMonth  ||
+                           w.replacesEnd       || w.replacementEnd       || '').substring(0, 7);
+    var replOk = true;
+    if (replStart && monthKey < replStart) replOk = false;
+    if (replEnd   && monthKey > replEnd)   replOk = false;
+    if (replOk) repl += parseFloat(w.replacesPct) || 0;
+  }
+
+  // extraReplaces עם בדיקת תקופה לכל אחד
+  (w.extraReplaces || []).forEach(function(r) {
+    if (!r || !r.pct) return;
+    var rStart = String(r.startMonth || r.replaceStartMonth || '').substring(0, 7);
+    var rEnd   = String(r.endMonth   || r.replaceEndMonth   || '').substring(0, 7);
+    if (rStart && monthKey < rStart) return;
+    if (rEnd   && monthKey > rEnd)   return;
+    repl += parseFloat(r.pct) || 0;
+  });
+
+  res.replacement = repl;
+
+  // ===== עיגול אחד בלבד — בסוף (גמיני + צ'ט) =====
+  res.base        = Math.max(0, Math.round(res.base        * 10) / 10);
+  res.replacement = Math.max(0, Math.round(res.replacement * 10) / 10);
+  res.total       = Math.max(0, Math.round((res.base + res.replacement) * 10) / 10);
+
+  return res;
+};
+// ===== סוף calcWorkerPct =====
 </script>
 
 </body>
