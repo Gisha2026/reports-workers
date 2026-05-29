@@ -1,9 +1,15 @@
 <!DOCTYPE html>
+<!-- ============================================================ -->
+<!-- מתג מערכת הרשאות — שנה ל-true כדי להפעיל סיסמאות          -->
+<!-- AUTH_ENABLED = false  →  האפליקציה פתוחה לכולם (כמו היום) -->
+<!-- AUTH_ENABLED = true   →  נדרשת סיסמה בכניסה               -->
+<!-- ============================================================ -->
+<script>window.AUTH_ENABLED = false;</script>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v563CL | גישה</title>
+<title>Reports_Workers v564CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -250,7 +256,15 @@ async function initPyodide(){
     <div class="login-logo">ג</div>
     <h2>Reports_Workers</h2>
     <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <input type="text" id="loginName" placeholder="הכנס את שמך">
+    <select id="loginName" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;" onchange="updateLoginUI()">
+      <option value="">— בחר שם —</option>
+    </select>
+    <div id="passwordField" style="display:none;">
+      <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password">
+      <div style="text-align:right;margin-top:-6px;margin-bottom:12px;">
+        <a href="#" onclick="resetPassword();return false;" style="font-size:11px;color:#00897B;text-decoration:none;">שכחתי סיסמה</a>
+      </div>
+    </div>
     <button onclick="doLogin()">כניסה</button>
     <div class="login-divider"></div>
     <p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
@@ -265,7 +279,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v563CL</span>
+      <span class="topbar-title">Reports_Workers v564CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -400,7 +414,7 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th id="authColHeader" style="padding:4px 8px;text-align:right;font-weight:500;display:none;">הרשאה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
@@ -416,7 +430,27 @@ async function initPyodide(){
         <div id="tokStatus"></div>
       </div>
     </div>
-    <div id="stab-content-roles" style="display:none;">
+    <div id="auth-security-box" style="display:none;margin-top:18px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:14px 16px;direction:rtl;">
+  <div style="font-size:13px;font-weight:600;color:#166534;margin-bottom:10px;">🔒 שאלת ביטחון — איפוס סיסמת מנהל</div>
+  <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+    <div style="flex:1;min-width:180px;">
+      <div style="font-size:11px;color:#666;margin-bottom:4px;">בחר שאלה</div>
+      <select id="secQ" style="width:100%;font-size:12px;padding:5px;direction:rtl;">
+        <option>שם העיר שבה נולדתי</option>
+        <option>שם הספר האהוב עלי</option>
+        <option>שם בית הספר הראשון שלי</option>
+        <option>שם החיה הראשונה שלי</option>
+      </select>
+    </div>
+    <div style="flex:1;min-width:180px;">
+      <div style="font-size:11px;color:#666;margin-bottom:4px;">תשובה סודית</div>
+      <input type="text" id="secA" placeholder="הכנס תשובה" style="width:100%;font-size:12px;padding:5px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+    </div>
+    <button onclick="saveSecurityQuestion()" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">שמור</button>
+  </div>
+</div>
+
+<div id="stab-content-roles" style="display:none;">
       <div class="s-sec">
         <h3>תפקידים</h3>
         <p style="font-size:12px;color:#666;margin-bottom:12px;">רשימת התפקידים בעמותה. בעת הוספת עובד לתורם ניתן לבחור תפקיד מרשימה זו.</p>
@@ -684,8 +718,110 @@ function fillMonthYearSelects(){
 function doLogin(){
   const n=document.getElementById('loginName').value.trim();
   if(!n){alert('נא להכניס שם');return;}
-  S.currentUser=n; startApp();
+
+  // אם מערכת ההרשאות כבויה — כניסה חופשית
+  if(!window.AUTH_ENABLED){
+    S.currentUser=n; startApp(); return;
+  }
+
+  // בדיקת סיסמה
+  const pwd=document.getElementById('loginPassword')?document.getElementById('loginPassword').value:'';
+  const workers=S.workers||[];
+  const match=workers.find(w=>w.name===n && w.accessLevel && w.accessLevel!=='');
+  if(!match){alert('משתמש זה אינו מורשה להיכנס');return;}
+  if(!match.password){alert('לא הוגדרה סיסמה למשתמש זה. פנה למנהל.');return;}
+  if(match.password!==pwd){alert('סיסמה שגויה');return;}
+
+  S.currentUser=n;
+  S.currentUserLevel=match.accessLevel;
+  startApp();
 }
+
+function resetPassword(){
+  const q=S.securityQuestion||'';
+  const a=S.securityAnswer||'';
+  if(!q||!a){alert('לא הוגדרה שאלת ביטחון. פנה לתמיכה.');return;}
+  const ans=prompt('שאלת ביטחון: '+q+'\n\nהכנס תשובה:');
+  if(!ans)return;
+  if(ans.trim()!==a.trim()){alert('תשובה שגויה');return;}
+  const np=prompt('הכנס סיסמה חדשה:');
+  if(!np)return;
+  const workers=S.workers||[];
+  const me=workers.find(w=>w.accessLevel==='ניהול');
+  if(me){me.password=np;saveLocally();saveData();alert('הסיסמה אופסה בהצלחה');}
+}
+
+
+// ===== מערכת הרשאות =====
+
+function updateLoginUI(){
+  if(!window.AUTH_ENABLED) return;
+  const pf=document.getElementById('passwordField');
+  if(pf) pf.style.display='block';
+}
+
+function initLoginScreen(){
+  const sel=document.getElementById('loginName');
+  if(!sel) return;
+
+  if(!window.AUTH_ENABLED){
+    // מצב כבוי — שדה טקסט רגיל
+    sel.outerHTML='<input type="text" id="loginName" placeholder="הכנס את שמך" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;">';
+    return;
+  }
+
+  // מצב פעיל — מלא את הרשימה רק מעובדים עם הרשאה
+  const workers=(S&&S.workers)||[];
+  const authorized=workers.filter(w=>w.accessLevel&&w.accessLevel!=='');
+  sel.innerHTML='<option value="">— בחר שם —</option>';
+  authorized.forEach(w=>{
+    const o=document.createElement('option');
+    o.value=w.name; o.textContent=w.name;
+    sel.appendChild(o);
+  });
+
+  const pf=document.getElementById('passwordField');
+  if(pf) pf.style.display='none';
+}
+
+// עמודת הרשאות בטבלת עובדים
+function renderPermCell(w,i){
+  if(!window.AUTH_ENABLED) return '';
+  const level=w.accessLevel||'';
+  const opts=['ניהול','עדכון','צפייה'].map(v=>`<option value="${v}" ${level===v?'selected':''}>${v}</option>`).join('');
+  const hasPwd=!!w.password;
+  const pwdBtn=level?`<button onclick="openSetPassword(${i})" style="font-size:10px;padding:2px 7px;border:1px solid #ddd;border-radius:4px;background:white;cursor:pointer;color:#555;">${hasPwd?'שנה סיסמה':'הגדר סיסמה'}</button>`:'';
+  return `<td style="padding:4px 6px;white-space:nowrap;">
+    <select onchange="S.workers[${i}].accessLevel=this.value;if(!this.value)S.workers[${i}].password='';renderWorkerList();saveLocally();saveData();"
+      style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;">
+      <option value="">—</option>${opts}
+    </select>
+    ${pwdBtn}
+  </td>`;
+}
+
+function openSetPassword(i){
+  const w=S.workers[i];
+  const np=prompt('הגדר סיסמה עבור '+w.name+':');
+  if(np===null) return;
+  if(!np){alert('סיסמה לא יכולה להיות ריקה');return;}
+  w.password=np;
+  saveLocally(); saveData();
+  renderWorkerList();
+  alert('סיסמה נשמרה');
+}
+
+// שאלת ביטחון
+function saveSecurityQuestion(){
+  const q=document.getElementById('secQ');
+  const a=document.getElementById('secA');
+  if(!q||!a||!q.value||!a.value){alert('נא למלא שאלה ותשובה');return;}
+  S.securityQuestion=q.value;
+  S.securityAnswer=a.value;
+  saveLocally(); saveData();
+  alert('שאלת הביטחון נשמרה');
+}
+// ===== סוף מערכת הרשאות =====
 
 function startApp(){
   document.getElementById('loginScreen').style.display='none';
@@ -694,8 +830,16 @@ function startApp(){
   fillMonthYearSelects();
   renderAll();
   startSyncLoop();
+  // הצג עמודת הרשאות אם מערכת פעילה
+  const authH=document.getElementById('authColHeader');
+  if(authH&&window.AUTH_ENABLED) authH.style.display='';
   // Only show token modal if no token AND user hasn't dismissed it before
   if(!getToken()&&!localStorage.getItem('rw_tok_skipped')) document.getElementById('tokenModal').classList.add('open');
+}
+
+// קריאה לאתחול מסך הכניסה — אחרי טעינת S
+function initAppAndLogin(){
+  initLoginScreen();
 }
 
 // ===== TOKEN =====
@@ -1230,6 +1374,9 @@ function importExcel(input){
 
 // ===== WORKERS =====
 function renderWorkerList(){
+  // הצג שאלת ביטחון ועמודת הרשאות אם מערכת פעילה
+  const sb=document.getElementById('auth-security-box');
+  if(sb) sb.style.display=window.AUTH_ENABLED?'block':'none';
   const div=document.getElementById('workerList');
   div.innerHTML='';
   const act=S.workers.filter(w=>w.active);
@@ -1269,6 +1416,7 @@ function mkWRow(w,i){
     statusHtml += ` <span class="badge-days">${daysCount} ימים</span>`;
   }
   const roleOpts=(S.roles||[]).map(r=>`<option value="${r}" ${(w.role===r)?'selected':''}>${r}</option>`).join('');
+  const permHtml=window.AUTH_ENABLED?renderPermCell(w,i):'';
   r.innerHTML=`
     <span class="wname">${w.name}</span>
     <span style="font-size:11px;color:#555;">
@@ -1279,6 +1427,7 @@ function mkWRow(w,i){
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
+    ${window.AUTH_ENABLED?permHtml:''}
     ${editBtn}
     ${btn}
   `;
@@ -7458,7 +7607,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v563CL | גישה</title>
+<title>Reports_Workers v564CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7698,7 +7847,15 @@ async function initPyodide(){
     <div class="login-logo">ג</div>
     <h2>Reports_Workers</h2>
     <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <input type="text" id="loginName" placeholder="הכנס את שמך">
+    <select id="loginName" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;text-align:right;" onchange="updateLoginUI()">
+      <option value="">— בחר שם —</option>
+    </select>
+    <div id="passwordField" style="display:none;">
+      <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password">
+      <div style="text-align:right;margin-top:-6px;margin-bottom:12px;">
+        <a href="#" onclick="resetPassword();return false;" style="font-size:11px;color:#00897B;text-decoration:none;">שכחתי סיסמה</a>
+      </div>
+    </div>
     <button onclick="doLogin()">כניסה</button>
     <div class="login-divider"></div>
     <p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
@@ -7713,7 +7870,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v563CL</span>
+      <span class="topbar-title">Reports_Workers v564CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7848,7 +8005,7 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th id="authColHeader" style="padding:4px 8px;text-align:right;font-weight:500;display:none;">הרשאה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
@@ -8132,7 +8289,37 @@ function fillMonthYearSelects(){
 function doLogin(){
   const n=document.getElementById('loginName').value.trim();
   if(!n){alert('נא להכניס שם');return;}
-  S.currentUser=n; startApp();
+
+  // אם מערכת ההרשאות כבויה — כניסה חופשית
+  if(!window.AUTH_ENABLED){
+    S.currentUser=n; startApp(); return;
+  }
+
+  // בדיקת סיסמה
+  const pwd=document.getElementById('loginPassword')?document.getElementById('loginPassword').value:'';
+  const workers=S.workers||[];
+  const match=workers.find(w=>w.name===n && w.accessLevel && w.accessLevel!=='');
+  if(!match){alert('משתמש זה אינו מורשה להיכנס');return;}
+  if(!match.password){alert('לא הוגדרה סיסמה למשתמש זה. פנה למנהל.');return;}
+  if(match.password!==pwd){alert('סיסמה שגויה');return;}
+
+  S.currentUser=n;
+  S.currentUserLevel=match.accessLevel;
+  startApp();
+}
+
+function resetPassword(){
+  const q=S.securityQuestion||'';
+  const a=S.securityAnswer||'';
+  if(!q||!a){alert('לא הוגדרה שאלת ביטחון. פנה לתמיכה.');return;}
+  const ans=prompt('שאלת ביטחון: '+q+'\n\nהכנס תשובה:');
+  if(!ans)return;
+  if(ans.trim()!==a.trim()){alert('תשובה שגויה');return;}
+  const np=prompt('הכנס סיסמה חדשה:');
+  if(!np)return;
+  const workers=S.workers||[];
+  const me=workers.find(w=>w.accessLevel==='ניהול');
+  if(me){me.password=np;saveLocally();saveData();alert('הסיסמה אופסה בהצלחה');}
 }
 
 function startApp(){
@@ -8142,6 +8329,9 @@ function startApp(){
   fillMonthYearSelects();
   renderAll();
   startSyncLoop();
+  // הצג עמודת הרשאות אם מערכת פעילה
+  const authH=document.getElementById('authColHeader');
+  if(authH&&window.AUTH_ENABLED) authH.style.display='';
   // Only show token modal if no token AND user hasn't dismissed it before
   if(!getToken()&&!localStorage.getItem('rw_tok_skipped')) document.getElementById('tokenModal').classList.add('open');
 }
@@ -8712,6 +8902,7 @@ function mkWRow(w,i){
     statusHtml += ` <span class="badge-days">${daysCount} ימים</span>`;
   }
   const roleOpts=(S.roles||[]).map(r=>`<option value="${r}" ${(w.role===r)?'selected':''}>${r}</option>`).join('');
+  const permHtml=window.AUTH_ENABLED?renderPermCell(w,i):'';
   r.innerHTML=`
     <span class="wname">${w.name}</span>
     <span style="font-size:11px;color:#555;">
@@ -8722,6 +8913,7 @@ function mkWRow(w,i){
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
+    ${window.AUTH_ENABLED?permHtml:''}
     ${editBtn}
     ${btn}
   `;
