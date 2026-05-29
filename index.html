@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v558CL | גישה</title>
+<title>Reports_Workers v559CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v558CL</span>
+      <span class="topbar-title">Reports_Workers v559CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7458,7 +7458,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v558CL | גישה</title>
+<title>Reports_Workers v559CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7713,7 +7713,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v558CL</span>
+      <span class="topbar-title">Reports_Workers v559CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16664,6 +16664,34 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 
 })();
 // ===== סוף v557CL-global-wrappers =====
+</script>
+
+<script id="v559CL-getWorkerFundingPct-wrapper">
+// ===== v559CL: getWorkerFundingPct → wrapper ל-calcWorkerPct =====
+// ישיבה 4 של שלב 7: getWorkerFundingPct הופכת wrapper.
+// כל workerTotal פנימי ב-IIFEs קורא ל-getWorkerFundingPct.
+// עכשיו getWorkerFundingPct קוראת ל-wdwWorkerTotalPct שכבר מחובר ל-calcWorkerPct.
+// תוצאה: מנוע חישוב אחד בלבד לכל המסכים.
+
+;(function() {
+  var _origGetWorkerFundingPct = window.getWorkerFundingPct;
+
+  window.getWorkerFundingPct = function(workerName, month, mode) {
+    // mode='monthly' → wdwWorkerTotalPct שקורא ל-calcWorkerPct
+    if (mode === 'monthly' || !mode) {
+      if (window.wdwWorkerTotalPct) {
+        return window.wdwWorkerTotalPct(workerName, month);
+      }
+    }
+    // mode='annual' → fallback לישן (calcWorkerPct לא תומכת ב-annual עדיין)
+    if (_origGetWorkerFundingPct) {
+      return _origGetWorkerFundingPct(workerName, month, mode);
+    }
+    return 0;
+  };
+
+})();
+// ===== סוף v559CL-getWorkerFundingPct-wrapper =====
 </script>
 
 </body>
