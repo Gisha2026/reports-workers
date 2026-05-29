@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v556CL | גישה</title>
+<title>Reports_Workers v557CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -265,7 +265,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v556CL</span>
+      <span class="topbar-title">Reports_Workers v557CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7458,7 +7458,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v556CL | גישה</title>
+<title>Reports_Workers v557CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7713,7 +7713,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v556CL</span>
+      <span class="topbar-title">Reports_Workers v557CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16600,6 +16600,57 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   return res;
 };
 // ===== סוף calcWorkerPct =====
+</script>
+
+<script id="v557CL-global-wrappers">
+// ===== v557CL: wrappers גלובליים — מחברים wdwBasePct/wdwReplacePct/wdwTotalRowPct ל-calcWorkerPct =====
+// לא נוגע בשום IIFE קיים. רק מחליף את הגלובליות שנקראות מבחוץ.
+
+;(function() {
+  // helper: מוצא את ה-donor של worker לפי שם
+  function findDonorForWorker(w) {
+    var _S = window.S || (typeof S !== 'undefined' ? S : null);
+    if (!_S || !_S.wdw || !_S.wdw.donors) return null;
+    var donors = _S.wdw.donors;
+    for (var i = 0; i < donors.length; i++) {
+      var d = donors[i];
+      var workers = d.workers || [];
+      for (var j = 0; j < workers.length; j++) {
+        if (workers[j] === w) return d; // השוואת reference מדויקת
+      }
+    }
+    return null;
+  }
+
+  // wrapper: wdwBasePct
+  window.wdwBasePct = function(w, month) {
+    if (!window.calcWorkerPct) return 0;
+    var donor = findDonorForWorker(w);
+    if (!donor) return 0;
+    var r = window.calcWorkerPct({ worker: w, donor: donor }, month);
+    return Number(isFinite(r.base) ? r.base : 0);
+  };
+
+  // wrapper: wdwReplacePct
+  window.wdwReplacePct = function(w, month) {
+    if (!window.calcWorkerPct) return 0;
+    var donor = findDonorForWorker(w);
+    if (!donor) return 0;
+    var r = window.calcWorkerPct({ worker: w, donor: donor }, month);
+    return Number(isFinite(r.replacement) ? r.replacement : 0);
+  };
+
+  // wrapper: wdwTotalRowPct
+  window.wdwTotalRowPct = function(w, month) {
+    if (!window.calcWorkerPct) return 0;
+    var donor = findDonorForWorker(w);
+    if (!donor) return 0;
+    var r = window.calcWorkerPct({ worker: w, donor: donor }, month);
+    return Number(isFinite(r.total) ? r.total : 0);
+  };
+
+})();
+// ===== סוף v557CL-global-wrappers =====
 </script>
 
 </body>
