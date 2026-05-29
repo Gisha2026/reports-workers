@@ -9,7 +9,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v567CL | גישה</title>
+<title>Reports_Workers v568CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -87,7 +87,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
+.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 120px 90px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
 .wname{font-weight:500;font-size:13px;text-align:right}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px;text-align:center}
 .wact{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}.wend{background:#ffcdd2;color:#c62828;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}
@@ -277,7 +277,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v567CL</span>
+      <span class="topbar-title">Reports_Workers v568CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -412,12 +412,12 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:4px 8px;text-align:right;font-weight:500;">הרשאה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:4px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:4px 8px;text-align:right;font-weight:500;">סיסמה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
         </div>
-        <div id="auth-security-box" style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;">
+        <div id="auth-security-box" style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;max-width:fit-content;">
           <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
             <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;">הפעל מערכת סיסמאות</button>
@@ -790,14 +790,14 @@ function renderPermCell(w,i){
   const level=w.accessLevel||'';
   const opts=['ניהול','עדכון','צפייה'].map(v=>`<option value="${v}" ${level===v?'selected':''}>${v}</option>`).join('');
   const hasPwd=!!w.password;
-  const pwdBtn=level?`<button onclick="openSetPassword(${i})" style="font-size:10px;padding:2px 7px;border:1px solid #ddd;border-radius:4px;background:white;cursor:pointer;color:#555;">${hasPwd?'שנה סיסמה':'הגדר סיסמה'}</button>`:'';
-  return `<td style="padding:4px 6px;white-space:nowrap;">
+  const permSpan=`<span style="font-size:11px;">
     <select onchange="S.workers[${i}].accessLevel=this.value;if(!this.value)S.workers[${i}].password='';renderWorkerList();saveLocally();saveData();"
       style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;">
       <option value="">—</option>${opts}
     </select>
-    ${pwdBtn}
-  </td>`;
+  </span>`;
+  const pwdSpan=level?`<span><button onclick="openSetPassword(${i})" class="edit-btn" style="font-size:10px;padding:2px 7px;">${hasPwd?'שנה סיסמה':'הגדר סיסמה'}</button></span>`:'<span></span>';
+  return permSpan+'|||'+pwdSpan;
 }
 
 function openSetPassword(i){
@@ -1414,7 +1414,7 @@ function mkWRow(w,i){
     statusHtml += ` <span class="badge-days">${daysCount} ימים</span>`;
   }
   const roleOpts=(S.roles||[]).map(r=>`<option value="${r}" ${(w.role===r)?'selected':''}>${r}</option>`).join('');
-  const permHtml=window.AUTH_ENABLED?renderPermCell(w,i):'';
+  const permHtml=renderPermCell(w,i);
   r.innerHTML=`
     <span class="wname">${w.name}</span>
     <span style="font-size:11px;color:#555;">
@@ -1425,7 +1425,8 @@ function mkWRow(w,i){
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
-    ${permHtml}
+    ${permHtml.split('|||')[0]||'<span></span>'}
+    ${permHtml.split('|||')[1]||'<span></span>'}
     ${editBtn}
     ${btn}
   `;
@@ -7652,7 +7653,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v567CL | גישה</title>
+<title>Reports_Workers v568CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7730,7 +7731,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
+.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 120px 90px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
 .wname{font-weight:500;font-size:13px;text-align:right}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px;text-align:center}
 .wact{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}.wend{background:#ffcdd2;color:#c62828;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}
@@ -7913,7 +7914,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v567CL</span>
+      <span class="topbar-title">Reports_Workers v568CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8048,12 +8049,12 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:4px 8px;text-align:right;font-weight:500;">הרשאה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:4px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:4px 8px;text-align:right;font-weight:500;">סיסמה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
         </div>
-        <div id="auth-security-box" style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;">
+        <div id="auth-security-box" style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;max-width:fit-content;">
           <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
             <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;">הפעל מערכת סיסמאות</button>
@@ -8962,7 +8963,7 @@ function mkWRow(w,i){
     statusHtml += ` <span class="badge-days">${daysCount} ימים</span>`;
   }
   const roleOpts=(S.roles||[]).map(r=>`<option value="${r}" ${(w.role===r)?'selected':''}>${r}</option>`).join('');
-  const permHtml=window.AUTH_ENABLED?renderPermCell(w,i):'';
+  const permHtml=renderPermCell(w,i);
   r.innerHTML=`
     <span class="wname">${w.name}</span>
     <span style="font-size:11px;color:#555;">
@@ -8973,7 +8974,8 @@ function mkWRow(w,i){
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
-    ${permHtml}
+    ${permHtml.split('|||')[0]||'<span></span>'}
+    ${permHtml.split('|||')[1]||'<span></span>'}
     ${editBtn}
     ${btn}
   `;
