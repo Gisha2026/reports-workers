@@ -9,7 +9,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v567CL | גישה</title>
+<title>Reports_Workers v566CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -277,7 +277,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v567CL</span>
+      <span class="topbar-title">Reports_Workers v566CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -417,25 +417,6 @@ async function initPyodide(){
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
         </div>
-        <div id="auth-security-box" style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;">
-          <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-            <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;">הפעל מערכת סיסמאות</button>
-            <button onclick="toggleAuthSystem(false)" class="end-btn">כבה מערכת סיסמאות</button>
-            <span id="authToggleStatus" style="font-size:11px;color:#666;"></span>
-          </div>
-          <div style="font-size:11px;color:#666;margin-bottom:6px;">שאלת ביטחון — איפוס סיסמת מנהל</div>
-          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
-            <select id="secQ" style="font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:4px;direction:rtl;flex:1;min-width:140px;">
-              <option>שם העיר שבה נולדתי</option>
-              <option>שם הספר האהוב עלי</option>
-              <option>שם בית הספר הראשון שלי</option>
-              <option>שם החיה הראשונה שלי</option>
-            </select>
-            <input type="text" id="secA" placeholder="תשובה סודית" style="flex:1;min-width:120px;font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-            <button onclick="saveSecurityQuestion()" class="edit-btn">שמור</button>
-          </div>
-        </div>
       </div>
       <div class="s-sec" style="margin-top:16px;">
         <h3>חיבור לגיטהאב</h3>
@@ -447,7 +428,33 @@ async function initPyodide(){
         <div id="tokStatus"></div>
       </div>
     </div>
-    <div id="stab-content-roles" style="display:none;">
+    <div id="auth-security-box" style="margin-top:18px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:14px 16px;direction:rtl;">
+  <div style="font-size:13px;font-weight:600;color:#166534;margin-bottom:10px;">🔒 הגדרות אבטחה</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <button onclick="toggleAuthSystem(true)" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">הפעל מערכת סיסמאות</button>
+    <button onclick="toggleAuthSystem(false)" style="padding:6px 14px;background:white;color:#c62828;border:1px solid #c62828;border-radius:5px;cursor:pointer;font-size:12px;">כבה מערכת סיסמאות</button>
+    <span id="authToggleStatus" style="font-size:12px;color:#555;"></span>
+  </div>
+  <div style="font-size:12px;font-weight:600;color:#166534;margin-bottom:8px;">שאלת ביטחון — איפוס סיסמת מנהל</div>
+  <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+    <div style="flex:1;min-width:180px;">
+      <div style="font-size:11px;color:#666;margin-bottom:4px;">בחר שאלה</div>
+      <select id="secQ" style="width:100%;font-size:12px;padding:5px;direction:rtl;">
+        <option>שם העיר שבה נולדתי</option>
+        <option>שם הספר האהוב עלי</option>
+        <option>שם בית הספר הראשון שלי</option>
+        <option>שם החיה הראשונה שלי</option>
+      </select>
+    </div>
+    <div style="flex:1;min-width:180px;">
+      <div style="font-size:11px;color:#666;margin-bottom:4px;">תשובה סודית</div>
+      <input type="text" id="secA" placeholder="הכנס תשובה" style="width:100%;font-size:12px;padding:5px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+    </div>
+    <button onclick="saveSecurityQuestion()" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">שמור</button>
+  </div>
+</div>
+
+<div id="stab-content-roles" style="display:none;">
       <div class="s-sec">
         <h3>תפקידים</h3>
         <p style="font-size:12px;color:#666;margin-bottom:12px;">רשימת התפקידים בעמותה. בעת הוספת עובד לתורם ניתן לבחור תפקיד מרשימה זו.</p>
@@ -7652,7 +7659,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v567CL | גישה</title>
+<title>Reports_Workers v566CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7913,7 +7920,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v567CL</span>
+      <span class="topbar-title">Reports_Workers v566CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8052,25 +8059,6 @@ async function initPyodide(){
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
-        </div>
-        <div id="auth-security-box" style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;">
-          <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-            <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;">הפעל מערכת סיסמאות</button>
-            <button onclick="toggleAuthSystem(false)" class="end-btn">כבה מערכת סיסמאות</button>
-            <span id="authToggleStatus" style="font-size:11px;color:#666;"></span>
-          </div>
-          <div style="font-size:11px;color:#666;margin-bottom:6px;">שאלת ביטחון — איפוס סיסמת מנהל</div>
-          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
-            <select id="secQ" style="font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:4px;direction:rtl;flex:1;min-width:140px;">
-              <option>שם העיר שבה נולדתי</option>
-              <option>שם הספר האהוב עלי</option>
-              <option>שם בית הספר הראשון שלי</option>
-              <option>שם החיה הראשונה שלי</option>
-            </select>
-            <input type="text" id="secA" placeholder="תשובה סודית" style="flex:1;min-width:120px;font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-            <button onclick="saveSecurityQuestion()" class="edit-btn">שמור</button>
-          </div>
         </div>
       </div>
       <div class="s-sec" style="margin-top:16px;">
