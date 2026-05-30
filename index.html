@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v571CL | גישה</title>
+<title>Reports_Workers v572CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -278,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v571CL</span>
+      <span class="topbar-title">Reports_Workers v572CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -414,36 +414,46 @@ async function initPyodide(){
       <div class="s-sec">
         <h3>עובדים</h3>
         <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;direction:rtl;">
-          <div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;">
+        <div style="margin-top:10px;direction:rtl;">
+
+          <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;">
             <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
             <div style="display:flex;gap:6px;align-items:center;">
               <button onclick="addWorker()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;white-space:nowrap;">הוסף</button>
-              <input type="text" id="newWorker" placeholder="שם עובד חדש" style="flex:1;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+              <input type="text" id="newWorker" placeholder="שם עובד חדש" style="flex:1;max-width:300px;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
             </div>
           </div>
-          <div id="auth-security-box" style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
-          <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
-          <button onclick="toggleAuthSystem(true)" style="width:100%;padding:5px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;margin-bottom:4px;">הפעל מערכת סיסמאות</button>
-          <button onclick="toggleAuthSystem(false)" style="width:100%;padding:5px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;margin-bottom:8px;">כבה מערכת סיסמאות</button>
-          <span id="authToggleStatus" style="font-size:10px;color:#666;"></span>
-          <div style="font-size:10px;color:#888;margin-bottom:4px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
-          <div style="display:flex;gap:4px;align-items:center;">
-            <select id="secQ" style="flex:2;font-size:10px;padding:3px 4px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-              <option>שם העיר שבה נולדתי</option>
-              <option>שם הספר האהוב עלי</option>
-              <option>שם בית הספר הראשון שלי</option>
-              <option>שם החיה הראשונה שלי</option>
-            </select>
-            <input type="text" id="secA" placeholder="תשובה" style="flex:1.5;font-size:10px;padding:3px 4px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-            <button onclick="saveSecurityQuestion()" style="padding:3px 8px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:10px;white-space:nowrap;">שמור</button>
+
+          <div id="auth-security-box" style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;direction:rtl;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
+            <div style="display:flex;gap:8px;margin-bottom:8px;">
+              <button onclick="toggleAuthSystem(true)" style="padding:5px 16px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;">הפעל מערכת סיסמאות</button>
+              <button onclick="toggleAuthSystem(false)" style="padding:5px 16px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;">כבה מערכת סיסמאות</button>
+              <span id="authToggleStatus" style="font-size:11px;color:#666;align-self:center;"></span>
+            </div>
+            <div style="font-size:11px;color:#888;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <select id="secQ" style="flex:2;max-width:260px;font-size:11px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+                <option>שם העיר שבה נולדתי</option>
+                <option>שם הספר האהוב עלי</option>
+                <option>שם בית הספר הראשון שלי</option>
+                <option>שם החיה הראשונה שלי</option>
+              </select>
+              <input type="text" id="secA" placeholder="תשובה סודית" style="flex:1;max-width:200px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+              <button onclick="saveSecurityQuestion()" style="padding:4px 12px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
+            </div>
           </div>
+
+          <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">חיבור לגיטהאב</div>
+            <div style="font-size:11px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב — ישמר לתמיד</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <input id="tokInput2" type="password" placeholder="ghp_..." style="flex:1;max-width:300px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:ltr;">
+              <button onclick="saveTokenFromBox2()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
+            </div>
+            <div id="tokStatus2" style="font-size:11px;color:#4caf50;margin-top:4px;"></div>
           </div>
-          <div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
-            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">חיבור לגיטהאב</div>
-            <p style="font-size:10px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב</p>
-            <div style="display:flex;gap:6px;align-items:center;"><input id="tokInput2" type="password" placeholder="ghp_..." style="flex:1;font-size:11px;padding:4px;border:1px solid #ddd;border-radius:4px;direction:ltr;"><button onclick="saveTokenFromBox2()" style="padding:3px 8px;background:#1B6B5A;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button></div><div id="tokStatus2" style="font-size:10px;color:#4caf50;margin-top:4px;"></div>
-          </div>
+
         </div>
       </div>
       <div class="s-sec" style="margin-top:16px;display:none;">
@@ -4215,7 +4225,7 @@ function sendEmail(){
     const lvlOptsW=['ניהול','עדכון','צפייה'].map(v=>'<option value="'+v+'" '+(lvlW===v?'selected':'')+'>'+v+'</option>').join('');
     const hasPwdW=!!w.password;
     const permSpanW='<select onchange="S.workers['+i+'].accessLevel=this.value;if(!this.value)delete S.workers['+i+'].password;renderWorkerList();saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;"><option value="">—</option>'+lvlOptsW+'</select>';
-    const pwdSpanW=lvlW?'<button onclick="openSetPassword('+i+')" class="edit-btn" style="font-size:10px;padding:2px 6px;">'+(hasPwdW?'שנה':'הגדר')+'</button>':'';
+    const pwdSpanW=lvlW?'<button onclick="openSetPassword('+i+')" style="font-size:11px;padding:3px 8px;border:1px solid #ddd;border-radius:4px;background:white;cursor:pointer;">'+(hasPwdW?'שנה סיסמה':'הגדר סיסמה')+'</button>':'';
     r.innerHTML=`
       <td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap;">${esc(w.name)}</td>
       <td style="padding:7px 8px;"><span style="display:flex;gap:4px;">${daysHtml}</span></td>
@@ -7620,7 +7630,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v571CL | גישה</title>
+<title>Reports_Workers v572CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7881,7 +7891,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v571CL</span>
+      <span class="topbar-title">Reports_Workers v572CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8017,36 +8027,46 @@ async function initPyodide(){
       <div class="s-sec">
         <h3>עובדים</h3>
         <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;direction:rtl;">
-          <div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;">
+        <div style="margin-top:10px;direction:rtl;">
+
+          <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;">
             <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
             <div style="display:flex;gap:6px;align-items:center;">
               <button onclick="addWorker()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;white-space:nowrap;">הוסף</button>
-              <input type="text" id="newWorker" placeholder="שם עובד חדש" style="flex:1;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+              <input type="text" id="newWorker" placeholder="שם עובד חדש" style="flex:1;max-width:300px;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
             </div>
           </div>
-          <div id="auth-security-box" style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
-          <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
-          <button onclick="toggleAuthSystem(true)" style="width:100%;padding:5px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;margin-bottom:4px;">הפעל מערכת סיסמאות</button>
-          <button onclick="toggleAuthSystem(false)" style="width:100%;padding:5px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;margin-bottom:8px;">כבה מערכת סיסמאות</button>
-          <span id="authToggleStatus" style="font-size:10px;color:#666;"></span>
-          <div style="font-size:10px;color:#888;margin-bottom:4px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
-          <div style="display:flex;gap:4px;align-items:center;">
-            <select id="secQ" style="flex:2;font-size:10px;padding:3px 4px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-              <option>שם העיר שבה נולדתי</option>
-              <option>שם הספר האהוב עלי</option>
-              <option>שם בית הספר הראשון שלי</option>
-              <option>שם החיה הראשונה שלי</option>
-            </select>
-            <input type="text" id="secA" placeholder="תשובה" style="flex:1.5;font-size:10px;padding:3px 4px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-            <button onclick="saveSecurityQuestion()" style="padding:3px 8px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:10px;white-space:nowrap;">שמור</button>
+
+          <div id="auth-security-box" style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;direction:rtl;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
+            <div style="display:flex;gap:8px;margin-bottom:8px;">
+              <button onclick="toggleAuthSystem(true)" style="padding:5px 16px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;">הפעל מערכת סיסמאות</button>
+              <button onclick="toggleAuthSystem(false)" style="padding:5px 16px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;">כבה מערכת סיסמאות</button>
+              <span id="authToggleStatus" style="font-size:11px;color:#666;align-self:center;"></span>
+            </div>
+            <div style="font-size:11px;color:#888;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <select id="secQ" style="flex:2;max-width:260px;font-size:11px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+                <option>שם העיר שבה נולדתי</option>
+                <option>שם הספר האהוב עלי</option>
+                <option>שם בית הספר הראשון שלי</option>
+                <option>שם החיה הראשונה שלי</option>
+              </select>
+              <input type="text" id="secA" placeholder="תשובה סודית" style="flex:1;max-width:200px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+              <button onclick="saveSecurityQuestion()" style="padding:4px 12px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
+            </div>
           </div>
+
+          <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">חיבור לגיטהאב</div>
+            <div style="font-size:11px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב — ישמר לתמיד</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <input id="tokInput2" type="password" placeholder="ghp_..." style="flex:1;max-width:300px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:ltr;">
+              <button onclick="saveTokenFromBox2()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
+            </div>
+            <div id="tokStatus2" style="font-size:11px;color:#4caf50;margin-top:4px;"></div>
           </div>
-          <div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
-            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">חיבור לגיטהאב</div>
-            <p style="font-size:10px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב</p>
-            <div style="display:flex;gap:6px;align-items:center;"><input id="tokInput2" type="password" placeholder="ghp_..." style="flex:1;font-size:11px;padding:4px;border:1px solid #ddd;border-radius:4px;direction:ltr;"><button onclick="saveTokenFromBox2()" style="padding:3px 8px;background:#1B6B5A;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button></div><div id="tokStatus2" style="font-size:10px;color:#4caf50;margin-top:4px;"></div>
-          </div>
+
         </div>
       </div>
       <div class="s-sec" style="margin-top:16px;display:none;">
@@ -12500,7 +12520,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     const lvlOptsW=['ניהול','עדכון','צפייה'].map(v=>'<option value="'+v+'" '+(lvlW===v?'selected':'')+'>'+v+'</option>').join('');
     const hasPwdW=!!w.password;
     const permSpanW='<select onchange="S.workers['+i+'].accessLevel=this.value;if(!this.value)delete S.workers['+i+'].password;renderWorkerList();saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;"><option value="">—</option>'+lvlOptsW+'</select>';
-    const pwdSpanW=lvlW?'<button onclick="openSetPassword('+i+')" class="edit-btn" style="font-size:10px;padding:2px 6px;">'+(hasPwdW?'שנה':'הגדר')+'</button>':'';
+    const pwdSpanW=lvlW?'<button onclick="openSetPassword('+i+')" style="font-size:11px;padding:3px 8px;border:1px solid #ddd;border-radius:4px;background:white;cursor:pointer;">'+(hasPwdW?'שנה סיסמה':'הגדר סיסמה')+'</button>':'';
     r.innerHTML=`
       <td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap;">${esc(w.name)}</td>
       <td style="padding:7px 8px;"><span style="display:flex;gap:4px;">${daysHtml}</span></td>
