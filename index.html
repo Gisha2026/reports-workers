@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v570CL | גישה</title>
+<title>Reports_Workers v571CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -96,7 +96,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .end-btn{background:#fff3e0;border:1px solid #FFB300;color:#E65100;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;white-space:nowrap;width:100%;}
 .edit-btn{background:#f5f5f5;border:1px solid #ccc;color:#555;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;width:100%;}
 .badge-days{font-size:11px;padding:3px 8px;border-radius:6px;background:#fff8e1;color:#f57f17;font-weight:500;display:inline-block;}
-.wday-btn{width:34px;height:34px;border-radius:8px;border:2px solid #00897B;background:#00897B;font-size:13px;cursor:pointer;font-weight:600;color:white;display:inline-flex;align-items:center;justify-content:center;}
+.wday-btn{width:28px;height:28px;border-radius:6px;border:1.5px solid #00897B;background:#00897B;font-size:11px;cursor:pointer;font-weight:600;color:white;display:inline-flex;align-items:center;justify-content:center;}
 .wday-btn.off{background:white;color:#ccc;border:2px solid #ddd;}
 .wdays-wrap{display:inline-flex;gap:6px;align-items:center;margin:0 6px;}
 .ended-sep{border-top:2px dashed #ccc;margin:8px 0 4px;color:#999;font-size:11px;padding-top:4px;text-align:center}
@@ -278,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v570CL</span>
+      <span class="topbar-title">Reports_Workers v571CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -413,32 +413,40 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:4px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:4px 8px;text-align:right;font-weight:500;">סיסמה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
-        <div class="add-row">
-          <input type="text" id="newWorker" placeholder="שם עובד חדש">
-          <button onclick="addWorker()">הוסף</button>
-        </div>
-        <div style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;max-width:900px;">
-          <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-            <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;font-size:11px;">הפעל מערכת סיסמאות</button>
-            <button onclick="toggleAuthSystem(false)" class="end-btn" style="font-size:11px;">כבה מערכת סיסמאות</button>
-            <span id="authToggleStatus" style="font-size:11px;color:#666;"></span>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;direction:rtl;">
+          <div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button onclick="addWorker()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;white-space:nowrap;">הוסף</button>
+              <input type="text" id="newWorker" placeholder="שם עובד חדש" style="flex:1;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+            </div>
           </div>
-          <div style="font-size:11px;color:#666;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
-          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
-            <select id="secQ" style="font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:4px;direction:rtl;min-width:180px;">
+          <div id="auth-security-box" style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
+          <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
+          <button onclick="toggleAuthSystem(true)" style="width:100%;padding:5px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;margin-bottom:4px;">הפעל מערכת סיסמאות</button>
+          <button onclick="toggleAuthSystem(false)" style="width:100%;padding:5px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;margin-bottom:8px;">כבה מערכת סיסמאות</button>
+          <span id="authToggleStatus" style="font-size:10px;color:#666;"></span>
+          <div style="font-size:10px;color:#888;margin-bottom:4px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
+          <div style="display:flex;gap:4px;align-items:center;">
+            <select id="secQ" style="flex:2;font-size:10px;padding:3px 4px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
               <option>שם העיר שבה נולדתי</option>
               <option>שם הספר האהוב עלי</option>
               <option>שם בית הספר הראשון שלי</option>
               <option>שם החיה הראשונה שלי</option>
             </select>
-            <input type="text" id="secA" placeholder="תשובה סודית" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;min-width:140px;">
-            <button onclick="saveSecurityQuestion()" class="edit-btn" style="font-size:11px;">שמור</button>
+            <input type="text" id="secA" placeholder="תשובה" style="flex:1.5;font-size:10px;padding:3px 4px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+            <button onclick="saveSecurityQuestion()" style="padding:3px 8px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:10px;white-space:nowrap;">שמור</button>
+          </div>
+          </div>
+          <div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">חיבור לגיטהאב</div>
+            <p style="font-size:10px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב</p>
+            <div style="display:flex;gap:6px;align-items:center;"><input id="tokInput2" type="password" placeholder="ghp_..." style="flex:1;font-size:11px;padding:4px;border:1px solid #ddd;border-radius:4px;direction:ltr;"><button onclick="saveTokenFromBox2()" style="padding:3px 8px;background:#1B6B5A;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button></div><div id="tokStatus2" style="font-size:10px;color:#4caf50;margin-top:4px;"></div>
           </div>
         </div>
       </div>
-      <div class="s-sec" style="margin-top:16px;">
+      <div class="s-sec" style="margin-top:16px;display:none;">
         <h3>חיבור לגיטהאב</h3>
         <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
         <div class="tok-row">
@@ -826,6 +834,13 @@ function initAuthUI(){
 
 // ===== TOKEN =====
 function getToken(){return localStorage.getItem(TOK_KEY)||'';}
+function saveTokenFromBox2(){
+  const t=document.getElementById('tokInput2');
+  if(!t||!t.value.trim()) return;
+  localStorage.setItem(TOK_KEY,t.value.trim());
+  const st=document.getElementById('tokStatus2');
+  if(st) st.textContent='✓ טוקן נשמר';
+}
 function saveToken(){
   const t=document.getElementById('tokInput').value.trim();
   if(!t)return;
@@ -4208,10 +4223,10 @@ function sendEmail(){
       <td style="padding:7px 8px;text-align:center;">${daysAlert}</td>
       <td style="padding:7px 8px;text-align:center;"><span style="display:flex;gap:3px;justify-content:center;">${upBtn}${downBtn}</span></td>
       <td style="padding:7px 8px;"><select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();" style="width:100%;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;"><option value="">— תפקיד קבוע —</option>${roleOpts}</select></td>
-      <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
-      <td style="padding:7px 8px;white-space:nowrap;">${btn}</td>
       <td style="padding:7px 8px;">${permSpanW}</td>
       <td style="padding:7px 8px;">${pwdSpanW}</td>
+      <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
+      <td style="padding:7px 8px;white-space:nowrap;">${btn}</td>
     `;
     return r;
   }
@@ -7605,7 +7620,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v570CL | גישה</title>
+<title>Reports_Workers v571CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7691,7 +7706,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .end-btn{background:#fff3e0;border:1px solid #FFB300;color:#E65100;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;white-space:nowrap;width:100%;}
 .edit-btn{background:#f5f5f5;border:1px solid #ccc;color:#555;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;width:100%;}
 .badge-days{font-size:11px;padding:3px 8px;border-radius:6px;background:#fff8e1;color:#f57f17;font-weight:500;display:inline-block;}
-.wday-btn{width:34px;height:34px;border-radius:8px;border:2px solid #00897B;background:#00897B;font-size:13px;cursor:pointer;font-weight:600;color:white;display:inline-flex;align-items:center;justify-content:center;}
+.wday-btn{width:28px;height:28px;border-radius:6px;border:1.5px solid #00897B;background:#00897B;font-size:11px;cursor:pointer;font-weight:600;color:white;display:inline-flex;align-items:center;justify-content:center;}
 .wday-btn.off{background:white;color:#ccc;border:2px solid #ddd;}
 .wdays-wrap{display:inline-flex;gap:6px;align-items:center;margin:0 6px;}
 .ended-sep{border-top:2px dashed #ccc;margin:8px 0 4px;color:#999;font-size:11px;padding-top:4px;text-align:center}
@@ -7866,7 +7881,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v570CL</span>
+      <span class="topbar-title">Reports_Workers v571CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8001,32 +8016,40 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:4px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:4px 8px;text-align:right;font-weight:500;">סיסמה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
-        <div class="add-row">
-          <input type="text" id="newWorker" placeholder="שם עובד חדש">
-          <button onclick="addWorker()">הוסף</button>
-        </div>
-        <div style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;max-width:900px;">
-          <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-            <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;font-size:11px;">הפעל מערכת סיסמאות</button>
-            <button onclick="toggleAuthSystem(false)" class="end-btn" style="font-size:11px;">כבה מערכת סיסמאות</button>
-            <span id="authToggleStatus" style="font-size:11px;color:#666;"></span>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;direction:rtl;">
+          <div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button onclick="addWorker()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;white-space:nowrap;">הוסף</button>
+              <input type="text" id="newWorker" placeholder="שם עובד חדש" style="flex:1;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+            </div>
           </div>
-          <div style="font-size:11px;color:#666;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
-          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
-            <select id="secQ" style="font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:4px;direction:rtl;min-width:180px;">
+          <div id="auth-security-box" style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
+          <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
+          <button onclick="toggleAuthSystem(true)" style="width:100%;padding:5px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;margin-bottom:4px;">הפעל מערכת סיסמאות</button>
+          <button onclick="toggleAuthSystem(false)" style="width:100%;padding:5px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;margin-bottom:8px;">כבה מערכת סיסמאות</button>
+          <span id="authToggleStatus" style="font-size:10px;color:#666;"></span>
+          <div style="font-size:10px;color:#888;margin-bottom:4px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
+          <div style="display:flex;gap:4px;align-items:center;">
+            <select id="secQ" style="flex:2;font-size:10px;padding:3px 4px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
               <option>שם העיר שבה נולדתי</option>
               <option>שם הספר האהוב עלי</option>
               <option>שם בית הספר הראשון שלי</option>
               <option>שם החיה הראשונה שלי</option>
             </select>
-            <input type="text" id="secA" placeholder="תשובה סודית" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;min-width:140px;">
-            <button onclick="saveSecurityQuestion()" class="edit-btn" style="font-size:11px;">שמור</button>
+            <input type="text" id="secA" placeholder="תשובה" style="flex:1.5;font-size:10px;padding:3px 4px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+            <button onclick="saveSecurityQuestion()" style="padding:3px 8px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:10px;white-space:nowrap;">שמור</button>
+          </div>
+          </div>
+          <div style="border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">חיבור לגיטהאב</div>
+            <p style="font-size:10px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב</p>
+            <div style="display:flex;gap:6px;align-items:center;"><input id="tokInput2" type="password" placeholder="ghp_..." style="flex:1;font-size:11px;padding:4px;border:1px solid #ddd;border-radius:4px;direction:ltr;"><button onclick="saveTokenFromBox2()" style="padding:3px 8px;background:#1B6B5A;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button></div><div id="tokStatus2" style="font-size:10px;color:#4caf50;margin-top:4px;"></div>
           </div>
         </div>
       </div>
-      <div class="s-sec" style="margin-top:16px;">
+      <div class="s-sec" style="margin-top:16px;display:none;">
         <h3>חיבור לגיטהאב</h3>
         <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
         <div class="tok-row">
@@ -12485,10 +12508,10 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       <td style="padding:7px 8px;text-align:center;">${daysAlert}</td>
       <td style="padding:7px 8px;text-align:center;"><span style="display:flex;gap:3px;justify-content:center;">${upBtn}${downBtn}</span></td>
       <td style="padding:7px 8px;"><select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();" style="width:100%;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;"><option value="">— תפקיד קבוע —</option>${roleOpts}</select></td>
-      <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
-      <td style="padding:7px 8px;white-space:nowrap;">${btn}</td>
       <td style="padding:7px 8px;">${permSpanW}</td>
       <td style="padding:7px 8px;">${pwdSpanW}</td>
+      <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
+      <td style="padding:7px 8px;white-space:nowrap;">${btn}</td>
     `;
     return r;
   }
