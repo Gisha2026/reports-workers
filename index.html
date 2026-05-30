@@ -2,8 +2,15 @@
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
+<!-- ============================================================ -->
+<!-- מתג מערכת הרשאות                                            -->
+<!-- false = פתוח לכולם (כמו היום, ברירת מחדל)                  -->
+<!-- true  = נדרשת סיסמה בכניסה                                  -->
+<!-- שנה את הערך רק דרך כפתור "הפעל/כבה" בהגדרות               -->
+<!-- ============================================================ -->
+<script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v563CL | גישה</title>
+<title>Reports_Workers v569CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -81,7 +88,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
+.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 110px 80px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
 .wname{font-weight:500;font-size:13px;text-align:right}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px;text-align:center}
 .wact{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}.wend{background:#ffcdd2;color:#c62828;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}
@@ -250,7 +257,13 @@ async function initPyodide(){
     <div class="login-logo">ג</div>
     <h2>Reports_Workers</h2>
     <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <input type="text" id="loginName" placeholder="הכנס את שמך">
+    <input type="text" id="loginName" placeholder="הכנס את שמך" autocomplete="username">
+    <div id="loginPasswordWrap" style="display:none;">
+      <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;">
+      <div style="text-align:right;margin-top:-8px;margin-bottom:10px;">
+        <a href="#" onclick="resetAdminPassword();return false;" style="font-size:11px;color:#00897B;">שכחתי סיסמה</a>
+      </div>
+    </div>
     <button onclick="doLogin()">כניסה</button>
     <div class="login-divider"></div>
     <p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
@@ -265,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v563CL</span>
+      <span class="topbar-title">Reports_Workers v569CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -400,10 +413,29 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:4px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:4px 8px;text-align:right;font-weight:500;">סיסמה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
+        </div>
+        <div style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;">
+          <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;font-size:11px;">הפעל מערכת סיסמאות</button>
+            <button onclick="toggleAuthSystem(false)" class="end-btn" style="font-size:11px;">כבה מערכת סיסמאות</button>
+            <span id="authToggleStatus" style="font-size:11px;color:#666;"></span>
+          </div>
+          <div style="font-size:11px;color:#666;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+            <select id="secQ" style="font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:4px;direction:rtl;min-width:180px;">
+              <option>שם העיר שבה נולדתי</option>
+              <option>שם הספר האהוב עלי</option>
+              <option>שם בית הספר הראשון שלי</option>
+              <option>שם החיה הראשונה שלי</option>
+            </select>
+            <input type="text" id="secA" placeholder="תשובה סודית" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;min-width:140px;">
+            <button onclick="saveSecurityQuestion()" class="edit-btn" style="font-size:11px;">שמור</button>
+          </div>
         </div>
       </div>
       <div class="s-sec" style="margin-top:16px;">
@@ -654,6 +686,7 @@ window.onload=()=>{
   if(!S.year) S.year=initYear;
   buildJumps();
   startPresenceLoop();
+  initAuthUI();
 };
 
 function buildJumps(){
@@ -681,10 +714,97 @@ function fillMonthYearSelects(){
 }
 
 // ===== LOGIN =====
+
+function openSetPassword(i){
+  const w=S.workers[i];
+  const np=prompt('הגדר סיסמה עבור '+w.name+':');
+  if(np===null) return;
+  if(!np.trim()){alert('סיסמה לא יכולה להיות ריקה');return;}
+  w.password=np.trim();
+  saveLocally();saveData();
+  renderWorkerList();
+}
+
+function saveSecurityQuestion(){
+  const q=document.getElementById('secQ');
+  const a=document.getElementById('secA');
+  if(!q||!a||!q.value||!a.value.trim()){alert('נא למלא שאלה ותשובה');return;}
+  S.securityQuestion=q.value;
+  S.securityAnswer=a.value.trim();
+  saveLocally();saveData();
+  alert('שאלת הביטחון נשמרה');
+}
+
+async function saveAuthEnabledToGithub(enabled){
+  const token=getToken();
+  if(!token){alert('אין טוקן — לא ניתן לשמור לגיטהאב');return false;}
+  const url='https://api.github.com/repos/Gisha2026/reports-workers/contents/index.html';
+  try{
+    const gr=await fetch(url,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
+    if(!gr.ok){alert('שגיאה בקריאה מגיטהאב');return false;}
+    const fd=await gr.json();
+    let html=decodeURIComponent(escape(atob(fd.content)));
+    html=html.replace(/window\.AUTH_ENABLED\s*=\s*(true|false);/,'window.AUTH_ENABLED = '+(enabled?'true':'false')+';');
+    const pr=await fetch(url,{method:'PUT',
+      headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      body:JSON.stringify({message:'auth '+(enabled?'on':'off'),content:btoa(unescape(encodeURIComponent(html))),sha:fd.sha})
+    });
+    return pr.ok;
+  }catch(e){console.error(e);return false;}
+}
+
+async function toggleAuthSystem(enable){
+  if(!confirm('האם '+(enable?'להפעיל':'לכבות')+' את מערכת הסיסמאות?')) return;
+  const st=document.getElementById('authToggleStatus');
+  if(st) st.textContent='שומר...';
+  const ok=await saveAuthEnabledToGithub(enable);
+  if(ok){
+    window.AUTH_ENABLED=enable;
+    S.authEnabled=enable;
+    saveLocally();
+    initAuthUI();
+    renderWorkerList();
+    if(st) st.textContent=enable?'✓ מערכת סיסמאות פעילה':'✓ מערכת כבויה';
+    alert(enable?'מערכת הסיסמאות הופעלה. מהכניסה הבאה תידרש סיסמה.':'מערכת הסיסמאות כובתה.');
+  } else {
+    if(st) st.textContent='שגיאה';
+    alert('שגיאה — ודא שהטוקן תקין.');
+  }
+}
+
 function doLogin(){
   const n=document.getElementById('loginName').value.trim();
   if(!n){alert('נא להכניס שם');return;}
-  S.currentUser=n; startApp();
+
+  if(!window.AUTH_ENABLED){
+    // מצב כבוי — כניסה חופשית
+    S.currentUser=n;
+    startApp();
+    return;
+  }
+
+  // מצב פעיל — בדיקת סיסמה
+  const pwd=(document.getElementById('loginPassword')||{value:''}).value;
+  const w=(S.workers||[]).find(x=>x.name===n && x.accessLevel && x.accessLevel!=='');
+  if(!w){alert('משתמש זה אינו מורשה להיכנס');return;}
+  if(!w.password){alert('לא הוגדרה סיסמה. פנה למנהל.');return;}
+  if(w.password!==pwd){alert('סיסמה שגויה');return;}
+  S.currentUser=n;
+  S.currentUserLevel=w.accessLevel;
+  startApp();
+}
+
+function resetAdminPassword(){
+  const q=S.securityQuestion||'';
+  const a=S.securityAnswer||'';
+  if(!q||!a){alert('לא הוגדרה שאלת ביטחון');return;}
+  const ans=prompt('שאלת ביטחון: '+q);
+  if(ans===null) return;
+  if(ans.trim()!==a.trim()){alert('תשובה שגויה');return;}
+  const np=prompt('הכנס סיסמה חדשה:');
+  if(!np) return;
+  const admin=(S.workers||[]).find(x=>x.accessLevel==='ניהול');
+  if(admin){admin.password=np;saveLocally();saveData();alert('הסיסמה אופסה');}
 }
 
 function startApp(){
@@ -696,6 +816,12 @@ function startApp(){
   startSyncLoop();
   // Only show token modal if no token AND user hasn't dismissed it before
   if(!getToken()&&!localStorage.getItem('rw_tok_skipped')) document.getElementById('tokenModal').classList.add('open');
+}
+
+function initAuthUI(){
+  // הצג שדה סיסמה רק כשAUTH_ENABLED=true
+  const pw=document.getElementById('loginPasswordWrap');
+  if(pw) pw.style.display=window.AUTH_ENABLED?'block':'none';
 }
 
 // ===== TOKEN =====
@@ -1269,6 +1395,11 @@ function mkWRow(w,i){
     statusHtml += ` <span class="badge-days">${daysCount} ימים</span>`;
   }
   const roleOpts=(S.roles||[]).map(r=>`<option value="${r}" ${(w.role===r)?'selected':''}>${r}</option>`).join('');
+  const lvl=w.accessLevel||'';
+  const lvlOpts=['ניהול','עדכון','צפייה'].map(v=>'<option value="'+v+'" '+(lvl===v?'selected':'')+'>'+v+'</option>').join('');
+  const hasPwd=!!w.password;
+  const permSpan='<span style="font-size:11px;"><select onchange="S.workers['+i+'].accessLevel=this.value;if(!this.value)delete S.workers['+i+'].password;renderWorkerList();saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;"><option value="">—</option>'+lvlOpts+'</select></span>';
+  const pwdSpan=lvl?'<span><button onclick="openSetPassword('+i+')" class="edit-btn" style="font-size:10px;padding:2px 6px;">'+(hasPwd?'שנה':'הגדר')+'</button></span>':'<span></span>';
   r.innerHTML=`
     <span class="wname">${w.name}</span>
     <span style="font-size:11px;color:#555;">
@@ -1279,6 +1410,8 @@ function mkWRow(w,i){
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
+    ${permSpan}
+    ${pwdSpan}
     ${editBtn}
     ${btn}
   `;
@@ -7457,8 +7590,15 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
+<!-- ============================================================ -->
+<!-- מתג מערכת הרשאות                                            -->
+<!-- false = פתוח לכולם (כמו היום, ברירת מחדל)                  -->
+<!-- true  = נדרשת סיסמה בכניסה                                  -->
+<!-- שנה את הערך רק דרך כפתור "הפעל/כבה" בהגדרות               -->
+<!-- ============================================================ -->
+<script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v563CL | גישה</title>
+<title>Reports_Workers v569CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7536,7 +7676,7 @@ tr.sum-row td{background:#e8f5e9!important;font-weight:bold;font-size:10px;paddi
 .ld{width:11px;height:11px;border-radius:2px;display:inline-block;margin-left:3px;vertical-align:middle}
 .s-sec{background:white;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .s-sec h3{color:#00897B;margin-bottom:10px;font-size:13px}
-.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
+.w-row{display:grid;grid-template-columns:70px 130px 60px 90px 28px 28px 150px 110px 80px 62px 96px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #f0f0f0;direction:rtl}
 .wname{font-weight:500;font-size:13px;text-align:right}
 .wst{font-size:10px;padding:2px 7px;border-radius:8px;text-align:center}
 .wact{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}.wend{background:#ffcdd2;color:#c62828;font-size:11px;padding:3px 8px;border-radius:6px;font-weight:500;display:inline-block}
@@ -7698,7 +7838,13 @@ async function initPyodide(){
     <div class="login-logo">ג</div>
     <h2>Reports_Workers</h2>
     <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <input type="text" id="loginName" placeholder="הכנס את שמך">
+    <input type="text" id="loginName" placeholder="הכנס את שמך" autocomplete="username">
+    <div id="loginPasswordWrap" style="display:none;">
+      <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;">
+      <div style="text-align:right;margin-top:-8px;margin-bottom:10px;">
+        <a href="#" onclick="resetAdminPassword();return false;" style="font-size:11px;color:#00897B;">שכחתי סיסמה</a>
+      </div>
+    </div>
     <button onclick="doLogin()">כניסה</button>
     <div class="login-divider"></div>
     <p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
@@ -7713,7 +7859,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v563CL</span>
+      <span class="topbar-title">Reports_Workers v569CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7848,10 +7994,29 @@ async function initPyodide(){
     <div id="stab-content-workers">
       <div class="s-sec">
         <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
+        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;color:#999;border-bottom:1px solid #e5e7eb;"><th style="padding:4px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:4px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:4px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:4px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:4px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:4px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:4px 8px;text-align:right;font-weight:500;">סיסמה</th><th></th><th></th></tr></thead><tbody id="workerList"></tbody></table></div>
         <div class="add-row">
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
+        </div>
+        <div style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;">
+          <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;font-size:11px;">הפעל מערכת סיסמאות</button>
+            <button onclick="toggleAuthSystem(false)" class="end-btn" style="font-size:11px;">כבה מערכת סיסמאות</button>
+            <span id="authToggleStatus" style="font-size:11px;color:#666;"></span>
+          </div>
+          <div style="font-size:11px;color:#666;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+            <select id="secQ" style="font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:4px;direction:rtl;min-width:180px;">
+              <option>שם העיר שבה נולדתי</option>
+              <option>שם הספר האהוב עלי</option>
+              <option>שם בית הספר הראשון שלי</option>
+              <option>שם החיה הראשונה שלי</option>
+            </select>
+            <input type="text" id="secA" placeholder="תשובה סודית" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;min-width:140px;">
+            <button onclick="saveSecurityQuestion()" class="edit-btn" style="font-size:11px;">שמור</button>
+          </div>
         </div>
       </div>
       <div class="s-sec" style="margin-top:16px;">
@@ -8132,7 +8297,36 @@ function fillMonthYearSelects(){
 function doLogin(){
   const n=document.getElementById('loginName').value.trim();
   if(!n){alert('נא להכניס שם');return;}
-  S.currentUser=n; startApp();
+
+  if(!window.AUTH_ENABLED){
+    // מצב כבוי — כניסה חופשית
+    S.currentUser=n;
+    startApp();
+    return;
+  }
+
+  // מצב פעיל — בדיקת סיסמה
+  const pwd=(document.getElementById('loginPassword')||{value:''}).value;
+  const w=(S.workers||[]).find(x=>x.name===n && x.accessLevel && x.accessLevel!=='');
+  if(!w){alert('משתמש זה אינו מורשה להיכנס');return;}
+  if(!w.password){alert('לא הוגדרה סיסמה. פנה למנהל.');return;}
+  if(w.password!==pwd){alert('סיסמה שגויה');return;}
+  S.currentUser=n;
+  S.currentUserLevel=w.accessLevel;
+  startApp();
+}
+
+function resetAdminPassword(){
+  const q=S.securityQuestion||'';
+  const a=S.securityAnswer||'';
+  if(!q||!a){alert('לא הוגדרה שאלת ביטחון');return;}
+  const ans=prompt('שאלת ביטחון: '+q);
+  if(ans===null) return;
+  if(ans.trim()!==a.trim()){alert('תשובה שגויה');return;}
+  const np=prompt('הכנס סיסמה חדשה:');
+  if(!np) return;
+  const admin=(S.workers||[]).find(x=>x.accessLevel==='ניהול');
+  if(admin){admin.password=np;saveLocally();saveData();alert('הסיסמה אופסה');}
 }
 
 function startApp(){
@@ -8144,6 +8338,12 @@ function startApp(){
   startSyncLoop();
   // Only show token modal if no token AND user hasn't dismissed it before
   if(!getToken()&&!localStorage.getItem('rw_tok_skipped')) document.getElementById('tokenModal').classList.add('open');
+}
+
+function initAuthUI(){
+  // הצג שדה סיסמה רק כשAUTH_ENABLED=true
+  const pw=document.getElementById('loginPasswordWrap');
+  if(pw) pw.style.display=window.AUTH_ENABLED?'block':'none';
 }
 
 // ===== TOKEN =====
@@ -8712,6 +8912,11 @@ function mkWRow(w,i){
     statusHtml += ` <span class="badge-days">${daysCount} ימים</span>`;
   }
   const roleOpts=(S.roles||[]).map(r=>`<option value="${r}" ${(w.role===r)?'selected':''}>${r}</option>`).join('');
+  const lvl=w.accessLevel||'';
+  const lvlOpts=['ניהול','עדכון','צפייה'].map(v=>'<option value="'+v+'" '+(lvl===v?'selected':'')+'>'+v+'</option>').join('');
+  const hasPwd=!!w.password;
+  const permSpan='<span style="font-size:11px;"><select onchange="S.workers['+i+'].accessLevel=this.value;if(!this.value)delete S.workers['+i+'].password;renderWorkerList();saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;"><option value="">—</option>'+lvlOpts+'</select></span>';
+  const pwdSpan=lvl?'<span><button onclick="openSetPassword('+i+')" class="edit-btn" style="font-size:10px;padding:2px 6px;">'+(hasPwd?'שנה':'הגדר')+'</button></span>':'<span></span>';
   r.innerHTML=`
     <span class="wname">${w.name}</span>
     <span style="font-size:11px;color:#555;">
@@ -8722,6 +8927,8 @@ function mkWRow(w,i){
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
+    ${permSpan}
+    ${pwdSpan}
     ${editBtn}
     ${btn}
   `;
