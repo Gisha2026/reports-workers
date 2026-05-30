@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v569CL | גישה</title>
+<title>Reports_Workers v570CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -278,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v569CL</span>
+      <span class="topbar-title">Reports_Workers v570CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -418,7 +418,7 @@ async function initPyodide(){
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
         </div>
-        <div style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;">
+        <div style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;max-width:900px;">
           <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
             <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;font-size:11px;">הפעל מערכת סיסמאות</button>
@@ -4196,6 +4196,11 @@ function sendEmail(){
     const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 6px;border-radius:10px;">${daysCount} ימים</span>`:'<span></span>';
     const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↑</button>`:'<span></span>';
     const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↓</button>`:'<span></span>';
+    const lvlW=w.accessLevel||'';
+    const lvlOptsW=['ניהול','עדכון','צפייה'].map(v=>'<option value="'+v+'" '+(lvlW===v?'selected':'')+'>'+v+'</option>').join('');
+    const hasPwdW=!!w.password;
+    const permSpanW='<select onchange="S.workers['+i+'].accessLevel=this.value;if(!this.value)delete S.workers['+i+'].password;renderWorkerList();saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;"><option value="">—</option>'+lvlOptsW+'</select>';
+    const pwdSpanW=lvlW?'<button onclick="openSetPassword('+i+')" class="edit-btn" style="font-size:10px;padding:2px 6px;">'+(hasPwdW?'שנה':'הגדר')+'</button>':'';
     r.innerHTML=`
       <td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap;">${esc(w.name)}</td>
       <td style="padding:7px 8px;"><span style="display:flex;gap:4px;">${daysHtml}</span></td>
@@ -4205,6 +4210,8 @@ function sendEmail(){
       <td style="padding:7px 8px;"><select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();" style="width:100%;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;"><option value="">— תפקיד קבוע —</option>${roleOpts}</select></td>
       <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
       <td style="padding:7px 8px;white-space:nowrap;">${btn}</td>
+      <td style="padding:7px 8px;">${permSpanW}</td>
+      <td style="padding:7px 8px;">${pwdSpanW}</td>
     `;
     return r;
   }
@@ -7598,7 +7605,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v569CL | גישה</title>
+<title>Reports_Workers v570CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7859,7 +7866,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v569CL</span>
+      <span class="topbar-title">Reports_Workers v570CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7999,7 +8006,7 @@ async function initPyodide(){
           <input type="text" id="newWorker" placeholder="שם עובד חדש">
           <button onclick="addWorker()">הוסף</button>
         </div>
-        <div style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;">
+        <div style="margin-top:14px;border-top:1px solid #e5e7eb;padding-top:12px;direction:rtl;max-width:900px;">
           <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">הגדרות אבטחה</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
             <button onclick="toggleAuthSystem(true)" class="edit-btn" style="background:#00897B;color:white;border-color:#00897B;font-size:11px;">הפעל מערכת סיסמאות</button>
@@ -12466,6 +12473,11 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     const daysAlert=(daysCount<5)?`<span style="font-size:11px;color:#e65100;background:#fff3e0;padding:2px 6px;border-radius:10px;">${daysCount} ימים</span>`:'<span></span>';
     const upBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},-1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↑</button>`:'<span></span>';
     const downBtn=w.active?`<button class="ord-btn" onclick="moveW(${i},1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0;">↓</button>`:'<span></span>';
+    const lvlW=w.accessLevel||'';
+    const lvlOptsW=['ניהול','עדכון','צפייה'].map(v=>'<option value="'+v+'" '+(lvlW===v?'selected':'')+'>'+v+'</option>').join('');
+    const hasPwdW=!!w.password;
+    const permSpanW='<select onchange="S.workers['+i+'].accessLevel=this.value;if(!this.value)delete S.workers['+i+'].password;renderWorkerList();saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;"><option value="">—</option>'+lvlOptsW+'</select>';
+    const pwdSpanW=lvlW?'<button onclick="openSetPassword('+i+')" class="edit-btn" style="font-size:10px;padding:2px 6px;">'+(hasPwdW?'שנה':'הגדר')+'</button>':'';
     r.innerHTML=`
       <td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap;">${esc(w.name)}</td>
       <td style="padding:7px 8px;"><span style="display:flex;gap:4px;">${daysHtml}</span></td>
@@ -12475,6 +12487,8 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       <td style="padding:7px 8px;"><select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();" style="width:100%;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;"><option value="">— תפקיד קבוע —</option>${roleOpts}</select></td>
       <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
       <td style="padding:7px 8px;white-space:nowrap;">${btn}</td>
+      <td style="padding:7px 8px;">${permSpanW}</td>
+      <td style="padding:7px 8px;">${pwdSpanW}</td>
     `;
     return r;
   }
