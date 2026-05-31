@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v585CL | גישה</title>
+<title>Reports_Workers v586CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -278,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v585CL</span>
+      <span class="topbar-title">Reports_Workers v586CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16358,21 +16358,29 @@ window.wdw447CloseDonorEdit=function(){
   window.v486ToggleMonthlyPct=window.v585ToggleMonthlyPct;
   window.v484ToggleMonthlyPct=window.v585ToggleMonthlyPct;
 
-  // === אתחול ===
-  function init(){
-    var old=window.switchWDW;
-    if(typeof old==='function'&&!old.__v585){
-      window.switchWDW=function(panel){
-        var r=old.apply(this,arguments);
-        if(panel==='monthlypct')setTimeout(window.v585RenderMonthlyPct,0);
-        return r;
-      };
-      window.switchWDW.__v585=true;
-    }
-    if(document.getElementById('wdw-monthlypct')&&document.getElementById('wdw-monthlypct').style.display!=='none'){
-      window.v585RenderMonthlyPct();
-    }
+  // === יצירת הכפתור והפאנל ===
+  function ensurePanel(){
+    var reports=document.getElementById('wdw-reports');if(!reports)return;
+    if(!document.getElementById('wdw-monthlypct')){var d=document.createElement('div');d.id='wdw-monthlypct';d.style.display='none';reports.parentElement.insertBefore(d,reports.nextSibling);}
+    var nav=document.querySelector('#tab-wdw .s-sec > div[style*="display:flex"]');
+    if(nav&&!document.getElementById('wdw-btn-monthlypct')){var b=document.createElement('button');b.id='wdw-btn-monthlypct';b.textContent='אחוז חודשי';b.onclick=function(){switchWDW('monthlypct');};b.setAttribute('style','padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;');nav.insertBefore(b,document.getElementById('wdw-write-top-btn'));}
   }
+  function patchSwitch(){
+    if(typeof window.switchWDW!=='function'||window.switchWDW.__v585)return;
+    var old=window.switchWDW;
+    window.switchWDW=function(panel){
+      ensurePanel();
+      if(panel==='monthlypct'){
+        ['org','donor','worker','input','reports','monthlypct'].forEach(function(p){var d=document.getElementById('wdw-'+p);if(d)d.style.display=p===panel?'':'none';var b=document.getElementById('wdw-btn-'+p);if(b){b.style.background=p===panel?'#00897B':'#f0f0f0';b.style.color=p===panel?'white':'#333';}});
+        window.v585RenderMonthlyPct();return;
+      }
+      var r=old.apply(this,arguments);var d=document.getElementById('wdw-monthlypct'),b=document.getElementById('wdw-btn-monthlypct');if(d)d.style.display='none';if(b){b.style.background='#f0f0f0';b.style.color='#333';}return r;
+    };
+    window.switchWDW.__v585=true;
+  }
+
+  // === אתחול ===
+  function init(){ensurePanel();patchSwitch();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   setTimeout(init,300);setTimeout(init,1000);
 })();
