@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v582CL | גישה</title>
+<title>Reports_Workers v583CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -278,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v582CL</span>
+      <span class="topbar-title">Reports_Workers v583CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7617,6 +7617,31 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 }
 </style>
 
+
+<script id="v583CH-monthly-role-diagnostics">
+window.v583CheckMonthlyRoleRows=function(workerName){
+  workerName=workerName||'תניה';
+  var out=[];
+  var S0=window.S||S;
+  ((S0&&S0.wdw&&S0.wdw.donors)||[]).forEach(function(d){
+    (d.workers||[]).forEach(function(w){
+      if(w&&w.name===workerName){
+        out.push({
+          donor:d.name||'',
+          worker:w.name||'',
+          baseRole:w.role||w.roleInDonor||w.projectRole||w.title||'',
+          replaces:w.replaces||'',
+          vacantName:w.vacantName||'',
+          replacesPct:w.replacesPct||w.replacementPct||0
+        });
+      }
+    });
+  });
+  console.table(out);
+  return out;
+};
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -7630,7 +7655,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v582CL | גישה</title>
+<title>Reports_Workers v583CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7891,7 +7916,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v582CL</span>
+      <span class="topbar-title">Reports_Workers v583CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16309,12 +16334,12 @@ function cls(v){v=n(v);if(!v)return'empty';if(v>100)return'bad';if(v>=90)return'
 function inRange(o,m){var st=String((o&&(o.startMonth||o.startDate))||'').substring(0,7), en=String((o&&(o.endMonth||o.endDate))||'').substring(0,7);return !(st&&m<st)&&!(en&&m>en);}
 function donorOk(d,m){if(!d||!inRange({startMonth:d.startDate||d.startMonth,endMonth:d.endDate||d.endMonth},m))return false;var s=String(d.status||'');return s!=='inactive'&&s!=='לא פעיל';}
 function workerRole(name){var w=((S&&S.workers)||[]).find(function(x){return x&&x.name===name});return w?(w.role||''):'';}
-function roleOf(w){return (w&&(w.role||w.roleInDonor||w.projectRole||w.title))||workerRole(w&&w.name)||'ללא תפקיד';}
+function roleOf(w){if(w&&w.replaces==='__vacant__'&&w.vacantName)return w.vacantName;return (w&&(w.role||w.roleInDonor||w.projectRole||w.title))||workerRole(w&&w.name)||'ללא תפקיד';}
 function monthPct(w,m){if(w&&w.monthlyPct&&w.monthlyPct[m]!=null&&w.monthlyPct[m]!==''&&!isNaN(parseFloat(w.monthlyPct[m])))return n(w.monthlyPct[m]);if(w&&(w.valueType==='percent'||w.fundingType==='אחוז קבוע'||w.fundingType==='percent'))return n(w.value);return 0;}
 function replOk(w,m){var st=String((w&&(w.replaceStartMonth||w.replacementStartMonth||w.replacesStart||w.replacementStart||w.replStart))||'').substring(0,7), en=String((w&&(w.replaceEndMonth||w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.replEnd))||'').substring(0,7);return !(st&&m<st)&&!(en&&m>en);}
 function collect(y){
  var out=[], donors=(S&&S.wdw&&S.wdw.donors)||[];
- donors.forEach(function(d){(d.workers||[]).forEach(function(w){if(!w||!w.name||w.active===false)return;for(var i=0;i<12;i++){var m=mk(y,i);if(!donorOk(d,m)||!inRange(w,m))continue;var bp=monthPct(w,m);if(bp)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:roleOf(w),pct:bp,kind:'בסיס',replaces:'',start:w.startMonth||d.startDate||'',end:w.endMonth||d.endDate||''});if(replOk(w,m)){var rp=n(w.replacesPct||w.replacementPct||0);if(rp)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:roleOf(w),pct:rp,kind:'החלפה',replaces:w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):(w.replaces||''),start:w.replaceStartMonth||w.replacementStartMonth||w.startMonth||'',end:w.replaceEndMonth||w.replacementEndMonth||w.endMonth||''});}(w.extraReplaces||[]).forEach(function(r){var st=String(r.startMonth||r.replaceStartMonth||w.startMonth||'').substring(0,7),en=String(r.endMonth||r.replaceEndMonth||w.endMonth||'').substring(0,7);if((st&&m<st)||(en&&m>en))return;var pct=n(r.pct||r.percent||r.value);if(pct)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:r.role||roleOf(w),pct:pct,kind:'החלפה',replaces:r.name||r.worker||'',start:st,end:en});});}});});return out;
+ donors.forEach(function(d){(d.workers||[]).forEach(function(w){if(!w||!w.name||w.active===false)return;for(var i=0;i<12;i++){var m=mk(y,i);if(!donorOk(d,m)||!inRange(w,m))continue;var bp=monthPct(w,m);if(bp)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:roleOf(w),pct:bp,kind:'בסיס',replaces:'',start:w.startMonth||d.startDate||'',end:w.endMonth||d.endDate||''});if(replOk(w,m)){var rp=n(w.replacesPct||w.replacementPct||0);if(rp)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:(w.replaces==='__vacant__'&&w.vacantName)?w.vacantName:roleOf(w),pct:rp,kind:'החלפה',replaces:w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):(w.replaces||''),start:w.replaceStartMonth||w.replacementStartMonth||w.startMonth||'',end:w.replaceEndMonth||w.replacementEndMonth||w.endMonth||''});}(w.extraReplaces||[]).forEach(function(r){var st=String(r.startMonth||r.replaceStartMonth||w.startMonth||'').substring(0,7),en=String(r.endMonth||r.replaceEndMonth||w.endMonth||'').substring(0,7);if((st&&m<st)||(en&&m>en))return;var pct=n(r.pct||r.percent||r.value);if(pct)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:(r.replaces==='__vacant__'&&r.vacantName)?r.vacantName:(r.role||r.vacantRole||roleOf(w)),pct:pct,kind:'החלפה',replaces:r.name||r.worker||r.vacantName||'',start:st,end:en});});}});});return out;
 }
 function group(records,mode){var map={};records.forEach(function(r){var k=mode==='role'?(r.role||'ללא תפקיד'):(r.worker||'ללא עובד');if(!map[k])map[k]={name:k,months:Array(12).fill(0),details:Array.from({length:12},function(){return[]})};map[k].months[r.monthIndex]+=n(r.pct);map[k].details[r.monthIndex].push(r);});return Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return a.name.localeCompare(b.name,'he')});}
 window.v486ToggleMonthlyPct=function(id){var el=document.getElementById(id);if(el)el.style.display=el.style.display==='table-row'?'none':'table-row';};
