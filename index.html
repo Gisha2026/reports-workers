@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v581CL | גישה</title>
+<title>Reports_Workers v582CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -278,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v581CL</span>
+      <span class="topbar-title">Reports_Workers v582CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7630,7 +7630,7 @@ table.v484-detail-table{width:100%;border-collapse:collapse!important;box-shadow
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v581CL | גישה</title>
+<title>Reports_Workers v582CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7891,7 +7891,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v581CL</span>
+      <span class="topbar-title">Reports_Workers v582CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16208,8 +16208,15 @@ window.wdw447CloseDonorEdit=function(){
   function group(records,mode){
     var map={};
     records.forEach(function(r){
-      var key=mode==='role'?(r.role||'ללא תפקיד'):(r.worker||'ללא עובד');
-      if(!map[key]) map[key]={name:key,months:Array(12).fill(0),details:Array.from({length:12},function(){return[];})};
+      var key;
+      if(mode==='role'){
+        // מפתח משולב: עובד + תפקיד — כך תניה תופיע פעמיים אם יש לה שני תפקידים
+        key=(r.worker||'ללא עובד')+'|||'+(r.role||'ללא תפקיד');
+      } else {
+        key=(r.worker||'ללא עובד');
+      }
+      var displayName=mode==='role'?(r.role||'ללא תפקיד'):(r.worker||'ללא עובד');
+      if(!map[key]) map[key]={name:displayName,months:Array(12).fill(0),details:Array.from({length:12},function(){return[];})};
       map[key].months[r.monthIndex]+=n(r.pct);
       map[key].details[r.monthIndex].push(r);
     });
