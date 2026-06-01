@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v593CL | גישה</title>
+<title>Reports_Workers v592CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -278,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v593CL</span>
+      <span class="topbar-title">Reports_Workers v592CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1614,7 +1614,7 @@ function renderHolList(){
   years.forEach(yr=>{
     html+=`<div style="margin-bottom:16px;">
       <div style="font-size:13px;font-weight:800;color:#1B6B5A;padding:6px 0;border-bottom:2px solid #1B6B5A;margin-bottom:6px;direction:rtl;">${yr}</div>
-      <table style="width:100%;border-collapse:collapse;direction:rtl;font-size:12px;">`;
+      <table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">`;
     byYear[yr].forEach(({h,i})=>{
       const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
       const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
@@ -2089,29 +2089,17 @@ function renderWDWInput(){
       activeW.forEach(w=>{
         const total=wdwWorkerTotalPct(w.name,curMonth);
         const repLabel=(w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null);const allReplaces=[repLabel,...((w.extraReplaces||[]).map(r=>r.name||r.replaces||null).filter(Boolean))].filter(Boolean);const repDisplay=allReplaces.length>0?allReplaces.join(', '):null;
-        const hasRepl=w.replaces==='__vacant__'&&parseFloat(w.replacesPct||0)>0;
-        const replVacantName=w.vacantName||'משרה פנויה';
-        const replPctVal=parseFloat(w.replacesPct||0);
-        const replStart=w.replaceStartMonth||w.startMonth||'';
-        const replEnd=w.replaceEndMonth||w.endMonth||'';
         html+=`<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden">
           <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f9fafb">
             <strong style="font-size:13px">${w.name}</strong>
-            <span style="font-size:12px;color:#6b7280">${w.roleInDonor||''}</span>
-            <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}</span>
+            <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}${w.replacesPct?' + '+w.replacesPct+'%':''}</span>
+            ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#6b7280">מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
             <span style="font-size:12px;color:#6b7280">${fmtMonth(w.startMonth||'')} — ${fmtMonth(w.endMonth||'')}</span>
             <span style="font-size:11px;background:${total>100?'#fee2e2':'#dcfce7'};color:${total>100?'#991b1b':'#166534'};padding:2px 8px;border-radius:20px">${total}%</span>
             <span style="flex:1"></span>
             <button onclick="wdwToggleWorkerEdit('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #cbd5e1;border-radius:5px;cursor:pointer;font-size:12px;color:#334155">✏ ערוך</button>
             <button onclick="wdwConfirmDeleteWorker('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;font-size:12px;color:#dc2626">🗑</button>
           </div>
-          ${hasRepl?`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:#fff8f0;border-top:1px solid #fed7aa">
-            <span style="font-size:11px;background:#fed7aa;color:#92400e;padding:2px 7px;border-radius:12px;font-weight:600">מחליפה</span>
-            <strong style="font-size:13px">${w.name}</strong>
-            <span style="font-size:12px;color:#92400e">${replVacantName}</span>
-            <span style="font-size:13px;color:#c2410c">${replPctVal}%</span>
-            <span style="font-size:12px;color:#6b7280">${fmtMonth(replStart)} — ${fmtMonth(replEnd)}</span>
-          </div>`:''}
           <div id="wdw-edit-worker-${d.id}-${w.id}" style="display:none;padding:12px;border-top:1px solid #e5e7eb">
             ${wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, true)}
             <div style="display:flex;gap:8px;margin-top:10px">
@@ -7690,7 +7678,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v593CL | גישה</title>
+<title>Reports_Workers v592CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7951,7 +7939,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v593CL</span>
+      <span class="topbar-title">Reports_Workers v592CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9214,7 +9202,7 @@ function renderHolList(){
   years.forEach(yr=>{
     html+=`<div style="margin-bottom:16px;">
       <div style="font-size:13px;font-weight:800;color:#1B6B5A;padding:6px 0;border-bottom:2px solid #1B6B5A;margin-bottom:6px;direction:rtl;">${yr}</div>
-      <table style="width:100%;border-collapse:collapse;direction:rtl;font-size:12px;">`;
+      <table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">`;
     byYear[yr].forEach(({h,i})=>{
       const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
       const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
@@ -9601,29 +9589,17 @@ function renderWDWInput(){
       activeW.forEach(w=>{
         const total=wdwWorkerTotalPct(w.name,curMonth);
         const repLabel=(w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces||null);const allReplaces=[repLabel,...((w.extraReplaces||[]).map(r=>r.name||r.replaces||null).filter(Boolean))].filter(Boolean);const repDisplay=allReplaces.length>0?allReplaces.join(', '):null;
-        const hasRepl=w.replaces==='__vacant__'&&parseFloat(w.replacesPct||0)>0;
-        const replVacantName=w.vacantName||'משרה פנויה';
-        const replPctVal=parseFloat(w.replacesPct||0);
-        const replStart=w.replaceStartMonth||w.startMonth||'';
-        const replEnd=w.replaceEndMonth||w.endMonth||'';
         html+=`<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden">
           <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f9fafb">
             <strong style="font-size:13px">${w.name}</strong>
-            <span style="font-size:12px;color:#6b7280">${w.roleInDonor||''}</span>
-            <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}</span>
+            <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}${w.replacesPct?' + '+w.replacesPct+'%':''}</span>
+            ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#6b7280">מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
             <span style="font-size:12px;color:#6b7280">${fmtMonth(w.startMonth||'')} — ${fmtMonth(w.endMonth||'')}</span>
             <span style="font-size:11px;background:${total>100?'#fee2e2':'#dcfce7'};color:${total>100?'#991b1b':'#166534'};padding:2px 8px;border-radius:20px">${total}%</span>
             <span style="flex:1"></span>
             <button onclick="wdwToggleWorkerEdit('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #cbd5e1;border-radius:5px;cursor:pointer;font-size:12px;color:#334155">✏ ערוך</button>
             <button onclick="wdwConfirmDeleteWorker('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;font-size:12px;color:#dc2626">🗑</button>
           </div>
-          ${hasRepl?`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;background:#fff8f0;border-top:1px solid #fed7aa">
-            <span style="font-size:11px;background:#fed7aa;color:#92400e;padding:2px 7px;border-radius:12px;font-weight:600">מחליפה</span>
-            <strong style="font-size:13px">${w.name}</strong>
-            <span style="font-size:12px;color:#92400e">${replVacantName}</span>
-            <span style="font-size:13px;color:#c2410c">${replPctVal}%</span>
-            <span style="font-size:12px;color:#6b7280">${fmtMonth(replStart)} — ${fmtMonth(replEnd)}</span>
-          </div>`:''}
           <div id="wdw-edit-worker-${d.id}-${w.id}" style="display:none;padding:12px;border-top:1px solid #e5e7eb">
             ${wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, true)}
             <div style="display:flex;gap:8px;margin-top:10px">
