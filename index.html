@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v592CH | גישה</title>
+<title>Reports_Workers v593CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -278,7 +278,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v592CH</span>
+      <span class="topbar-title">Reports_Workers v593CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1614,14 +1614,14 @@ function renderHolList(){
   years.forEach(yr=>{
     html+=`<div style="margin-bottom:16px;">
       <div style="font-size:13px;font-weight:800;color:#1B6B5A;padding:6px 0;border-bottom:2px solid #1B6B5A;margin-bottom:6px;direction:rtl;">${yr}</div>
-      <table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">`;
+      <table style="width:620px;max-width:100%;border-collapse:collapse;direction:rtl;font-size:12px;table-layout:fixed;">`;
     byYear[yr].forEach(({h,i})=>{
       const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
       const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
       html+=`<tr style="background:white;border-bottom:1px solid #e0e0e0;">
         <td style="padding:7px 12px;font-weight:bold;color:#333;width:100px;text-align:right;direction:rtl;">${h.name}</td>
         <td style="padding:7px 8px;color:#555;font-size:11px;width:160px;text-align:right;direction:rtl;">${dTxt}</td>
-        <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;">${wTxt}</td>
+        <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;width:220px;white-space:normal;">${wTxt}</td>
         <td style="padding:7px 8px;width:120px;text-align:center;white-space:nowrap;"><button onclick="editHol(${i})" style="background:#e3f2fd;border:1px solid #1565c0;color:#1565c0;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;margin-left:6px;">עריכה</button><button onclick="delHol(${i})" style="background:#ffebee;border:1px solid #e53935;color:#e53935;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;">מחק</button></td>
       </tr>`;
     });
@@ -2092,7 +2092,7 @@ function renderWDWInput(){
         html+=`<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden">
           <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f9fafb">
             <strong style="font-size:13px">${w.name}</strong>
-            <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}${w.replacesPct?' + '+w.replacesPct+'%':''}</span>
+            <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}</span>
             ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#6b7280">מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
             <span style="font-size:12px;color:#6b7280">${fmtMonth(w.startMonth||'')} — ${fmtMonth(w.endMonth||'')}</span>
             <span style="font-size:11px;background:${total>100?'#fee2e2':'#dcfce7'};color:${total>100?'#991b1b':'#166534'};padding:2px 8px;border-radius:20px">${total}%</span>
@@ -2100,6 +2100,13 @@ function renderWDWInput(){
             <button onclick="wdwToggleWorkerEdit('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #cbd5e1;border-radius:5px;cursor:pointer;font-size:12px;color:#334155">✏ ערוך</button>
             <button onclick="wdwConfirmDeleteWorker('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;font-size:12px;color:#dc2626">🗑</button>
           </div>
+          ${(w.replaces==='__vacant__' && parseFloat(w.replacesPct||0)>0)?`<div class="v593-replacement-row" style="display:flex;align-items:center;gap:8px;padding:7px 12px 7px 12px;background:#fff7ed;border-top:1px solid #fed7aa;color:#9a3412;font-size:12px">
+            <span style="font-weight:800;background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;border-radius:999px;padding:2px 8px;white-space:nowrap">מחליפה</span>
+            <strong style="font-size:13px;color:#7c2d12">${w.name}</strong>
+            <span style="color:#7c2d12">${w.vacantName||'משרה פנויה'}</span>
+            <span style="font-weight:800;color:#7c2d12">${w.replacesPct}%</span>
+            <span style="color:#9a3412">${fmtMonth(w.replaceStartMonth||w.replacementStartMonth||w.startMonth||'')} — ${fmtMonth(w.replaceEndMonth||w.replacementEndMonth||w.endMonth||'')}</span>
+          </div>`:''}
           <div id="wdw-edit-worker-${d.id}-${w.id}" style="display:none;padding:12px;border-top:1px solid #e5e7eb">
             ${wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, true)}
             <div style="display:flex;gap:8px;margin-top:10px">
@@ -5596,7 +5603,7 @@ window.wdwReportRoleRender = function(){
   html+='</tbody></table></div>';
   body.innerHTML=html;
 };
-// ===== v592CH role report fix: base rows and replacement rows are rendered independently =====
+// ===== v593CH role report fix: base rows and replacement rows are rendered independently =====
 
 
 })();
@@ -7678,7 +7685,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v592CH | גישה</title>
+<title>Reports_Workers v593CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7939,7 +7946,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v592CH</span>
+      <span class="topbar-title">Reports_Workers v593CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9202,14 +9209,14 @@ function renderHolList(){
   years.forEach(yr=>{
     html+=`<div style="margin-bottom:16px;">
       <div style="font-size:13px;font-weight:800;color:#1B6B5A;padding:6px 0;border-bottom:2px solid #1B6B5A;margin-bottom:6px;direction:rtl;">${yr}</div>
-      <table style="width:auto;border-collapse:collapse;direction:rtl;font-size:12px;">`;
+      <table style="width:620px;max-width:100%;border-collapse:collapse;direction:rtl;font-size:12px;table-layout:fixed;">`;
     byYear[yr].forEach(({h,i})=>{
       const wTxt=h.workers==='all'?'כל העובדים':h.workers.join(', ');
       const dTxt=h.start===h.end?fmtDFull(h.start):fmtDFull(h.start)+'–'+fmtDFull(h.end);
       html+=`<tr style="background:white;border-bottom:1px solid #e0e0e0;">
         <td style="padding:7px 12px;font-weight:bold;color:#333;width:100px;text-align:right;direction:rtl;">${h.name}</td>
         <td style="padding:7px 8px;color:#555;font-size:11px;width:160px;text-align:right;direction:rtl;">${dTxt}</td>
-        <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;">${wTxt}</td>
+        <td style="padding:7px 8px;color:#888;font-size:11px;text-align:right;direction:rtl;width:220px;white-space:normal;">${wTxt}</td>
         <td style="padding:7px 8px;width:120px;text-align:center;white-space:nowrap;"><button onclick="editHol(${i})" style="background:#e3f2fd;border:1px solid #1565c0;color:#1565c0;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;margin-left:6px;">עריכה</button><button onclick="delHol(${i})" style="background:#ffebee;border:1px solid #e53935;color:#e53935;cursor:pointer;font-size:12px;padding:3px 10px;border-radius:4px;">מחק</button></td>
       </tr>`;
     });
@@ -9592,7 +9599,7 @@ function renderWDWInput(){
         html+=`<div style="background:white;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;overflow:hidden">
           <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f9fafb">
             <strong style="font-size:13px">${w.name}</strong>
-            <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}${w.replacesPct?' + '+w.replacesPct+'%':''}</span>
+            <span style="font-size:13px">${w.valueType==='percent'?w.value+'%':'₪'+parseFloat(w.value).toLocaleString()}</span>
             ${(repDisplay||repLabel)?`<span style="font-size:12px;color:#6b7280">מחליף: ${repDisplay||repLabel}${(w.extraReplaces&&w.extraReplaces.length>0)?w.extraReplaces.map(r=>" ו-"+(r.name||r.replaces||'')).join(""):""}</span>`:''}
             <span style="font-size:12px;color:#6b7280">${fmtMonth(w.startMonth||'')} — ${fmtMonth(w.endMonth||'')}</span>
             <span style="font-size:11px;background:${total>100?'#fee2e2':'#dcfce7'};color:${total>100?'#991b1b':'#166534'};padding:2px 8px;border-radius:20px">${total}%</span>
@@ -9600,6 +9607,13 @@ function renderWDWInput(){
             <button onclick="wdwToggleWorkerEdit('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #cbd5e1;border-radius:5px;cursor:pointer;font-size:12px;color:#334155">✏ ערוך</button>
             <button onclick="wdwConfirmDeleteWorker('${d.id}','${w.id}')" style="padding:4px 10px;background:white;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;font-size:12px;color:#dc2626">🗑</button>
           </div>
+          ${(w.replaces==='__vacant__' && parseFloat(w.replacesPct||0)>0)?`<div class="v593-replacement-row" style="display:flex;align-items:center;gap:8px;padding:7px 12px 7px 12px;background:#fff7ed;border-top:1px solid #fed7aa;color:#9a3412;font-size:12px">
+            <span style="font-weight:800;background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;border-radius:999px;padding:2px 8px;white-space:nowrap">מחליפה</span>
+            <strong style="font-size:13px;color:#7c2d12">${w.name}</strong>
+            <span style="color:#7c2d12">${w.vacantName||'משרה פנויה'}</span>
+            <span style="font-weight:800;color:#7c2d12">${w.replacesPct}%</span>
+            <span style="color:#9a3412">${fmtMonth(w.replaceStartMonth||w.replacementStartMonth||w.startMonth||'')} — ${fmtMonth(w.replaceEndMonth||w.replacementEndMonth||w.endMonth||'')}</span>
+          </div>`:''}
           <div id="wdw-edit-worker-${d.id}-${w.id}" style="display:none;padding:12px;border-top:1px solid #e5e7eb">
             ${wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, true)}
             <div style="display:flex;gap:8px;margin-top:10px">
