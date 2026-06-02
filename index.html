@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v607CL | גישה</title>
+<title>Reports_Workers v608CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -289,7 +289,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v607CL</span>
+      <span class="topbar-title">Reports_Workers v608CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7839,35 +7839,27 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
     }
     if(!monthly.length && !annual.length && !missingCost.length) return;
 
-    var dlg=document.getElementById('v607dlg');if(dlg)dlg.remove();
-    var mh='';
+    var msg=[];
+    msg.push('בדיקת מימון לפי עלות מעביד: '+workerName);
+    if(label) msg.push(label);
     if(monthly.length){
-      mh+='<div style="border-top:0.5px solid var(--color-border-tertiary,#e5e7eb);padding-top:1rem;margin-bottom:1rem"><p style="font-size:12px;font-weight:500;color:var(--color-text-secondary,#6b7280);margin:0 0 8px">חריגה חודשית</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
-      monthly.slice(0,10).forEach(function(x){mh+='<div style="background:var(--color-background-danger,#fee2e2);border-radius:8px;padding:7px 10px;display:flex;justify-content:space-between"><span style="font-size:13px;color:var(--color-text-danger,#dc2626)">'+x.month+'</span><span style="font-size:13px;font-weight:500;color:var(--color-text-danger,#dc2626)">'+x.pct+'%</span></div>';});
-      mh+='</div>';
-      if(monthly.length>10)mh+='<p style="font-size:12px;color:var(--color-text-secondary,#6b7280);margin:8px 0 0;text-align:center">ועוד '+(monthly.length-10)+' חודשים נוספים</p>';
-      mh+='</div>';
+      msg.push('');
+      msg.push('חריגה חודשית מעל 100%:');
+      monthly.slice(0,18).forEach(function(x){ msg.push('• '+x.month+' — '+x.pct+'%'); });
+      if(monthly.length>18) msg.push('• ועוד '+(monthly.length-18)+' חודשים');
     }
-    var ah='';
     if(annual.length){
-      ah+='<div style="border-top:0.5px solid var(--color-border-tertiary,#e5e7eb);padding-top:1rem;margin-bottom:1rem"><p style="font-size:12px;font-weight:500;color:var(--color-text-secondary,#6b7280);margin:0 0 8px">חריגה שנתית</p>';
-      annual.forEach(function(x){ah+='<div style="background:var(--color-background-danger,#fee2e2);border-radius:8px;padding:7px 10px;display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;color:var(--color-text-danger,#dc2626)">'+x.year+'</span><span style="font-size:13px;font-weight:500;color:var(--color-text-danger,#dc2626)">'+x.pct+'%</span></div>';});
-      ah+='</div>';
+      msg.push('');
+      msg.push('חריגה שנתית מעל 100% מעלות מעביד שנתית:');
+      annual.forEach(function(x){ msg.push('• '+x.year+' — '+x.pct+'%'); });
     }
-    var d=document.createElement('dialog');
-    d.id='v607dlg';
-    d.style.cssText='border:none;border-radius:12px;padding:0;max-width:90vw;width:400px;background:var(--color-background-primary,#fff);box-shadow:0 8px 32px rgba(0,0,0,0.18);direction:rtl';
-    d.innerHTML='<div style="padding:1.5rem">'
-      +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem">'
-      +'<div style="width:40px;height:40px;border-radius:50%;background:var(--color-background-danger,#fee2e2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-danger,#dc2626)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>'
-      +'<div><p style="font-size:15px;font-weight:500;margin:0;color:var(--color-text-primary,#111)">חריגת מימון — '+workerName+'</p><p style="font-size:13px;color:var(--color-text-secondary,#6b7280);margin:4px 0 0">סך המימון חורג מ-100%</p></div>'
-      +'</div>'
-      +mh+ah
-      +'<p style="font-size:12px;color:var(--color-text-secondary,#6b7280);margin:0 0 1rem;text-align:center">השמירה בוצעה. ניתן לתקן את ההקצאות.</p>'
-      +'<button onclick="document.getElementById('v607dlg').close();document.getElementById('v607dlg').remove();" style="width:100%;padding:9px;border-radius:8px;font-size:14px;cursor:pointer;background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-secondary,#d1d5db);color:var(--color-text-primary,#111)">סגור ותקן</button>'
-      +'</div>';
-    document.body.appendChild(d);
-    d.showModal();
+    if(missingCost.length){
+      msg.push('');
+      missingCost.forEach(function(x){ msg.push('⚠ '+x); });
+    }
+    msg.push('');
+    msg.push('── לחץ OK לסגירה ──');
+    alert(msg.join('\n'));
   }
 
   // חישוב קשיח: monthlyPct לא משפיע על calcWorkerPct
@@ -8390,7 +8382,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v607CL | גישה</title>
+<title>Reports_Workers v608CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8651,7 +8643,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v607CL</span>
+      <span class="topbar-title">Reports_Workers v608CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
