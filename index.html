@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v601CL | גישה</title>
+<title>Reports_Workers v605CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -289,7 +289,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v601CL</span>
+      <span class="topbar-title">Reports_Workers v605CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7857,9 +7857,56 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
       msg.push('');
       missingCost.forEach(function(x){ msg.push('⚠ '+x); });
     }
-    msg.push('');
-    msg.push('השמירה לא נחסמה. בדוק אם להמשיך עם הנתון.');
-    alert(msg.join('\n'));
+    window._v605BlockSave = true;
+
+    var existing = document.getElementById('v605-overflow-modal');
+    if(existing) existing.remove();
+
+    var monthlyHtml = '';
+    if(monthly.length){
+      monthlyHtml += '<p style="font-size:12px;font-weight:500;color:var(--color-text-secondary,#6b7280);margin:0 0 8px">חריגה חודשית מעל 100%</p>';
+      monthlyHtml += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+      monthly.slice(0,10).forEach(function(x){
+        monthlyHtml += '<div style="background:var(--color-background-danger,#fee2e2);border-radius:8px;padding:7px 10px;display:flex;justify-content:space-between">'
+          + '<span style="font-size:13px;color:var(--color-text-danger,#dc2626)">'+x.month+'</span>'
+          + '<span style="font-size:13px;font-weight:500;color:var(--color-text-danger,#dc2626)">'+x.pct+'%</span>'
+          + '</div>';
+      });
+      monthlyHtml += '</div>';
+      if(monthly.length > 10) monthlyHtml += '<p style="font-size:12px;color:var(--color-text-secondary,#6b7280);margin:8px 0 0;text-align:center">ועוד '+(monthly.length-10)+' חודשים נוספים</p>';
+    }
+
+    var annualHtml = '';
+    if(annual.length){
+      annualHtml += '<div style="border-top:0.5px solid var(--color-border-tertiary,#e5e7eb);padding-top:1rem;margin-bottom:1rem">';
+      annualHtml += '<p style="font-size:12px;font-weight:500;color:var(--color-text-secondary,#6b7280);margin:0 0 8px">חריגה שנתית</p>';
+      annual.forEach(function(x){
+        annualHtml += '<div style="background:var(--color-background-danger,#fee2e2);border-radius:8px;padding:7px 10px;display:flex;justify-content:space-between;margin-bottom:4px">'
+          + '<span style="font-size:13px;color:var(--color-text-danger,#dc2626)">'+x.year+'</span>'
+          + '<span style="font-size:13px;font-weight:500;color:var(--color-text-danger,#dc2626)">'+x.pct+'%</span>'
+          + '</div>';
+      });
+      annualHtml += '</div>';
+    }
+
+    var overlay = document.createElement('div');
+    overlay.id = 'v605-overflow-modal';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:99999;display:flex;align-items:center;justify-content:center;direction:rtl';
+    overlay.innerHTML = '<div style="background:var(--color-background-primary,#fff);border-radius:12px;border:0.5px solid var(--color-border-tertiary,#e5e7eb);padding:1.5rem;width:400px;max-width:90%;max-height:80vh;overflow-y:auto">'
+      + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem">'
+      + '<div style="width:40px;height:40px;border-radius:50%;background:var(--color-background-danger,#fee2e2);display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+      + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-danger,#dc2626)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+      + '</div>'
+      + '<div><p style="font-size:15px;font-weight:500;margin:0;color:var(--color-text-primary,#111)">חריגת מימון — '+workerName+'</p>'
+      + '<p style="font-size:13px;color:var(--color-text-secondary,#6b7280);margin:4px 0 0">השמירה לא בוצעה. יש לתקן את ההקצאות.</p></div>'
+      + '</div>'
+      + '<div style="border-top:0.5px solid var(--color-border-tertiary,#e5e7eb);padding-top:1rem;margin-bottom:1rem">'
+      + monthlyHtml
+      + '</div>'
+      + annualHtml
+      + '<button onclick="document.getElementById('v605-overflow-modal').remove();window._v605BlockSave=false;" style="width:100%;padding:9px;border-radius:8px;font-size:14px;cursor:pointer;background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-secondary,#d1d5db);color:var(--color-text-primary,#111)">סגור ותקן</button>'
+      + '</div>';
+    document.body.appendChild(overlay);
   }
 
   // חישוב קשיח: monthlyPct לא משפיע על calcWorkerPct
@@ -8036,7 +8083,9 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
       beforeName = w0 && w0.name || '';
     } catch(e){}
 
+    window._v605BlockSave = false;
     var result = orig.apply(this, arguments);
+    if(window._v605BlockSave){ window._v605BlockSave=false; return result; }
 
     try {
       var d = (window.S && S.wdw && S.wdw.donors || []).find(function(x){ return x.id === did; });
@@ -8044,7 +8093,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
       var workerName = (w && w.name) || beforeName;
 
       if (workerName && typeof window.v597CheckWorkerFunding === 'function') {
-        // v597CheckWorkerFunding already checks all relevant project months and annual totals.
         window.v597CheckWorkerFunding(workerName);
       }
     } catch(e) {
@@ -8382,7 +8430,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v601CL | גישה</title>
+<title>Reports_Workers v605CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8643,7 +8691,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v601CL</span>
+      <span class="topbar-title">Reports_Workers v605CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
