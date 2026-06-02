@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v597CH | גישה</title>
+<title>Reports_Workers v598CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -250,7 +250,7 @@ async function initPyodide(){
 .wdw-budget-used{color:#e67e22}
 .wdw-budget-free{color:#27ae60}
 </style>
-<style id="v597CH-wdw-replacement-display-style">
+<style id="v598CH-wdw-replacement-display-style">
 #tab-wdw .v594-replacement-row{
   box-shadow: inset 4px 0 0 #f59e0b;
 }
@@ -289,7 +289,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v597CH</span>
+      <span class="topbar-title">Reports_Workers v598CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5607,7 +5607,7 @@ window.wdwReportRoleRender = function(){
   html+='</tbody></table></div>';
   body.innerHTML=html;
 };
-// ===== v597CH role report fix: base rows and replacement rows are rendered independently =====
+// ===== v598CH role report fix: base rows and replacement rows are rendered independently =====
 
 
 })();
@@ -7677,9 +7677,9 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 
 
 
-<script id="v597CH-wdw-flex-contract-and-employer-cost-validation">
+<script id="v598CH-wdw-flex-contract-and-employer-cost-validation">
 /*
-  v597CH
+  v598CH
   Scope:
   1. גמישות תורם היא תנאי חובה: גמיש / קשיח.
   2. ניתן להפוך תורם מגמיש לקשיח ולהפך.
@@ -8014,6 +8014,50 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 })();
 </script>
 
+
+<script id="v598CH-wdw-save-edit-worker-validation-fix">
+/*
+  v598CH
+  תיקון יחיד:
+  הפעלת בדיקת חריגה חודשית/שנתית גם לאחר עריכת עובד קיים דרך wdwSaveEditWorker.
+  לא משנה חישובים, לא חוסם שמירה, לא נוגע בגמיש/קשיח.
+*/
+(function(){
+  if (typeof window.wdwSaveEditWorker !== 'function') return;
+  if (window.wdwSaveEditWorker.__v598Wrapped) return;
+
+  var orig = window.wdwSaveEditWorker;
+
+  window.wdwSaveEditWorker = function(did, wid){
+    var beforeName = '';
+    try {
+      var d0 = (window.S && S.wdw && S.wdw.donors || []).find(function(x){ return x.id === did; });
+      var w0 = d0 && (d0.workers || []).find(function(x){ return x.id === wid; });
+      beforeName = w0 && w0.name || '';
+    } catch(e){}
+
+    var result = orig.apply(this, arguments);
+
+    try {
+      var d = (window.S && S.wdw && S.wdw.donors || []).find(function(x){ return x.id === did; });
+      var w = d && (d.workers || []).find(function(x){ return x.id === wid; });
+      var workerName = (w && w.name) || beforeName;
+
+      if (workerName && typeof window.v597CheckWorkerFunding === 'function') {
+        // v597CheckWorkerFunding already checks all relevant project months and annual totals.
+        window.v597CheckWorkerFunding(workerName);
+      }
+    } catch(e) {
+      console.warn('v598CH validation after wdwSaveEditWorker failed:', e);
+    }
+
+    return result;
+  };
+
+  window.wdwSaveEditWorker.__v598Wrapped = true;
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -8027,7 +8071,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v597CH | גישה</title>
+<title>Reports_Workers v598CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8288,7 +8332,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v597CH</span>
+      <span class="topbar-title">Reports_Workers v598CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -15269,7 +15313,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div class="v437-row-actions"><button onclick="wdw437EditWorker(\''+d.id+'\',\''+w.id+'\')">ערוך</button><button class="danger" onclick="wdwDeleteWorker(\''+d.id+'\',\''+w.id+'\')">מחק</button></div>'+
     '</div>';
 
-    // v597CH: display-only replacement indicator under the base worker row.
+    // v598CH: display-only replacement indicator under the base worker row.
     // No calculation, saving, or editing logic is changed.
     var replPct=parseFloat(w.replacesPct||w.replacementPct||0)||0;
     var isVacantReplacement=(w.replaces==='__vacant__' && replPct>0);
