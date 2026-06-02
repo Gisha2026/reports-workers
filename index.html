@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v598CH | גישה</title>
+<title>Reports_Workers v599CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -250,7 +250,7 @@ async function initPyodide(){
 .wdw-budget-used{color:#e67e22}
 .wdw-budget-free{color:#27ae60}
 </style>
-<style id="v598CH-wdw-replacement-display-style">
+<style id="v599CH-wdw-replacement-display-style">
 #tab-wdw .v594-replacement-row{
   box-shadow: inset 4px 0 0 #f59e0b;
 }
@@ -289,7 +289,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v598CH</span>
+      <span class="topbar-title">Reports_Workers v599CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5607,7 +5607,7 @@ window.wdwReportRoleRender = function(){
   html+='</tbody></table></div>';
   body.innerHTML=html;
 };
-// ===== v598CH role report fix: base rows and replacement rows are rendered independently =====
+// ===== v599CH role report fix: base rows and replacement rows are rendered independently =====
 
 
 })();
@@ -7677,9 +7677,9 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 
 
 
-<script id="v598CH-wdw-flex-contract-and-employer-cost-validation">
+<script id="v599CH-wdw-flex-contract-and-employer-cost-validation">
 /*
-  v598CH
+  v599CH
   Scope:
   1. גמישות תורם היא תנאי חובה: גמיש / קשיח.
   2. ניתן להפוך תורם מגמיש לקשיח ולהפך.
@@ -8015,9 +8015,9 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 </script>
 
 
-<script id="v598CH-wdw-save-edit-worker-validation-fix">
+<script id="v599CH-wdw-save-edit-worker-validation-fix">
 /*
-  v598CH
+  v599CH
   תיקון יחיד:
   הפעלת בדיקת חריגה חודשית/שנתית גם לאחר עריכת עובד קיים דרך wdwSaveEditWorker.
   לא משנה חישובים, לא חוסם שמירה, לא נוגע בגמיש/קשיח.
@@ -8048,13 +8048,116 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
         window.v597CheckWorkerFunding(workerName);
       }
     } catch(e) {
-      console.warn('v598CH validation after wdwSaveEditWorker failed:', e);
+      console.warn('v599CH validation after wdwSaveEditWorker failed:', e);
     }
 
     return result;
   };
 
   window.wdwSaveEditWorker.__v598Wrapped = true;
+})();
+</script>
+
+
+<script id="v599CH-wdw-saveData-global-overfunding-alert">
+/*
+  v599CH
+  תיקון יחיד:
+  התראה אחרי שמירה גם כאשר השינוי בוצע מטבלת "אחוז חודשי" ולא דרך עריכת עובד.
+  לא חוסם שמירה. לא משנה חישובים. לא נוגע בגמיש/קשיח.
+*/
+(function(){
+  if (typeof window.saveData !== 'function') return;
+  if (window.saveData.__v599Wrapped) return;
+
+  function monthNorm(v){
+    v=String(v||'').trim();
+    var m=v.match(/^(\d{4})-(\d{2})/);
+    return m ? (m[1]+'-'+m[2]) : '';
+  }
+  function nextMonth(ym){
+    var y=parseInt(ym.slice(0,4),10), m=parseInt(ym.slice(5,7),10);
+    m++; if(m>12){m=1;y++;}
+    return y+'-'+String(m).padStart(2,'0');
+  }
+  function monthsBetween(start,end){
+    start=monthNorm(start); end=monthNorm(end);
+    if(!start || !end) return [];
+    var out=[], cur=start, guard=0;
+    while(cur<=end && guard<240){
+      out.push(cur);
+      cur=nextMonth(cur);
+      guard++;
+    }
+    return out;
+  }
+  function allWorkerMonths(){
+    var map={};
+    var donors=(window.S && S.wdw && S.wdw.donors) || [];
+    donors.forEach(function(d){
+      (d.workers||[]).forEach(function(w){
+        if(!w || !w.name || w.active===false) return;
+        var start=monthNorm(w.startMonth) || monthNorm(d.startDate);
+        var end=monthNorm(w.endMonth) || monthNorm(d.endDate);
+        monthsBetween(start,end).forEach(function(m){
+          if(!map[w.name]) map[w.name]={};
+          map[w.name][m]=true;
+        });
+      });
+    });
+    return map;
+  }
+  function totalPct(workerName, month){
+    if(typeof window.wdwWorkerTotalPct==='function'){
+      var p=parseFloat(window.wdwWorkerTotalPct(workerName, month));
+      if(isFinite(p)) return Math.round(p*10)/10;
+    }
+    if(typeof window.getWorkerFundingPct==='function'){
+      var q=parseFloat(window.getWorkerFundingPct(workerName, month, 'monthly'));
+      if(isFinite(q)) return Math.round(q*10)/10;
+    }
+    return 0;
+  }
+  function scanAndAlert(){
+    var activeTab=document.querySelector('.tab-content.active');
+    if(!activeTab || activeTab.id!=='tab-wdw') return;
+
+    var map=allWorkerMonths();
+    var lines=[];
+    Object.keys(map).sort().forEach(function(workerName){
+      var bad=[];
+      Object.keys(map[workerName]).sort().forEach(function(m){
+        var p=totalPct(workerName,m);
+        if(p>100.0001) bad.push(m+' — '+p+'%');
+      });
+      if(bad.length){
+        lines.push(workerName+':');
+        bad.slice(0,18).forEach(function(x){ lines.push('• '+x); });
+        if(bad.length>18) lines.push('• ועוד '+(bad.length-18)+' חודשים');
+        lines.push('');
+      }
+    });
+
+    if(lines.length){
+      alert(
+        'בדיקת חריגה חודשית מעל 100% לפי עובד וחודש\n\n' +
+        lines.join('\n') +
+        '\nהשמירה לא נחסמה. בדוק אם להמשיך עם הנתון.'
+      );
+    }
+  }
+
+  var orig=window.saveData;
+  window.saveData=function(){
+    var result=orig.apply(this,arguments);
+    try{
+      setTimeout(scanAndAlert, 120);
+    }catch(e){
+      console.warn('v599CH overfunding alert failed:', e);
+    }
+    return result;
+  };
+  window.saveData.__v599Wrapped=true;
 })();
 </script>
 
@@ -8071,7 +8174,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v598CH | גישה</title>
+<title>Reports_Workers v599CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8332,7 +8435,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v598CH</span>
+      <span class="topbar-title">Reports_Workers v599CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -15313,7 +15416,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div class="v437-row-actions"><button onclick="wdw437EditWorker(\''+d.id+'\',\''+w.id+'\')">ערוך</button><button class="danger" onclick="wdwDeleteWorker(\''+d.id+'\',\''+w.id+'\')">מחק</button></div>'+
     '</div>';
 
-    // v598CH: display-only replacement indicator under the base worker row.
+    // v599CH: display-only replacement indicator under the base worker row.
     // No calculation, saving, or editing logic is changed.
     var replPct=parseFloat(w.replacesPct||w.replacementPct||0)||0;
     var isVacantReplacement=(w.replaces==='__vacant__' && replPct>0);
