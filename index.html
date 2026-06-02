@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v596CH | גישה</title>
+<title>Reports_Workers v597CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -250,7 +250,7 @@ async function initPyodide(){
 .wdw-budget-used{color:#e67e22}
 .wdw-budget-free{color:#27ae60}
 </style>
-<style id="v596CH-wdw-replacement-display-style">
+<style id="v597CH-wdw-replacement-display-style">
 #tab-wdw .v594-replacement-row{
   box-shadow: inset 4px 0 0 #f59e0b;
 }
@@ -289,7 +289,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v596CH</span>
+      <span class="topbar-title">Reports_Workers v597CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5607,7 +5607,7 @@ window.wdwReportRoleRender = function(){
   html+='</tbody></table></div>';
   body.innerHTML=html;
 };
-// ===== v596CH role report fix: base rows and replacement rows are rendered independently =====
+// ===== v597CH role report fix: base rows and replacement rows are rendered independently =====
 
 
 })();
@@ -7676,6 +7676,344 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 </style>
 
 
+
+<script id="v597CH-wdw-flex-contract-and-employer-cost-validation">
+/*
+  v597CH
+  Scope:
+  1. גמישות תורם היא תנאי חובה: גמיש / קשיח.
+  2. ניתן להפוך תורם מגמיש לקשיח ולהפך.
+  3. תורם קשיח: monthlyPct לא משפיע על החישוב ולא נשמר כהרכב משתנה.
+  4. תורם גמיש: monthlyPct מותר ומשפיע.
+  5. אחרי שמירת עובד/עריכת עובד: בדיקה חודשית לכל חודשי הפרויקט + בדיקה שנתית.
+  6. הבדיקה מזהירה בלבד. אינה חוסמת שמירה.
+*/
+(function(){
+  function donors(){
+    if(!window.S) return [];
+    if(!S.wdw) S.wdw={donors:[], employerCosts:{}};
+    if(!S.wdw.donors) S.wdw.donors=[];
+    if(!S.wdw.employerCosts) S.wdw.employerCosts={};
+    return S.wdw.donors;
+  }
+  function esc(s){
+    return String(s==null?'':s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function ymNorm(v){
+    v=String(v||'').trim();
+    if(!v) return '';
+    var m=v.match(/^(\d{4})-(\d{2})/);
+    return m ? (m[1]+'-'+m[2]) : '';
+  }
+  function nextMonth(ym){
+    var y=parseInt(ym.slice(0,4),10), m=parseInt(ym.slice(5,7),10);
+    m++; if(m>12){m=1;y++;}
+    return y+'-'+String(m).padStart(2,'0');
+  }
+  function monthRange(start,end){
+    start=ymNorm(start); end=ymNorm(end);
+    if(!start && !end){
+      var y=(S&&S.year)||new Date().getFullYear();
+      start=y+'-01'; end=y+'-12';
+    } else if(!start) start=end;
+    else if(!end) end=start;
+    var out=[], cur=start, guard=0;
+    while(cur<=end && guard<240){
+      out.push(cur);
+      cur=nextMonth(cur);
+      guard++;
+    }
+    return out;
+  }
+  function donorFlexState(d){
+    if(!d) return '';
+    if(d.flexible===true || d.flexibility==='flexible' || d.flexibility==='yes' || d.flexibility==='גמיש') return 'flexible';
+    if(d.flexible===false || d.flexibility==='rigid' || d.flexibility==='no' || d.flexibility==='קשיח' || d.flexibility==='לא גמיש') return 'rigid';
+    return '';
+  }
+  function donorIsRigid(d){ return donorFlexState(d)==='rigid'; }
+  function donorIsFlexible(d){ return donorFlexState(d)==='flexible'; }
+  function normalizeDonorFlex(d){
+    var st=donorFlexState(d);
+    if(st==='flexible'){ d.flexible=true; d.flexibility='flexible'; }
+    if(st==='rigid'){ d.flexible=false; d.flexibility='rigid'; }
+    return st;
+  }
+  function workerMonthsForDonor(w,d){
+    var st=ymNorm(w&&w.startMonth) || ymNorm(d&&d.startDate);
+    var en=ymNorm(w&&w.endMonth) || ymNorm(d&&d.endDate);
+    return monthRange(st,en);
+  }
+  function workerCost(name){
+    if(!S.wdw) return 0;
+    var c = (S.wdw.employerCosts && S.wdw.employerCosts[name]) || 
+            (S.wdw.budget && S.wdw.budget[name]) || 0;
+    return parseFloat(c)||0;
+  }
+  function donorRowsForWorker(name){
+    var rows=[];
+    donors().forEach(function(d){
+      (d.workers||[]).forEach(function(w){
+        if(w && w.name===name && w.active!==false) rows.push({donor:d, worker:w});
+      });
+    });
+    return rows;
+  }
+  function totalPctForWorkerMonth(name, month){
+    if(typeof window.wdwWorkerTotalPct==='function'){
+      var p=parseFloat(window.wdwWorkerTotalPct(name, month));
+      if(isFinite(p)) return Math.round(p*10)/10;
+    }
+    if(typeof window.calcWorkerPct==='function'){
+      var total=0;
+      donorRowsForWorker(name).forEach(function(r){
+        var res=window.calcWorkerPct(r, month) || {};
+        total += parseFloat(res.total||0) || 0;
+      });
+      return Math.round(total*10)/10;
+    }
+    return 0;
+  }
+  function clearMonthlyPctForRigid(d){
+    if(!donorIsRigid(d)) return;
+    (d.workers||[]).forEach(function(w){
+      if(w && w.monthlyPct && Object.keys(w.monthlyPct).length){
+        w.monthlyPct={};
+      }
+    });
+  }
+  function disableMonthlyInputsForRigidDonors(){
+    donors().forEach(function(d){
+      if(!d || !d.id) return;
+      var rigid=donorIsRigid(d);
+      var inputs=document.querySelectorAll('input[id^="v437-worker-"][id*="-'+CSS.escape(d.id)+'-"][id*="-mp-"]');
+      inputs.forEach(function(inp){
+        inp.disabled=rigid;
+        inp.readOnly=rigid;
+        inp.title=rigid ? 'תורם קשיח: לא ניתן לשנות אחוזים לפי חודש' : '';
+        if(rigid) inp.style.background='#f3f4f6';
+      });
+      var wraps=document.querySelectorAll('[id^="v437-worker-"][id*="-'+CSS.escape(d.id)+'-"][id$="-monthly-wrap"]');
+      wraps.forEach(function(wrap){
+        if(rigid){
+          var note=wrap.querySelector('.v597-rigid-note');
+          if(!note){
+            note=document.createElement('div');
+            note.className='v597-rigid-note';
+            note.style.cssText='grid-column:1/-1;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:6px;padding:7px 10px;font-size:12px;font-weight:700';
+            note.textContent='תורם קשיח: אחוז/סכום ההקצאה קבוע לכל התקופה. שינוי חודשי חסום.';
+            wrap.insertBefore(note, wrap.firstChild);
+          }
+        }
+      });
+    });
+  }
+  function checkFundingAfterChange(workerName, months, label){
+    workerName=String(workerName||'').trim();
+    if(!workerName || !months || !months.length) return;
+    var cost=workerCost(workerName);
+    var monthly=[];
+    var byYear={};
+    months.forEach(function(m){
+      var p=totalPctForWorkerMonth(workerName,m);
+      if(p>100.0001) monthly.push({month:m,pct:p});
+      var y=m.slice(0,4);
+      if(!byYear[y]) byYear[y]=0;
+      byYear[y]+=p;
+    });
+    var annual=[];
+    Object.keys(byYear).sort().forEach(function(y){
+      var yearlyPct=Math.round((byYear[y]/12)*10)/10;
+      if(yearlyPct>100.0001) annual.push({year:y,pct:yearlyPct});
+    });
+    var missingCost=[];
+    if(!cost){
+      var hasAmount=false;
+      donorRowsForWorker(workerName).forEach(function(r){
+        var w=r.worker||{};
+        if(w.valueType==='amount' || w.fundingType==='סכום חודשי' || w.fundingType==='סכום לתקופה' || w.replacesAmt || w.totalPeriodAmount) hasAmount=true;
+      });
+      if(hasAmount) missingCost.push('לא נמצאה עלות מעביד לעובד/ת "'+workerName+'"; חישוב סכומים מול עלות מעביד עלול להיות לא מלא.');
+    }
+    if(!monthly.length && !annual.length && !missingCost.length) return;
+
+    var msg=[];
+    msg.push('בדיקת מימון לפי עלות מעביד: '+workerName);
+    if(label) msg.push(label);
+    if(monthly.length){
+      msg.push('');
+      msg.push('חריגה חודשית מעל 100%:');
+      monthly.slice(0,18).forEach(function(x){ msg.push('• '+x.month+' — '+x.pct+'%'); });
+      if(monthly.length>18) msg.push('• ועוד '+(monthly.length-18)+' חודשים');
+    }
+    if(annual.length){
+      msg.push('');
+      msg.push('חריגה שנתית מעל 100% מעלות מעביד שנתית:');
+      annual.forEach(function(x){ msg.push('• '+x.year+' — '+x.pct+'%'); });
+    }
+    if(missingCost.length){
+      msg.push('');
+      missingCost.forEach(function(x){ msg.push('⚠ '+x); });
+    }
+    msg.push('');
+    msg.push('השמירה לא נחסמה. בדוק אם להמשיך עם הנתון.');
+    alert(msg.join('\n'));
+  }
+
+  // חישוב קשיח: monthlyPct לא משפיע על calcWorkerPct
+  var origCalc=window.calcWorkerPct;
+  if(typeof origCalc==='function' && !origCalc.__v597Wrapped){
+    var wrapped=function(row, month){
+      try{
+        var d=row && row.donor;
+        var w=row && row.worker;
+        if(d && w && donorIsRigid(d)){
+          var clone=Object.assign({}, w);
+          clone.monthlyPct={};
+          row=Object.assign({}, row, {worker:clone});
+        }
+      }catch(e){}
+      return origCalc.call(this,row,month);
+    };
+    wrapped.__v597Wrapped=true;
+    window.calcWorkerPct=wrapped;
+  }
+
+  // שמירת תורם: גמישות חובה, וניתן להפוך גמיש/קשיח בכל שלב
+  var origSaveDonor=window.wdw437SaveDonor;
+  if(typeof origSaveDonor==='function' && !origSaveDonor.__v597Wrapped){
+    window.wdw437SaveDonor=function(mode,id){
+      var before=donors().map(function(d){return {id:d.id, flex:donorFlexState(d)};});
+      var r=origSaveDonor.apply(this,arguments);
+      donors().forEach(function(d){
+        var st=normalizeDonorFlex(d);
+        if(st==='rigid') clearMonthlyPctForRigid(d);
+      });
+      if(typeof saveLocally==='function') saveLocally();
+      if(typeof saveData==='function') try{saveData();}catch(e){}
+      setTimeout(function(){
+        if(typeof renderWDWInput==='function') renderWDWInput();
+        disableMonthlyInputsForRigidDonors();
+      },0);
+      return r;
+    };
+    window.wdw437SaveDonor.__v597Wrapped=true;
+  }
+
+  function afterWorkerSaved(workerName, d){
+    normalizeDonorFlex(d);
+    if(donorIsRigid(d)) clearMonthlyPctForRigid(d);
+    var rows=(d.workers||[]).filter(function(w){return w && w.name===workerName && w.active!==false;});
+    var months=[];
+    rows.forEach(function(w){ months=months.concat(workerMonthsForDonor(w,d)); });
+    months=Array.from(new Set(months)).sort();
+    if(typeof saveLocally==='function') saveLocally();
+    checkFundingAfterChange(workerName, months, d&&d.name ? ('תורם: '+d.name) : '');
+  }
+
+  // שמירת עובד במסלול הפעיל
+  var origSaveWorker=window.wdw437SaveWorker;
+  if(typeof origSaveWorker==='function' && !origSaveWorker.__v597Wrapped){
+    window.wdw437SaveWorker=function(mode,did,wid){
+      var d=donors().find(function(x){return x.id===did;});
+      if(!d){return origSaveWorker.apply(this,arguments);}
+      var st=normalizeDonorFlex(d);
+      if(!st){
+        alert('נא להגדיר קודם גמישות תורם: גמיש או קשיח.');
+        return;
+      }
+      var p='v437-worker-'+mode+'-'+did+'-'+wid;
+      var workerName='';
+      var nameEl=document.getElementById(p+'-name');
+      if(nameEl) workerName=nameEl.value||'';
+      if(donorIsRigid(d)){
+        document.querySelectorAll('input[id^="'+p+'-mp-"]').forEach(function(inp){ inp.value=''; });
+      }
+      var r=origSaveWorker.apply(this,arguments);
+      var d2=donors().find(function(x){return x.id===did;});
+      afterWorkerSaved(workerName,d2||d);
+      setTimeout(disableMonthlyInputsForRigidDonors,0);
+      return r;
+    };
+    window.wdw437SaveWorker.__v597Wrapped=true;
+  }
+
+  // מסלולי שמירה ישנים — לא משנים לוגיקה, רק מוסיפים בדיקה אחרי שמירה אם הם מופעלים
+  ['wdwSaveNewWorker','wdwSaveWorker'].forEach(function(fnName){
+    var orig=window[fnName];
+    if(typeof orig==='function' && !orig.__v597Wrapped){
+      window[fnName]=function(did){
+        var d=donors().find(function(x){return x.id===did;});
+        if(d && !normalizeDonorFlex(d)){
+          alert('נא להגדיר קודם גמישות תורם: גמיש או קשיח.');
+          return;
+        }
+        if(d && donorIsRigid(d)){
+          document.querySelectorAll('input[id*="'+CSS.escape(did)+'"][id*="-mp-"]').forEach(function(inp){inp.value='';});
+        }
+        var r=orig.apply(this,arguments);
+        if(d) {
+          if(donorIsRigid(d)) clearMonthlyPctForRigid(d);
+          var last=(d.workers||[])[(d.workers||[]).length-1];
+          if(last && last.name) afterWorkerSaved(last.name,d);
+        }
+        setTimeout(disableMonthlyInputsForRigidDonors,0);
+        return r;
+      };
+      window[fnName].__v597Wrapped=true;
+    }
+  });
+
+  // אחרי כל רינדור נועלים שדות חודשיים לתורמים קשיחים
+  var origRender=window.renderWDWInput;
+  if(typeof origRender==='function' && !origRender.__v597Wrapped){
+    window.renderWDWInput=function(){
+      var r=origRender.apply(this,arguments);
+      donors().forEach(function(d){ normalizeDonorFlex(d); if(donorIsRigid(d)) clearMonthlyPctForRigid(d); });
+      setTimeout(disableMonthlyInputsForRigidDonors,0);
+      return r;
+    };
+    window.renderWDWInput.__v597Wrapped=true;
+  }
+
+  // בדיקת שינוי ישירה בשדות monthlyPct: רק אזהרה אחרי שינוי, לא חסימה
+  document.addEventListener('change',function(ev){
+    var t=ev.target;
+    if(!t || !t.id || t.id.indexOf('-mp-')<0) return;
+    var id=t.id;
+    var m=id.match(/^v437-worker-(new|edit)-(.+?)-(.+?)-mp-(\d{4}-\d{2})$/);
+    if(!m) return;
+    var did=m[2], wid=m[3], month=m[4];
+    var d=donors().find(function(x){return x.id===did;});
+    if(!d) return;
+    if(donorIsRigid(d)){
+      alert('תורם קשיח: לא ניתן לשנות אחוזים לפי חודש.');
+      t.value='';
+      t.disabled=true;
+      return;
+    }
+  },true);
+
+  window.v597CheckWorkerFunding=function(workerName){
+    var months=[];
+    donorRowsForWorker(workerName).forEach(function(r){ months=months.concat(workerMonthsForDonor(r.worker,r.donor)); });
+    months=Array.from(new Set(months)).sort();
+    checkFundingAfterChange(workerName, months, 'בדיקה ידנית');
+  };
+
+  window.v597WDWFlexStatus=function(){
+    return donors().map(function(d){return {id:d.id, name:d.name, flexible:d.flexible, flexibility:d.flexibility, state:donorFlexState(d)};});
+  };
+
+  setTimeout(function(){
+    donors().forEach(function(d){ normalizeDonorFlex(d); if(donorIsRigid(d)) clearMonthlyPctForRigid(d); });
+    disableMonthlyInputsForRigidDonors();
+  },0);
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -7689,7 +8027,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v596CH | גישה</title>
+<title>Reports_Workers v597CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -7950,7 +8288,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v596CH</span>
+      <span class="topbar-title">Reports_Workers v597CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -14931,7 +15269,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div class="v437-row-actions"><button onclick="wdw437EditWorker(\''+d.id+'\',\''+w.id+'\')">ערוך</button><button class="danger" onclick="wdwDeleteWorker(\''+d.id+'\',\''+w.id+'\')">מחק</button></div>'+
     '</div>';
 
-    // v596CH: display-only replacement indicator under the base worker row.
+    // v597CH: display-only replacement indicator under the base worker row.
     // No calculation, saving, or editing logic is changed.
     var replPct=parseFloat(w.replacesPct||w.replacementPct||0)||0;
     var isVacantReplacement=(w.replaces==='__vacant__' && replPct>0);
