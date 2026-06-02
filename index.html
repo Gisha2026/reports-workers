@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v601CL | גישה</title>
+<title>Reports_Workers v602CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -260,6 +260,22 @@ async function initPyodide(){
 }
 </style>
 
+
+<style id="v602CH-overfunding-modal-style">
+#v602-overfunding-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:999999;display:none;align-items:center;justify-content:center;padding:24px;direction:rtl}
+#v602-overfunding-backdrop.open{display:flex}
+#v602-overfunding-modal{width:min(680px,94vw);max-height:86vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.35);border:1px solid #fecaca;font-family:Arial,sans-serif}
+.v602-of-head{display:flex;align-items:center;gap:12px;padding:18px 22px;background:#fff1f2;border-bottom:1px solid #fecaca}
+.v602-of-icon{width:38px;height:38px;border-radius:50%;background:#dc2626;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;flex:0 0 auto}
+.v602-of-title{font-size:18px;font-weight:900;color:#7f1d1d;line-height:1.25}
+.v602-of-sub{font-size:12px;color:#991b1b;margin-top:3px}
+.v602-of-body{padding:18px 22px;color:#111827;font-size:14px;line-height:1.7}
+.v602-of-lines{background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;white-space:pre-wrap;max-height:48vh;overflow:auto;direction:rtl;text-align:right}
+.v602-of-actions{padding:14px 22px 18px;display:flex;justify-content:flex-start;gap:10px;border-top:1px solid #f1f5f9}
+.v602-of-close{background:#991b1b;color:white;border:none;border-radius:10px;padding:9px 18px;font-size:13px;font-weight:800;cursor:pointer}
+.v602-of-close:hover{background:#7f1d1d}
+</style>
+
 </head>
 <body>
 
@@ -289,7 +305,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v601CL</span>
+      <span class="topbar-title">Reports_Workers v602CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -7859,7 +7875,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
     }
     msg.push('');
     msg.push('השמירה לא נחסמה. בדוק אם להמשיך עם הנתון.');
-    alert(msg.join('\n'));
+    window.v602ShowOverfundingModal(msg.join('\n'));
   }
 
   // חישוב קשיח: monthlyPct לא משפיע על calcWorkerPct
@@ -8239,7 +8255,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 </script>
 
 
-<script id="v601CL-overflow-modal">
+<script id="v602CH-overflow-modal">
 (function(){
   function showOverflowModal(workerName, monthly, annual){
     var existing = document.getElementById('v601-overflow-modal');
@@ -8369,6 +8385,42 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 })();
 </script>
 
+
+<script id="v602CH-overfunding-modal-helper">
+(function(){
+  window.v602ShowOverfundingModal = function(message){
+    var text = String(message || '');
+    var bd = document.getElementById('v602-overfunding-backdrop');
+    if(!bd){
+      bd = document.createElement('div');
+      bd.id = 'v602-overfunding-backdrop';
+      bd.innerHTML =
+        '<div id="v602-overfunding-modal" role="dialog" aria-modal="true" aria-labelledby="v602-of-title">' +
+          '<div class="v602-of-head">' +
+            '<div class="v602-of-icon">!</div>' +
+            '<div>' +
+              '<div class="v602-of-title" id="v602-of-title">התראת חריגה באחוזי מימון</div>' +
+              '<div class="v602-of-sub">הנתונים נשמרו, אך נמצאה חריגה שיש לבדוק.</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="v602-of-body"><div class="v602-of-lines" id="v602-of-lines"></div></div>' +
+          '<div class="v602-of-actions"><button type="button" class="v602-of-close" onclick="window.v602CloseOverfundingModal()">סגור ותקן</button></div>' +
+        '</div>';
+      document.body.appendChild(bd);
+      bd.addEventListener('click', function(e){ if(e.target === bd) window.v602CloseOverfundingModal(); });
+      document.addEventListener('keydown', function(e){ if(e.key === 'Escape') window.v602CloseOverfundingModal(); });
+    }
+    var lines = document.getElementById('v602-of-lines');
+    if(lines) lines.textContent = text;
+    bd.classList.add('open');
+  };
+  window.v602CloseOverfundingModal = function(){
+    var bd = document.getElementById('v602-overfunding-backdrop');
+    if(bd) bd.classList.remove('open');
+  };
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -8382,7 +8434,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v601CL | גישה</title>
+<title>Reports_Workers v602CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8643,7 +8695,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v601CL</span>
+      <span class="topbar-title">Reports_Workers v602CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -17620,7 +17672,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 </script>
 
 
-<script id="v601CL-overflow-modal">
+<script id="v602CH-overflow-modal">
 (function(){
   function showOverflowModal(workerName, monthly, annual){
     var existing = document.getElementById('v601-overflow-modal');
