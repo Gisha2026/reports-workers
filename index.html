@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v599CH | גישה</title>
+<title>Reports_Workers v600CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -289,7 +289,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v599CH</span>
+      <span class="topbar-title">Reports_Workers v600CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8161,6 +8161,83 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 })();
 </script>
 
+
+<script id="v600CL-save-edit-worker-overflow-fix">
+/* v600CL - תיקון: עטיפת wdwSaveEditWorker הסופית עם בדיקת חריגה */
+(function(){
+  function doFix(){
+    var orig = window.wdwSaveEditWorker;
+    if(typeof orig !== 'function' || orig.__v600Fixed) return;
+    window.wdwSaveEditWorker = function(did, wid){
+      var workerName = '';
+      try {
+        var donors = (window.S && window.S.wdw && window.S.wdw.donors) || [];
+        var d = donors.find(function(x){ return x.id === did; });
+        var w = d && (d.workers||[]).find(function(x){ return x.id === wid; });
+        workerName = (w && w.name) || '';
+      } catch(e){}
+      var result = orig.apply(this, arguments);
+      setTimeout(function(){
+        try {
+          if(workerName && typeof window.v597CheckWorkerFunding === 'function'){
+            window.v597CheckWorkerFunding(workerName);
+          }
+        } catch(e){ console.warn('v600CL overflow check failed:', e); }
+      }, 100);
+      return result;
+    };
+    window.wdwSaveEditWorker.__v600Fixed = true;
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', doFix);
+  } else {
+    doFix();
+  }
+  setTimeout(doFix, 500);
+  setTimeout(doFix, 1500);
+})();
+</script>
+
+
+<script id="v600CL-savedata-overflow-fix">
+/* v600CL - בדיקת חריגה גם אחרי שמירה מטבלת אחוז חודשי */
+(function(){
+  function doFix(){
+    var origSave = window.saveData;
+    if(typeof origSave !== 'function' || origSave.__v600SaveFixed) return;
+    window.saveData = function(){
+      var result = origSave.apply(this, arguments);
+      setTimeout(function(){
+        try {
+          var activeTab = document.querySelector('.tab-content.active, [id="tab-wdw"]');
+          if(!activeTab) return;
+          var donors = (window.S && window.S.wdw && window.S.wdw.donors) || [];
+          var checked = {};
+          donors.forEach(function(d){
+            (d.workers||[]).forEach(function(w){
+              if(!w || !w.name || w.active===false || checked[w.name]) return;
+              checked[w.name] = true;
+              if(typeof window.v597CheckWorkerFunding === 'function'){
+                window.v597CheckWorkerFunding(w.name);
+              }
+            });
+          });
+        } catch(e){ console.warn('v600CL saveData overflow check failed:', e); }
+      }, 200);
+      return result;
+    };
+    window.saveData.__v600SaveFixed = true;
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', doFix);
+  } else {
+    doFix();
+  }
+  setTimeout(doFix, 500);
+  setTimeout(doFix, 1500);
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -8174,7 +8251,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v599CH | גישה</title>
+<title>Reports_Workers v600CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8435,7 +8512,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v599CH</span>
+      <span class="topbar-title">Reports_Workers v600CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -17332,6 +17409,83 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 
 })();
 // ===== סוף v559CL-getWorkerFundingPct-wrapper =====
+</script>
+
+
+<script id="v600CL-save-edit-worker-overflow-fix">
+/* v600CL - תיקון: עטיפת wdwSaveEditWorker הסופית עם בדיקת חריגה */
+(function(){
+  function doFix(){
+    var orig = window.wdwSaveEditWorker;
+    if(typeof orig !== 'function' || orig.__v600Fixed) return;
+    window.wdwSaveEditWorker = function(did, wid){
+      var workerName = '';
+      try {
+        var donors = (window.S && window.S.wdw && window.S.wdw.donors) || [];
+        var d = donors.find(function(x){ return x.id === did; });
+        var w = d && (d.workers||[]).find(function(x){ return x.id === wid; });
+        workerName = (w && w.name) || '';
+      } catch(e){}
+      var result = orig.apply(this, arguments);
+      setTimeout(function(){
+        try {
+          if(workerName && typeof window.v597CheckWorkerFunding === 'function'){
+            window.v597CheckWorkerFunding(workerName);
+          }
+        } catch(e){ console.warn('v600CL overflow check failed:', e); }
+      }, 100);
+      return result;
+    };
+    window.wdwSaveEditWorker.__v600Fixed = true;
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', doFix);
+  } else {
+    doFix();
+  }
+  setTimeout(doFix, 500);
+  setTimeout(doFix, 1500);
+})();
+</script>
+
+
+<script id="v600CL-savedata-overflow-fix">
+/* v600CL - בדיקת חריגה גם אחרי שמירה מטבלת אחוז חודשי */
+(function(){
+  function doFix(){
+    var origSave = window.saveData;
+    if(typeof origSave !== 'function' || origSave.__v600SaveFixed) return;
+    window.saveData = function(){
+      var result = origSave.apply(this, arguments);
+      setTimeout(function(){
+        try {
+          var activeTab = document.querySelector('.tab-content.active, [id="tab-wdw"]');
+          if(!activeTab) return;
+          var donors = (window.S && window.S.wdw && window.S.wdw.donors) || [];
+          var checked = {};
+          donors.forEach(function(d){
+            (d.workers||[]).forEach(function(w){
+              if(!w || !w.name || w.active===false || checked[w.name]) return;
+              checked[w.name] = true;
+              if(typeof window.v597CheckWorkerFunding === 'function'){
+                window.v597CheckWorkerFunding(w.name);
+              }
+            });
+          });
+        } catch(e){ console.warn('v600CL saveData overflow check failed:', e); }
+      }, 200);
+      return result;
+    };
+    window.saveData.__v600SaveFixed = true;
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', doFix);
+  } else {
+    doFix();
+  }
+  setTimeout(doFix, 500);
+  setTimeout(doFix, 1500);
+})();
 </script>
 
 </body>
