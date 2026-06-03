@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v606CH | גישה</title>
+<title>Reports_Workers v613CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v606CH</span>
+      <span class="topbar-title">Reports_Workers v613CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8478,6 +8478,127 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 </script>
 
 
+
+<script id="v613CL-year-selector">
+(function(){
+  function patchWorkerFields(){
+    var orig = window.wdwWorkerFields;
+    if(!orig || orig.__v613) return;
+    window.wdwWorkerFields = function(w, d, hasBudget, curMonth, workerOpts, isEdit){
+      var html = orig.apply(this, arguments);
+      if(typeof html !== 'string') return html;
+      // הוסף id לגריד החודשי
+      html = html.replace(
+        'style="display:grid;grid-template-columns:repeat(4,',
+        'id="__PFXTOKEN__-mp-grid" style="display:grid;grid-template-columns:repeat(4,'
+      );
+      return html;
+    };
+    window.wdwWorkerFields.__v613 = true;
+  }
+
+  function addYearSelector(pfx){
+    if(document.getElementById(pfx+'-mp-year-sel')) return;
+    var startEl = document.getElementById(pfx+'-start');
+    var endEl   = document.getElementById(pfx+'-end');
+    if(!startEl || !endEl || !startEl.value || !endEl.value) return;
+    var y1 = parseInt(startEl.value.substring(0,4));
+    var y2 = parseInt(endEl.value.substring(0,4));
+    if(!y1 || !y2 || y1 === y2) return;
+    var grid = document.getElementById(pfx+'-mp-grid');
+    if(!grid) return;
+    // בנה בורר שנה
+    var sd = document.createElement('div');
+    sd.style.cssText = 'margin-bottom:8px;display:flex;align-items:center;gap:8px';
+    var lb = document.createElement('label');
+    lb.style.cssText = 'font-size:12px;color:#555;font-weight:600';
+    lb.textContent = 'שנה:';
+    var sl = document.createElement('select');
+    sl.id = pfx+'-mp-year-sel';
+    sl.style.cssText = 'padding:4px 8px;border:1px solid #90caf9;border-radius:4px;font-size:12px';
+    for(var y=y1; y<=y2; y++){
+      var o = document.createElement('option');
+      o.value = y; o.textContent = y;
+      if(y===y1) o.selected = true;
+      sl.appendChild(o);
+    }
+    sl.addEventListener('change', function(){
+      rebuildGrid(pfx, parseInt(sl.value));
+    });
+    sd.appendChild(lb); sd.appendChild(sl);
+    grid.parentNode.insertBefore(sd, grid);
+    rebuildGrid(pfx, y1);
+  }
+
+  function rebuildGrid(pfx, yr){
+    var MN = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+    var grid = document.getElementById(pfx+'-mp-grid');
+    if(!grid) return;
+    // שמור ערכים קיימים
+    var mp = {};
+    grid.querySelectorAll('input[type=number]').forEach(function(el){
+      if(!el.id || !el.id.startsWith(pfx+'-mp-')) return;
+      var k = el.id.substring((pfx+'-mp-').length);
+      if(k.length===7 && k[4]==='-' && el.value) mp[k] = el.value;
+    });
+    // בנה מחדש
+    grid.innerHTML = MN.map(function(mn, mi){
+      var mk = yr+'-'+(mi+1<10?'0':'')+(mi+1);
+      return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'
+        +'<label style="font-size:11px;color:#555">'+mn+'</label>'
+        +'<input id="'+pfx+'-mp-'+mk+'" type="number" value="'+(mp[mk]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'
+        +'</div>';
+    }).join('');
+  }
+
+  function patchToggle(){
+    var orig = window.wdwToggleMonthlyPct;
+    if(!orig || orig.__v613) return;
+    window.wdwToggleMonthlyPct = function(pfx){
+      orig.call(this, pfx);
+      var wrap = document.getElementById(pfx+'-monthly-pct-wrap');
+      if(wrap && wrap.style.display !== 'none'){
+        setTimeout(function(){ addYearSelector(pfx); }, 80);
+      }
+    };
+    window.wdwToggleMonthlyPct.__v613 = true;
+  }
+
+  function patchCollect(){
+    var orig = window.wdwCollectMonthlyPct;
+    if(!orig || orig.__v613) return;
+    window.wdwCollectMonthlyPct = function(pfx){
+      var mp = {};
+      var wrap = document.getElementById(pfx+'-monthly-pct-wrap');
+      if(wrap){
+        wrap.querySelectorAll('input[type=number]').forEach(function(el){
+          if(!el.id || !el.id.startsWith(pfx+'-mp-')) return;
+          var k = el.id.substring((pfx+'-mp-').length);
+          if(k.length===7 && k[4]==='-' && el.value) mp[k] = parseFloat(el.value)||0;
+        });
+        return Object.keys(mp).length ? mp : null;
+      }
+      return orig.call(this, pfx);
+    };
+    window.wdwCollectMonthlyPct.__v613 = true;
+  }
+
+  function init(){
+    patchWorkerFields();
+    patchToggle();
+    patchCollect();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  setTimeout(init, 500);
+  setTimeout(init, 1500);
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -8491,7 +8612,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v606CH | גישה</title>
+<title>Reports_Workers v613CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8752,7 +8873,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v606CH</span>
+      <span class="topbar-title">Reports_Workers v613CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
