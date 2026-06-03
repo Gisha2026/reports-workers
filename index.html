@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v611CL | גישה</title>
+<title>Reports_Workers v612CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v611CL</span>
+      <span class="topbar-title">Reports_Workers v612CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2564,19 +2564,10 @@ function wdwToggleVacantExtra(pfx,idx){
 
 function wdwCollectMonthlyPct(pfx){
   const mp={};
-  const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
-  if(wrap){
-    wrap.querySelectorAll('input[type=number]').forEach(function(el){
-      if(!el.id||!el.id.startsWith(pfx+'-mp-')) return;
-      const k=el.id.substring((pfx+'-mp-').length);
-      if(k.length===7&&k[4]==='-'&&el.value) mp[k]=parseFloat(el.value)||0;
-    });
-  } else {
-    for(let mi=0;mi<12;mi++){
-      const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
-      const el=document.getElementById(pfx+'-mp-'+mkey);
-      if(el&&el.value) mp[mkey]=parseFloat(el.value)||0;
-    }
+  for(let mi=0;mi<12;mi++){
+    const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
+    const el=document.getElementById(pfx+'-mp-'+mkey);
+    if(el&&el.value) mp[mkey]=parseFloat(el.value)||0;
   }
   return Object.keys(mp).length?mp:null;
 }
@@ -2584,63 +2575,7 @@ function wdwCollectMonthlyPct(pfx){
 function wdwToggleMonthlyPct(pfx){
   const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
   if(!wrap) return;
-  const isOpen=wrap.style.display!=='none';
-  wrap.style.display=isOpen?'none':'block';
-  if(!isOpen) wdwInitMpYearSel(pfx);
-}
-function wdwInitMpYearSel(pfx){
-  if(document.getElementById(pfx+'-mp-year-sel')) return;
-  const startEl=document.getElementById(pfx+'-start');
-  const endEl=document.getElementById(pfx+'-end');
-  const sv=startEl&&startEl.value?startEl.value:'';
-  const ev=endEl&&endEl.value?endEl.value:'';
-  const y1=sv?parseInt(sv.substring(0,4)):(S.year||new Date().getFullYear());
-  const y2=ev?parseInt(ev.substring(0,4)):(S.year||new Date().getFullYear());
-  if(y1===y2) return;
-  const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
-  if(!wrap) return;
-  const sd=document.createElement('div');
-  sd.style.cssText='margin-bottom:8px;display:flex;align-items:center;gap:8px';
-  const lb=document.createElement('label');
-  lb.style.cssText='font-size:12px;color:#555;font-weight:600';
-  lb.textContent='שנה:';
-  const sl=document.createElement('select');
-  sl.id=pfx+'-mp-year-sel';
-  sl.style.cssText='padding:4px 8px;border:1px solid #90caf9;border-radius:4px;font-size:12px';
-  for(let y=y1;y<=y2;y++){
-    const o=document.createElement('option');
-    o.value=y; o.textContent=y;
-    if(y===y1) o.selected=true;
-    sl.appendChild(o);
-  }
-  sl.onchange=function(){ wdwRebuildMpGrid(pfx,parseInt(sl.value)); };
-  sd.appendChild(lb); sd.appendChild(sl);
-  wrap.insertBefore(sd,wrap.firstChild);
-  wdwRebuildMpGrid(pfx,y1);
-}
-function wdwRebuildMpGrid(pfx,yr){
-  const MN=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-  const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
-  if(!wrap) return;
-  const mp={};
-  wrap.querySelectorAll('input[type=number]').forEach(function(el){
-    if(!el.id||!el.id.startsWith(pfx+'-mp-')) return;
-    const k=el.id.substring((pfx+'-mp-').length);
-    if(k.length===7&&k[4]==='-'&&el.value) mp[k]=el.value;
-  });
-  let gd=null;
-  const divs=wrap.querySelectorAll('div');
-  for(let i=0;i<divs.length;i++){
-    if(divs[i].querySelectorAll('input[type=number]').length>=6){gd=divs[i];break;}
-  }
-  if(!gd) return;
-  gd.innerHTML=MN.map(function(mn,mi){
-    const mk=yr+'-'+String(mi+1).padStart(2,'0');
-    return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'
-      +'<label style="font-size:11px;color:#555">'+mn+'</label>'
-      +'<input id="'+pfx+'-mp-'+mk+'" type="number" value="'+(mp[mk]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'
-      +'</div>';
-  }).join('');
+  wrap.style.display=wrap.style.display==='none'?'block':'none';
 }
 
 
@@ -8543,6 +8478,106 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 </script>
 
 
+
+<script id="v612CL-year-selector">
+(function(){
+  var origToggle = window.wdwToggleMonthlyPct;
+  function addYearSel(pfx){
+    if(document.getElementById(pfx+'-mp-year-sel')) return;
+    var startEl=document.getElementById(pfx+'-start');
+    var endEl=document.getElementById(pfx+'-end');
+    if(!startEl||!endEl||!startEl.value||!endEl.value) return;
+    var y1=parseInt(startEl.value.substring(0,4));
+    var y2=parseInt(endEl.value.substring(0,4));
+    if(!y1||!y2||y1===y2) return;
+    var wrap=document.getElementById(pfx+'-monthly-pct-wrap');
+    if(!wrap) return;
+    var sd=document.createElement('div');
+    sd.style.cssText='margin-bottom:8px;display:flex;align-items:center;gap:8px;padding:4px 0';
+    var lb=document.createElement('label');
+    lb.style.cssText='font-size:12px;color:#555;font-weight:600';
+    lb.textContent='שנה:';
+    var sl=document.createElement('select');
+    sl.id=pfx+'-mp-year-sel';
+    sl.style.cssText='padding:4px 8px;border:1px solid #90caf9;border-radius:4px;font-size:12px';
+    for(var y=y1;y<=y2;y++){
+      var o=document.createElement('option');
+      o.value=y; o.textContent=y;
+      if(y===y1) o.selected=true;
+      sl.appendChild(o);
+    }
+    sl.addEventListener('change',function(){ rebuildGrid(pfx,parseInt(sl.value)); });
+    sd.appendChild(lb); sd.appendChild(sl);
+    wrap.insertBefore(sd,wrap.firstChild);
+    rebuildGrid(pfx,y1);
+  }
+  function rebuildGrid(pfx,yr){
+    var MN=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+    var wrap=document.getElementById(pfx+'-monthly-pct-wrap');
+    if(!wrap) return;
+    var mp={};
+    wrap.querySelectorAll('input[type=number]').forEach(function(el){
+      if(!el.id||!el.id.startsWith(pfx+'-mp-')) return;
+      var k=el.id.substring((pfx+'-mp-').length);
+      if(k.length===7&&k[4]==='-'&&el.value) mp[k]=el.value;
+    });
+    var gd=null;
+    var divs=wrap.querySelectorAll('div');
+    for(var i=0;i<divs.length;i++){
+      if(divs[i].querySelectorAll('input[type=number]').length>=6){gd=divs[i];break;}
+    }
+    if(!gd) return;
+    gd.innerHTML=MN.map(function(mn,mi){
+      var mk=yr+'-'+(mi+1<10?'0':'')+(mi+1);
+      return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'
+        +'<label style="font-size:11px;color:#555">'+mn+'</label>'
+        +'<input id="'+pfx+'-mp-'+mk+'" type="number" value="'+(mp[mk]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'
+        +'</div>';
+    }).join('');
+  }
+  function patchToggle(){
+    if(!window.wdwToggleMonthlyPct||window.wdwToggleMonthlyPct.__v612) return;
+    var orig=window.wdwToggleMonthlyPct;
+    window.wdwToggleMonthlyPct=function(pfx){
+      orig.call(this,pfx);
+      var wrap=document.getElementById(pfx+'-monthly-pct-wrap');
+      if(wrap&&wrap.style.display!=='none') setTimeout(function(){addYearSel(pfx);},50);
+    };
+    window.wdwToggleMonthlyPct.__v612=true;
+  }
+  function patchCollect(){
+    if(!window.wdwCollectMonthlyPct||window.wdwCollectMonthlyPct.__v612) return;
+    window.wdwCollectMonthlyPct=function(pfx){
+      var mp={};
+      var wrap=document.getElementById(pfx+'-monthly-pct-wrap');
+      if(wrap){
+        wrap.querySelectorAll('input[type=number]').forEach(function(el){
+          if(!el.id||!el.id.startsWith(pfx+'-mp-')) return;
+          var k=el.id.substring((pfx+'-mp-').length);
+          if(k.length===7&&k[4]==='-'&&el.value) mp[k]=parseFloat(el.value)||0;
+        });
+      } else {
+        var yr=(window.S&&window.S.year)||new Date().getFullYear();
+        for(var mi=0;mi<12;mi++){
+          var mk=yr+'-'+(mi+1<10?'0':'')+(mi+1);
+          var el=document.getElementById(pfx+'-mp-'+mk);
+          if(el&&el.value) mp[mk]=parseFloat(el.value)||0;
+        }
+      }
+      return Object.keys(mp).length?mp:null;
+    };
+    window.wdwCollectMonthlyPct.__v612=true;
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){patchToggle();patchCollect();});
+  } else {
+    patchToggle();patchCollect();
+  }
+  setTimeout(function(){patchToggle();patchCollect();},500);
+  setTimeout(function(){patchToggle();patchCollect();},1500);
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -8556,7 +8591,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v611CL | גישה</title>
+<title>Reports_Workers v612CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8817,7 +8852,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v611CL</span>
+      <span class="topbar-title">Reports_Workers v612CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -10902,19 +10937,10 @@ function wdwToggleVacantExtra(pfx,idx){
 
 function wdwCollectMonthlyPct(pfx){
   const mp={};
-  const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
-  if(wrap){
-    wrap.querySelectorAll('input[type=number]').forEach(function(el){
-      if(!el.id||!el.id.startsWith(pfx+'-mp-')) return;
-      const k=el.id.substring((pfx+'-mp-').length);
-      if(k.length===7&&k[4]==='-'&&el.value) mp[k]=parseFloat(el.value)||0;
-    });
-  } else {
-    for(let mi=0;mi<12;mi++){
-      const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
-      const el=document.getElementById(pfx+'-mp-'+mkey);
-      if(el&&el.value) mp[mkey]=parseFloat(el.value)||0;
-    }
+  for(let mi=0;mi<12;mi++){
+    const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
+    const el=document.getElementById(pfx+'-mp-'+mkey);
+    if(el&&el.value) mp[mkey]=parseFloat(el.value)||0;
   }
   return Object.keys(mp).length?mp:null;
 }
@@ -10922,63 +10948,7 @@ function wdwCollectMonthlyPct(pfx){
 function wdwToggleMonthlyPct(pfx){
   const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
   if(!wrap) return;
-  const isOpen=wrap.style.display!=='none';
-  wrap.style.display=isOpen?'none':'block';
-  if(!isOpen) wdwInitMpYearSel(pfx);
-}
-function wdwInitMpYearSel(pfx){
-  if(document.getElementById(pfx+'-mp-year-sel')) return;
-  const startEl=document.getElementById(pfx+'-start');
-  const endEl=document.getElementById(pfx+'-end');
-  const sv=startEl&&startEl.value?startEl.value:'';
-  const ev=endEl&&endEl.value?endEl.value:'';
-  const y1=sv?parseInt(sv.substring(0,4)):(S.year||new Date().getFullYear());
-  const y2=ev?parseInt(ev.substring(0,4)):(S.year||new Date().getFullYear());
-  if(y1===y2) return;
-  const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
-  if(!wrap) return;
-  const sd=document.createElement('div');
-  sd.style.cssText='margin-bottom:8px;display:flex;align-items:center;gap:8px';
-  const lb=document.createElement('label');
-  lb.style.cssText='font-size:12px;color:#555;font-weight:600';
-  lb.textContent='שנה:';
-  const sl=document.createElement('select');
-  sl.id=pfx+'-mp-year-sel';
-  sl.style.cssText='padding:4px 8px;border:1px solid #90caf9;border-radius:4px;font-size:12px';
-  for(let y=y1;y<=y2;y++){
-    const o=document.createElement('option');
-    o.value=y; o.textContent=y;
-    if(y===y1) o.selected=true;
-    sl.appendChild(o);
-  }
-  sl.onchange=function(){ wdwRebuildMpGrid(pfx,parseInt(sl.value)); };
-  sd.appendChild(lb); sd.appendChild(sl);
-  wrap.insertBefore(sd,wrap.firstChild);
-  wdwRebuildMpGrid(pfx,y1);
-}
-function wdwRebuildMpGrid(pfx,yr){
-  const MN=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-  const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
-  if(!wrap) return;
-  const mp={};
-  wrap.querySelectorAll('input[type=number]').forEach(function(el){
-    if(!el.id||!el.id.startsWith(pfx+'-mp-')) return;
-    const k=el.id.substring((pfx+'-mp-').length);
-    if(k.length===7&&k[4]==='-'&&el.value) mp[k]=el.value;
-  });
-  let gd=null;
-  const divs=wrap.querySelectorAll('div');
-  for(let i=0;i<divs.length;i++){
-    if(divs[i].querySelectorAll('input[type=number]').length>=6){gd=divs[i];break;}
-  }
-  if(!gd) return;
-  gd.innerHTML=MN.map(function(mn,mi){
-    const mk=yr+'-'+String(mi+1).padStart(2,'0');
-    return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'
-      +'<label style="font-size:11px;color:#555">'+mn+'</label>'
-      +'<input id="'+pfx+'-mp-'+mk+'" type="number" value="'+(mp[mk]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'
-      +'</div>';
-  }).join('');
+  wrap.style.display=wrap.style.display==='none'?'block':'none';
 }
 
 
