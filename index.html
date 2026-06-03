@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v635CL | גישה</title>
+<title>Reports_Workers v636CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v635CL</span>
+      <span class="topbar-title">Reports_Workers v636CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8588,21 +8588,23 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   var totalAmt = totalAmtEl ? parseFloat(totalAmtEl.value)||0 : 0;
   var fixedPct = pctEl ? parseFloat(pctEl.value)||0 : 0;
 
-  // שם עובד — נסה מהשדה הישיר, אחר כך מה-select
-  var nameEl = document.getElementById(workerPfx+'-name');
+  // שם עובד — שליפה מ-SELECT לפי text ואחר כך value
   var workerName = '';
-  if(nameEl){
-    workerName = (nameEl.tagName==='SELECT')
-      ? (nameEl.options[nameEl.selectedIndex] ? nameEl.options[nameEl.selectedIndex].value : '')
-      : (nameEl.value || '');
+  var nameEl = document.getElementById(workerPfx+'-name');
+  if(nameEl && nameEl.tagName==='SELECT'){
+    var selOpt = nameEl.options[nameEl.selectedIndex];
+    workerName = selOpt ? (selOpt.value || selOpt.text || '') : '';
+  } else if(nameEl){
+    workerName = nameEl.value || '';
   }
-
-  // אם עדיין ריק — חפש select של עובד בקרבת הפרפיקס
   if(!workerName){
     var wEl = document.querySelector('[id^="'+workerPfx+'"][id$="-name"]');
-    if(wEl) workerName = (wEl.tagName==='SELECT')
-      ? (wEl.options[wEl.selectedIndex] ? wEl.options[wEl.selectedIndex].value : '')
-      : (wEl.value || '');
+    if(wEl && wEl.tagName==='SELECT'){
+      var op=wEl.options[wEl.selectedIndex];
+      workerName = op ? (op.value || op.text || '') : '';
+    } else if(wEl){
+      workerName = wEl.value || '';
+    }
   }
 
   var cost = (window.S && window.S.wdw && window.S.wdw.employerCosts && window.S.wdw.employerCosts[workerName]) || 0;
@@ -8629,7 +8631,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
       explicitMonths[mk] = val;
     } else {
       freeMonths.push(mk);
-      if(inp) inp.value = ''; // אפס נחשב ריק — מנקה לנראות אחידה
+      if(inp && inp.value !== '') inp.value = '';
     }
   });
 
@@ -8678,7 +8680,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v635CL | גישה</title>
+<title>Reports_Workers v636CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8939,7 +8941,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v635CL</span>
+      <span class="topbar-title">Reports_Workers v636CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
