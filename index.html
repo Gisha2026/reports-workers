@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v606CH | גישה</title>
+<title>Reports_Workers v608CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v606CH</span>
+      <span class="topbar-title">Reports_Workers v608CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -2414,13 +2414,39 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
         <div id="${pfx}-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
           ${(()=>{
             const mp=w&&w.monthlyPct||{};
-            return MONTHS.map((mn,mi)=>{
-              const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
-              return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'+
-                '<label style="font-size:11px;color:#555">'+mn+'</label>'+
-                '<input id="'+pfx+'-mp-'+mkey+'" type="number" value="'+( mp[mkey]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'+
-                '</div>';
-            }).join('');
+            // חישוב השנים הרלוונטיות לפרויקט
+            const pStart=d&&(d.startDate||d.startMonth)||'';
+            const pEnd=d&&(d.endDate||d.endMonth)||'';
+            const yrStart=pStart?parseInt(pStart.substring(0,4)):S.year;
+            const yrEnd=pEnd?parseInt(pEnd.substring(0,4)):S.year;
+            const years=[];
+            for(let y=yrStart;y<=yrEnd;y++) years.push(y);
+            if(!years.length) years.push(S.year);
+            const gridId=pfx+'-mp-year-sel';
+            const curYr='window.__mpYear_'+pfx.replace(/[^a-z0-9]/gi,\'_\')||years[0];
+            let html='';
+            if(years.length>1){
+              html+='<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">';
+              html+='<label style="font-size:11px;color:#555;font-weight:600">שנה:</label>';
+              html+='<select id="'+gridId+'" onchange="wdwRefreshMpGrid(\''+pfx+'\')" style="padding:3px 7px;border:1px solid #90caf9;border-radius:4px;font-size:12px">';
+              years.forEach(function(y){
+                const sel=(y===yrStart)?' selected':'';
+                html+='<option value="'+y+'"'+sel+'>'+y+'</option>';
+              });
+              html+='</select></div>';
+            }
+            const selYear=(typeof document!==\'undefined\'&&document.getElementById(gridId))?parseInt(document.getElementById(gridId).value):yrStart;
+            const displayYear=selYear||yrStart;
+            html+='<div id="'+pfx+'-mp-grid" style="display:contents">';
+            html+=MONTHS.map((mn,mi)=>{
+              const mkey=displayYear+\'-\'+String(mi+1).padStart(2,\'0\');
+              return \'<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">\'+
+                \'<label style="font-size:11px;color:#555">\'+mn+\'</label>\'+
+                \'<input id="\'+pfx+\'-mp-\'+mkey+\'" type="number" value="\'+( mp[mkey]||\'\')+\'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">\'+ 
+                \'</div>\';
+            }).join(\'\');
+            html+=\'</div>\';
+            return html;
           })()}
         </div>
       </div>
@@ -2564,11 +2590,13 @@ function wdwToggleVacantExtra(pfx,idx){
 
 function wdwCollectMonthlyPct(pfx){
   const mp={};
-  for(let mi=0;mi<12;mi++){
-    const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
-    const el=document.getElementById(pfx+'-mp-'+mkey);
-    if(el&&el.value) mp[mkey]=parseFloat(el.value)||0;
-  }
+  // אסוף מכל ה-inputs שמתחילים ב-pfx-mp-
+  const allInputs=document.querySelectorAll('[id^="'+pfx+'-mp-"]');
+  allInputs.forEach(function(el){
+    if(el.id===pfx+'-mp-year-sel') return;
+    const mkey=el.id.replace(pfx+'-mp-','');
+    if(el.value) mp[mkey]=parseFloat(el.value)||0;
+  });
   return Object.keys(mp).length?mp:null;
 }
 
@@ -2576,6 +2604,27 @@ function wdwToggleMonthlyPct(pfx){
   const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
   if(!wrap) return;
   wrap.style.display=wrap.style.display==='none'?'block':'none';
+}
+
+function wdwRefreshMpGrid(pfx){
+  const sel=document.getElementById(pfx+'-mp-year-sel');
+  if(!sel) return;
+  const yr=parseInt(sel.value);
+  const MONTHS_HE=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const grid=document.getElementById(pfx+'-mp-grid');
+  if(!grid) return;
+  const mp={};
+  // שמור ערכים קיימים
+  document.querySelectorAll('[id^="'+pfx+'-mp-"]').forEach(function(el){
+    if(el.tagName==='INPUT'&&el.value) mp[el.id.replace(pfx+'-mp-','')]=el.value;
+  });
+  grid.innerHTML=MONTHS_HE.map(function(mn,mi){
+    const mkey=yr+'-'+String(mi+1).padStart(2,'0');
+    return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'+
+      '<label style="font-size:11px;color:#555">'+mn+'</label>'+
+      '<input id="'+pfx+'-mp-'+mkey+'" type="number" value="'+(mp[mkey]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'+
+      '</div>';
+  }).join('');
 }
 
 
@@ -8491,7 +8540,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v606CH | גישה</title>
+<title>Reports_Workers v608CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8752,7 +8801,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v606CH</span>
+      <span class="topbar-title">Reports_Workers v608CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -10687,13 +10736,39 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
         <div id="${pfx}-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
           ${(()=>{
             const mp=w&&w.monthlyPct||{};
-            return MONTHS.map((mn,mi)=>{
-              const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
-              return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'+
-                '<label style="font-size:11px;color:#555">'+mn+'</label>'+
-                '<input id="'+pfx+'-mp-'+mkey+'" type="number" value="'+( mp[mkey]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'+
-                '</div>';
-            }).join('');
+            // חישוב השנים הרלוונטיות לפרויקט
+            const pStart=d&&(d.startDate||d.startMonth)||'';
+            const pEnd=d&&(d.endDate||d.endMonth)||'';
+            const yrStart=pStart?parseInt(pStart.substring(0,4)):S.year;
+            const yrEnd=pEnd?parseInt(pEnd.substring(0,4)):S.year;
+            const years=[];
+            for(let y=yrStart;y<=yrEnd;y++) years.push(y);
+            if(!years.length) years.push(S.year);
+            const gridId=pfx+'-mp-year-sel';
+            const curYr='window.__mpYear_'+pfx.replace(/[^a-z0-9]/gi,\'_\')||years[0];
+            let html='';
+            if(years.length>1){
+              html+='<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">';
+              html+='<label style="font-size:11px;color:#555;font-weight:600">שנה:</label>';
+              html+='<select id="'+gridId+'" onchange="wdwRefreshMpGrid(\''+pfx+'\')" style="padding:3px 7px;border:1px solid #90caf9;border-radius:4px;font-size:12px">';
+              years.forEach(function(y){
+                const sel=(y===yrStart)?' selected':'';
+                html+='<option value="'+y+'"'+sel+'>'+y+'</option>';
+              });
+              html+='</select></div>';
+            }
+            const selYear=(typeof document!==\'undefined\'&&document.getElementById(gridId))?parseInt(document.getElementById(gridId).value):yrStart;
+            const displayYear=selYear||yrStart;
+            html+='<div id="'+pfx+'-mp-grid" style="display:contents">';
+            html+=MONTHS.map((mn,mi)=>{
+              const mkey=displayYear+\'-\'+String(mi+1).padStart(2,\'0\');
+              return \'<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">\'+
+                \'<label style="font-size:11px;color:#555">\'+mn+\'</label>\'+
+                \'<input id="\'+pfx+\'-mp-\'+mkey+\'" type="number" value="\'+( mp[mkey]||\'\')+\'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">\'+ 
+                \'</div>\';
+            }).join(\'\');
+            html+=\'</div>\';
+            return html;
           })()}
         </div>
       </div>
@@ -10837,11 +10912,13 @@ function wdwToggleVacantExtra(pfx,idx){
 
 function wdwCollectMonthlyPct(pfx){
   const mp={};
-  for(let mi=0;mi<12;mi++){
-    const mkey=S.year+'-'+String(mi+1).padStart(2,'0');
-    const el=document.getElementById(pfx+'-mp-'+mkey);
-    if(el&&el.value) mp[mkey]=parseFloat(el.value)||0;
-  }
+  // אסוף מכל ה-inputs שמתחילים ב-pfx-mp-
+  const allInputs=document.querySelectorAll('[id^="'+pfx+'-mp-"]');
+  allInputs.forEach(function(el){
+    if(el.id===pfx+'-mp-year-sel') return;
+    const mkey=el.id.replace(pfx+'-mp-','');
+    if(el.value) mp[mkey]=parseFloat(el.value)||0;
+  });
   return Object.keys(mp).length?mp:null;
 }
 
@@ -10849,6 +10926,27 @@ function wdwToggleMonthlyPct(pfx){
   const wrap=document.getElementById(pfx+'-monthly-pct-wrap');
   if(!wrap) return;
   wrap.style.display=wrap.style.display==='none'?'block':'none';
+}
+
+function wdwRefreshMpGrid(pfx){
+  const sel=document.getElementById(pfx+'-mp-year-sel');
+  if(!sel) return;
+  const yr=parseInt(sel.value);
+  const MONTHS_HE=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const grid=document.getElementById(pfx+'-mp-grid');
+  if(!grid) return;
+  const mp={};
+  // שמור ערכים קיימים
+  document.querySelectorAll('[id^="'+pfx+'-mp-"]').forEach(function(el){
+    if(el.tagName==='INPUT'&&el.value) mp[el.id.replace(pfx+'-mp-','')]=el.value;
+  });
+  grid.innerHTML=MONTHS_HE.map(function(mn,mi){
+    const mkey=yr+'-'+String(mi+1).padStart(2,'0');
+    return '<div style="display:grid;grid-template-columns:60px 70px;gap:6px;align-items:center;margin-bottom:4px">'+
+      '<label style="font-size:11px;color:#555">'+mn+'</label>'+
+      '<input id="'+pfx+'-mp-'+mkey+'" type="number" value="'+(mp[mkey]||'')+'" placeholder="0" style="padding:4px 6px;border:1px solid #90caf9;border-radius:4px;font-size:12px;width:100%">'+
+      '</div>';
+  }).join('');
 }
 
 
