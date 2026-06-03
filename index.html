@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v637CL | גישה</title>
+<title>Reports_Workers v640CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v637CL</span>
+      <span class="topbar-title">Reports_Workers v640CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8588,26 +8588,10 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   var totalAmt = totalAmtEl ? parseFloat(totalAmtEl.value)||0 : 0;
   var fixedPct = pctEl ? parseFloat(pctEl.value)||0 : 0;
 
-  // שם עובד — שליפה דרך text ואחר כך value
-  var workerName = '';
+  // שם עובד ועלות מעביד — אותה שיטה כמו wdwRecalcAmountWorkers
   var nameEl = document.getElementById(workerPfx+'-name');
-  if(nameEl && nameEl.tagName==='SELECT'){
-    var selOpt = nameEl.options[nameEl.selectedIndex];
-    workerName = selOpt ? (selOpt.value || selOpt.text || '') : '';
-  } else if(nameEl){
-    workerName = nameEl.value || '';
-  }
-  if(!workerName){
-    var wEl = document.querySelector('[id^="'+workerPfx+'"][id$="-name"]');
-    if(wEl && wEl.tagName==='SELECT'){
-      var op=wEl.options[wEl.selectedIndex];
-      workerName = op ? (op.value || op.text || '') : '';
-    } else if(wEl){
-      workerName = wEl.value || '';
-    }
-  }
-
-  var cost = (window.S && window.S.wdw && window.S.wdw.employerCosts && window.S.wdw.employerCosts[workerName]) || 0;
+  var workerName = nameEl ? nameEl.value : '';
+  var cost = parseFloat((window.S && window.S.wdw && window.S.wdw.employerCosts && window.S.wdw.employerCosts[workerName])||0);
 
   // בנה רשימת כל החודשים בתקופה
   var sy=parseInt(startEl.value.substring(0,4)), sm=parseInt(startEl.value.substring(5,7));
@@ -8631,7 +8615,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
       explicitMonths[mk] = val;
     } else {
       freeMonths.push(mk);
-      if(inp && inp.value !== '') inp.value = '';
     }
   });
 
@@ -8645,13 +8628,10 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 
   var valuePerFreeMonth = 0;
   if(totalAmt > 0 && cost > 0){
-    // סכום + עלות מעביד — חשב אחוז
-    // עלות מעביד חודשית = שנתית / 12
-    var monthlyCost = cost / 12;
-    // אחוז לכל חודש = סכום חודשי / עלות חודשית × 100
+    // עלות חודשית = שנתית / 12 (אותה שיטה כמו wdwRecalcAmountWorkers)
+    var empCostMonthly = cost / 12;
     var monthlyAmt = totalAmt / allMonths.length;
-    var pctPerMonth = Math.round((monthlyAmt / monthlyCost) * 100 * 10) / 10;
-    // סך האחוזים לתקופה = אחוז לחודש × מספר חודשים
+    var pctPerMonth = Math.round(monthlyAmt / empCostMonthly * 100 * 10) / 10;
     var totalPctForPeriod = pctPerMonth * allMonths.length;
     var remaining = totalPctForPeriod - usedPct;
     valuePerFreeMonth = Math.round((remaining / freeMonths.length) * 10) / 10;
@@ -8686,7 +8666,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v637CL | גישה</title>
+<title>Reports_Workers v640CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8947,7 +8927,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v637CL</span>
+      <span class="topbar-title">Reports_Workers v640CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
