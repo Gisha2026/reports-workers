@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v634CL | גישה</title>
+<title>Reports_Workers v635CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v634CL</span>
+      <span class="topbar-title">Reports_Workers v635CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -528,7 +528,7 @@ async function initPyodide(){
         <button onclick="switchWDW('worker')" id="wdw-btn-worker" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
         <button onclick="switchWDW('input')" id="wdw-btn-input" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">ניהול</button>
         <button onclick="switchWDW('reports')" id="wdw-btn-reports" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">דוחות</button>
-        <button onclick="window.open(window.location.href+'#monthlypct','_blank'); switchWDW('monthlypct');" id="wdw-btn-monthlypct" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">אחוז חודשי ↗</button>
+        <button onclick="switchWDW('monthlypct')" id="wdw-btn-monthlypct" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">אחוז חודשי</button>
         <button id="wdw-write-top-btn" onclick="wdwOpenWriteTimesheet()" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#1565C0;color:white;">כתיבה ל־Timesheet</button>
       </div>
       <div id="wdw-input"></div>
@@ -2411,7 +2411,7 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
         <input id="${pfx}-pct" style="${fld}" type="number" value="${w&&w.valueType==='percent'?w.value:''}" placeholder="0" oninput="wdwCalcAmt('${pfx}')">
         <div style="font-size:11px;color:#1565C0;font-weight:600;margin-top:1px">↕ מחושב</div>
         <button type="button" onclick="wdwToggleMonthlyPct('${pfx}')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button>
-        <div id="${pfx}-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
+        <div id="${pfx}-monthly-pct-wrap" style="display:block;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
           ${(()=>{
             const mp=w&&w.monthlyPct||{};
             return MONTHS.map((mn,mi)=>{
@@ -4521,7 +4521,7 @@ window.isAmountFunding = isAmountFunding;
     var extra=(w&&w.extraReplaces||[]).map(function(r,i){var isVac=r.replaces==='__vacant__'; return '<div class="wdw-repl-fields" id="'+pfx+'-extra-row-'+i+'"><div><label>מחליף את</label><select id="'+pfx+'-extra-replaces-'+i+'" style="'+fld+'" onchange="wdwToggleVacantExtra(\''+pfx+'\','+i+')"><option value="">— לא רלוונטי —</option>'+wdwWorkersList().map(function(x){return '<option value="'+esc(x)+'" '+(r.replaces===x?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'<option value="__vacant__" '+(isVac?'selected':'')+'>משרה פנויה</option></select><div id="'+pfx+'-extra-vacant-wrap-'+i+'" style="margin-top:4px;'+(isVac?'':'display:none')+'"><input id="'+pfx+'-extra-vacant-name-'+i+'" style="'+fld+'" type="text" value="'+esc(r.vacantName||'')+'" placeholder="לדוגמה: רכזת פניות"></div></div><div><label>% אחוז</label><input id="'+pfx+'-extra-pct-'+i+'" style="'+fld+'" type="number" value="'+esc(r.pct||'')+'" placeholder="20"></div><div><label>סכום ₪</label><input id="'+pfx+'-extra-amt-'+i+'" style="'+fld+'" type="number" value="'+esc(r.amt||'')+'" placeholder="—"></div><div><label>מחודש</label><input id="'+pfx+'-extra-start-'+i+'" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(r.startMonth||r.replaceStartMonth||w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-extra-end-'+i+'" style="'+fld+'" type="month" value="'+esc(r.endMonth||r.replaceEndMonth||'')+'"><div class="wdw-muted">ריק = פתוח</div></div><div><button onclick="wdwRemoveExtraReplace(\''+pfx+'\','+i+')" style="height:34px;padding:0 10px;background:#fff;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;color:#e53935;font-size:14px">✕</button></div></div>';}).join('');
     return '<div class="wdw-input-grid">'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px"><div><label>עובד</label><select id="'+pfx+'-name" style="'+fld+'" onchange="wdwUpdateWorkerCost(\''+pfx+'\')"><option value="" '+(!w||!w.name?'selected':'')+'>— בחר עובד —</option>'+wdwWorkersList().map(function(x){return '<option value="'+esc(x)+'" '+(w&&w.name===x?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select><div id="'+pfx+'-cost" class="wdw-muted">'+(cost>0?'עלות מעביד: ₪'+cost.toLocaleString():(hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'))+'</div></div><div><label>סוג מימון</label><select id="'+pfx+'-ftype" style="'+fld+'">'+WDW_FUNDING_TYPES.map(function(t){return '<option '+(w&&w.fundingType===t?'selected':'')+'>'+esc(t)+'</option>';}).join('')+'</select></div></div>'+
-      '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
+      '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:block;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
       '<div style="margin-bottom:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px"><div style="font-size:12px;font-weight:600;color:#166534;margin-bottom:6px">חישוב מסכום לתקופה</div><div style="display:flex;gap:8px;align-items:center"><input id="'+pfx+'-total-amt" style="'+fld+';max-width:150px" type="number" value="'+esc(w&&w.totalPeriodAmount||'')+'" placeholder="סכום כולל ₪"><button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+pfx+'\')" style="padding:6px 12px;background:#00897B;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600">חשב סכום חודשי</button></div></div>'+
       '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:8px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
       
@@ -8588,24 +8588,21 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   var totalAmt = totalAmtEl ? parseFloat(totalAmtEl.value)||0 : 0;
   var fixedPct = pctEl ? parseFloat(pctEl.value)||0 : 0;
 
-  // שם עובד — שליפה מ-SELECT או INPUT
-  var workerName = '';
+  // שם עובד — נסה מהשדה הישיר, אחר כך מה-select
   var nameEl = document.getElementById(workerPfx+'-name');
+  var workerName = '';
   if(nameEl){
-    if(nameEl.tagName==='SELECT'){
-      workerName = nameEl.options[nameEl.selectedIndex] ? nameEl.options[nameEl.selectedIndex].value : '';
-    } else {
-      workerName = nameEl.value || '';
-    }
+    workerName = (nameEl.tagName==='SELECT')
+      ? (nameEl.options[nameEl.selectedIndex] ? nameEl.options[nameEl.selectedIndex].value : '')
+      : (nameEl.value || '');
   }
-  // אם ריק — חפש כל שדה name בפרפיקס זה
+
+  // אם עדיין ריק — חפש select של עובד בקרבת הפרפיקס
   if(!workerName){
-    var allNameEls = document.querySelectorAll('[id^="'+workerPfx+'"][id$="-name"]');
-    for(var ni=0;ni<allNameEls.length;ni++){
-      var ne=allNameEls[ni];
-      var nv = (ne.tagName==='SELECT') ? (ne.options[ne.selectedIndex]?ne.options[ne.selectedIndex].value:'') : (ne.value||'');
-      if(nv){ workerName=nv; break; }
-    }
+    var wEl = document.querySelector('[id^="'+workerPfx+'"][id$="-name"]');
+    if(wEl) workerName = (wEl.tagName==='SELECT')
+      ? (wEl.options[wEl.selectedIndex] ? wEl.options[wEl.selectedIndex].value : '')
+      : (wEl.value || '');
   }
 
   var cost = (window.S && window.S.wdw && window.S.wdw.employerCosts && window.S.wdw.employerCosts[workerName]) || 0;
@@ -8621,22 +8618,23 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
     if(allMonths.length>60) break;
   }
 
-  // חודש פנוי = ריק לחלוטין. חודש מוגדר = יש בו ערך כלשהו (כולל 0)
+  // חודש פנוי = ריק או 0. חודש מוגדר = ערך גדול מ-0
   var explicitMonths = {};
   var freeMonths = [];
 
   allMonths.forEach(function(mk){
     var inp = document.getElementById(workerPfx+'-mp-'+mk);
-    var raw = inp ? inp.value : '';
-    if(raw !== '' && raw !== null){
-      explicitMonths[mk] = parseFloat(raw)||0;
+    var val = inp ? parseFloat(inp.value) : NaN;
+    if(!isNaN(val) && val > 0){
+      explicitMonths[mk] = val;
     } else {
       freeMonths.push(mk);
+      if(inp) inp.value = ''; // אפס נחשב ריק — מנקה לנראות אחידה
     }
   });
 
   if(!freeMonths.length){
-    alert('כל החודשים כבר מוגדרים. כדי לחשב מחדש — מחק את הערכים בחודשים הרצויים.'); return;
+    alert('כל החודשים כבר מוגדרים עם ערך גדול מאפס. אין חודשים פנויים לחלוקה.'); return;
   }
 
   // חשב יתרה
@@ -8680,7 +8678,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v634CL | גישה</title>
+<title>Reports_Workers v635CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8941,7 +8939,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v634CL</span>
+      <span class="topbar-title">Reports_Workers v635CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -10873,7 +10871,7 @@ function wdwWorkerFields(w, d, hasBudget, curMonth, workerOpts, isEdit=false){
         <input id="${pfx}-pct" style="${fld}" type="number" value="${w&&w.valueType==='percent'?w.value:''}" placeholder="0" oninput="wdwCalcAmt('${pfx}')">
         <div style="font-size:11px;color:#1565C0;font-weight:600;margin-top:1px">↕ מחושב</div>
         <button type="button" onclick="wdwToggleMonthlyPct('${pfx}')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button>
-        <div id="${pfx}-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
+        <div id="${pfx}-monthly-pct-wrap" style="display:block;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">
           ${(()=>{
             const mp=w&&w.monthlyPct||{};
             return MONTHS.map((mn,mi)=>{
@@ -13816,7 +13814,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
     var extra=(w&&w.extraReplaces||[]).map(function(r,i){var isVac=r.replaces==='__vacant__'; return '<div class="wdw-repl-fields" id="'+pfx+'-extra-row-'+i+'"><div><label>מחליף את</label><select id="'+pfx+'-extra-replaces-'+i+'" style="'+fld+'" onchange="wdwToggleVacantExtra(\''+pfx+'\','+i+')"><option value="">— לא רלוונטי —</option>'+wdwWorkersList().map(function(x){return '<option value="'+esc(x)+'" '+(r.replaces===x?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'<option value="__vacant__" '+(isVac?'selected':'')+'>משרה פנויה</option></select><div id="'+pfx+'-extra-vacant-wrap-'+i+'" style="margin-top:4px;'+(isVac?'':'display:none')+'"><select id="'+pfx+'-extra-vacant-name-'+i+'" style="'+fld+'"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r2){return '<option value="'+esc(r2)+'" '+(r2===(r.vacantName||'')?'selected':'')+'>'+esc(r2)+'</option>';}).join(''))+'</select></div></div><div><label>% אחוז</label><input id="'+pfx+'-extra-pct-'+i+'" style="'+fld+'" type="number" value="'+esc(r.pct||'')+'" placeholder="20"></div><div><label>סכום ₪</label><input id="'+pfx+'-extra-amt-'+i+'" style="'+fld+'" type="number" value="'+esc(r.amt||'')+'" placeholder="—"></div><div><label>מחודש</label><input id="'+pfx+'-extra-start-'+i+'" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(r.startMonth||r.replaceStartMonth||w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-extra-end-'+i+'" style="'+fld+'" type="month" value="'+esc(r.endMonth||r.replaceEndMonth||'')+'"><div class="wdw-muted">ריק = פתוח</div></div><div><button onclick="wdwRemoveExtraReplace(\''+pfx+'\','+i+')" style="height:34px;padding:0 10px;background:#fff;border:1px solid #fca5a5;border-radius:5px;cursor:pointer;color:#e53935;font-size:14px">✕</button></div></div>';}).join('');
     return '<div class="wdw-input-grid">'+
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px"><div><label>עובד</label><select id="'+pfx+'-name" style="'+fld+'" onchange="wdwUpdateWorkerCost(\''+pfx+'\')"><option value="" '+(!w||!w.name?'selected':'')+'>— בחר עובד —</option>'+wdwWorkersList().map(function(x){return '<option value="'+esc(x)+'" '+(w&&w.name===x?'selected':'')+'>'+esc(x)+'</option>';}).join('')+'</select><div id="'+pfx+'-cost" class="wdw-muted">'+(cost>0?'עלות מעביד: ₪'+cost.toLocaleString():(hasBudget?'עלות לא ידועה':'ייבא תקציב לחישוב'))+'</div></div><div><label>סוג מימון</label><select id="'+pfx+'-ftype" style="'+fld+'">'+WDW_FUNDING_TYPES.map(function(t){return '<option '+(w&&w.fundingType===t?'selected':'')+'>'+esc(t)+'</option>';}).join('')+'</select></div><div><label>תפקיד בתרומה</label><select id="'+pfx+'-roleInDonor" style="'+fld+'"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r){return '<option value="'+esc(r)+'" '+((w&&w.roleInDonor===r)?'selected':'')+'>'+esc(r)+'</option>';}).join(''))+'</select></div></div>'+
-      '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:none;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
+      '<div style="display:grid;grid-template-columns:100px 140px 1fr;gap:10px;margin-bottom:10px"><div><label>% אחוז</label><input id="'+pfx+'-pct" style="'+fld+'" type="number" value="'+(w&&w.valueType==='percent'?esc(w.value):'')+'" placeholder="0" oninput="wdwCalcAmt(\''+pfx+'\')"><button type="button" onclick="wdwToggleMonthlyPct(\''+pfx+'\')" style="margin-top:4px;padding:3px 8px;background:#fff;border:1px dashed #1565C0;border-radius:4px;cursor:pointer;color:#1565C0;font-size:11px">📅 אחוזים לפי חודשים</button><div id="'+pfx+'-monthly-pct-wrap" style="display:block;margin-top:6px;border:1px solid #bbdefb;border-radius:5px;padding:8px;background:#e3f2fd">'+monthsHtml+'</div></div><div><label>סכום ₪ חודשי</label><input id="'+pfx+'-amt" style="'+fld+'" type="number" value="'+(w&&w.valueType==='amount'?esc(w.value):'')+'" placeholder="'+(hasBudget?'3700':'—')+'" '+(!hasBudget?'disabled':'')+' oninput="wdwCalcPct(\''+pfx+'\')"></div><div><label>מסגרת מקסימום ₪</label><input id="'+pfx+'-cap" style="'+fld+'" type="number" value="'+esc(w&&w.cap||'')+'" placeholder="ללא הגבלה"></div></div>'+
       '<div style="margin-bottom:10px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px"><div style="font-size:12px;font-weight:600;color:#166534;margin-bottom:6px">חישוב מסכום לתקופה</div><div style="display:flex;gap:8px;align-items:center"><input id="'+pfx+'-total-amt" style="'+fld+';max-width:150px" type="number" value="'+esc(w&&w.totalPeriodAmount||'')+'" placeholder="סכום כולל ₪"><button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+pfx+'\')" style="padding:6px 12px;background:#00897B;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600">חשב סכום חודשי</button></div></div>'+
       '<div style="display:grid;grid-template-columns:160px 160px;gap:10px;margin-bottom:8px"><div><label>מחודש</label><input id="'+pfx+'-start" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.startMonth||defaultStart)+'"></div><div><label>עד חודש</label><input id="'+pfx+'-end" style="'+fld+'" type="month" min="2020-01" max="2035-12" value="'+esc(w&&w.endMonth||defaultEnd)+'"></div></div>'+
       
