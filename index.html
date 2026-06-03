@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v641CL | גישה</title>
+<title>Reports_Workers v642CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v641CL</span>
+      <span class="topbar-title">Reports_Workers v642CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8673,7 +8673,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v641CL | גישה</title>
+<title>Reports_Workers v642CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8934,7 +8934,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v641CL</span>
+      <span class="topbar-title">Reports_Workers v642CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -17941,5 +17941,128 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 })();
 </script>
 
+
+
+<script id="v642CH-employer-cost-and-open-monthly">
+(function(){
+  'use strict';
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function num(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
+  function costs(){return (window.S&&window.S.wdw&&window.S.wdw.employerCosts)||{};}
+  function costFor(name){return num(costs()[name]);}
+  function fmtMoney(n){return n?('₪'+Math.round(n).toLocaleString('he-IL')):'';}
+  function monthList(st,en){
+    st=String(st||'').substring(0,7); en=String(en||'').substring(0,7);
+    if(!/^\d{4}-\d{2}$/.test(st)||!/^\d{4}-\d{2}$/.test(en)||st>en)return [];
+    var y=parseInt(st.slice(0,4),10), m=parseInt(st.slice(5,7),10);
+    var ey=parseInt(en.slice(0,4),10), em=parseInt(en.slice(5,7),10), out=[];
+    while(y<ey||(y===ey&&m<=em)){
+      out.push(y+'-'+String(m).padStart(2,'0'));
+      m++; if(m>12){m=1;y++;}
+      if(out.length>120)break;
+    }
+    return out;
+  }
+  function pfxFromSelect(sel){return sel&&sel.id?sel.id.replace(/-name$/,''):'';}
+  window.wdwUpdateWorkerCost=function(pfx){
+    var nameEl=document.getElementById(pfx+'-name');
+    var name=nameEl?nameEl.value:'';
+    var c=costFor(name);
+    var inp=document.getElementById(pfx+'-employer-cost');
+    if(inp) inp.value=c||'';
+    var note=document.getElementById(pfx+'-employer-cost-note');
+    if(note){
+      note.textContent=c?('עלות מעביד: '+fmtMoney(c)):'עלות מעביד לא קיימת — ייבא תקציב';
+      note.style.color=c?'#166534':'#b45309';
+    }
+    return c;
+  };
+  function ensureCostFieldForSelect(sel){
+    var pfx=pfxFromSelect(sel); if(!pfx)return;
+    if(document.getElementById(pfx+'-employer-cost')){window.wdwUpdateWorkerCost(pfx);return;}
+    var field=sel.closest('.v437-field')||sel.parentElement; if(!field)return;
+    var box=document.createElement('div');
+    box.className='v642-employer-cost-box';
+    box.style.cssText='margin-top:6px;';
+    box.innerHTML='<div id="'+esc(pfx)+'-employer-cost-note" style="font-size:11px;margin-bottom:3px;color:#64748b">עלות מעביד</div>'+
+      '<input type="number" id="'+esc(pfx)+'-employer-cost" readonly placeholder="עלות מעביד שנתית ₪" '+
+      'style="width:100%;height:32px;padding:5px 8px;border:1px solid #bbf7d0;border-radius:6px;background:#f0fdf4;color:#166534;font-weight:700;font-size:12px">';
+    sel.insertAdjacentElement('afterend',box);
+    if(!sel.getAttribute('data-v642-cost-bound')){
+      sel.setAttribute('data-v642-cost-bound','1');
+      sel.addEventListener('change',function(){window.wdwUpdateWorkerCost(pfx);});
+    }
+    window.wdwUpdateWorkerCost(pfx);
+  }
+  function ensureEmployerCostFields(){
+    document.querySelectorAll('#wdw-input select[id$="-name"]').forEach(function(sel){
+      if(/^(v437-worker-|nw-|ew-|ndw-)/.test(sel.id.replace(/-name$/,''))) ensureCostFieldForSelect(sel);
+    });
+  }
+  function ensureMonthlyAlwaysOpen(){
+    document.querySelectorAll('#wdw-input .v439-monthly-grid, #wdw-input [id$="-monthly-wrap"]').forEach(function(el){
+      el.style.setProperty('display','grid','important');
+    });
+    document.querySelectorAll('#wdw-input button.v439-toggle').forEach(function(btn){
+      var t=(btn.textContent||'').replace(/\s+/g,' ').trim();
+      if(t.indexOf('אחוזים לפי חודשים')>-1){
+        btn.style.display='none';
+        btn.onclick=function(ev){if(ev){ev.preventDefault();ev.stopPropagation();}return false;};
+      }
+    });
+  }
+  function ensureAll(){ensureEmployerCostFields();ensureMonthlyAlwaysOpen();}
+  var oldRender=window.renderWDWInput;
+  if(typeof oldRender==='function'&&!oldRender._v642Wrapped){
+    var wrapped=function(){var r=oldRender.apply(this,arguments);setTimeout(ensureAll,0);setTimeout(ensureAll,80);return r;};
+    wrapped._v642Wrapped=true;
+    window.renderWDWInput=wrapped;
+  }
+  var oldSwitch=window.switchWDW;
+  if(typeof oldSwitch==='function'&&!oldSwitch._v642Wrapped){
+    var sw=function(){var r=oldSwitch.apply(this,arguments);setTimeout(ensureAll,0);setTimeout(ensureAll,120);return r;};
+    sw._v642Wrapped=true;
+    window.switchWDW=sw;
+  }
+  window.wdwCalcMonthlyFromPeriod=function(pfx){
+    ensureAll();
+    var totalEl=document.getElementById(pfx+'-total-amt');
+    var startEl=document.getElementById(pfx+'-start');
+    var endEl=document.getElementById(pfx+'-end');
+    var nameEl=document.getElementById(pfx+'-name');
+    var total=num(totalEl&&totalEl.value);
+    var st=startEl&&startEl.value, en=endEl&&endEl.value;
+    if(!total){alert('נא להזין סכום לכל התקופה');return;}
+    if(!st||!en){alert('נא למלא תקופת הקצאה — מחודש ועד חודש');return;}
+    var annual=num((document.getElementById(pfx+'-employer-cost')||{}).value);
+    if(!annual) annual=costFor(nameEl&&nameEl.value);
+    if(!annual){alert('אין עלות מעביד לעובד. יש לייבא תקציב או לבחור עובד עם עלות מעביד.');return;}
+    var months=monthList(st,en);
+    if(!months.length){alert('תקופת הקצאה לא תקינה');return;}
+    var free=[];
+    months.forEach(function(mk){
+      var inp=document.getElementById(pfx+'-mp-'+mk);
+      if(!inp)return;
+      var raw=String(inp.value==null?'':inp.value).trim();
+      var v=raw===''?NaN:parseFloat(raw);
+      if(raw===''||(!isNaN(v)&&v===0)) free.push(inp);
+    });
+    if(!free.length){alert('כל החודשים בתקופה כבר מוגדרים עם ערך גדול מ־0. אין חודשים פנויים לחישוב.');return;}
+    var monthlyAmount=total/months.length;
+    var pct=(monthlyAmount/(annual/12))*100;
+    pct=Math.round(pct*10)/10;
+    free.forEach(function(inp){inp.value=pct;});
+    var amtEl=document.getElementById(pfx+'-amt');
+    if(amtEl) amtEl.value=Math.round(monthlyAmount*100)/100;
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureAll); else ensureAll();
+  setTimeout(ensureAll,300); setTimeout(ensureAll,1000);
+  if(window.MutationObserver){
+    var mo=new MutationObserver(function(){ensureAll();});
+    var bind=function(){var root=document.getElementById('wdw-input'); if(root)mo.observe(root,{childList:true,subtree:true});};
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind); else bind();
+  }
+})();
+</script>
 </body>
 </html>
