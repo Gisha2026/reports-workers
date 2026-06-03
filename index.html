@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v633CL | גישה</title>
+<title>Reports_Workers v634CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v633CL</span>
+      <span class="topbar-title">Reports_Workers v634CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -528,7 +528,7 @@ async function initPyodide(){
         <button onclick="switchWDW('worker')" id="wdw-btn-worker" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
         <button onclick="switchWDW('input')" id="wdw-btn-input" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">ניהול</button>
         <button onclick="switchWDW('reports')" id="wdw-btn-reports" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">דוחות</button>
-        <button onclick="switchWDW('monthlypct')" id="wdw-btn-monthlypct" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">אחוז חודשי</button>
+        <button onclick="window.open(window.location.href+'#monthlypct','_blank'); switchWDW('monthlypct');" id="wdw-btn-monthlypct" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">אחוז חודשי ↗</button>
         <button id="wdw-write-top-btn" onclick="wdwOpenWriteTimesheet()" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#1565C0;color:white;">כתיבה ל־Timesheet</button>
       </div>
       <div id="wdw-input"></div>
@@ -8588,21 +8588,24 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   var totalAmt = totalAmtEl ? parseFloat(totalAmtEl.value)||0 : 0;
   var fixedPct = pctEl ? parseFloat(pctEl.value)||0 : 0;
 
-  // שם עובד — נסה מהשדה הישיר, אחר כך מה-select
-  var nameEl = document.getElementById(workerPfx+'-name');
+  // שם עובד — שליפה מ-SELECT או INPUT
   var workerName = '';
+  var nameEl = document.getElementById(workerPfx+'-name');
   if(nameEl){
-    workerName = (nameEl.tagName==='SELECT')
-      ? (nameEl.options[nameEl.selectedIndex] ? nameEl.options[nameEl.selectedIndex].value : '')
-      : (nameEl.value || '');
+    if(nameEl.tagName==='SELECT'){
+      workerName = nameEl.options[nameEl.selectedIndex] ? nameEl.options[nameEl.selectedIndex].value : '';
+    } else {
+      workerName = nameEl.value || '';
+    }
   }
-
-  // אם עדיין ריק — חפש select של עובד בקרבת הפרפיקס
+  // אם ריק — חפש כל שדה name בפרפיקס זה
   if(!workerName){
-    var wEl = document.querySelector('[id^="'+workerPfx+'"][id$="-name"]');
-    if(wEl) workerName = (wEl.tagName==='SELECT')
-      ? (wEl.options[wEl.selectedIndex] ? wEl.options[wEl.selectedIndex].value : '')
-      : (wEl.value || '');
+    var allNameEls = document.querySelectorAll('[id^="'+workerPfx+'"][id$="-name"]');
+    for(var ni=0;ni<allNameEls.length;ni++){
+      var ne=allNameEls[ni];
+      var nv = (ne.tagName==='SELECT') ? (ne.options[ne.selectedIndex]?ne.options[ne.selectedIndex].value:'') : (ne.value||'');
+      if(nv){ workerName=nv; break; }
+    }
   }
 
   var cost = (window.S && window.S.wdw && window.S.wdw.employerCosts && window.S.wdw.employerCosts[workerName]) || 0;
@@ -8618,22 +8621,22 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
     if(allMonths.length>60) break;
   }
 
-  // חודש פנוי = ריק או 0. חודש מוגדר = ערך גדול מ-0
+  // חודש פנוי = ריק לחלוטין. חודש מוגדר = יש בו ערך כלשהו (כולל 0)
   var explicitMonths = {};
   var freeMonths = [];
 
   allMonths.forEach(function(mk){
     var inp = document.getElementById(workerPfx+'-mp-'+mk);
-    var val = inp ? parseFloat(inp.value) : NaN;
-    if(!isNaN(val) && val > 0){
-      explicitMonths[mk] = val;
+    var raw = inp ? inp.value : '';
+    if(raw !== '' && raw !== null){
+      explicitMonths[mk] = parseFloat(raw)||0;
     } else {
       freeMonths.push(mk);
     }
   });
 
   if(!freeMonths.length){
-    alert('כל החודשים כבר מוגדרים עם ערך גדול מאפס. אין חודשים פנויים לחלוקה.'); return;
+    alert('כל החודשים כבר מוגדרים. כדי לחשב מחדש — מחק את הערכים בחודשים הרצויים.'); return;
   }
 
   // חשב יתרה
@@ -8677,7 +8680,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v633CL | גישה</title>
+<title>Reports_Workers v634CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8938,7 +8941,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v633CL</span>
+      <span class="topbar-title">Reports_Workers v634CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
