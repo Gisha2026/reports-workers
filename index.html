@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v636CL | גישה</title>
+<title>Reports_Workers v637CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v636CL</span>
+      <span class="topbar-title">Reports_Workers v637CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8588,7 +8588,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   var totalAmt = totalAmtEl ? parseFloat(totalAmtEl.value)||0 : 0;
   var fixedPct = pctEl ? parseFloat(pctEl.value)||0 : 0;
 
-  // שם עובד — שליפה מ-SELECT לפי text ואחר כך value
+  // שם עובד — שליפה דרך text ואחר כך value
   var workerName = '';
   var nameEl = document.getElementById(workerPfx+'-name');
   if(nameEl && nameEl.tagName==='SELECT'){
@@ -8646,8 +8646,14 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   var valuePerFreeMonth = 0;
   if(totalAmt > 0 && cost > 0){
     // סכום + עלות מעביד — חשב אחוז
-    var totalPctForPeriod = Math.round((totalAmt / allMonths.length / cost) * 100 * 10) / 10;
-    var remaining = totalPctForPeriod * allMonths.length - usedPct;
+    // עלות מעביד חודשית = שנתית / 12
+    var monthlyCost = cost / 12;
+    // אחוז לכל חודש = סכום חודשי / עלות חודשית × 100
+    var monthlyAmt = totalAmt / allMonths.length;
+    var pctPerMonth = Math.round((monthlyAmt / monthlyCost) * 100 * 10) / 10;
+    // סך האחוזים לתקופה = אחוז לחודש × מספר חודשים
+    var totalPctForPeriod = pctPerMonth * allMonths.length;
+    var remaining = totalPctForPeriod - usedPct;
     valuePerFreeMonth = Math.round((remaining / freeMonths.length) * 10) / 10;
   } else if(fixedPct > 0){
     // אחוז קבוע
@@ -8680,7 +8686,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v636CL | גישה</title>
+<title>Reports_Workers v637CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8941,7 +8947,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v636CL</span>
+      <span class="topbar-title">Reports_Workers v637CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
