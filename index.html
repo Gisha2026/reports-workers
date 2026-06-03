@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v631CL | גישה</title>
+<title>Reports_Workers v632CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v631CL</span>
+      <span class="topbar-title">Reports_Workers v632CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8566,32 +8566,52 @@ window.wdwDeleteWorker217 = window.wdwDeleteWorker;
 
 <script id="v631CL-calc-monthly">
 window.wdwCalcMonthlyFromPeriod = function(pfx){
-  // מוצא את כל inputs של חודשים
-  var allInps = Array.prototype.slice.call(document.querySelectorAll('[id^="'+pfx+'-mp-"]'));
+  // חיפוש פרפיקס העובד — pfx יכול להיות של תורם או עובד
+  // נחפש את הפרפיקס הנכון לפי קיום שדות החודשים
+  var workerPfx = pfx;
+
+  // אם אין שדות חודשים ב-pfx הנוכחי — נחפש פרפיקס worker בתוך אותו תורם
+  var allInps = Array.prototype.slice.call(document.querySelectorAll('[id^="'+workerPfx+'-mp-"]'));
   if(!allInps.length){
-    // אם הטבלה לא פתוחה — פתח אותה קודם
-    var wrap = document.getElementById(pfx+'-monthly-pct-wrap');
+    // נסה לפתוח את הטבלה
+    var wrap = document.getElementById(workerPfx+'-monthly-pct-wrap');
     if(wrap) wrap.style.display = 'block';
-    allInps = Array.prototype.slice.call(document.querySelectorAll('[id^="'+pfx+'-mp-"]'));
+    allInps = Array.prototype.slice.call(document.querySelectorAll('[id^="'+workerPfx+'-mp-"]'));
   }
   if(!allInps.length){ alert('פתח תחילה את טבלת אחוזים לפי חודשים'); return; }
 
-  // קבל את התקופה
-  var startEl = document.getElementById(pfx+'-start');
-  var endEl = document.getElementById(pfx+'-end');
+  // קבל את התקופה — חפש תחת workerPfx
+  var startEl = document.getElementById(workerPfx+'-start');
+  var endEl = document.getElementById(workerPfx+'-end');
   if(!startEl||!endEl||!startEl.value||!endEl.value){
     alert('נא למלא תקופת הקצאה (מחודש / עד חודש)'); return;
   }
 
-  // חשב סכום כולל
-  var totalAmtEl = document.getElementById(pfx+'-total-amt');
-  var pctEl = document.getElementById(pfx+'-pct');
+  // חשב סכום כולל — חפש תחת workerPfx
+  var totalAmtEl = document.getElementById(workerPfx+'-total-amt');
+  var pctEl = document.getElementById(workerPfx+'-pct');
   var totalAmt = totalAmtEl ? parseFloat(totalAmtEl.value)||0 : 0;
   var fixedPct = pctEl ? parseFloat(pctEl.value)||0 : 0;
 
-  // מצא עלות מעביד
-  var nameEl = document.getElementById(pfx+'-name');
-  var workerName = nameEl ? (nameEl.value || (nameEl.options && nameEl.options[nameEl.selectedIndex] && nameEl.options[nameEl.selectedIndex].value) || '') : '';
+  // מצא שם עובד — חפש שדה name תחת workerPfx
+  var nameEl = document.getElementById(workerPfx+'-name');
+  // אם לא נמצא או ריק — חפש שדה worker בתוך אותו הקשר
+  var workerName = '';
+  if(nameEl){
+    workerName = nameEl.value || (nameEl.options && nameEl.options[nameEl.selectedIndex] && nameEl.options[nameEl.selectedIndex].text) || '';
+  }
+  // אם עדיין ריק — חפש שדה שמכיל "worker" ו-"name" בפרפיקס דומה
+  if(!workerName){
+    var workerNameEl = document.querySelector('[id^="'+workerPfx+'"][id$="-name"]:not([id*="donor"])');
+    if(!workerNameEl){
+      // חפש לפי חלק מהפרפיקס — הסר את החלק האחרון
+      var parts = workerPfx.split('-');
+      var basePfx = parts.slice(0,3).join('-');
+      workerNameEl = document.querySelector('[id^="'+basePfx+'"][id*="worker"][id$="-name"]');
+    }
+    if(workerNameEl) workerName = workerNameEl.value || (workerNameEl.options && workerNameEl.options[workerNameEl.selectedIndex] && workerNameEl.options[workerNameEl.selectedIndex].value) || '';
+  }
+
   var cost = (window.S && window.S.wdw && window.S.wdw.employerCosts && window.S.wdw.employerCosts[workerName]) || 0;
 
   // בנה רשימת כל החודשים בתקופה
@@ -8606,11 +8626,11 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   }
 
   // חלק לחודשים עם ערך מפורש (כולל 0) וחודשים ריקים
-  var explicitMonths = {}; // חודשים עם ערך מפורש
-  var freeMonths = []; // חודשים ריקים שיקבלו את היתרה
+  var explicitMonths = {};
+  var freeMonths = [];
 
   allMonths.forEach(function(mk){
-    var inp = document.getElementById(pfx+'-mp-'+mk);
+    var inp = document.getElementById(workerPfx+'-mp-'+mk);
     if(inp && inp.value !== '' && inp.value !== null){
       explicitMonths[mk] = parseFloat(inp.value)||0;
     } else {
@@ -8634,22 +8654,24 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
     valuePerFreeMonth = Math.round((remaining / freeMonths.length) * 10) / 10;
   } else if(fixedPct > 0){
     // אחוז קבוע
-    var remaining = fixedPct * allMonths.length - usedPct;
-    valuePerFreeMonth = Math.round((remaining / freeMonths.length) * 10) / 10;
+    var remaining2 = fixedPct * allMonths.length - usedPct;
+    valuePerFreeMonth = Math.round((remaining2 / freeMonths.length) * 10) / 10;
   } else if(totalAmt > 0){
-    // סכום בלי עלות מעביד - חלק שווה
-    valuePerFreeMonth = Math.round((totalAmt / freeMonths.length) * 10) / 10;
+    // סכום בלי עלות מעביד — חלק שווה כאחוז מתוך 100%
+    var totalPctForPeriod2 = 100;
+    var remaining3 = totalPctForPeriod2 - usedPct;
+    valuePerFreeMonth = Math.round((remaining3 / freeMonths.length) * 10) / 10;
   }
 
   // מלא חודשים ריקים
   freeMonths.forEach(function(mk){
-    var inp = document.getElementById(pfx+'-mp-'+mk);
+    var inp = document.getElementById(workerPfx+'-mp-'+mk);
     if(inp) inp.value = valuePerFreeMonth;
   });
 
   // פתח את הטבלה אם סגורה
-  var wrap = document.getElementById(pfx+'-monthly-pct-wrap');
-  if(wrap) wrap.style.display = 'block';
+  var wrap2 = document.getElementById(workerPfx+'-monthly-pct-wrap');
+  if(wrap2) wrap2.style.display = 'block';
 };
 </script>
 
@@ -8666,7 +8688,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v631CL | גישה</title>
+<title>Reports_Workers v632CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8927,7 +8949,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v631CL</span>
+      <span class="topbar-title">Reports_Workers v632CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
