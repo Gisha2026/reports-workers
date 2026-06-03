@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v643CL | גישה</title>
+<title>Reports_Workers v644CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v643CL</span>
+      <span class="topbar-title">Reports_Workers v644CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8675,7 +8675,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v643CL | גישה</title>
+<title>Reports_Workers v644CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8936,7 +8936,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v643CL</span>
+      <span class="topbar-title">Reports_Workers v644CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -15813,7 +15813,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div class="v437-form-title"><b>'+title+'</b><span></span></div>'+
 
       '<div class="v439-section"><div class="v439-section-title">פרטי עובד ותפקיד</div><div class="v437-form-grid">'+
-        field('עובד','<select id="'+p+'-name">'+workerNames(w.name||'')+'</select>')+
+        field('עובד','<select id="'+p+'-name" onchange="wdwUpdateWorkerCost(\''+p+'\')" ><option value="">בחר עובד</option>'+workerNames(w.name||'')+'</select><div id="'+p+'-cost" style="font-size:11px;color:#2E7D32;margin-top:2px">'+(w.name&&S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[w.name]?'עלות מעביד: ₪'+(parseFloat(S.wdw.employerCosts[w.name])||0).toLocaleString():'בחר עובד לצפייה בעלות מעביד')+'</div><input type="number" id="'+p+'-employer-cost" value="'+(w.name&&S.wdw&&S.wdw.employerCosts?parseFloat(S.wdw.employerCosts[w.name])||'':'')+'" placeholder="עלות מעביד שנתית ₪" style="margin-top:4px;padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;color:#1B5E20;background:#f1f8e9" readonly>')+
         field('תפקיד בתרומה','<select id="'+p+'-role"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r){return '<option value="'+esc(r)+'" '+(w.roleInDonor===r?'selected':'')+'>'+esc(r)+'</option>';}).join(''))+'</select>')+
         field('סוג מימון','<select id="'+p+'-funding"><option value="אחוז קבוע" '+((!w.fundingType||w.fundingType==='אחוז קבוע')?'selected':'')+'>אחוז קבוע</option><option value="אחוז לתקופה" '+(w.fundingType==='אחוז לתקופה'?'selected':'')+'>אחוז לתקופה</option><option value="סכום חודשי" '+(w.fundingType==='סכום חודשי'?'selected':'')+'>סכום חודשי</option><option value="סכום לתקופה" '+(w.fundingType==='סכום לתקופה'?'selected':'')+'>סכום לתקופה</option><option value="גמיש" '+(w.fundingType==='גמיש'?'selected':'')+'>גמיש</option><option value="מוגבל מסגרת" '+(w.fundingType==='מוגבל מסגרת'?'selected':'')+'>מוגבל מסגרת</option><option value="מט״ח" '+(w.fundingType==='מט״ח'?'selected':'')+'>מט״ח</option></select>')+
       '</div></div>'+
@@ -15823,7 +15823,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
         field('סכום ₪ חודשי','<input id="'+p+'-amt" type="number" step="0.01" value="'+esc(w.valueType==='amount'?w.value:monthly)+'">')+
         field('סכום ₪ לכל התקופה','<input id="'+p+'-total-amt" type="number" step="0.01" value="'+esc(w.totalPeriodAmount||'')+'" placeholder="יחולק לחודשים הפעילים"><button type="button" onclick="wdwCalcMonthlyFromPeriod(\''+p+'\')" style="padding:4px 10px;background:#00897B;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;margin-top:4px;display:block">חשב סכום חודשי</button>')+
         field('מסגרת מקסימום ₪','<input id="'+p+'-cap" type="number" step="0.01" value="'+esc(w.cap||'')+'" placeholder="ללא הגבלה">')+
-      '</div><button type="button" class="v439-toggle" onclick="var x=document.getElementById(\''+p+'-monthly-wrap\'); if(x)x.style.display=x.style.display===\'none\'?\'grid\':\'none\';">אחוזים לפי חודשים</button><div id="'+p+'-monthly-wrap" class="v439-monthly-grid" style="display:'+(Object.keys(mp).length?'grid':'none')+'">'+monthPctInputs()+'</div></div>'+
+      '</div><div id="'+p+'-monthly-wrap" class="v439-monthly-grid" style="display:grid">'+monthPctInputs()+'</div></div>'+
 
       '<div class="v439-section"><div class="v439-section-title">תקופת הקצאה</div><div class="v437-form-grid">'+
         field('מחודש','<input id="'+p+'-start" type="month" min="2020-01" max="2035-12" style="padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:13px" value="'+esc((w&&w.startMonth?String(w.startMonth).substring(0,7):'')||(d.startDate?String(d.startDate).substring(0,7):''))+'">')+
