@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v655CL | גישה</title>
+<title>Reports_Workers v656CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v655CL</span>
+      <span class="topbar-title">Reports_Workers v656CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8668,19 +8668,21 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   // 2. עדכן ישירות ב-S.wdw — לחודשים שלא מוצגים (כגון שנים אחרות)
   var donorId = workerPfx.replace(/^nw-/,'').replace(/^ew-[^-]+-/,'').split('-')[0];
   var donors = window.S && window.S.wdw && window.S.wdw.donors;
+  // בנה את monthlyPct המלא לשמירה
+  var fullMonthlyPct = {};
+  Object.keys(explicitMonths).forEach(function(mk){ fullMonthlyPct[mk] = explicitMonths[mk]; });
+  freeMonths.forEach(function(mk){ fullMonthlyPct[mk] = valuePerFreeMonth; });
+  // שמור ב-_pendingMonthlyPct לשימוש פונקציית השמירה
+  window._pendingMonthlyPct = window._pendingMonthlyPct || {};
+  window._pendingMonthlyPct[donorId] = fullMonthlyPct;
   if(donors){
     donors.forEach(function(d){
       (d.workers||[]).forEach(function(w){
         var wpfx = 'nw-'+d.id;
         if(wpfx === workerPfx || 'ew-'+d.id+'-'+w.id === workerPfx){
           if(!w.monthlyPct) w.monthlyPct = {};
-          freeMonths.forEach(function(mk){
-            w.monthlyPct[mk] = valuePerFreeMonth;
-          });
-          // גם שמור explicitMonths
-          Object.keys(explicitMonths).forEach(function(mk){
-            w.monthlyPct[mk] = explicitMonths[mk];
-          });
+          freeMonths.forEach(function(mk){ w.monthlyPct[mk] = valuePerFreeMonth; });
+          Object.keys(explicitMonths).forEach(function(mk){ w.monthlyPct[mk] = explicitMonths[mk]; });
         }
       });
     });
@@ -8701,7 +8703,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v655CL | גישה</title>
+<title>Reports_Workers v656CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8962,7 +8964,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v655CL</span>
+      <span class="topbar-title">Reports_Workers v656CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
