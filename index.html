@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v646CL | גישה</title>
+<title>Reports_Workers v647CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v646CL</span>
+      <span class="topbar-title">Reports_Workers v647CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -3206,13 +3206,15 @@ async function saveToGithub(){
   try{
     let sha='';
     const gr=await fetch(url,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
-    if(gr.ok) sha=(await gr.json()).sha;
+    if(gr.ok){ const gj=await gr.json(); sha=gj.sha||''; }
+    else if(gr.status!==404){ console.error('GitHub GET failed:',gr.status,gr.statusText); return false; }
     const content=btoa(unescape(encodeURIComponent(JSON.stringify(S))));
-    const body={message:'update',content};
+    const body={message:'auto-save '+new Date().toISOString(),content};
     if(sha) body.sha=sha;
     const pr=await fetch(url,{method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
-    return pr.ok;
-  }catch(e){return false;}
+    if(!pr.ok){ const err=await pr.text(); console.error('GitHub PUT failed:',pr.status,err); return false; }
+    return true;
+  }catch(e){ console.error('saveToGithub exception:',e); return false; }
 }
 
 async function loadFromGithub(){
@@ -3231,7 +3233,7 @@ async function saveData(){
   const st=document.getElementById('saveStatus');
   st.textContent='שומר...';
   const ok=await saveToGithub();
-  st.innerHTML=ok?'<span class="sok">✓ נשמר ומסונכרן</span>':(getToken()?'<span class="serr">⚠ שגיאה — נשמר מקומית</span>':'<span style="color:#E65100">⚠ נשמר מקומית — הגדר טוקן</span>');
+  st.innerHTML=ok?'<span class="sok">✓ נשמר ומסונכרן</span>':(getToken()?'<span class="serr" title="השמירה לגיטהאב נכשלה — הנתונים קיימים רק על מחשב זה. פתח קונסול (F12) לפרטים.">⚠ שגיאה — לא נשמר לגיטהאב!</span>':'<span style="color:#E65100">⚠ טוקן לא מוגדר — נשמר מקומית בלבד</span>');
 }
 
 function startSyncLoop(){
@@ -8678,7 +8680,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v646CL | גישה</title>
+<title>Reports_Workers v647CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8939,7 +8941,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v646CL</span>
+      <span class="topbar-title">Reports_Workers v647CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -11666,13 +11668,15 @@ async function saveToGithub(){
   try{
     let sha='';
     const gr=await fetch(url,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
-    if(gr.ok) sha=(await gr.json()).sha;
+    if(gr.ok){ const gj=await gr.json(); sha=gj.sha||''; }
+    else if(gr.status!==404){ console.error('GitHub GET failed:',gr.status,gr.statusText); return false; }
     const content=btoa(unescape(encodeURIComponent(JSON.stringify(S))));
-    const body={message:'update',content};
+    const body={message:'auto-save '+new Date().toISOString(),content};
     if(sha) body.sha=sha;
     const pr=await fetch(url,{method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
-    return pr.ok;
-  }catch(e){return false;}
+    if(!pr.ok){ const err=await pr.text(); console.error('GitHub PUT failed:',pr.status,err); return false; }
+    return true;
+  }catch(e){ console.error('saveToGithub exception:',e); return false; }
 }
 
 async function loadFromGithub(){
@@ -11691,7 +11695,7 @@ async function saveData(){
   const st=document.getElementById('saveStatus');
   st.textContent='שומר...';
   const ok=await saveToGithub();
-  st.innerHTML=ok?'<span class="sok">✓ נשמר ומסונכרן</span>':(getToken()?'<span class="serr">⚠ שגיאה — נשמר מקומית</span>':'<span style="color:#E65100">⚠ נשמר מקומית — הגדר טוקן</span>');
+  st.innerHTML=ok?'<span class="sok">✓ נשמר ומסונכרן</span>':(getToken()?'<span class="serr" title="השמירה לגיטהאב נכשלה — הנתונים קיימים רק על מחשב זה. פתח קונסול (F12) לפרטים.">⚠ שגיאה — לא נשמר לגיטהאב!</span>':'<span style="color:#E65100">⚠ טוקן לא מוגדר — נשמר מקומית בלבד</span>');
 }
 
 function startSyncLoop(){
