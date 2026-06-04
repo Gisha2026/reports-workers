@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v661CH | גישה</title>
+<title>Reports_Workers v659CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v661CH</span>
+      <span class="topbar-title">Reports_Workers v659CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8698,198 +8698,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 };
 </script>
 
-
-
-<script id="v661CH-wdw-period-amount-final-fix">
-/* v661CH — תיקון ממוקד אחרי השוואה אמיתית v530 מול v659.
-   מטרה: עובד שהוזן עם "סכום לתקופה" יוצג כאחוז חודשי נכון גם אם monthlyPct ריק.
-   לא נשען על rowBase מקומית שאינה ניתנת לדריסה מתוך closures; עוקף דרך הגלובליים הפעילים. */
-(function(){
-  'use strict';
-
-  function numVal(v){
-    var n = parseFloat(String(v == null ? '' : v).replace(/,/g,''));
-    return isFinite(n) ? n : 0;
-  }
-  function key7(v){ return String(v || '').substring(0,7); }
-  function monthList(start,end){
-    start = key7(start); end = key7(end);
-    var out=[];
-    if(!start || !end || start > end) return out;
-    var y=parseInt(start.slice(0,4),10), m=parseInt(start.slice(5,7),10);
-    var ey=parseInt(end.slice(0,4),10), em=parseInt(end.slice(5,7),10);
-    var guard=0;
-    while((y<ey || (y===ey && m<=em)) && guard<240){
-      out.push(y+'-'+String(m).padStart(2,'0'));
-      m++; if(m>12){m=1;y++;} guard++;
-    }
-    return out;
-  }
-  function norm(s){ return String(s || '').replace(/\s+/g,' ').trim(); }
-  function costFor(name){
-    var S0 = window.S || {};
-    var costs = (S0.wdw && S0.wdw.employerCosts) || {};
-    var n = norm(name);
-    if(costs[name] != null && numVal(costs[name]) > 0) return numVal(costs[name]);
-    if(costs[n] != null && numVal(costs[n]) > 0) return numVal(costs[n]);
-    var keys = Object.keys(costs);
-    for(var i=0;i<keys.length;i++){
-      if(norm(keys[i]) === n && numVal(costs[keys[i]]) > 0) return numVal(costs[keys[i]]);
-    }
-    return 0;
-  }
-  function isActive(w,m){
-    if(!w || w.active === false) return false;
-    var st = key7(w.startMonth || w.startDate || '');
-    var en = key7(w.endMonth || w.endDate || '');
-    if(st && m < st) return false;
-    if(en && m > en) return false;
-    if(w.blockedMonths && w.blockedMonths.indexOf(m) !== -1) return false;
-    return true;
-  }
-  function hasMonthly(w,m){
-    return !!(w && w.monthlyPct && Object.prototype.hasOwnProperty.call(w.monthlyPct,m) && String(w.monthlyPct[m]).trim() !== '' && !isNaN(parseFloat(w.monthlyPct[m])));
-  }
-  function calcPeriodAmountPct(w,d,m){
-    if(!w || !isActive(w,m)) return 0;
-    if(hasMonthly(w,m)) return numVal(w.monthlyPct[m]);
-    if(w.valueType === 'percent' || w.fundingType === 'אחוז קבוע' || w.fundingType === 'percent') return numVal(w.value);
-
-    var total = numVal(w.totalPeriodAmount);
-    var monthlyAmount = 0;
-    var st = key7(w.startMonth || w.startDate || (d && d.startDate) || '');
-    var en = key7(w.endMonth || w.endDate || (d && d.endDate) || '');
-    var months = monthList(st,en);
-
-    if(total > 0 && months.length){
-      monthlyAmount = total / months.length;
-    } else if(w.valueType === 'amount' || w.fundingType === 'סכום חודשי' || w.fundingType === 'amount'){
-      monthlyAmount = numVal(w.value);
-    }
-    if(monthlyAmount <= 0) return 0;
-
-    var annualCost = costFor(w.name);
-    if(annualCost <= 0) return 0;
-    return Math.round((monthlyAmount / (annualCost/12)) * 100 * 10) / 10;
-  }
-  function replPct(w,m){
-    var r = 0;
-    if(!w || !isActive(w,m)) return 0;
-    if(w.replacesPct){
-      var rs=key7(w.replaceStartMonth || w.replacementStartMonth || w.startMonth || '');
-      var re=key7(w.replaceEndMonth || w.replacementEndMonth || w.endMonth || '');
-      if(!(rs && m < rs) && !(re && m > re)) r += numVal(w.replacesPct);
-    }
-    (w.extraReplaces || []).forEach(function(x){
-      var rs=key7(x.startMonth || x.replaceStartMonth || '');
-      var re=key7(x.endMonth || x.replaceEndMonth || '');
-      if((rs && m < rs) || (re && m > re)) return;
-      r += numVal(x.pct);
-    });
-    return Math.round(r*10)/10;
-  }
-  function donors(){ return (window.S && window.S.wdw && window.S.wdw.donors) || []; }
-  function findDonor(did){ return donors().find(function(d){return d && d.id === did;}); }
-  function collectAllMonthlyPct(pfx, did){
-    var mp = {};
-    Array.prototype.slice.call(document.querySelectorAll('input[id^="'+pfx+'-mp-"]')).forEach(function(inp){
-      var raw = (inp.value == null ? '' : String(inp.value)).trim();
-      if(raw === '') return;
-      var mk = inp.id.substring((pfx+'-mp-').length);
-      var v = parseFloat(raw);
-      if(!isNaN(v)) mp[mk] = v;
-    });
-    if(window._pendingMonthlyPct && did && window._pendingMonthlyPct[did]){
-      Object.assign(mp, window._pendingMonthlyPct[did]);
-    }
-    return mp;
-  }
-
-  function install(){
-    window.wdwBasePct = function(w,m){ return calcPeriodAmountPct(w,null,key7(m || ((window.S&&window.S.year)||new Date().getFullYear())+'-01')); };
-    window.wdwReplacePct = function(w,m){ return replPct(w,key7(m || ((window.S&&window.S.year)||new Date().getFullYear())+'-01')); };
-    window.wdwTotalRowPct = function(w,m){ var k=key7(m || ((window.S&&window.S.year)||new Date().getFullYear())+'-01'); return Math.round((calcPeriodAmountPct(w,null,k)+replPct(w,k))*10)/10; };
-    window.calcWorkerPct = function(workerRow, monthKey){
-      var res={base:0,replacement:0,total:0};
-      var w = workerRow && (workerRow.worker || workerRow);
-      var d = workerRow && workerRow.donor;
-      var m = key7(monthKey);
-      if(!w || !m) return res;
-      res.base = calcPeriodAmountPct(w,d,m);
-      res.replacement = replPct(w,m);
-      res.total = Math.round((res.base + res.replacement)*10)/10;
-      return res;
-    };
-    window.wdwWorkerTotalPct = function(workerName,m){
-      var k=key7(m); var n=norm(workerName); var t=0;
-      donors().forEach(function(d){ (d.workers||[]).forEach(function(w){ if(norm(w.name)===n) t += calcPeriodAmountPct(w,d,k)+replPct(w,k); }); });
-      return Math.round(t*10)/10;
-    };
-    window.getWorkerFundingPct = function(workerName, month, mode){
-      return window.wdwWorkerTotalPct(workerName, month);
-    };
-    window.wdwCollectMonthlyPct = function(pfx){ return collectAllMonthlyPct(pfx, null); };
-
-    if(typeof window.wdw437SaveWorker === 'function' && !window.wdw437SaveWorker.__v661Patched){
-      var old437 = window.wdw437SaveWorker;
-      window.wdw437SaveWorker = function(mode,did,wid){
-        var beforeD = findDonor(did);
-        var beforeLen = beforeD && beforeD.workers ? beforeD.workers.length : 0;
-        var result = old437.apply(this, arguments);
-        try{
-          var d = findDonor(did); if(!d || !d.workers) return result;
-          var w = (mode==='new') ? d.workers[d.workers.length-1] : d.workers.find(function(x){return x.id===wid;});
-          if(!w && mode==='new' && d.workers.length>beforeLen) w = d.workers[d.workers.length-1];
-          if(!w) return result;
-          var p='v437-worker-'+mode+'-'+did+'-'+wid;
-          var pending = (window._pendingMonthlyPct && window._pendingMonthlyPct[did]) || null;
-          var mp = collectAllMonthlyPct(p,did);
-          if(pending) Object.assign(mp,pending);
-          if(Object.keys(mp).length) w.monthlyPct = mp;
-          var totalEl=document.getElementById(p+'-total-amt');
-          var amtEl=document.getElementById(p+'-amt');
-          var pctEl=document.getElementById(p+'-pct');
-          var total=numVal(totalEl && totalEl.value), amt=numVal(amtEl && amtEl.value), pct=numVal(pctEl && pctEl.value);
-          if(total>0){ w.totalPeriodAmount=total; w.valueType='amount'; w.value=amt>0?amt:total; }
-          else if(amt>0){ w.valueType='amount'; w.value=amt; }
-          else if(pct>0){ w.valueType='percent'; w.value=pct; }
-          try{ if(typeof saveLocally==='function') saveLocally(); }catch(e){}
-          try{ if(typeof saveData==='function') saveData(); }catch(e){}
-        }catch(e){ console.warn('v661 wdw437SaveWorker post-save fix failed', e); }
-        return result;
-      };
-      window.wdw437SaveWorker.__v661Patched = true;
-    }
-
-    if(typeof window.wdwSaveNewWorker === 'function' && !window.wdwSaveNewWorker.__v661Patched){
-      var oldNew = window.wdwSaveNewWorker;
-      window.wdwSaveNewWorker = function(did){
-        var p='nw-'+did;
-        var result = oldNew.apply(this, arguments);
-        try{
-          var d=findDonor(did); if(!d || !d.workers || !d.workers.length) return result;
-          var w=d.workers[d.workers.length-1];
-          var mp=collectAllMonthlyPct(p,did);
-          if(Object.keys(mp).length) w.monthlyPct=mp;
-          var total=numVal((document.getElementById(p+'-total-amt')||{}).value);
-          var amt=numVal((document.getElementById(p+'-amt')||{}).value);
-          if(total>0){ w.totalPeriodAmount=total; w.valueType='amount'; w.value=amt>0?amt:total; }
-          try{ if(typeof saveLocally==='function') saveLocally(); }catch(e){}
-          try{ if(typeof saveData==='function') saveData(); }catch(e){}
-        }catch(e){ console.warn('v661 wdwSaveNewWorker post-save fix failed', e); }
-        return result;
-      };
-      window.wdwSaveNewWorker.__v661Patched = true;
-    }
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
-  else install();
-  setTimeout(install,500);
-  setTimeout(install,1500);
-})();
-</script>
-
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -8903,7 +8711,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v661CH | גישה</title>
+<title>Reports_Workers v659CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9164,7 +8972,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v661CH</span>
+      <span class="topbar-title">Reports_Workers v659CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
