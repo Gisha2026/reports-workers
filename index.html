@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v667CL | גישה</title>
+<title>Reports_Workers v668CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v667CL</span>
+      <span class="topbar-title">Reports_Workers v668CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8724,7 +8724,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v667CL | גישה</title>
+<title>Reports_Workers v668CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8985,7 +8985,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v667CL</span>
+      <span class="topbar-title">Reports_Workers v668CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -15982,7 +15982,16 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   window.wdw437EditWorker=function(did,wid){window.WDW_EDIT_WORKER_ID=(window.WDW_EDIT_WORKER_ID===wid?null:wid);window.WDW_ADD_WORKER_FOR=null;window.WDW_EDIT_DONOR_ID=did;renderWDWInput();};
 
   function workerRow(d,w){
-    var valTxt=w.valueType==='percent'?((w.value||0)+'%'):(w.value?('₪'+Math.round(w.value).toLocaleString('he-IL')+'/חודש'):'—');
+    var valTxt;
+    if(w.totalPeriodAmount && typeof window.wdwBasePct==='function'){
+      var _curMonth=(function(){var n=new Date();return n.getFullYear()+'-'+(n.getMonth()<9?'0':'')+(n.getMonth()+1);})();
+      var _pct=window.wdwBasePct(w,_curMonth);
+      valTxt=(_pct||0)+'%';
+    } else if(w.valueType==='percent'){
+      valTxt=(w.value||0)+'%';
+    } else {
+      valTxt=w.value?('₪'+Math.round(w.value).toLocaleString('he-IL')+'/חודש'):'—';
+    }
     var open=window.WDW_EDIT_WORKER_ID===w.id;
     var html='<div class="v437-worker-row">'+
       '<div><b>'+esc(w.name||'—')+'</b><span>'+esc(w.roleInDonor||w.fundingType||'')+'</span></div>'+
