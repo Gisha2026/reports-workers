@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v674CL | גישה</title>
+<title>Reports_Workers v675CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v674CL</span>
+      <span class="topbar-title">Reports_Workers v675CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5904,7 +5904,7 @@ window.wdwResetNewWorkerForm = function(did) {
     html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px">'+
       field217('שם תורם','<input id="v217-ed-name-'+d.id+'" class="wdw-inp" value="'+esc217(d.name||'')+'">')+
       field217('סוג','<select id="v217-ed-type-'+d.id+'" class="wdw-inp"><option value="budget" '+(d.type==='budget'?'selected':'')+'>תקציב</option><option value="core" '+(d.type==='core'?'selected':'')+'>כללי</option></select>')+
-      field217('סטטוס','<select id="v217-ed-status-'+d.id+'" class="wdw-inp"><option value="active" '+(d.status==='active'?'selected':'')+'>פעיל</option><option value="ended" '+(d.status===WDW_STATUS.ENDED?'selected':'')+'>הסתיים</option><option value="inactive" '+(d.status===WDW_STATUS.INACTIVE?'selected':'')+'>לא פעיל</option></select>')+
+      field217('סטטוס','<select id="v217-ed-status-'+d.id+'" class="wdw-inp"><option value="active" '+(d.status==='active'?'selected':'')+'>פעיל</option><option value="inactive" '+(d.status===WDW_STATUS.INACTIVE?'selected':'')+'>לא פעיל</option></select>')+
       field217('תקציב ₪','<input id="v217-ed-budget-'+d.id+'" class="wdw-inp" type="number" value="'+esc217(d.totalBudget||'')+'">')+
       field217('תחילת חוזה','<input id="v217-ed-start-'+d.id+'" class="wdw-inp" type="month" value="'+esc217(d.startDate||'')+'">')+
       field217('סיום חוזה','<input id="v217-ed-end-'+d.id+'" class="wdw-inp" type="month" value="'+esc217(d.endDate||'')+'">')+
@@ -6056,8 +6056,8 @@ window.wdwResetNewWorkerForm = function(did) {
   function donorWorkers(d,m){if(!calcDonor(d))return[];return (d.workers||[]).filter(function(w){return rowActive(w,m);});}
   function workerTotal(name,m){if(typeof window.getWorkerFundingPct==='function')return window.getWorkerFundingPct(name,m,'monthly');return Math.round(workerRows(name,m).reduce(function(s,r){return s+rowTotal(r.worker,m);},0)*10)/10;}
   function typeChip(d){return '<span class="wdw-chip gray">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
-  function statusLabel(d){if(!d)return '—'; if(d.status==='review')return 'בבחינה'; if(d.status===WDW_STATUS.PENDING)return 'ממתין לתשובה'; if(d.status===WDW_STATUS.ENDED)return 'הסתיים'; if(d.status===WDW_STATUS.INACTIVE)return 'לא פעיל'; return 'פעיל';}
-  function statusClass(d){if(!d)return 'gray'; if(d.status==='review')return 'gray'; if(d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE)return 'gray'; if(d.status===WDW_STATUS.PENDING)return 'warn'; return 'budget';}
+  function statusLabel(d){if(!d)return '—'; if(d.status===WDW_STATUS.INACTIVE)return 'לא פעיל'; var now=new Date(); var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1)); if(d.endDate&&d.endDate<curM)return 'הסתיים'; if(d.status==='review')return 'בבחינה'; if(d.status===WDW_STATUS.PENDING)return 'ממתין לתשובה'; if(d.status===WDW_STATUS.ENDED)return 'הסתיים'; return 'פעיל';}
+  function statusClass(d){if(!d)return 'gray'; var now=new Date(); var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1)); if(d.status===WDW_STATUS.INACTIVE)return 'gray'; if((d.endDate&&d.endDate<curM)||d.status===WDW_STATUS.ENDED)return 'gray'; if(d.status==='review')return 'gray'; if(d.status===WDW_STATUS.PENDING)return 'warn'; return 'budget';}
   function health(d,m){if(d.status==='review')return {label:'בבחינה',cls:'gray',note:'לא מחושב'}; if(d.status===WDW_STATUS.INACTIVE)return {label:'הסתיים',cls:'gray',note:'לא מחושב'}; var ws=donorWorkers(d,m); var over=ws.find(function(w){return workerTotal(w.name,m)>100;}); if(over)return {label:'חריגה',cls:'bad',note:'עובד מעל 100%'}; if(!ws.length)return {label:'לא הוגדר',cls:'gray',note:'אין עובדים בחודש זה'}; return {label:'תקין',cls:'budget',note:'מחושב'};}
   function range(a,b){return (mLabel(a)||'—')+' — '+(b?mLabel(b):'פתוח');}
   function periodKind(d){if(!d.startDate||!d.endDate)return 'לא הוגדר'; var sy=String(d.startDate).slice(0,4),ey=String(d.endDate).slice(0,4),sm=String(d.startDate).slice(5,7),em=String(d.endDate).slice(5,7); return (sy===ey&&sm==='01'&&em==='12')?'שנה קלנדרית':'חוצה שנים';}
@@ -8726,7 +8726,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v674CL | גישה</title>
+<title>Reports_Workers v675CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8987,7 +8987,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v674CL</span>
+      <span class="topbar-title">Reports_Workers v675CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -14359,7 +14359,7 @@ window.wdwResetNewWorkerForm = function(did) {
     html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:14px">'+
       field217('שם תורם','<input id="v217-ed-name-'+d.id+'" class="wdw-inp" value="'+esc217(d.name||'')+'">')+
       field217('סוג','<select id="v217-ed-type-'+d.id+'" class="wdw-inp"><option value="budget" '+(d.type==='budget'?'selected':'')+'>תקציב</option><option value="core" '+(d.type==='core'?'selected':'')+'>כללי</option></select>')+
-      field217('סטטוס','<select id="v217-ed-status-'+d.id+'" class="wdw-inp"><option value="active" '+(d.status==='active'?'selected':'')+'>פעיל</option><option value="ended" '+(d.status===WDW_STATUS.ENDED?'selected':'')+'>הסתיים</option><option value="inactive" '+(d.status===WDW_STATUS.INACTIVE?'selected':'')+'>לא פעיל</option></select>')+
+      field217('סטטוס','<select id="v217-ed-status-'+d.id+'" class="wdw-inp"><option value="active" '+(d.status==='active'?'selected':'')+'>פעיל</option><option value="inactive" '+(d.status===WDW_STATUS.INACTIVE?'selected':'')+'>לא פעיל</option></select>')+
       field217('תקציב ₪','<input id="v217-ed-budget-'+d.id+'" class="wdw-inp" type="number" value="'+esc217(d.totalBudget||'')+'">')+
       field217('תחילת חוזה','<input id="v217-ed-start-'+d.id+'" class="wdw-inp" type="month" value="'+esc217(d.startDate||'')+'">')+
       field217('סיום חוזה','<input id="v217-ed-end-'+d.id+'" class="wdw-inp" type="month" value="'+esc217(d.endDate||'')+'">')+
@@ -14511,8 +14511,8 @@ window.wdwResetNewWorkerForm = function(did) {
   function donorWorkers(d,m){if(!calcDonor(d))return[];return (d.workers||[]).filter(function(w){return rowActive(w,m);});}
   function workerTotal(name,m){if(typeof window.getWorkerFundingPct==='function')return window.getWorkerFundingPct(name,m,'monthly');return Math.round(workerRows(name,m).reduce(function(s,r){return s+rowTotal(r.worker,m);},0)*10)/10;}
   function typeChip(d){return '<span class="wdw-chip gray">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
-  function statusLabel(d){if(!d)return '—'; if(d.status==='review')return 'בבחינה'; if(d.status===WDW_STATUS.PENDING)return 'ממתין לתשובה'; if(d.status===WDW_STATUS.ENDED)return 'הסתיים'; if(d.status===WDW_STATUS.INACTIVE)return 'לא פעיל'; return 'פעיל';}
-  function statusClass(d){if(!d)return 'gray'; if(d.status==='review')return 'gray'; if(d.status===WDW_STATUS.ENDED||d.status===WDW_STATUS.INACTIVE)return 'gray'; if(d.status===WDW_STATUS.PENDING)return 'warn'; return 'budget';}
+  function statusLabel(d){if(!d)return '—'; if(d.status===WDW_STATUS.INACTIVE)return 'לא פעיל'; var now=new Date(); var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1)); if(d.endDate&&d.endDate<curM)return 'הסתיים'; if(d.status==='review')return 'בבחינה'; if(d.status===WDW_STATUS.PENDING)return 'ממתין לתשובה'; if(d.status===WDW_STATUS.ENDED)return 'הסתיים'; return 'פעיל';}
+  function statusClass(d){if(!d)return 'gray'; var now=new Date(); var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1)); if(d.status===WDW_STATUS.INACTIVE)return 'gray'; if((d.endDate&&d.endDate<curM)||d.status===WDW_STATUS.ENDED)return 'gray'; if(d.status==='review')return 'gray'; if(d.status===WDW_STATUS.PENDING)return 'warn'; return 'budget';}
   function health(d,m){if(d.status==='review')return {label:'בבחינה',cls:'gray',note:'לא מחושב'}; if(d.status===WDW_STATUS.INACTIVE)return {label:'הסתיים',cls:'gray',note:'לא מחושב'}; var ws=donorWorkers(d,m); var over=ws.find(function(w){return workerTotal(w.name,m)>100;}); if(over)return {label:'חריגה',cls:'bad',note:'עובד מעל 100%'}; if(!ws.length)return {label:'לא הוגדר',cls:'gray',note:'אין עובדים בחודש זה'}; return {label:'תקין',cls:'budget',note:'מחושב'};}
   function range(a,b){return (mLabel(a)||'—')+' — '+(b?mLabel(b):'פתוח');}
   function periodKind(d){if(!d.startDate||!d.endDate)return 'לא הוגדר'; var sy=String(d.startDate).slice(0,4),ey=String(d.endDate).slice(0,4),sm=String(d.startDate).slice(5,7),em=String(d.endDate).slice(5,7); return (sy===ey&&sm==='01'&&em==='12')?'שנה קלנדרית':'חוצה שנים';}
@@ -15728,7 +15728,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div class="v437-form-grid">'+
         field('שם תורם','<input id="'+p+'-name" value="'+esc(d.name||'')+'">') +field('Timesheet name','<input id="'+p+'-timesheet-name" value="'+esc(d.timesheetName||'')+'" placeholder="שם ב-Timesheet">')+
         field('סוג','<select id="'+p+'-type"><option value="budget" '+(d.type!=='core'?'selected':'')+'>תקציב</option><option value="core" '+(d.type==='core'?'selected':'')+'>כללי</option></select>')+
-        field('סטטוס','<select id="'+p+'-status"><option value="active" '+((!d.status||d.status==='active')?'selected':'')+'>פעיל</option><option value="pending" '+(d.status==='pending'?'selected':'')+'>ממתין</option><option value="ended" '+(d.status==='ended'?'selected':'')+'>הסתיים</option><option value="inactive" '+(d.status==='inactive'?'selected':'')+'>לא פעיל</option></select>')+
+        field('סטטוס','<select id="'+p+'-status"><option value="active" '+((!d.status||d.status==='active')?'selected':'')+'>פעיל</option><option value="pending" '+(d.status==='pending'?'selected':'')+'>ממתין</option><option value="inactive" '+(d.status==='inactive'?'selected':'')+'>לא פעיל</option></select>')+
         field('קוד תורם','<input id="'+p+'-code" value="'+esc(d.code||'')+'">')+
         field('תחילת חוזה','<input id="'+p+'-start" type="month" value="'+esc(d.startDate||'')+'">')+
         field('סיום חוזה','<input id="'+p+'-end" type="month" value="'+esc(d.endDate||'')+'">')+
