@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v663CL | גישה</title>
+<title>Reports_Workers v664CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v663CL</span>
+      <span class="topbar-title">Reports_Workers v664CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8538,7 +8538,19 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
     if(w.blockedMonths&&w.blockedMonths.indexOf(monthKey)!==-1)return res;
     if(hasOverride(w,monthKey)) res.base=overrideVal(w,monthKey);
     else if(w.monthlyPct&&w.monthlyPct[monthKey]!=null&&!isNaN(parseFloat(w.monthlyPct[monthKey]))) res.base=parseFloat(w.monthlyPct[monthKey])||0;
-    else if(isAmount(w)) res.base=amountBase(w,d,monthKey);
+    else if(w.totalPeriodAmount){
+      var _name=(w.name||'').trim();
+      var _costs=(typeof S!=='undefined'&&S.wdw&&S.wdw.employerCosts)||{};
+      var _cost=parseFloat(_costs[_name]||_costs[Object.keys(_costs).find(function(k){return k.trim()===_name;})||'']||0);
+      if(_cost>0){
+        var _total=parseFloat(w.totalPeriodAmount)||0;
+        var _st=String(w.startMonth||'').substring(0,7);
+        var _en=String(w.endMonth||'').substring(0,7);
+        var _months=0;
+        if(_st&&_en&&_st<=_en){var _sy=parseInt(_st.substring(0,4)),_sm=parseInt(_st.substring(5,7)),_ey=parseInt(_en.substring(0,4)),_em=parseInt(_en.substring(5,7));_months=(_ey-_sy)*12+(_em-_sm)+1;}
+        if(_months>0) res.base=Math.round((_total/_months/(_cost/12))*100*10)/10;
+      }
+    }
     else res.base=n(w.value);
     var repl=0;
     if(w.replacesPct){var rs=String(w.replaceStartMonth||w.replacementStartMonth||'').substring(0,7), re=String(w.replaceEndMonth||w.replacementEndMonth||'').substring(0,7); if(!(rs&&monthKey<rs)&&!(re&&monthKey>re)) repl+=n(w.replacesPct);}
@@ -8712,7 +8724,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v663CL | גישה</title>
+<title>Reports_Workers v664CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8973,7 +8985,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v663CL</span>
+      <span class="topbar-title">Reports_Workers v664CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -17968,7 +17980,19 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     if(w.blockedMonths&&w.blockedMonths.indexOf(monthKey)!==-1)return res;
     if(hasOverride(w,monthKey)) res.base=overrideVal(w,monthKey);
     else if(w.monthlyPct&&w.monthlyPct[monthKey]!=null&&!isNaN(parseFloat(w.monthlyPct[monthKey]))) res.base=parseFloat(w.monthlyPct[monthKey])||0;
-    else if(isAmount(w)) res.base=amountBase(w,d,monthKey);
+    else if(w.totalPeriodAmount){
+      var _name=(w.name||'').trim();
+      var _costs=(typeof S!=='undefined'&&S.wdw&&S.wdw.employerCosts)||{};
+      var _cost=parseFloat(_costs[_name]||_costs[Object.keys(_costs).find(function(k){return k.trim()===_name;})||'']||0);
+      if(_cost>0){
+        var _total=parseFloat(w.totalPeriodAmount)||0;
+        var _st=String(w.startMonth||'').substring(0,7);
+        var _en=String(w.endMonth||'').substring(0,7);
+        var _months=0;
+        if(_st&&_en&&_st<=_en){var _sy=parseInt(_st.substring(0,4)),_sm=parseInt(_st.substring(5,7)),_ey=parseInt(_en.substring(0,4)),_em=parseInt(_en.substring(5,7));_months=(_ey-_sy)*12+(_em-_sm)+1;}
+        if(_months>0) res.base=Math.round((_total/_months/(_cost/12))*100*10)/10;
+      }
+    }
     else res.base=n(w.value);
     var repl=0;
     if(w.replacesPct){var rs=String(w.replaceStartMonth||w.replacementStartMonth||'').substring(0,7), re=String(w.replaceEndMonth||w.replacementEndMonth||'').substring(0,7); if(!(rs&&monthKey<rs)&&!(re&&monthKey>re)) repl+=n(w.replacesPct);}
