@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v675CL | גישה</title>
+<title>Reports_Workers v676CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v675CL</span>
+      <span class="topbar-title">Reports_Workers v676CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1805,7 +1805,10 @@ function initWDW(){
 
 function wdwGenId(p){return p+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
 
-function wdwStatusLabel(status){
+function wdwStatusLabel(status, endDate){
+  if(status==='inactive') return 'לא פעיל';
+  var now=new Date(); var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1));
+  if(endDate && String(endDate).substring(0,7)<curM) return 'הסתיים';
   const map={active:'פעיל',pending:'ממתין לאישור',inactive:'לא פעיל',ended:'הסתיים'};
   return map[status]||status;
 }
@@ -4639,7 +4642,7 @@ window.isAmountFunding = isAmountFunding;
   function rowPct204(w,m){if(typeof wdwTotalRowPct==='function') return wdwTotalRowPct(w,m); let n=0;if(w&&w.valueType==='percent')n+=parseFloat(w.value)||0;if(w&&w.replacesPct)n+=parseFloat(w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}
   function replPct204(w,m){if(typeof wdwReplacePct==='function') return wdwReplacePct(w,m); let n=parseFloat(w&&w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return n;}
   function typeChip204(d){if(typeof wdwDonorTypeChip==='function')return wdwDonorTypeChip(d);return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
-  function statusLabel204(d){try{return wdwStatusLabel(d.status);}catch(e){return d&&d.status||'פעיל';}}
+  function statusLabel204(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
   function projectHealth204(d,m){
     const ws=(d.workers||[]).filter(function(w){return isActive204(w,m);});
     const hasOver=ws.some(function(w){return (typeof wdwWorkerTotalPct==='function'?wdwWorkerTotalPct(w.name,m):0)>100;});
@@ -5663,7 +5666,7 @@ window.wdwReportRoleRender = function(){
   function isActive209(w,m){if(typeof wdwIsActiveInMonth==='function') return wdwIsActiveInMonth(w,m); if(!w||w.active===false)return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}
   function replPct209(w,m){if(typeof wdwReplacePct==='function') return wdwReplacePct(w,m); let n=parseFloat(w&&w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}
   function typeChip209(d){if(typeof wdwDonorTypeChip==='function')return wdwDonorTypeChip(d);return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
-  function statusLabel209(d){try{return wdwStatusLabel(d.status);}catch(e){return d&&d.status||'פעיל';}}
+  function statusLabel209(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
   function health209(d,m){
     const ws=(d.workers||[]).filter(function(w){return isActive209(w,m);});
     const hasOver=ws.some(function(w){return (typeof wdwWorkerTotalPct==='function'?wdwWorkerTotalPct(w.name,m):0)>100;});
@@ -5835,7 +5838,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function fmtPct217(n){n=parseFloat(n)||0; return (Math.round(n*10)/10)+'%';}
   function fmtM217(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
   function type217(d){return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
-  function status217(d){try{return wdwStatusLabel(d.status);}catch(e){return d&&d.status||'פעיל';}}
+  function status217(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
   function isActive217(w,m){try{return wdwIsActiveInMonth(w,m);}catch(e){ if(!w||w.active===false)return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}}
   function base217(w,m){try{return wdwBasePct(w,m);}catch(e){return (w&&w.valueType==='percent'&&isActive217(w,m))?(parseFloat(w.value)||0):0;}}
   function repl217(w,m){try{return wdwReplacePct(w,m);}catch(e){var n=0;if(w&&w.replaces&&isActive217(w,m)) n+=parseFloat(w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}}
@@ -6786,7 +6789,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function month(){try{if(S.wdw&&S.wdw.viewMonth)return S.wdw.viewMonth;}catch(e){} return (S.year||new Date().getFullYear())+'-'+String((typeof curMI==='number'?curMI:new Date().getMonth())+1).padStart(2,'0');}
   function fmtMonth(m){if(!m)return '—';var a=String(m).match(/^(\d{4})-(\d{2})/);if(!a)return esc(m);var namesArr=(window.MONTHS||['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']);return namesArr[parseInt(a[2],10)-1]+' '+a[1];}
   function activeDonor(d){return d && d.status!=='inactive';}
-  function statusLabel(d){if(!d)return '—'; if(d.status==='review')return 'בבחינה'; if(d.status==='pending')return 'ממתין'; if(d.status==='ended')return 'הסתיים'; if(d.status==='inactive')return 'לא פעיל'; return 'פעיל';}
+  function statusLabel(d){if(!d)return '—'; if(d.status==='inactive')return 'לא פעיל'; var now=new Date(); var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1)); if(d.endDate&&String(d.endDate).substring(0,7)<curM)return 'הסתיים'; if(d.status==='review')return 'בבחינה'; if(d.status==='pending')return 'ממתין'; if(d.status==='ended')return 'הסתיים'; return 'פעיל';}
   function statusChip(d){var cls=(d.status==='active'?'ok':d.status==='pending'?'warn':d.status==='review'?'info':'gray');return '<span class="org249-chip '+cls+'">'+statusLabel(d)+'</span>';}
   function typeLabel(d){return d&&d.type==='core'?'CORE':'BUDGET';}
   function inRange(w,m){var st=String(w.startMonth||w.startDate||'').substring(0,7);var en=String(w.endMonth||w.endDate||'').substring(0,7);if(st&&m<st)return false;if(en&&m>en)return false;return true;}
@@ -8726,7 +8729,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v675CL | גישה</title>
+<title>Reports_Workers v676CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8987,7 +8990,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v675CL</span>
+      <span class="topbar-title">Reports_Workers v676CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -10421,7 +10424,10 @@ function initWDW(){
 
 function wdwGenId(p){return p+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);}
 
-function wdwStatusLabel(status){
+function wdwStatusLabel(status, endDate){
+  if(status==='inactive') return 'לא פעיל';
+  var now=new Date(); var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1));
+  if(endDate && String(endDate).substring(0,7)<curM) return 'הסתיים';
   const map={active:'פעיל',pending:'ממתין לאישור',inactive:'לא פעיל',ended:'הסתיים'};
   return map[status]||status;
 }
@@ -13980,7 +13986,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   function rowPct204(w,m){if(typeof wdwTotalRowPct==='function') return wdwTotalRowPct(w,m); let n=0;if(w&&w.valueType==='percent')n+=parseFloat(w.value)||0;if(w&&w.replacesPct)n+=parseFloat(w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}
   function replPct204(w,m){if(typeof wdwReplacePct==='function') return wdwReplacePct(w,m); let n=parseFloat(w&&w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return n;}
   function typeChip204(d){if(typeof wdwDonorTypeChip==='function')return wdwDonorTypeChip(d);return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
-  function statusLabel204(d){try{return wdwStatusLabel(d.status);}catch(e){return d&&d.status||'פעיל';}}
+  function statusLabel204(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
   function projectHealth204(d,m){
     const ws=(d.workers||[]).filter(function(w){return isActive204(w,m);});
     const hasOver=ws.some(function(w){return (typeof wdwWorkerTotalPct==='function'?wdwWorkerTotalPct(w.name,m):0)>100;});
@@ -14118,7 +14124,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   function isActive209(w,m){if(typeof wdwIsActiveInMonth==='function') return wdwIsActiveInMonth(w,m); if(!w||w.active===false)return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}
   function replPct209(w,m){if(typeof wdwReplacePct==='function') return wdwReplacePct(w,m); let n=parseFloat(w&&w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}
   function typeChip209(d){if(typeof wdwDonorTypeChip==='function')return wdwDonorTypeChip(d);return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
-  function statusLabel209(d){try{return wdwStatusLabel(d.status);}catch(e){return d&&d.status||'פעיל';}}
+  function statusLabel209(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
   function health209(d,m){
     const ws=(d.workers||[]).filter(function(w){return isActive209(w,m);});
     const hasOver=ws.some(function(w){return (typeof wdwWorkerTotalPct==='function'?wdwWorkerTotalPct(w.name,m):0)>100;});
@@ -14290,7 +14296,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function fmtPct217(n){n=parseFloat(n)||0; return (Math.round(n*10)/10)+'%';}
   function fmtM217(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
   function type217(d){return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
-  function status217(d){try{return wdwStatusLabel(d.status);}catch(e){return d&&d.status||'פעיל';}}
+  function status217(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
   function isActive217(w,m){try{return wdwIsActiveInMonth(w,m);}catch(e){ if(!w||w.active===false)return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}}
   function base217(w,m){try{return wdwBasePct(w,m);}catch(e){return (w&&w.valueType==='percent'&&isActive217(w,m))?(parseFloat(w.value)||0):0;}}
   function repl217(w,m){try{return wdwReplacePct(w,m);}catch(e){var n=0;if(w&&w.replaces&&isActive217(w,m)) n+=parseFloat(w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}}
@@ -15289,7 +15295,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function month(){try{if(S.wdw&&S.wdw.viewMonth)return S.wdw.viewMonth;}catch(e){} return (S.year||new Date().getFullYear())+'-'+String((typeof curMI==='number'?curMI:new Date().getMonth())+1).padStart(2,'0');}
   function fmtMonth(m){if(!m)return '—';var a=String(m).match(/^(\d{4})-(\d{2})/);if(!a)return esc(m);var namesArr=(window.MONTHS||['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']);return namesArr[parseInt(a[2],10)-1]+' '+a[1];}
   function activeDonor(d){return d && d.status!=='inactive';}
-  function statusLabel(d){if(!d)return '—'; if(d.status==='review')return 'בבחינה'; if(d.status==='pending')return 'ממתין'; if(d.status==='ended')return 'הסתיים'; if(d.status==='inactive')return 'לא פעיל'; return 'פעיל';}
+  function statusLabel(d){if(!d)return '—'; if(d.status==='inactive')return 'לא פעיל'; var now=new Date(); var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1)); if(d.endDate&&String(d.endDate).substring(0,7)<curM)return 'הסתיים'; if(d.status==='review')return 'בבחינה'; if(d.status==='pending')return 'ממתין'; if(d.status==='ended')return 'הסתיים'; return 'פעיל';}
   function statusChip(d){var cls=(d.status==='active'?'ok':d.status==='pending'?'warn':d.status==='review'?'info':'gray');return '<span class="org249-chip '+cls+'">'+statusLabel(d)+'</span>';}
   function typeLabel(d){return d&&d.type==='core'?'CORE':'BUDGET';}
   function inRange(w,m){var st=String(w.startMonth||w.startDate||'').substring(0,7);var en=String(w.endMonth||w.endDate||'').substring(0,7);if(st&&m<st)return false;if(en&&m>en)return false;return true;}
