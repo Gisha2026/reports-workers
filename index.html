@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v662CL | גישה</title>
+<title>Reports_Workers v663CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v662CL</span>
+      <span class="topbar-title">Reports_Workers v663CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8537,6 +8537,7 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
     if(wStart&&monthKey<wStart)return res; if(wEnd&&monthKey>wEnd)return res;
     if(w.blockedMonths&&w.blockedMonths.indexOf(monthKey)!==-1)return res;
     if(hasOverride(w,monthKey)) res.base=overrideVal(w,monthKey);
+    else if(w.monthlyPct&&w.monthlyPct[monthKey]!=null&&!isNaN(parseFloat(w.monthlyPct[monthKey]))) res.base=parseFloat(w.monthlyPct[monthKey])||0;
     else if(isAmount(w)) res.base=amountBase(w,d,monthKey);
     else res.base=n(w.value);
     var repl=0;
@@ -8711,7 +8712,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v662CL | גישה</title>
+<title>Reports_Workers v663CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8972,7 +8973,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v662CL</span>
+      <span class="topbar-title">Reports_Workers v663CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -17966,6 +17967,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     if(wStart&&monthKey<wStart)return res; if(wEnd&&monthKey>wEnd)return res;
     if(w.blockedMonths&&w.blockedMonths.indexOf(monthKey)!==-1)return res;
     if(hasOverride(w,monthKey)) res.base=overrideVal(w,monthKey);
+    else if(w.monthlyPct&&w.monthlyPct[monthKey]!=null&&!isNaN(parseFloat(w.monthlyPct[monthKey]))) res.base=parseFloat(w.monthlyPct[monthKey])||0;
     else if(isAmount(w)) res.base=amountBase(w,d,monthKey);
     else res.base=n(w.value);
     var repl=0;
