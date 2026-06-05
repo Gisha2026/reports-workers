@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v673CL | גישה</title>
+<title>Reports_Workers v674CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v673CL</span>
+      <span class="topbar-title">Reports_Workers v674CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -5317,7 +5317,8 @@ window.wdwReportDonorRender = function(){
       html += '<tr style="background:#f9fafb;"><td style="padding:6px 10px;border:1px solid #e5e7eb;font-size:10px;color:#6b7280;">ILS</td>';
       months.forEach(function(m){
         var active = (!w.startMonth||m>=w.startMonth) && (!w.endMonth||m<=w.endMonth);
-        var pct = active ? (parseFloat(w.value||0)+parseFloat(w.replacesPct||0)+(w.extraReplaces||[]).reduce(function(s,r){return s+(parseFloat(r.pct)||0);},0))/100 : 0;
+        var _bpct=active?(typeof window.wdwBasePct==='function'?window.wdwBasePct(w,m):parseFloat(w.value||0)):0;
+        var pct = active ? (_bpct+parseFloat(w.replacesPct||0)+(w.extraReplaces||[]).reduce(function(s,r){return s+(parseFloat(r.pct)||0);},0))/100 : 0;
         var amt = cost>0 ? Math.round(cost/12*pct) : 0;
         if(active) totalAmt+=amt;
         html += '<td style="padding:6px 4px;text-align:center;border:1px solid #e5e7eb;font-size:10px;'+(amt===0&&active?'background:#fff8e1;color:#e65100;':'')+'">'+(active?(amt||'0'):'—')+'</td>';
@@ -8725,7 +8726,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v673CL | גישה</title>
+<title>Reports_Workers v674CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8986,7 +8987,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v673CL</span>
+      <span class="topbar-title">Reports_Workers v674CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
