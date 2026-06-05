@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v679CL | גישה</title>
+<title>Reports_Workers v680CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v679CL</span>
+      <span class="topbar-title">Reports_Workers v680CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1820,11 +1820,13 @@ function wdwStatusColor(status){
 
 function wdwCheckEnded(){
   const today=new Date().toISOString().substring(0,7);
+  let changed=false;
   (S.wdw.donors||[]).forEach(d=>{
     if(d.status===WDW_STATUS.ACTIVE||d.status===WDW_STATUS.PENDING){
-      if(d.endDate&&d.endDate<today) d.status=WDW_STATUS.ENDED;
+      if(d.endDate&&d.endDate<today){ d.status=WDW_STATUS.ENDED; changed=true; }
     }
   });
+  if(changed && typeof saveLocally==='function'){ saveLocally(); if(typeof saveData==='function') saveData(); }
 }
 
 
@@ -8730,7 +8732,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v679CL | גישה</title>
+<title>Reports_Workers v680CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8991,7 +8993,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v679CL</span>
+      <span class="topbar-title">Reports_Workers v680CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -10440,11 +10442,13 @@ function wdwStatusColor(status){
 
 function wdwCheckEnded(){
   const today=new Date().toISOString().substring(0,7);
+  let changed=false;
   (S.wdw.donors||[]).forEach(d=>{
     if(d.status===WDW_STATUS.ACTIVE||d.status===WDW_STATUS.PENDING){
-      if(d.endDate&&d.endDate<today) d.status=WDW_STATUS.ENDED;
+      if(d.endDate&&d.endDate<today){ d.status=WDW_STATUS.ENDED; changed=true; }
     }
   });
+  if(changed && typeof saveLocally==='function'){ saveLocally(); if(typeof saveData==='function') saveData(); }
 }
 
 
