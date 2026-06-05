@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v682CL | גישה</title>
+<title>Reports_Workers v683CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v682CL</span>
+      <span class="topbar-title">Reports_Workers v683CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -6897,7 +6897,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function workerTotal(n,m){if(typeof window.getWorkerFundingPct==='function')return window.getWorkerFundingPct(n,m,'monthly');return workerRows(n,m).reduce(function(s,r){return s+rowPct(r.worker,m);},0);}
   function daysUntilEnd(d){var en=String(d.endDate||'').substring(0,7);if(!en)return null;var a=en.match(/^(\d{4})-(\d{2})/);if(!a)return null;var end=new Date(+a[1],+a[2],0);var today=new Date();return Math.ceil((end-today)/(1000*60*60*24));}
   function endingSoon(d){var x=daysUntilEnd(d);return x!==null&&x>=0&&x<=90;}
-  function statusChip(d,m){var cls=activeDonor(d,m)?'ok':'gray';var txt=activeDonor(d,m)?'פעיל':'לא פעיל';if(d.status==='review'){cls='info';txt='בבחינה';} if(d.status==='pending'){cls='warn';txt='ממתין';} return '<span class="org250-chip '+cls+'">'+txt+'</span>';}
+  function statusChip(d,m){var now=new Date();var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1));var isEnded=(d.endDate&&String(d.endDate).substring(0,7)<curM)||d.status==='ended';var cls=isEnded?'gray':activeDonor(d,m)?'ok':'gray';var txt=isEnded?'הסתיים':activeDonor(d,m)?'פעיל':'לא פעיל';if(!isEnded&&d.status==='review'){cls='info';txt='בבחינה';}if(!isEnded&&d.status==='pending'){cls='warn';txt='ממתין';}return '<span class="org250-chip '+cls+'">'+txt+'</span>';}
   function range(d){return fmtMonth(d.startDate)+' — '+fmtMonth(d.endDate);}
   function kpis(m){var activeD=donorList().filter(function(d){return activeDonor(d,m);});var assigned=0,over=0,near=0,ending=0,repls=0;officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>0)assigned++;if(t>100)over++;else if(t>=90)near++;});activeD.forEach(function(d){if(endingSoon(d))ending++;(d.workers||[]).forEach(function(w){if(inRange(w,m)&&replPct(w,m)>0)repls++;});});return '<div class="org250-kpis">'+
     '<div class="org250-kpi"><div class="lbl">תורמים פעילים</div><div class="num">'+activeD.length+'</div><div class="note">בחודש התצוגה</div></div>'+ 
@@ -6981,7 +6981,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function exceptionWorkersForDonor(d,m){var out=[];donorWorkers(d,m).forEach(function(w){var t=workerTotal(w.name,m);if(t>=90)out.push({name:w.name,total:t});});out.sort(function(a,b){return b.total-a.total;});return out;}
   function daysUntilEnd(d){var en=String(d.endDate||'').substring(0,7);if(!en)return null;var a=en.match(/^(\d{4})-(\d{2})/);if(!a)return null;var end=new Date(+a[1],+a[2],0);var today=new Date();return Math.ceil((end-today)/(1000*60*60*24));}
   function endingSoon(d){var x=daysUntilEnd(d);return x!==null&&x>=0&&x<=90;}
-  function statusChip(d,m){var cls=activeDonor(d,m)?'ok':'gray';var txt=activeDonor(d,m)?'פעיל':'לא פעיל';if(d.status==='review'){cls='info';txt='בבחינה';}if(d.status==='pending'){cls='warn';txt='ממתין';}return '<span class="org251-chip '+cls+'">'+txt+'</span>';}
+  function statusChip(d,m){var now=new Date();var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1));var isEnded=(d.endDate&&String(d.endDate).substring(0,7)<curM)||d.status==='ended';var cls=isEnded?'gray':activeDonor(d,m)?'ok':'gray';var txt=isEnded?'הסתיים':activeDonor(d,m)?'פעיל':'לא פעיל';if(!isEnded&&d.status==='review'){cls='info';txt='בבחינה';}if(!isEnded&&d.status==='pending'){cls='warn';txt='ממתין';}return '<span class="org251-chip '+cls+'">'+txt+'</span>';}
   function typeLabel(d){return d.type==='core'?'CORE':'BUDGET';}
   function range(d){return fmtMonth(d.startDate)+' — '+fmtMonth(d.endDate);}
   function kpis(m){var activeD=donors().filter(function(d){return activeDonor(d,m);});var assigned=0,over=0,near=0,ending=0,repls=0;officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>0)assigned++;if(t>100)over++;else if(t>=90)near++;});activeD.forEach(function(d){if(endingSoon(d))ending++;donorWorkers(d,m).forEach(function(w){if(replPct(w,m)>0)repls++;});});return '<div class="org251-kpis">'+
@@ -8733,7 +8733,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v682CL | גישה</title>
+<title>Reports_Workers v683CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8994,7 +8994,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v682CL</span>
+      <span class="topbar-title">Reports_Workers v683CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -15406,7 +15406,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function workerTotal(n,m){if(typeof window.getWorkerFundingPct==='function')return window.getWorkerFundingPct(n,m,'monthly');return workerRows(n,m).reduce(function(s,r){return s+rowPct(r.worker,m);},0);}
   function daysUntilEnd(d){var en=String(d.endDate||'').substring(0,7);if(!en)return null;var a=en.match(/^(\d{4})-(\d{2})/);if(!a)return null;var end=new Date(+a[1],+a[2],0);var today=new Date();return Math.ceil((end-today)/(1000*60*60*24));}
   function endingSoon(d){var x=daysUntilEnd(d);return x!==null&&x>=0&&x<=90;}
-  function statusChip(d,m){var cls=activeDonor(d,m)?'ok':'gray';var txt=activeDonor(d,m)?'פעיל':'לא פעיל';if(d.status==='review'){cls='info';txt='בבחינה';} if(d.status==='pending'){cls='warn';txt='ממתין';} return '<span class="org250-chip '+cls+'">'+txt+'</span>';}
+  function statusChip(d,m){var now=new Date();var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1));var isEnded=(d.endDate&&String(d.endDate).substring(0,7)<curM)||d.status==='ended';var cls=isEnded?'gray':activeDonor(d,m)?'ok':'gray';var txt=isEnded?'הסתיים':activeDonor(d,m)?'פעיל':'לא פעיל';if(!isEnded&&d.status==='review'){cls='info';txt='בבחינה';}if(!isEnded&&d.status==='pending'){cls='warn';txt='ממתין';}return '<span class="org250-chip '+cls+'">'+txt+'</span>';}
   function range(d){return fmtMonth(d.startDate)+' — '+fmtMonth(d.endDate);}
   function kpis(m){var activeD=donorList().filter(function(d){return activeDonor(d,m);});var assigned=0,over=0,near=0,ending=0,repls=0;officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>0)assigned++;if(t>100)over++;else if(t>=90)near++;});activeD.forEach(function(d){if(endingSoon(d))ending++;(d.workers||[]).forEach(function(w){if(inRange(w,m)&&replPct(w,m)>0)repls++;});});return '<div class="org250-kpis">'+
     '<div class="org250-kpi"><div class="lbl">תורמים פעילים</div><div class="num">'+activeD.length+'</div><div class="note">בחודש התצוגה</div></div>'+ 
@@ -15490,7 +15490,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function exceptionWorkersForDonor(d,m){var out=[];donorWorkers(d,m).forEach(function(w){var t=workerTotal(w.name,m);if(t>=90)out.push({name:w.name,total:t});});out.sort(function(a,b){return b.total-a.total;});return out;}
   function daysUntilEnd(d){var en=String(d.endDate||'').substring(0,7);if(!en)return null;var a=en.match(/^(\d{4})-(\d{2})/);if(!a)return null;var end=new Date(+a[1],+a[2],0);var today=new Date();return Math.ceil((end-today)/(1000*60*60*24));}
   function endingSoon(d){var x=daysUntilEnd(d);return x!==null&&x>=0&&x<=90;}
-  function statusChip(d,m){var cls=activeDonor(d,m)?'ok':'gray';var txt=activeDonor(d,m)?'פעיל':'לא פעיל';if(d.status==='review'){cls='info';txt='בבחינה';}if(d.status==='pending'){cls='warn';txt='ממתין';}return '<span class="org251-chip '+cls+'">'+txt+'</span>';}
+  function statusChip(d,m){var now=new Date();var curM=(now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1));var isEnded=(d.endDate&&String(d.endDate).substring(0,7)<curM)||d.status==='ended';var cls=isEnded?'gray':activeDonor(d,m)?'ok':'gray';var txt=isEnded?'הסתיים':activeDonor(d,m)?'פעיל':'לא פעיל';if(!isEnded&&d.status==='review'){cls='info';txt='בבחינה';}if(!isEnded&&d.status==='pending'){cls='warn';txt='ממתין';}return '<span class="org251-chip '+cls+'">'+txt+'</span>';}
   function typeLabel(d){return d.type==='core'?'CORE':'BUDGET';}
   function range(d){return fmtMonth(d.startDate)+' — '+fmtMonth(d.endDate);}
   function kpis(m){var activeD=donors().filter(function(d){return activeDonor(d,m);});var assigned=0,over=0,near=0,ending=0,repls=0;officialWorkers(m).forEach(function(n){var t=workerTotal(n,m);if(t>0)assigned++;if(t>100)over++;else if(t>=90)near++;});activeD.forEach(function(d){if(endingSoon(d))ending++;(d.workers||[]).forEach(function(w){if((parseFloat(w.replacesPct)||0)>0)repls++;});});return '<div class="org251-kpis">'+
