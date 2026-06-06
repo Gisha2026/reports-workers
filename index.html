@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v708CH | גישה</title>
+<title>Reports_Workers v709CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v708CH</span>
+      <span class="topbar-title">Reports_Workers v709CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8803,7 +8803,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v708CH | גישה</title>
+<title>Reports_Workers v709CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9064,7 +9064,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v708CH</span>
+      <span class="topbar-title">Reports_Workers v709CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18261,5 +18261,129 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   window.wdwAnnualUtilizationPct = annualPctByAmounts;
 })();
 </script>
+
+
+<script id="v709CH-overfunding-popup-final-fix">
+(function(){
+  'use strict';
+  // v709CH: תיקון נקודתי למנגנון הפופ-אפ של מימון כפול חודשי/שנתי.
+  // לא משנה טבלאות, נתונים או חישובי תצוגה. רק מפעיל את ההתראה אחרי שמירה.
+  if(window.__v709OverfundingPopupInstalled) return;
+  window.__v709OverfundingPopupInstalled = true;
+
+  function n(v){
+    var x=parseFloat(String(v==null?'':v).replace(/,/g,''));
+    return isFinite(x)?x:0;
+  }
+  function getS(){ return window.S || (typeof S!=='undefined' ? S : null); }
+  function yearNow(){
+    var s=getS();
+    var y='';
+    try{
+      var el=document.querySelector('#wdw-monthlypct select, #wdw-reports select, #wdw-worker select, #wdw-donor select');
+      if(el && /^\d{4}$/.test(String(el.value||''))) y=String(el.value);
+    }catch(e){}
+    if(!y && s && s.wdw && s.wdw.viewMonth) y=String(s.wdw.viewMonth).substring(0,4);
+    if(!y && s && s.year) y=String(s.year);
+    if(!/^\d{4}$/.test(y)) y=String(new Date().getFullYear());
+    return y;
+  }
+  function ym(y,m){ return String(y)+'-'+String(m).padStart(2,'0'); }
+  function esc(s){
+    return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+  function officialNames(){
+    var s=getS(), map={};
+    try{ if(typeof window.wdwWorkersList==='function') window.wdwWorkersList().forEach(function(x){ if(x) map[String(x).trim()]=true; }); }catch(e){}
+    try{ ((s&&s.workers)||[]).forEach(function(w){ var nm=(w&&w.name)||w; if(nm) map[String(nm).trim()]=true; }); }catch(e){}
+    try{ (((s&&s.wdw&&s.wdw.donors)||[])).forEach(function(d){ ((d.workers)||[]).forEach(function(w){ if(w&&w.name) map[String(w.name).trim()]=true; }); }); }catch(e){}
+    return Object.keys(map).filter(Boolean).sort();
+  }
+  function pctMonthly(name,month){
+    var p=0;
+    try{
+      if(typeof window.getWorkerFundingPct==='function') p=n(window.getWorkerFundingPct(name,month,'monthly'));
+      else if(typeof window.wdwWorkerTotalPct==='function') p=n(window.wdwWorkerTotalPct(name,month));
+    }catch(e){ p=0; }
+    return Math.round(p*10)/10;
+  }
+  function pctAnnual(name,year){
+    var p=0;
+    try{
+      if(typeof window.getWorkerFundingPct==='function') p=n(window.getWorkerFundingPct(name,String(year)+'-01','annual'));
+      else if(typeof window.wdwAnnualUtilizationPct==='function') p=n(window.wdwAnnualUtilizationPct(name,year));
+    }catch(e){ p=0; }
+    if(!p){
+      var sum=0;
+      for(var i=1;i<=12;i++) sum+=pctMonthly(name,ym(year,i));
+      p=sum/12;
+    }
+    return Math.round(p*10)/10;
+  }
+  function buildMessage(year){
+    var names=officialNames();
+    var lines=[];
+    var any=false;
+    names.forEach(function(name){
+      for(var i=1;i<=12;i++){
+        var m=ym(year,i), p=pctMonthly(name,m);
+        if(p>100.0001){
+          if(!any){ lines.push('חריגה חודשית מעל 100%:'); any=true; }
+          lines.push('• '+name+' — '+m+' — '+p+'%');
+        }
+      }
+    });
+    var annualHeader=false;
+    names.forEach(function(name){
+      var p=pctAnnual(name,year);
+      if(p>100.0001){
+        if(!annualHeader){ if(lines.length) lines.push(''); lines.push('חריגה שנתית מעל 100%:'); annualHeader=true; }
+        lines.push('• '+year+' — '+name+' — '+p+'%');
+      }
+    });
+    if(!lines.length) return '';
+    lines.push('');
+    lines.push('השמירה לא נחסמה. בדוק את ההקצאות.');
+    return lines.join('\n');
+  }
+  function show(msg){
+    if(!msg) return;
+    if(typeof window.v602ShowOverfundingModal==='function'){
+      window.v602ShowOverfundingModal(msg);
+      return;
+    }
+    alert(msg);
+  }
+  window.v709CheckOverfundingAndPopup=function(){
+    var msg=buildMessage(yearNow());
+    if(msg) show(msg);
+  };
+  function wrapSave(){
+    var orig=window.saveData;
+    if(typeof orig!=='function' || orig.__v709OverfundingWrapped) return;
+    window.saveData=function(){
+      var r=orig.apply(this,arguments);
+      try{ setTimeout(window.v709CheckOverfundingAndPopup,180); }catch(e){ console.warn('v709 overfunding popup failed',e); }
+      return r;
+    };
+    window.saveData.__v709OverfundingWrapped=true;
+  }
+  function wrapLocalSave(){
+    var orig=window.saveLocally;
+    if(typeof orig!=='function' || orig.__v709OverfundingWrapped) return;
+    window.saveLocally=function(){
+      var r=orig.apply(this,arguments);
+      try{ setTimeout(window.v709CheckOverfundingAndPopup,220); }catch(e){}
+      return r;
+    };
+    window.saveLocally.__v709OverfundingWrapped=true;
+  }
+  function install(){ wrapSave(); wrapLocalSave(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install); else install();
+  setTimeout(install,500);
+  setTimeout(install,1500);
+})();
+</script>
+
 </body>
 </html>
