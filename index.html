@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v695CH | גישה</title>
+<title>Reports_Workers v696CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v695CH</span>
+      <span class="topbar-title">Reports_Workers v696CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8721,6 +8721,124 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 };
 </script>
 
+
+
+<script id="v696CH-unified-annual-percent-by-amount-rule">
+/*
+  v696CH — כלל אחוז שנתי אחיד בכל מסך עובדים:
+  אחוז שנתי של עובד בתורם = סכום שנתי שחושב לעובד בתורם / עלות מעביד שנתית של העובד.
+  החישוב נעשה מסכומי החודשים בפועל, ולכן תורם שהסתיים נספר רק בחודשים שבהם היה פעיל,
+  בלי לשנות נתונים ידנית ובלי להבדיל בין תורם פעיל לתורם שהסתיים.
+*/
+(function(){
+  'use strict';
+  function Sref(){ return window.S || (typeof S!=='undefined'?S:null); }
+  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+  function norm(x){return String(x||'').trim().replace(/\s+/g,' ');}
+  function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
+  function pct(v){v=n(v);var r=Math.round(v*10)/10;return (Math.abs(r-Math.round(r))<0.0001?String(Math.round(r)):String(r))+'%';}
+  function money(v){return Math.round(n(v)).toLocaleString('he-IL');}
+  function monthKey(year,mi){return String(year)+'-'+String(mi).padStart(2,'0');}
+  function selectedMonth(){var _S=Sref();return (_S&&_S.wdw&&_S.wdw.viewMonth)||((_S&&_S.year)||new Date().getFullYear())+'-01';}
+  function selectedYear(){return String(selectedMonth()).substring(0,4);}
+  function allDonors(){var _S=Sref();return (_S&&_S.wdw&&Array.isArray(_S.wdw.donors))?_S.wdw.donors:[];}
+  function donorInactive(d){var st=String(d&&d.status||'').toLowerCase();return st==='inactive'||st==='לא פעיל';}
+  function officialWorkers(){var _S=Sref();return ((_S&&_S.workers)||[]).map(function(w){return w&&w.name;}).filter(Boolean);}
+  function officialWorkerObject(name){var _S=Sref();return ((_S&&_S.workers)||[]).find(function(w){return w&&norm(w.name)===norm(name);});}
+  function isFormerWorker(name){var w=officialWorkerObject(name);return !!(w&&(w.active===false||w.endDate||w.status==='ended'));}
+  function employerCost(name){
+    if(typeof window.wdwGetEmployerCostByName==='function') return n(window.wdwGetEmployerCostByName(name));
+    var _S=Sref(), costs=(_S&&_S.wdw&&_S.wdw.employerCosts)||{}, nm=norm(name);
+    var key=Object.keys(costs).find(function(k){return norm(k)===nm;});
+    return n(costs[nm]||costs[key]);
+  }
+  function calc(worker,donor,month){
+    if(typeof window.calcWorkerPct==='function') return window.calcWorkerPct({worker:worker,donor:donor},month)||{base:0,replacement:0,total:0};
+    return {base:0,replacement:0,total:0};
+  }
+  function amountFromPct(worker,pctVal){
+    var annual=employerCost(worker&&worker.name);
+    if(annual<=0) return 0;
+    return annual * n(pctVal) / 100 / 12;
+  }
+  function annualAmountForRow(worker,donor,year,part){
+    var sum=0;
+    for(var mi=1;mi<=12;mi++){
+      var c=calc(worker,donor,monthKey(year,mi));
+      var p=(part==='base')?c.base:(part==='repl'||part==='replacement')?c.replacement:c.total;
+      sum += amountFromPct(worker,p);
+    }
+    return sum;
+  }
+  function annualPctByAmountForRow(worker,donor,year,part){
+    var annual=employerCost(worker&&worker.name);
+    if(annual<=0) return 0;
+    return Math.round((annualAmountForRow(worker,donor,year,part)/annual*100)*10)/10;
+  }
+  function rowsForYear(workerName,year){
+    var out=[];
+    allDonors().forEach(function(d){
+      if(donorInactive(d)) return;
+      (d.workers||[]).forEach(function(w){
+        if(!w||norm(w.name)!==norm(workerName)) return;
+        var total=annualPctByAmountForRow(w,d,year,'total');
+        var annualAmount=annualAmountForRow(w,d,year,'total');
+        if(total>0 || annualAmount>0){
+          out.push({donor:d,worker:w,total:total,base:annualPctByAmountForRow(w,d,year,'base'),repl:annualPctByAmountForRow(w,d,year,'repl'),amount:annualAmount});
+        }
+      });
+    });
+    return out;
+  }
+  function workerAnnualTotal(workerName,year){
+    var sum=0; rowsForYear(workerName,year).forEach(function(r){sum+=r.total;});
+    return Math.round(sum*10)/10;
+  }
+  function workerAnnualAmount(workerName,year){
+    var sum=0; rowsForYear(workerName,year).forEach(function(r){sum+=r.amount;});
+    return Math.round(sum);
+  }
+  function workerReplacementCount(workerName,year){var cnt=0;rowsForYear(workerName,year).forEach(function(r){if(r.repl>0)cnt++;});return cnt;}
+  function rangeText(w){return esc((w&&w.startMonth||'')+' — '+(w&&w.endMonth||''));}
+  function replacementText(w){if(typeof window.wdwReplacementText==='function'){try{return window.wdwReplacementText(w)||'—';}catch(e){}}
+    if(w&&w.replaces)return w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces;return '—';}
+  function header(){var y=selectedYear();if(typeof window.wdwHeader==='function')return window.wdwHeader('WDW — עובדים','כלל אחיד: אחוז שנתי = סכום שנתי שחושב לעובד בתורם / עלות מעביד שנתית. שנת תצוגה: '+y);return '<div class="wdw-shell">';}
+  function kpis(){try{return typeof window.wdwKpis==='function'?window.wdwKpis():'';}catch(e){return '';}}
+
+  window.wdwAnnualPctByAmount=function(workerName,year){return workerAnnualTotal(workerName,year||selectedYear());};
+  window.getWorkerFundingPct=function(workerName,month,mode){
+    mode=mode||'monthly';
+    if(mode==='annual') return workerAnnualTotal(workerName,String(month||selectedYear()).substring(0,4));
+    if(typeof window.wdwWorkerTotalPct==='function') return window.wdwWorkerTotalPct(workerName,month);
+    return 0;
+  };
+
+  window.renderWDWWorker=function(){
+    var div=document.getElementById('wdw-worker'); if(!div) return;
+    var year=selectedYear();
+    var html=header()+kpis();
+    html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">עובדים</div><div class="wdw-panel-note">האחוז השנתי בכל שורה מחושב לפי סכום שנתי בפועל חלקי עלות מעביד שנתית.</div></div></div><div style="overflow-x:auto"><table class="v271-table"><thead><tr><th>שם</th><th>תקציב ₪</th><th>ניצול ₪</th><th>יתרה ₪</th><th>ניצול %</th><th>יתרה %</th><th>פרויקטים</th><th style="text-align:right">סטטוס</th><th style="text-align:right">מחליף</th></tr></thead><tbody>';
+    var names=officialWorkers(), activeNames=names.filter(function(name){return !isFormerWorker(name);}), formerNames=names.filter(function(name){return isFormerWorker(name);});
+    function employeeRow(name,i,former){
+      var rows=rowsForYear(name,year), annualBudget=employerCost(name), annualUsed=workerAnnualAmount(name,year);
+      var t=annualBudget>0?Math.round((annualUsed/annualBudget*100)*10)/10:workerAnnualTotal(name,year);
+      var free=Math.max(0,Math.round((100-t)*10)/10), annualFree=annualBudget>0?Math.round(annualBudget-annualUsed):0;
+      var detail=(former?'v696-former-':'v696-detail-')+i, rowCls=t>100?'over':t>=90?'near':'', usedCls=annualUsed===0?'v271-col-used zero':'v271-col-used', pctCls=t===0?'v271-col-pct-used zero':'v271-col-pct-used';
+      var replCount=workerReplacementCount(name,year), replBadge=replCount?'<span class="v271-badge-repl">מחליף '+replCount+'</span>':'<span class="v271-badge-none">אין</span>';
+      var statusBadge=former?'<span style="color:#e53935;font-size:11px;font-weight:600">סיום עבודה</span>':'<span style="color:#1B6B5A;font-size:11px;font-weight:600">פעיל</span>';
+      var out='<tr class="'+rowCls+'" style="cursor:pointer'+(former?';opacity:0.7':'')+'" onclick="var e=document.getElementById(\''+detail+'\');if(e)e.style.display=e.style.display===\'none\'?\'table-row\':\'none\'"><td class="v271-col-name">'+esc(name)+'</td><td class="v271-col-budget">'+(annualBudget>0?money(annualBudget):'—')+'</td><td class="'+usedCls+'">'+(annualBudget>0?money(annualUsed):'—')+'</td><td class="v271-col-remain">'+(annualBudget>0?money(annualFree):'—')+'</td><td class="'+pctCls+'">'+pct(t)+'</td><td class="v271-col-pct-free">'+pct(free)+'</td><td class="v271-col-proj">'+rows.length+'</td><td>'+statusBadge+'</td><td class="v271-col-repl" style="text-align:right">'+replBadge+'</td></tr>';
+      out+='<tr id="'+detail+'" style="display:none"><td colspan="9" style="padding:0"><div class="v271-detail"><table class="wdw-table"><thead><tr><th>תורם / פרויקט</th><th class="wdw-num">סכום שנתי ₪</th><th class="wdw-num">בסיס שנתי</th><th class="wdw-num">החלפה שנתית</th><th class="wdw-num">סה״כ שנתי</th><th>מחליף את</th><th>תקופה</th></tr></thead><tbody>';
+      if(!rows.length) out+='<tr><td colspan="7" style="text-align:center!important;color:#94a3b8">אין שיוכים בשנה זו</td></tr>';
+      rows.forEach(function(r){out+='<tr><td><b>'+esc(r.donor.name||'')+'</b><div class="wdw-muted">'+esc(r.donor.code||'')+'</div></td><td class="wdw-num">'+money(r.amount)+'</td><td class="wdw-num">'+pct(r.base)+'</td><td class="wdw-num">'+pct(r.repl)+'</td><td class="wdw-num"><b>'+pct(r.total)+'</b></td><td>'+esc(replacementText(r.worker))+'</td><td>'+rangeText(r.worker)+'</td></tr>';});
+      out+='</tbody></table></div></td></tr>'; return out;
+    }
+    activeNames.forEach(function(name,i){html+=employeeRow(name,i,false);});
+    if(formerNames.length){html+='<tr><td colspan="9" style="padding:8px 14px;background:#f8fafc;color:#64748b;font-size:12px;font-weight:600;border-top:2px solid #e5e7eb">עובדים לשעבר</td></tr>'; formerNames.forEach(function(name,i){html+=employeeRow(name,i,true);});}
+    html+='</tbody></table></div></div></div>'; div.innerHTML=html;
+  };
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -8734,7 +8852,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v695CH | גישה</title>
+<title>Reports_Workers v696CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8995,7 +9113,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v695CH</span>
+      <span class="topbar-title">Reports_Workers v696CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18326,6 +18444,124 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     activeNames.forEach(function(name,i){html+=employeeRow(name,i,false);});
     if(formerNames.length){html+='<tr><td colspan="9" style="padding:8px 14px;background:#f8fafc;color:#64748b;font-size:12px;font-weight:600;border-top:2px solid #e5e7eb">עובדים לשעבר</td></tr>';formerNames.forEach(function(name,i){html+=employeeRow(name,i,true);});}
     html+='</tbody></table></div></div></div>';div.innerHTML=html;
+  };
+})();
+</script>
+
+
+
+<script id="v696CH-unified-annual-percent-by-amount-rule">
+/*
+  v696CH — כלל אחוז שנתי אחיד בכל מסך עובדים:
+  אחוז שנתי של עובד בתורם = סכום שנתי שחושב לעובד בתורם / עלות מעביד שנתית של העובד.
+  החישוב נעשה מסכומי החודשים בפועל, ולכן תורם שהסתיים נספר רק בחודשים שבהם היה פעיל,
+  בלי לשנות נתונים ידנית ובלי להבדיל בין תורם פעיל לתורם שהסתיים.
+*/
+(function(){
+  'use strict';
+  function Sref(){ return window.S || (typeof S!=='undefined'?S:null); }
+  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+  function norm(x){return String(x||'').trim().replace(/\s+/g,' ');}
+  function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
+  function pct(v){v=n(v);var r=Math.round(v*10)/10;return (Math.abs(r-Math.round(r))<0.0001?String(Math.round(r)):String(r))+'%';}
+  function money(v){return Math.round(n(v)).toLocaleString('he-IL');}
+  function monthKey(year,mi){return String(year)+'-'+String(mi).padStart(2,'0');}
+  function selectedMonth(){var _S=Sref();return (_S&&_S.wdw&&_S.wdw.viewMonth)||((_S&&_S.year)||new Date().getFullYear())+'-01';}
+  function selectedYear(){return String(selectedMonth()).substring(0,4);}
+  function allDonors(){var _S=Sref();return (_S&&_S.wdw&&Array.isArray(_S.wdw.donors))?_S.wdw.donors:[];}
+  function donorInactive(d){var st=String(d&&d.status||'').toLowerCase();return st==='inactive'||st==='לא פעיל';}
+  function officialWorkers(){var _S=Sref();return ((_S&&_S.workers)||[]).map(function(w){return w&&w.name;}).filter(Boolean);}
+  function officialWorkerObject(name){var _S=Sref();return ((_S&&_S.workers)||[]).find(function(w){return w&&norm(w.name)===norm(name);});}
+  function isFormerWorker(name){var w=officialWorkerObject(name);return !!(w&&(w.active===false||w.endDate||w.status==='ended'));}
+  function employerCost(name){
+    if(typeof window.wdwGetEmployerCostByName==='function') return n(window.wdwGetEmployerCostByName(name));
+    var _S=Sref(), costs=(_S&&_S.wdw&&_S.wdw.employerCosts)||{}, nm=norm(name);
+    var key=Object.keys(costs).find(function(k){return norm(k)===nm;});
+    return n(costs[nm]||costs[key]);
+  }
+  function calc(worker,donor,month){
+    if(typeof window.calcWorkerPct==='function') return window.calcWorkerPct({worker:worker,donor:donor},month)||{base:0,replacement:0,total:0};
+    return {base:0,replacement:0,total:0};
+  }
+  function amountFromPct(worker,pctVal){
+    var annual=employerCost(worker&&worker.name);
+    if(annual<=0) return 0;
+    return annual * n(pctVal) / 100 / 12;
+  }
+  function annualAmountForRow(worker,donor,year,part){
+    var sum=0;
+    for(var mi=1;mi<=12;mi++){
+      var c=calc(worker,donor,monthKey(year,mi));
+      var p=(part==='base')?c.base:(part==='repl'||part==='replacement')?c.replacement:c.total;
+      sum += amountFromPct(worker,p);
+    }
+    return sum;
+  }
+  function annualPctByAmountForRow(worker,donor,year,part){
+    var annual=employerCost(worker&&worker.name);
+    if(annual<=0) return 0;
+    return Math.round((annualAmountForRow(worker,donor,year,part)/annual*100)*10)/10;
+  }
+  function rowsForYear(workerName,year){
+    var out=[];
+    allDonors().forEach(function(d){
+      if(donorInactive(d)) return;
+      (d.workers||[]).forEach(function(w){
+        if(!w||norm(w.name)!==norm(workerName)) return;
+        var total=annualPctByAmountForRow(w,d,year,'total');
+        var annualAmount=annualAmountForRow(w,d,year,'total');
+        if(total>0 || annualAmount>0){
+          out.push({donor:d,worker:w,total:total,base:annualPctByAmountForRow(w,d,year,'base'),repl:annualPctByAmountForRow(w,d,year,'repl'),amount:annualAmount});
+        }
+      });
+    });
+    return out;
+  }
+  function workerAnnualTotal(workerName,year){
+    var sum=0; rowsForYear(workerName,year).forEach(function(r){sum+=r.total;});
+    return Math.round(sum*10)/10;
+  }
+  function workerAnnualAmount(workerName,year){
+    var sum=0; rowsForYear(workerName,year).forEach(function(r){sum+=r.amount;});
+    return Math.round(sum);
+  }
+  function workerReplacementCount(workerName,year){var cnt=0;rowsForYear(workerName,year).forEach(function(r){if(r.repl>0)cnt++;});return cnt;}
+  function rangeText(w){return esc((w&&w.startMonth||'')+' — '+(w&&w.endMonth||''));}
+  function replacementText(w){if(typeof window.wdwReplacementText==='function'){try{return window.wdwReplacementText(w)||'—';}catch(e){}}
+    if(w&&w.replaces)return w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):w.replaces;return '—';}
+  function header(){var y=selectedYear();if(typeof window.wdwHeader==='function')return window.wdwHeader('WDW — עובדים','כלל אחיד: אחוז שנתי = סכום שנתי שחושב לעובד בתורם / עלות מעביד שנתית. שנת תצוגה: '+y);return '<div class="wdw-shell">';}
+  function kpis(){try{return typeof window.wdwKpis==='function'?window.wdwKpis():'';}catch(e){return '';}}
+
+  window.wdwAnnualPctByAmount=function(workerName,year){return workerAnnualTotal(workerName,year||selectedYear());};
+  window.getWorkerFundingPct=function(workerName,month,mode){
+    mode=mode||'monthly';
+    if(mode==='annual') return workerAnnualTotal(workerName,String(month||selectedYear()).substring(0,4));
+    if(typeof window.wdwWorkerTotalPct==='function') return window.wdwWorkerTotalPct(workerName,month);
+    return 0;
+  };
+
+  window.renderWDWWorker=function(){
+    var div=document.getElementById('wdw-worker'); if(!div) return;
+    var year=selectedYear();
+    var html=header()+kpis();
+    html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">עובדים</div><div class="wdw-panel-note">האחוז השנתי בכל שורה מחושב לפי סכום שנתי בפועל חלקי עלות מעביד שנתית.</div></div></div><div style="overflow-x:auto"><table class="v271-table"><thead><tr><th>שם</th><th>תקציב ₪</th><th>ניצול ₪</th><th>יתרה ₪</th><th>ניצול %</th><th>יתרה %</th><th>פרויקטים</th><th style="text-align:right">סטטוס</th><th style="text-align:right">מחליף</th></tr></thead><tbody>';
+    var names=officialWorkers(), activeNames=names.filter(function(name){return !isFormerWorker(name);}), formerNames=names.filter(function(name){return isFormerWorker(name);});
+    function employeeRow(name,i,former){
+      var rows=rowsForYear(name,year), annualBudget=employerCost(name), annualUsed=workerAnnualAmount(name,year);
+      var t=annualBudget>0?Math.round((annualUsed/annualBudget*100)*10)/10:workerAnnualTotal(name,year);
+      var free=Math.max(0,Math.round((100-t)*10)/10), annualFree=annualBudget>0?Math.round(annualBudget-annualUsed):0;
+      var detail=(former?'v696-former-':'v696-detail-')+i, rowCls=t>100?'over':t>=90?'near':'', usedCls=annualUsed===0?'v271-col-used zero':'v271-col-used', pctCls=t===0?'v271-col-pct-used zero':'v271-col-pct-used';
+      var replCount=workerReplacementCount(name,year), replBadge=replCount?'<span class="v271-badge-repl">מחליף '+replCount+'</span>':'<span class="v271-badge-none">אין</span>';
+      var statusBadge=former?'<span style="color:#e53935;font-size:11px;font-weight:600">סיום עבודה</span>':'<span style="color:#1B6B5A;font-size:11px;font-weight:600">פעיל</span>';
+      var out='<tr class="'+rowCls+'" style="cursor:pointer'+(former?';opacity:0.7':'')+'" onclick="var e=document.getElementById(\''+detail+'\');if(e)e.style.display=e.style.display===\'none\'?\'table-row\':\'none\'"><td class="v271-col-name">'+esc(name)+'</td><td class="v271-col-budget">'+(annualBudget>0?money(annualBudget):'—')+'</td><td class="'+usedCls+'">'+(annualBudget>0?money(annualUsed):'—')+'</td><td class="v271-col-remain">'+(annualBudget>0?money(annualFree):'—')+'</td><td class="'+pctCls+'">'+pct(t)+'</td><td class="v271-col-pct-free">'+pct(free)+'</td><td class="v271-col-proj">'+rows.length+'</td><td>'+statusBadge+'</td><td class="v271-col-repl" style="text-align:right">'+replBadge+'</td></tr>';
+      out+='<tr id="'+detail+'" style="display:none"><td colspan="9" style="padding:0"><div class="v271-detail"><table class="wdw-table"><thead><tr><th>תורם / פרויקט</th><th class="wdw-num">סכום שנתי ₪</th><th class="wdw-num">בסיס שנתי</th><th class="wdw-num">החלפה שנתית</th><th class="wdw-num">סה״כ שנתי</th><th>מחליף את</th><th>תקופה</th></tr></thead><tbody>';
+      if(!rows.length) out+='<tr><td colspan="7" style="text-align:center!important;color:#94a3b8">אין שיוכים בשנה זו</td></tr>';
+      rows.forEach(function(r){out+='<tr><td><b>'+esc(r.donor.name||'')+'</b><div class="wdw-muted">'+esc(r.donor.code||'')+'</div></td><td class="wdw-num">'+money(r.amount)+'</td><td class="wdw-num">'+pct(r.base)+'</td><td class="wdw-num">'+pct(r.repl)+'</td><td class="wdw-num"><b>'+pct(r.total)+'</b></td><td>'+esc(replacementText(r.worker))+'</td><td>'+rangeText(r.worker)+'</td></tr>';});
+      out+='</tbody></table></div></td></tr>'; return out;
+    }
+    activeNames.forEach(function(name,i){html+=employeeRow(name,i,false);});
+    if(formerNames.length){html+='<tr><td colspan="9" style="padding:8px 14px;background:#f8fafc;color:#64748b;font-size:12px;font-weight:600;border-top:2px solid #e5e7eb">עובדים לשעבר</td></tr>'; formerNames.forEach(function(name,i){html+=employeeRow(name,i,true);});}
+    html+='</tbody></table></div></div></div>'; div.innerHTML=html;
   };
 })();
 </script>
