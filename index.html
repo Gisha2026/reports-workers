@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v705CH | גישה</title>
+<title>Reports_Workers v707CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v705CH</span>
+      <span class="topbar-title">Reports_Workers v707CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8793,7 +8793,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v705CH | גישה</title>
+<title>Reports_Workers v707CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9054,7 +9054,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v705CH</span>
+      <span class="topbar-title">Reports_Workers v707CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18195,5 +18195,61 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 })();
 </script>
 
+
+
+<script id="v707CH-annual-utilization-only-patch">
+(function(){
+  // v707CH: תיקון חישוב ניצול שנתי בלבד, ללא שינוי נתונים/טבלאות/עיצוב.
+  var previousGetWorkerFundingPct = window.getWorkerFundingPct;
+  function n(v){ v=parseFloat(String(v==null?'':v).replace(/,/g,'')); return isFinite(v)?v:0; }
+  function norm(s){ return String(s||'').trim(); }
+  function getS(){ return window.S || (typeof S!=='undefined' ? S : null); }
+  function employerCostAnnual(name){
+    var s=getS(); if(!s||!s.wdw) return 0;
+    if(typeof window.wdwGetEmployerCostByName==='function'){
+      var c=n(window.wdwGetEmployerCostByName(name));
+      if(c>0) return c;
+    }
+    var key=norm(name);
+    var ec=s.wdw.employerCosts||{};
+    var b=s.wdw.budget||{};
+    // בגרסאות הקיימות תקציב/עלות מעביד נשמרים בשדות שונים; לא מוחקים ולא מעבירים נתונים.
+    var v=n(ec[key]); if(v>0) return v;
+    v=n(b[key]); if(v>0) return v;
+    return 0;
+  }
+  function ym(y,m){ return String(y)+'-'+String(m).padStart(2,'0'); }
+  function monthlyPct(name,month){
+    if(typeof previousGetWorkerFundingPct==='function'){
+      return n(previousGetWorkerFundingPct(name, month, 'monthly'));
+    }
+    if(typeof window.wdwWorkerTotalPct==='function'){
+      return n(window.wdwWorkerTotalPct(name, month));
+    }
+    return 0;
+  }
+  function annualPctByAmounts(name,year){
+    var annualCost=employerCostAnnual(name);
+    if(annualCost<=0) return 0;
+    var monthlyCost=annualCost/12;
+    var used=0;
+    for(var i=1;i<=12;i++){
+      used += monthlyCost * monthlyPct(name, ym(year,i)) / 100;
+    }
+    return Math.round((used/annualCost*100)*10)/10;
+  }
+  window.getWorkerFundingPct=function(workerName, month, mode){
+    if(mode==='annual'){
+      var y=month ? String(month).substring(0,4) : String((getS()&&getS().year)||new Date().getFullYear());
+      return annualPctByAmounts(workerName, y);
+    }
+    if(typeof previousGetWorkerFundingPct==='function'){
+      return previousGetWorkerFundingPct(workerName, month, mode||'monthly');
+    }
+    return 0;
+  };
+  window.wdwAnnualUtilizationPct = annualPctByAmounts;
+})();
+</script>
 </body>
 </html>
