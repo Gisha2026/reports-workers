@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v701CH | גישה</title>
+<title>Reports_Workers v702CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v701CH</span>
+      <span class="topbar-title">Reports_Workers v702CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8734,7 +8734,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v701CH | גישה</title>
+<title>Reports_Workers v702CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -8995,7 +8995,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v701CH</span>
+      <span class="topbar-title">Reports_Workers v702CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18292,28 +18292,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   function rowTotal(worker,donor,month){if(typeof window.calcWorkerPct==='function'){var r=window.calcWorkerPct({worker:worker,donor:donor},month)||{};return n(r.total);}return 0;}
   function rowBase(worker,donor,month){if(typeof window.calcWorkerPct==='function'){var r=window.calcWorkerPct({worker:worker,donor:donor},month)||{};return n(r.base);}return 0;}
   function rowRepl(worker,donor,month){if(typeof window.calcWorkerPct==='function'){var r=window.calcWorkerPct({worker:worker,donor:donor},month)||{};return n(r.replacement);}return 0;}
-  function annualAvgForRow(worker,donor,year,part){
-    /*
-      v701CH: כלל אחיד לאחוז שנתי.
-      אחוז שנתי של עובד בתורם = סכום שנתי שחושב לעובד בתורם / עלות מעביד שנתית של העובד.
-      אין שינוי UI: אותה טבלה, אותם טורים, רק דרך החישוב של האחוז השנתי.
-    */
-    var annualCost=employerCost(worker&&worker.name);
-    var monthlyCost=annualCost>0?annualCost/12:0;
-    var annualAmount=0, fallbackPctSum=0;
-    for(var mi=1;mi<=12;mi++){
-      var m=monthKey(year,mi);
-      var p=0;
-      if(part==='base')p=rowBase(worker,donor,m);
-      else if(part==='repl')p=rowRepl(worker,donor,m);
-      else p=rowTotal(worker,donor,m);
-      p=n(p);
-      fallbackPctSum+=p;
-      if(monthlyCost>0) annualAmount += (p/100)*monthlyCost;
-    }
-    if(annualCost>0) return Math.round((annualAmount/annualCost*100)*10)/10;
-    return Math.round((fallbackPctSum/12)*10)/10;
-  }
+  function annualAvgForRow(worker,donor,year,part){var sum=0;for(var mi=1;mi<=12;mi++){var m=monthKey(year,mi);if(part==='base')sum+=rowBase(worker,donor,m);else if(part==='repl')sum+=rowRepl(worker,donor,m);else sum+=rowTotal(worker,donor,m);}return Math.round((sum/12)*10)/10;}
   function rowsForYear(workerName,year){var out=[];allDonors().forEach(function(d){if(donorInactive(d))return;(d.workers||[]).forEach(function(w){if(!w||norm(w.name)!==norm(workerName))return;var total=annualAvgForRow(w,d,year,'total');if(total>0)out.push({donor:d,worker:w,total:total,base:annualAvgForRow(w,d,year,'base'),repl:annualAvgForRow(w,d,year,'repl')});});});return out;}
   function workerAnnualTotal(workerName,year){var sum=0;rowsForYear(workerName,year).forEach(function(r){sum+=r.total;});return Math.round(sum*10)/10;}
   function workerReplacementCount(workerName,year){var cnt=0;rowsForYear(workerName,year).forEach(function(r){if(r.repl>0)cnt++;});return cnt;}
