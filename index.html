@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v711CH | גישה</title>
+<title>Reports_Workers v712CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v711CH</span>
+      <span class="topbar-title">Reports_Workers v712CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1784,7 +1784,7 @@ function v449ToggleAnnualRow(id){
 
 // ===== WDW =====
 var WDW_WORKERS=['תניה','דווה','אדם','סתיו','מעיין','נעה','שי','ליטל','אסנת','סיגי','מוחמד','שאדי','סועאד','עלאא','לנא'];
-var WDW_FUNDING_TYPES=['אחוז קבוע','אחוז לתקופה','סכום חודשי','סכום לתקופה','גמיש','מוגבל מסגרת'];
+var WDW_FUNDING_TYPES=['אחוז קבוע לתקופה','אחוז גמיש','סכום לתקופה'];
 var WDW_STATUS={ACTIVE:'active',PENDING:'pending',INACTIVE:'inactive',ENDED:'ended'};
 let WDW_CREATING_DONOR=false;
 
@@ -8803,7 +8803,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v711CH | גישה</title>
+<title>Reports_Workers v712CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9064,7 +9064,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v711CH</span>
+      <span class="topbar-title">Reports_Workers v712CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -15918,7 +15918,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
     cell.classList.remove('v710-state-auto','v710-state-manual','v710-state-blocked');
     cell.classList.add('v710-state-'+state);
     var btn=cell.querySelector('.v710-state-btn');
-    if(btn)btn.textContent=state==='blocked'?'חסום':state==='manual'?'ידני':'רגיל';
+    if(btn)btn.textContent=state==='blocked'?'חסום':state==='manual'?'ידני':'לפי סוג מימון';
     var pct=cell.querySelector('.v710-percent-input'), amt=cell.querySelector('.v710-amount-input'), unit=cell.querySelector('.v710-unit');
     if(kind==='amount'){
       if(pct)pct.classList.add('v710-hidden');
@@ -15957,7 +15957,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
     if(!months.length) months=wdw710MonthRange(((window.S&&S.year)||new Date().getFullYear())+'-01',((window.S&&S.year)||new Date().getFullYear())+'-12');
     var blocked=Array.isArray(w.blockedMonths)?w.blockedMonths:[];
     var mp=w.monthlyPct||{}, fm=w.fixedMonths||{};
-    var h='<div class="v710-month-table" data-pfx="'+esc(p)+'"><div class="v710-month-help"><span class="v710-pill">רגיל = לפי ההגדרה למעלה</span><span class="v710-pill">ידני = ערך חודשי</span><span class="v710-pill">חסום = לא מחושב</span><span style="color:#64748b">לחיצה על מצב התא: רגיל → ידני → חסום → רגיל.</span></div>';
+    var h='<div class="v710-month-table" data-pfx="'+esc(p)+'"><div class="v710-month-help"><span class="v710-pill">לפי סוג מימון = ברירת המחדל</span><span class="v710-pill">ידני = ערך חודשי</span><span class="v710-pill">חסום = לא מחושב</span><span style="color:#64748b">לחיצה על מצב התא: לפי סוג מימון → ידני → חסום → לפי סוג מימון.</span></div>';
     var curYear='';
     months.forEach(function(mk){
       var y=mk.slice(0,4);
@@ -15967,8 +15967,8 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       var hasPct=Object.prototype.hasOwnProperty.call(mp,mk)&&String(mp[mk]).trim()!=='';
       var state=isBlocked?'blocked':(hasAmt||hasPct?'manual':'auto');
       h+='<div class="v710-month-cell v710-state-'+state+'" data-pfx="'+esc(p)+'" data-month="'+esc(mk)+'" data-state="'+state+'" data-kind="percent">'+
-        '<div class="v710-month-top"><span class="v710-month-name">'+esc(wdw710MonthName(mk))+'</span><button type="button" class="v710-state-btn" onclick="wdw710CycleMonthCell(this.parentNode.parentNode)">'+(state==='blocked'?'חסום':state==='manual'?'ידני':'רגיל')+'</button></div>'+
-        '<div class="v710-value-row"><span class="v710-unit">%</span><input class="v710-percent-input" id="'+esc(p)+'-mp-'+esc(mk)+'" type="number" step="0.01" value="'+esc(hasPct?mp[mk]:'')+'" placeholder="אוטומטי" oninput="wdw710SetManual(this)"><input class="v710-amount-input v710-hidden" id="'+esc(p)+'-fm-'+esc(mk)+'" type="number" step="0.01" value="'+esc(hasAmt?fm[mk]:'')+'" placeholder="אוטומטי" oninput="wdw710SetManual(this)"></div><div class="v710-blocked-label">חסום</div></div>';
+        '<div class="v710-month-top"><span class="v710-month-name">'+esc(wdw710MonthName(mk))+'</span><button type="button" class="v710-state-btn" onclick="wdw710CycleMonthCell(this.parentNode.parentNode)">'+(state==='blocked'?'חסום':state==='manual'?'ידני':'לפי סוג מימון')+'</button></div>'+
+        '<div class="v710-value-row"><span class="v710-unit">%</span><input class="v710-percent-input" id="'+esc(p)+'-mp-'+esc(mk)+'" type="number" step="0.01" value="'+esc(hasPct?mp[mk]:'')+'" placeholder="לפי סוג מימון" oninput="wdw710SetManual(this)"><input class="v710-amount-input v710-hidden" id="'+esc(p)+'-fm-'+esc(mk)+'" type="number" step="0.01" value="'+esc(hasAmt?fm[mk]:'')+'" placeholder="לפי סוג מימון" oninput="wdw710SetManual(this)"></div><div class="v710-blocked-label">חסום</div></div>';
     });
     if(curYear) h+='</div>';
     return h+'</div>';
@@ -16013,9 +16013,9 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       '<div class="v437-form-title"><b>'+title+'</b><span></span></div>'+
 
       '<div class="v439-section"><div class="v439-section-title">פרטי עובד ותפקיד</div><div class="v437-form-grid">'+
-        field('עובד','<select id="'+p+'-name" onchange="wdwUpdateWorkerCost(\''+p+'\')" ><option value="">בחר עובד</option>'+workerNames(w.name||'')+'</select><div id="'+p+'-cost" style="font-size:11px;color:#2E7D32;margin-top:2px">'+(w.name&&S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[w.name]?'עלות מעביד: ₪'+(parseFloat(S.wdw.employerCosts[w.name])||0).toLocaleString():'בחר עובד לצפייה בעלות מעביד')+'</div><input type="number" id="'+p+'-employer-cost" value="'+(w.name&&S.wdw&&S.wdw.employerCosts?parseFloat(S.wdw.employerCosts[w.name])||'':'')+'" placeholder="עלות מעביד שנתית ₪" style="margin-top:4px;padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;color:#1B5E20;background:#f1f8e9" readonly>')+
+        field('עובד','<select id="'+p+'-name" onchange="wdwUpdateWorkerCost(\''+p+'\')" >'+workerNames(w.name||'')+'</select><div id="'+p+'-cost" style="font-size:11px;color:#2E7D32;margin-top:2px">'+(w.name&&S.wdw&&S.wdw.employerCosts&&S.wdw.employerCosts[w.name]?'עלות מעביד: ₪'+(parseFloat(S.wdw.employerCosts[w.name])||0).toLocaleString():'בחר עובד לצפייה בעלות מעביד')+'</div><input type="number" id="'+p+'-employer-cost" value="'+(w.name&&S.wdw&&S.wdw.employerCosts?parseFloat(S.wdw.employerCosts[w.name])||'':'')+'" placeholder="עלות מעביד שנתית ₪" style="margin-top:4px;padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;color:#1B5E20;background:#f1f8e9" readonly>')+
         field('תפקיד בתרומה','<select id="'+p+'-role"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r){return '<option value="'+esc(r)+'" '+(w.roleInDonor===r?'selected':'')+'>'+esc(r)+'</option>';}).join(''))+'</select>')+
-        field('סוג מימון','<select id="'+p+'-funding"><option value="אחוז קבוע" '+((!w.fundingType||w.fundingType==='אחוז קבוע')?'selected':'')+'>אחוז קבוע</option><option value="אחוז לתקופה" '+(w.fundingType==='אחוז לתקופה'?'selected':'')+'>אחוז לתקופה</option><option value="סכום חודשי" '+(w.fundingType==='סכום חודשי'?'selected':'')+'>סכום חודשי</option><option value="סכום לתקופה" '+(w.fundingType==='סכום לתקופה'?'selected':'')+'>סכום לתקופה</option><option value="גמיש" '+(w.fundingType==='גמיש'?'selected':'')+'>גמיש</option><option value="מוגבל מסגרת" '+(w.fundingType==='מוגבל מסגרת'?'selected':'')+'>מוגבל מסגרת</option><option value="מט״ח" '+(w.fundingType==='מט״ח'?'selected':'')+'>מט״ח</option></select>')+
+        field('סוג מימון','<select id="'+p+'-funding">'+(function(ft){ft=String(ft||'');var isAmount=(ft==='סכום לתקופה'||ft==='סכום חודשי'||ft==='סכום קבוע'||ft==='amount'||w.valueType==='amount'||w.totalPeriodAmount);var isFlexible=(ft==='אחוז גמיש'||ft==='אחוז לתקופה'||ft==='גמיש'||ft==='מוגבל מסגרת');var isFixed=!isAmount&&!isFlexible;return '<option value="אחוז קבוע לתקופה" '+(isFixed?'selected':'')+'>אחוז קבוע לתקופה</option><option value="אחוז גמיש" '+(isFlexible?'selected':'')+'>אחוז גמיש</option><option value="סכום לתקופה" '+(isAmount?'selected':'')+'>סכום לתקופה</option>'; })(w.fundingType)+'</select>')+
       '</div></div>'+
 
       '<div class="v439-section"><div class="v439-section-title">מימון והקצאה</div><div class="v437-form-grid">'+
@@ -16075,13 +16075,19 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       amt=Math.round((w.fxAmount*w.fxRate/calcMonths(w.startMonth,w.endMonth))*100)/100;
       w.valueType='amount';
       w.value=amt;
-      w.fundingType='מט״ח';
+      w.fundingType='סכום לתקופה';
+    }else if(totalAmt!=null && totalAmt!==0){
+      w.valueType='amount';
+      w.value=amt||0;
+      w.fundingType='סכום לתקופה';
     }else if(amt!=null && amt!==0){
       w.valueType='amount';
       w.value=amt;
+      w.fundingType='סכום לתקופה';
     }else{
       w.valueType='percent';
       w.value=pct||0;
+      if(w.fundingType!=='אחוז גמיש') w.fundingType='אחוז קבוע לתקופה';
     }
     w.cap=num(p+'-cap',null);
     w.replaces=val(p+'-replaces','')||null;
