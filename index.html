@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v722CH | גישה</title>
+<title>Reports_Workers v723CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v722CH</span>
+      <span class="topbar-title">Reports_Workers v723CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8948,7 +8948,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v722CH | גישה</title>
+<title>Reports_Workers v723CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9209,7 +9209,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v722CH</span>
+      <span class="topbar-title">Reports_Workers v723CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -17643,6 +17643,7 @@ window.wdw447CloseDonorEdit=function(){
 
 
 <script id="v590CH-wdw-monthly-percent-unified">
+<!-- v723CH: monthly percent panel skips worker blockedMonths so blocked months display as empty/0, not base pct. -->
 (function(){
   'use strict';
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -17672,7 +17673,7 @@ window.wdw447CloseDonorEdit=function(){
     (w.extraReplaces||[]).forEach(function(r){var st=String(r.startMonth||r.replaceStartMonth||w.startMonth||'').substring(0,7), en=String(r.endMonth||r.replaceEndMonth||w.endMonth||'').substring(0,7);if((st&&m<st)||(en&&m>en))return;var pct=n(r.pct||r.percent||r.value);if(!pct)return;out.push({monthIndex:idx,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:(r.replaces==='__vacant__'&&r.vacantName)?r.vacantName:(r.role||r.vacantRole||allocRole(w)),pct:pct,kind:'החלפה',replaces:r.name||r.worker||r.vacantName||'',start:st,end:en});});
     return out;
   }
-  function collect(year){var _S=window.S||(typeof S!=='undefined'?S:null), donors=(_S&&_S.wdw&&Array.isArray(_S.wdw.donors))?_S.wdw.donors:[], out=[];donors.forEach(function(d){(d.workers||[]).forEach(function(w){if(!w||!w.name||w.active===false)return;for(var i=0;i<12;i++){var m=mk(year,i);if(!donorOk(d,m)||!inRange(w,m))continue;var bp=basePct(w,m);if(bp)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:baseRoleOf(w),pct:bp,kind:'בסיס',replaces:'',start:w.startMonth||d.startDate||'',end:w.endMonth||d.endDate||''});replacementRecords(w,d,m,i).forEach(function(r){out.push(r);});}});});return out;}
+  function collect(year){var _S=window.S||(typeof S!=='undefined'?S:null), donors=(_S&&_S.wdw&&Array.isArray(_S.wdw.donors))?_S.wdw.donors:[], out=[];donors.forEach(function(d){(d.workers||[]).forEach(function(w){if(!w||!w.name||w.active===false)return;for(var i=0;i<12;i++){var m=mk(year,i);if(!donorOk(d,m)||!inRange(w,m))continue;if(Array.isArray(w.blockedMonths)&&w.blockedMonths.indexOf(m)!==-1)continue;var bp=basePct(w,m);if(bp)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:baseRoleOf(w),pct:bp,kind:'בסיס',replaces:'',start:w.startMonth||d.startDate||'',end:w.endMonth||d.endDate||''});replacementRecords(w,d,m,i).forEach(function(r){out.push(r);});}});});return out;}
   function group(records,mode){var map={};records.forEach(function(r){var k=mode==='role'?((r.worker||'ללא עובד')+'|||'+(r.role||'ללא תפקיד')):(r.worker||'ללא עובד');var display=mode==='role'?(r.role||'ללא תפקיד'):(r.worker||'ללא עובד');if(!map[k])map[k]={name:display,months:Array(12).fill(0),details:Array.from({length:12},function(){return[]})};map[k].months[r.monthIndex]+=n(r.pct);map[k].details[r.monthIndex].push(r);});return Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return a.name.localeCompare(b.name,'he')});}
   window.v590ToggleMonthlyPct=window.v486ToggleMonthlyPct=function(id){var el=document.getElementById(id);if(el)el.style.display=el.style.display==='table-row'?'none':'table-row';};
   function detail(row){var dm={};row.details.forEach(function(list,mi){list.forEach(function(r){var k=(r.donor||'ללא תורם')+'||'+(r.project||'');if(!dm[k])dm[k]={donor:r.donor||'ללא תורם',project:r.project||'',months:Array(12).fill(0),notes:Array.from({length:12},function(){return[]})};dm[k].months[mi]+=n(r.pct);dm[k].notes[mi].push(r);});});var donors=Object.keys(dm).map(function(k){return dm[k]}).sort(function(a,b){return a.donor.localeCompare(b.donor,'he')});var h='<div class="v486-detail-box"><div class="v486-detail-title">'+esc(row.name)+' — פירוט לפי תורמים וחודשים</div><table class="v486-detail-matrix"><thead><tr><th>תורם / פרויקט</th>';for(var i=0;i<12;i++)h+='<th>'+esc(ml(i).slice(0,3))+'</th>';h+='</tr></thead><tbody>';if(!donors.length)h+='<tr><td colspan="13" class="v486-empty">אין פירוט</td></tr>';donors.forEach(function(d){h+='<tr><td class="v486-donor-name"><b>'+esc(d.donor)+'</b>'+(d.project?'<span>'+esc(d.project)+'</span>':'')+'</td>';d.months.forEach(function(v,mi){var title=(d.notes[mi]||[]).map(function(r){return (r.kind||'')+' '+fmt(r.pct)+(r.replaces?' | מחליף את: '+r.replaces:'')+' | '+(r.start||'—')+' עד '+(r.end||'—')}).join('\n');h+='<td class="v486-pct '+cls(v)+'" title="'+esc(title)+'">'+fmt(v)+'</td>';});h+='</tr>';});return h+'</tbody></table><div class="v486-detail-note">ריחוף על תא מציג בסיס/החלפה ותקופה.</div></div>';}
