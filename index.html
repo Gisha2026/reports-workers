@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v725CH | גישה</title>
+<title>Reports_Workers v726CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v725CH</span>
+      <span class="topbar-title">Reports_Workers v726CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8948,7 +8948,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v725CH | גישה</title>
+<title>Reports_Workers v726CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9209,7 +9209,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v725CH</span>
+      <span class="topbar-title">Reports_Workers v726CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16188,13 +16188,23 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       var en=wdw710YM((extra?r.endMonth:w.replaceEndMonth)||w.endMonth||d.endDate)||wdw710YM(w.endMonth)||wdw710YM(d.endDate)||(((window.S&&S.year)||new Date().getFullYear())+'-12');
       var months=wdw710MonthRange(st,en);
       if(!months.length) months=wdw710MonthRange(st,st);
+      // v726CH: תקופת ההחלפה היא התקופה הפעילה. רק חודשים שסומנו כאן במפורש הם חסומים.
       var blocked=Array.isArray(extra?r.blockedMonths:w.replaceBlockedMonths)?(extra?r.blockedMonths:w.replaceBlockedMonths):[];
       var baseId=extra?(p+'-extra-repblock-'+idx):(p+'-repblock');
-      var h='<div style="grid-column:1/-1;margin-top:8px;border:1px dashed #d0d5dd;border-radius:6px;padding:8px;background:#fafafa"><div style="font-size:11px;font-weight:700;color:#555;margin-bottom:6px">חודשים חסומים להחלפה</div><div style="display:flex;gap:6px;flex-wrap:wrap">';
+      var h='<div style="grid-column:1/-1;margin-top:8px;border:1px dashed #d0d5dd;border-radius:8px;padding:10px;background:#fbfdff">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+          '<div style="font-size:11px;font-weight:800;color:#334155">תקופת ההחלפה הפעילה</div>'+
+          '<div style="font-size:11px;color:#00897B;font-weight:700">'+esc(wdw710MonthName(st))+' — '+esc(wdw710MonthName(en))+'</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">';
       months.forEach(function(mk){
-        h+='<label style="display:flex;align-items:center;gap:3px;border:1px solid #e5e7eb;border-radius:5px;padding:4px 6px;background:white;font-size:11px"><input type="checkbox" class="v717-rep-block" data-prefix="'+esc(baseId)+'" data-month="'+esc(mk)+'" '+(blocked.indexOf(mk)!==-1?'checked':'')+'> '+esc(wdw710MonthName(mk))+'</label>';
+        h+='<span style="border:1px solid #bfdbfe;background:#eff6ff;color:#1e40af;border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700">'+esc(wdw710MonthName(mk))+'</span>';
       });
-      h+='</div><div style="font-size:10px;color:#777;margin-top:5px">חודש חסום לא יחושב בהחלפה זו בלבד.</div></div>';
+      h+='</div><div style="font-size:11px;font-weight:800;color:#555;margin-bottom:6px">חודשים חסומים בתוך תקופת ההחלפה בלבד</div><div style="display:flex;gap:6px;flex-wrap:wrap">';
+      months.forEach(function(mk){
+        h+='<label style="display:flex;align-items:center;gap:3px;border:1px solid #e5e7eb;border-radius:5px;padding:4px 6px;background:white;font-size:11px"><input type="checkbox" class="v717-rep-block" data-prefix="'+esc(baseId)+'" data-month="'+esc(mk)+'" '+(blocked.indexOf(mk)!==-1?'checked':'')+'> חסום '+esc(wdw710MonthName(mk))+'</label>';
+      });
+      h+='</div><div style="font-size:10px;color:#777;margin-top:5px">לא לסמן חודשים כדי שההחלפה תחושב בכל התקופה. סימון כאן יוצר חריג חסום בלבד.</div></div>';
       return h;
     }
     function replacementRow(prefix, r, idx, extra){
@@ -16209,12 +16219,12 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       var repVal=extra?(r.replaces||''):(w.replaces||'');
       var opts='<option value="">— לא רלוונטי —</option>'+workerNames(repVal).replace('<option value="">בחר עובד</option>','')+'<option value="__vacant__" '+(repVal==='__vacant__'?'selected':'')+'>משרה פנויה</option>';
       return '<div class="v439-replace-row">'+
-        field(extra?'מחליף את — נוסף':'מחליף את','<select id="'+replId+'">'+opts+'</select>')+
-        field('שם משרה פנויה','<select id="'+vacId+'" style="width:100%;padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:13px"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r2){var cur=extra?(r.vacantName||''):(w.vacantName||'');return '<option value="'+esc(r2)+'" '+(r2===cur?'selected':'')+'>'+esc(r2)+'</option>';}).join(''))+'</select>')+
+        field('משרה / תפקיד','<select id="'+vacId+'" style="width:100%;padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:13px"><option value="">— בחר תפקיד —</option>'+((S.roles||[]).map(function(r2){var cur=extra?(r.vacantName||''):(w.vacantName||'');return '<option value="'+esc(r2)+'" '+(r2===cur?'selected':'')+'>'+esc(r2)+'</option>';}).join(''))+'</select>')+
+        field(extra?'שם העובד — נוסף':'שם העובד','<select id="'+replId+'">'+opts+'</select>')+
         field('אחוז החלפה','<input id="'+pctId+'" type="number" step="0.01" value="'+esc(extra?(r.pct||''):(w.replacesPct||''))+'">')+
         field('סכום החלפה','<input id="'+amtId+'" type="number" step="0.01" value="'+esc(extra?(r.amt||''):(w.replacesAmt||''))+'">')+
-        field('מחודש החלפה','<select id="'+stId+'">'+monthOptions(extra?(r.startMonth||''):(w.replaceStartMonth||''))+'</select>')+
-        field('עד חודש החלפה','<select id="'+enId+'">'+monthOptions(extra?(r.endMonth||''):(w.replaceEndMonth||''))+'</select>')+
+        field('מחודש החלפה','<input id="'+stId+'" type="month" min="2020-01" max="2035-12" value="'+esc(extra?(r.startMonth||''):(w.replaceStartMonth||''))+'">')+
+        field('עד חודש החלפה','<input id="'+enId+'" type="month" min="2020-01" max="2035-12" value="'+esc(extra?(r.endMonth||''):(w.replaceEndMonth||''))+'">')+
         replacementBlockedTableHTML(p,r,extra,idx)+
       '</div>';
     }
@@ -16505,20 +16515,23 @@ window.wdw439AddExtraReplace=function(p){
   var st=(document.getElementById(p+'-start')||{}).value||'';
   var en=(document.getElementById(p+'-end')||{}).value||'';
   var mlist=range(st,en);
-  var months = mlist.map(function(k){var i=parseInt(k.slice(5,7),10)-1;var nm=(window.MONTHS||[])[i]||k;return '<option value="'+k+'">'+nm+' '+k.slice(0,4)+'</option>';}).join('');
-  var block = '<div style="grid-column:1/-1;margin-top:8px;border:1px dashed #d0d5dd;border-radius:6px;padding:8px;background:#fafafa"><div style="font-size:11px;font-weight:700;color:#555;margin-bottom:6px">חודשים חסומים להחלפה נוספת</div><div style="display:flex;gap:6px;flex-wrap:wrap">'+
-    mlist.map(function(k){var i=parseInt(k.slice(5,7),10)-1;var nm=(window.MONTHS||[])[i]||k;return '<label style="display:flex;align-items:center;gap:3px;border:1px solid #e5e7eb;border-radius:5px;padding:4px 6px;background:white;font-size:11px"><input type="checkbox" class="v717-rep-block" data-prefix="'+escLocal(p+'-extra-repblock-'+idx)+'" data-month="'+escLocal(k)+'"> '+escLocal(nm)+' '+escLocal(k.slice(0,4))+'</label>';}).join('')+
-    '</div><div style="font-size:10px;color:#777;margin-top:5px">חודש חסום לא יחושב בהחלפה הנוספת הזו בלבד.</div></div>';
+  var activeChips = mlist.map(function(k){var i=parseInt(k.slice(5,7),10)-1;var nm=(window.MONTHS||[])[i]||k;return '<span style="border:1px solid #bfdbfe;background:#eff6ff;color:#1e40af;border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700">'+escLocal(nm)+' '+escLocal(k.slice(0,4))+'</span>';}).join('');
+  var block = '<div style="grid-column:1/-1;margin-top:8px;border:1px dashed #d0d5dd;border-radius:8px;padding:10px;background:#fbfdff">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px"><div style="font-size:11px;font-weight:800;color:#334155">תקופת ההחלפה הפעילה</div><div style="font-size:11px;color:#00897B;font-weight:700">לפי מחודש ועד חודש</div></div>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+activeChips+'</div>'+
+    '<div style="font-size:11px;font-weight:800;color:#555;margin-bottom:6px">חודשים חסומים בתוך תקופת ההחלפה בלבד</div><div style="display:flex;gap:6px;flex-wrap:wrap">'+
+    mlist.map(function(k){var i=parseInt(k.slice(5,7),10)-1;var nm=(window.MONTHS||[])[i]||k;return '<label style="display:flex;align-items:center;gap:3px;border:1px solid #e5e7eb;border-radius:5px;padding:4px 6px;background:white;font-size:11px"><input type="checkbox" class="v717-rep-block" data-prefix="'+escLocal(p+'-extra-repblock-'+idx)+'" data-month="'+escLocal(k)+'"> חסום '+escLocal(nm)+' '+escLocal(k.slice(0,4))+'</label>';}).join('')+
+    '</div><div style="font-size:10px;color:#777;margin-top:5px">לא לסמן חודשים כדי שההחלפה תחושב בכל התקופה. סימון כאן יוצר חריג חסום בלבד.</div></div>';
   var workerOpts='<option value="">— לא רלוונטי —</option>';
   try{ workerOpts += wdwWorkersList().map(function(x){return '<option value="'+escLocal(x)+'">'+escLocal(x)+'</option>';}).join(''); }catch(e){}
   workerOpts += '<option value="__vacant__">משרה פנויה</option>';
   var row='<div class="v439-replace-row">'+
-    '<div class="v437-field"><label>מחליף את — נוסף</label><select id="'+p+'-extra-replaces-'+idx+'">'+workerOpts+'</select></div>'+
-    '<div class="v437-field"><label>שם משרה פנויה</label><input id="'+p+'-extra-vacant-name-'+idx+'" placeholder="אם נבחרה משרה פנויה"></div>'+
+    '<div class="v437-field"><label>משרה / תפקיד</label><input id="'+p+'-extra-vacant-name-'+idx+'" placeholder="שם משרה / תפקיד"></div>'+
+    '<div class="v437-field"><label>שם העובד — נוסף</label><select id="'+p+'-extra-replaces-'+idx+'">'+workerOpts+'</select></div>'+
     '<div class="v437-field"><label>אחוז החלפה</label><input id="'+p+'-extra-pct-'+idx+'" type="number" step="0.01"></div>'+
     '<div class="v437-field"><label>סכום החלפה</label><input id="'+p+'-extra-amt-'+idx+'" type="number" step="0.01"></div>'+
-    '<div class="v437-field"><label>מחודש החלפה</label><select id="'+p+'-extra-start-'+idx+'"><option value="">—</option>'+months+'</select></div>'+
-    '<div class="v437-field"><label>עד חודש החלפה</label><select id="'+p+'-extra-end-'+idx+'"><option value="">—</option>'+months+'</select></div>'+block+
+    '<div class="v437-field"><label>מחודש החלפה</label><input id="'+p+'-extra-start-'+idx+'" type="month" min="2020-01" max="2035-12" value="'+escLocal(st)+'"></div>'+
+    '<div class="v437-field"><label>עד חודש החלפה</label><input id="'+p+'-extra-end-'+idx+'" type="month" min="2020-01" max="2035-12" value="'+escLocal(en)+'"></div>'+block+
   '</div>';
   wrap.insertAdjacentHTML('beforeend',row);
 };
