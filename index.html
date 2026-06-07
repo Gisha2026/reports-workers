@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v721CH | גישה</title>
+<title>Reports_Workers v722CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v721CH</span>
+      <span class="topbar-title">Reports_Workers v722CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8833,6 +8833,108 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   };
 })();
 </script>
+
+
+<script id="v722CH-flexible-period-target-annual-fix">
+(function(){
+  'use strict';
+  function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
+  function ym(y,i){return String(y)+'-'+String(i+1).padStart(2,'0');}
+  function inMonth(obj,m){
+    var st=String((obj&&(obj.startMonth||obj.startDate))||'').substring(0,7);
+    var en=String((obj&&(obj.endMonth||obj.endDate))||'').substring(0,7);
+    if(st&&m<st)return false;
+    if(en&&m>en)return false;
+    return true;
+  }
+  function donorOk(d,m){
+    if(!d||d.status==='inactive'||d.status==='לא פעיל')return false;
+    return inMonth({startMonth:d.startDate||d.startMonth,endMonth:d.endDate||d.endMonth},m);
+  }
+  function isPercentFunding(w){
+    if(!w)return false;
+    var vt=String(w.valueType||'').toLowerCase();
+    var ft=String(w.fundingType||'').toLowerCase();
+    return vt==='percent'||vt==='אחוז'||ft.indexOf('אחוז')>=0||ft==='percent'||(!w.totalPeriodAmount&&vt!=='amount'&&vt!=='סכום');
+  }
+  function yearFromUI(){
+    var el=document.getElementById('v486-monthlypct-year')||document.getElementById('v485-monthlypct-year')||document.getElementById('v484-monthlypct-year');
+    var y=el?parseInt(el.value,10):0;
+    var S=window.S||(typeof window.S!=='undefined'?window.S:null);
+    return y||(S&&S.year)||new Date().getFullYear();
+  }
+  function add(map,key,val){map[key]=(map[key]||0)+val;}
+  function buildTargets(year){
+    var S=window.S||(typeof window.S!=='undefined'?window.S:null);
+    var donors=(S&&S.wdw&&Array.isArray(S.wdw.donors))?S.wdw.donors:[];
+    var main={}, detail={};
+    donors.forEach(function(d){
+      (d.workers||[]).forEach(function(w){
+        if(!w||!w.name||w.active===false||!isPercentFunding(w))return;
+        var val=n(w.value);
+        if(!val)return;
+        var months=0;
+        for(var i=0;i<12;i++){
+          var m=ym(year,i);
+          if(!donorOk(d,m)||!inMonth(w,m))continue;
+          // חשוב: חודשים חסומים וידניים לא מקטינים את יעד התקופה.
+          // הם רק מחלקים מחדש את היתרה בין החודשים האחרים.
+          months++;
+        }
+        if(!months)return;
+        var annual=Math.round((val*months/12)*10)/10;
+        add(main,w.name,annual);
+        add(detail,w.name+'|||'+(d.name||''),annual);
+      });
+    });
+    return {main:main,detail:detail};
+  }
+  function fmt(v){v=Math.round(n(v)*10)/10;return v?(Number.isInteger(v)?String(v):v.toFixed(1))+'%':'—';}
+  function cls(v){v=n(v);return 'v486-pct v487-annual-cell '+(v>100?'bad':v>=90?'warn':v>=50?'ok':v>0?'low':'empty');}
+  function setCell(td,val){if(!td)return;td.className=cls(val);td.textContent=fmt(val);td.title='יעד תקופתי: חודשים ידניים/חסומים מחולקים מחדש ואינם משנים את יעד המימון.';}
+  function apply(){
+    var root=document.getElementById('wdw-monthlypct');
+    if(!root||root.style.display==='none')return;
+    var year=yearFromUI();
+    var maps=buildTargets(year);
+    root.querySelectorAll('table.v486-table > tbody > tr.v486-main-row').forEach(function(row){
+      var nameCell=row.querySelector('td.v486-name')||row.children[0];
+      var name=(nameCell&&nameCell.textContent||'').trim();
+      if(Object.prototype.hasOwnProperty.call(maps.main,name)){
+        var annualCell=row.querySelector('td.v487-annual-cell');
+        setCell(annualCell,maps.main[name]);
+      }
+    });
+    root.querySelectorAll('tr.v486-detail-row').forEach(function(drow){
+      var title=drow.querySelector('.v486-detail-title');
+      var worker='';
+      if(title){worker=(title.textContent||'').split('—')[0].trim();}
+      drow.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){
+        var b=row.querySelector('td.v486-donor-name b');
+        var donor=(b&&b.textContent||'').trim();
+        var key=worker+'|||'+donor;
+        if(Object.prototype.hasOwnProperty.call(maps.detail,key)){
+          var annualCell=row.querySelector('td.v487-annual-cell');
+          setCell(annualCell,maps.detail[key]);
+        }
+      });
+    });
+  }
+  function run(){setTimeout(apply,0);setTimeout(apply,120);setTimeout(apply,350);}
+  ['click','change','input'].forEach(function(ev){document.addEventListener(ev,function(e){
+    if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct'))run();
+  },true);});
+  var old=window.v486RenderMonthlyPct;
+  if(typeof old==='function'&&!old.__v722AnnualTarget){
+    window.v486RenderMonthlyPct=function(){var r=old.apply(this,arguments);run();return r;};
+    window.v486RenderMonthlyPct.__v722AnnualTarget=true;
+    window.v485RenderMonthlyPct=window.v486RenderMonthlyPct;
+    window.v484RenderMonthlyPct=window.v486RenderMonthlyPct;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -8846,7 +8948,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v721CH | גישה</title>
+<title>Reports_Workers v722CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9107,7 +9209,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v721CH</span>
+      <span class="topbar-title">Reports_Workers v722CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18625,5 +18727,107 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   };
 })();
 </script>
+
+
+<script id="v722CH-flexible-period-target-annual-fix">
+(function(){
+  'use strict';
+  function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
+  function ym(y,i){return String(y)+'-'+String(i+1).padStart(2,'0');}
+  function inMonth(obj,m){
+    var st=String((obj&&(obj.startMonth||obj.startDate))||'').substring(0,7);
+    var en=String((obj&&(obj.endMonth||obj.endDate))||'').substring(0,7);
+    if(st&&m<st)return false;
+    if(en&&m>en)return false;
+    return true;
+  }
+  function donorOk(d,m){
+    if(!d||d.status==='inactive'||d.status==='לא פעיל')return false;
+    return inMonth({startMonth:d.startDate||d.startMonth,endMonth:d.endDate||d.endMonth},m);
+  }
+  function isPercentFunding(w){
+    if(!w)return false;
+    var vt=String(w.valueType||'').toLowerCase();
+    var ft=String(w.fundingType||'').toLowerCase();
+    return vt==='percent'||vt==='אחוז'||ft.indexOf('אחוז')>=0||ft==='percent'||(!w.totalPeriodAmount&&vt!=='amount'&&vt!=='סכום');
+  }
+  function yearFromUI(){
+    var el=document.getElementById('v486-monthlypct-year')||document.getElementById('v485-monthlypct-year')||document.getElementById('v484-monthlypct-year');
+    var y=el?parseInt(el.value,10):0;
+    var S=window.S||(typeof window.S!=='undefined'?window.S:null);
+    return y||(S&&S.year)||new Date().getFullYear();
+  }
+  function add(map,key,val){map[key]=(map[key]||0)+val;}
+  function buildTargets(year){
+    var S=window.S||(typeof window.S!=='undefined'?window.S:null);
+    var donors=(S&&S.wdw&&Array.isArray(S.wdw.donors))?S.wdw.donors:[];
+    var main={}, detail={};
+    donors.forEach(function(d){
+      (d.workers||[]).forEach(function(w){
+        if(!w||!w.name||w.active===false||!isPercentFunding(w))return;
+        var val=n(w.value);
+        if(!val)return;
+        var months=0;
+        for(var i=0;i<12;i++){
+          var m=ym(year,i);
+          if(!donorOk(d,m)||!inMonth(w,m))continue;
+          // חשוב: חודשים חסומים וידניים לא מקטינים את יעד התקופה.
+          // הם רק מחלקים מחדש את היתרה בין החודשים האחרים.
+          months++;
+        }
+        if(!months)return;
+        var annual=Math.round((val*months/12)*10)/10;
+        add(main,w.name,annual);
+        add(detail,w.name+'|||'+(d.name||''),annual);
+      });
+    });
+    return {main:main,detail:detail};
+  }
+  function fmt(v){v=Math.round(n(v)*10)/10;return v?(Number.isInteger(v)?String(v):v.toFixed(1))+'%':'—';}
+  function cls(v){v=n(v);return 'v486-pct v487-annual-cell '+(v>100?'bad':v>=90?'warn':v>=50?'ok':v>0?'low':'empty');}
+  function setCell(td,val){if(!td)return;td.className=cls(val);td.textContent=fmt(val);td.title='יעד תקופתי: חודשים ידניים/חסומים מחולקים מחדש ואינם משנים את יעד המימון.';}
+  function apply(){
+    var root=document.getElementById('wdw-monthlypct');
+    if(!root||root.style.display==='none')return;
+    var year=yearFromUI();
+    var maps=buildTargets(year);
+    root.querySelectorAll('table.v486-table > tbody > tr.v486-main-row').forEach(function(row){
+      var nameCell=row.querySelector('td.v486-name')||row.children[0];
+      var name=(nameCell&&nameCell.textContent||'').trim();
+      if(Object.prototype.hasOwnProperty.call(maps.main,name)){
+        var annualCell=row.querySelector('td.v487-annual-cell');
+        setCell(annualCell,maps.main[name]);
+      }
+    });
+    root.querySelectorAll('tr.v486-detail-row').forEach(function(drow){
+      var title=drow.querySelector('.v486-detail-title');
+      var worker='';
+      if(title){worker=(title.textContent||'').split('—')[0].trim();}
+      drow.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){
+        var b=row.querySelector('td.v486-donor-name b');
+        var donor=(b&&b.textContent||'').trim();
+        var key=worker+'|||'+donor;
+        if(Object.prototype.hasOwnProperty.call(maps.detail,key)){
+          var annualCell=row.querySelector('td.v487-annual-cell');
+          setCell(annualCell,maps.detail[key]);
+        }
+      });
+    });
+  }
+  function run(){setTimeout(apply,0);setTimeout(apply,120);setTimeout(apply,350);}
+  ['click','change','input'].forEach(function(ev){document.addEventListener(ev,function(e){
+    if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct'))run();
+  },true);});
+  var old=window.v486RenderMonthlyPct;
+  if(typeof old==='function'&&!old.__v722AnnualTarget){
+    window.v486RenderMonthlyPct=function(){var r=old.apply(this,arguments);run();return r;};
+    window.v486RenderMonthlyPct.__v722AnnualTarget=true;
+    window.v485RenderMonthlyPct=window.v486RenderMonthlyPct;
+    window.v484RenderMonthlyPct=window.v486RenderMonthlyPct;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+})();
+</script>
+
 </body>
 </html>
