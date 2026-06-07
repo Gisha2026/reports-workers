@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v720CH | גישה</title>
+<title>Reports_Workers v721CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v720CH</span>
+      <span class="topbar-title">Reports_Workers v721CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8846,7 +8846,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v720CH | גישה</title>
+<title>Reports_Workers v721CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9107,7 +9107,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v720CH</span>
+      <span class="topbar-title">Reports_Workers v721CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16052,6 +16052,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
     if(!months.length) months=wdw710MonthRange(((window.S&&S.year)||new Date().getFullYear())+'-01',((window.S&&S.year)||new Date().getFullYear())+'-12');
     var blocked=Array.isArray(w.blockedMonths)?w.blockedMonths:[];
     var mp=w.monthlyPct||{}, fm=w.fixedMonths||{};
+    var manualMonths=Array.isArray(w.manualMonths)?w.manualMonths:[];
     var h='<div class="v710-month-table" data-pfx="'+esc(p)+'"><div class="v710-month-help"><span class="v710-pill">לפי סוג מימון = ברירת המחדל</span><span class="v710-pill">ידני = ערך חודשי</span><span class="v710-pill">חסום = לא מחושב</span><span style="color:#64748b">לחיצה על מצב התא: לפי סוג מימון → ידני → חסום → לפי סוג מימון.</span></div>';
     var curYear='';
     months.forEach(function(mk){
@@ -16060,7 +16061,8 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       var isBlocked=blocked.indexOf(mk)!==-1;
       var hasAmt=Object.prototype.hasOwnProperty.call(fm,mk)&&String(fm[mk]).trim()!=='';
       var hasPct=Object.prototype.hasOwnProperty.call(mp,mk)&&String(mp[mk]).trim()!=='';
-      var state=isBlocked?'blocked':(hasAmt||hasPct?'manual':'auto');
+      var isManual=(manualMonths.indexOf(mk)!==-1) || (hasAmt && !(w.valueType==='percent' || w.fundingType==='אחוז גמיש'));
+      var state=isBlocked?'blocked':(isManual?'manual':'auto');
       h+='<div class="v710-month-cell v710-state-'+state+'" data-pfx="'+esc(p)+'" data-month="'+esc(mk)+'" data-state="'+state+'" data-kind="percent">'+
         '<div class="v710-month-top"><span class="v710-month-name">'+esc(wdw710MonthName(mk))+'</span><button type="button" class="v710-state-btn" onclick="wdw710CycleMonthCell(this.parentNode.parentNode)">'+(state==='blocked'?'חסום':state==='manual'?'ידני':'סוג מימון')+'</button></div>'+
         '<div class="v710-value-row"><span class="v710-unit">%</span><input class="v710-percent-input" id="'+esc(p)+'-mp-'+esc(mk)+'" type="number" step="0.01" value="'+esc(hasPct?mp[mk]:'')+'" placeholder="לפי סוג מימון" oninput="wdw710SetManual(this)"><input class="v710-amount-input v710-hidden" id="'+esc(p)+'-fm-'+esc(mk)+'" type="number" step="0.01" value="'+esc(hasAmt?fm[mk]:'')+'" placeholder="לפי סוג מימון" oninput="wdw710SetManual(this)"></div><div class="v710-blocked-label">חסום</div></div>';
@@ -16208,7 +16210,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
     w.remark=val(p+'-remark','');
 
     wdw710Rebalance(p);
-    var mp={}, fm={}, bm=[];
+    var mp={}, fm={}, bm=[], manualMonths=[];
     var mode710=wdw710FundingMode(p), kind710=wdw710Kind(p);
     Array.prototype.slice.call(document.querySelectorAll('.v710-month-cell[data-pfx="'+p+'"]')).forEach(function(cell){
       var mk=cell.getAttribute('data-month');
@@ -16216,6 +16218,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       var state=cell.getAttribute('data-state')||'auto';
       if(mode710==='percentFixed') return;
       if(state==='blocked'){ bm.push(mk); return; }
+      if(state==='manual') manualMonths.push(mk);
       var rawPct=((document.getElementById(p+'-mp-'+mk)||{}).value||'').toString().trim();
       var rawAmt=((document.getElementById(p+'-fm-'+mk)||{}).value||'').toString().trim();
       if(kind710==='amount'){
@@ -16225,6 +16228,7 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
       }
     });
     w.monthlyPct=(mode710==='percentFlexible' && Object.keys(mp).length)?mp:{};
+    w.manualMonths=(mode710==='percentFlexible' && manualMonths.length)?manualMonths:undefined;
     w.fixedMonths=(mode710==='amountPeriod' && Object.keys(fm).length)?fm:undefined;
     w.blockedMonths=(mode710!=='percentFixed' && bm.length)?bm:undefined;
 
