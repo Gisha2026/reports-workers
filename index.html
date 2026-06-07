@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v724CH | גישה</title>
+<title>Reports_Workers v725CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v724CH</span>
+      <span class="topbar-title">Reports_Workers v725CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8948,7 +8948,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v724CH | גישה</title>
+<title>Reports_Workers v725CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9209,7 +9209,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v724CH</span>
+      <span class="topbar-title">Reports_Workers v725CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18846,6 +18846,70 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     var m=id.match(/^(v437-worker-[^-]+-[^-]+-[^-]+)-funding$/);
     if(m) clearIrrelevantFields(m[1]);
   },true);
+})();
+</script>
+
+<script>
+// ===== v725CH: robust funding-mode switching for worker allocation form =====
+(function(){
+  function q(id){return document.getElementById(id);}
+  function cells(pfx){return Array.prototype.slice.call(document.querySelectorAll('.v710-month-cell[data-pfx="'+pfx+'"]'));}
+  function mode(pfx){
+    var f=q(pfx+'-funding');
+    var v=String(f&&f.value||'');
+    if(v==='סכום לתקופה') return 'amountPeriod';
+    if(v==='אחוז גמיש') return 'percentFlexible';
+    return 'percentFixed';
+  }
+  function resetMonthlyStateForMode(pfx){
+    var m=mode(pfx);
+    cells(pfx).forEach(function(cell){
+      var pct=cell.querySelector('.v710-percent-input');
+      var amt=cell.querySelector('.v710-amount-input');
+      // Changing funding mode starts the selected mode cleanly. Existing blocked months are preserved.
+      if((cell.getAttribute('data-state')||'auto')!=='blocked') cell.setAttribute('data-state','auto');
+      if(m==='percentFlexible'){
+        if(amt) amt.value='';
+        if(pct) pct.value='';
+      }else if(m==='amountPeriod'){
+        if(pct) pct.value='';
+        if(amt) amt.value='';
+      }else{
+        if(pct) pct.value='';
+        if(amt) amt.value='';
+      }
+    });
+    if(typeof window.wdw710Rebalance==='function') window.wdw710Rebalance(pfx);
+  }
+  function normalizeBeforePercentCalc(pfx){
+    if(mode(pfx)!=='percentFlexible') return;
+    cells(pfx).forEach(function(cell){
+      var st=cell.getAttribute('data-state')||'auto';
+      var pct=cell.querySelector('.v710-percent-input');
+      var amt=cell.querySelector('.v710-amount-input');
+      var pctVal=String(pct&&pct.value||'').trim();
+      var amtVal=String(amt&&amt.value||'').trim();
+      // If the cell was left as manual only because the previous mode was amount, release it.
+      if(st==='manual' && pctVal==='' && amtVal!==''){
+        cell.setAttribute('data-state','auto');
+        if(amt) amt.value='';
+      }
+      // Empty manual cells should not block the flexible calculation.
+      if(st==='manual' && pctVal==='') cell.setAttribute('data-state','auto');
+    });
+  }
+  document.addEventListener('change',function(e){
+    var id=e.target&&e.target.id||'';
+    if(id.slice(-8)==='-funding' && id.indexOf('v437-worker-')===0){
+      resetMonthlyStateForMode(id.slice(0,-8));
+    }
+  },true);
+  var oldCalc=window.wdw710CalcPercentMonthly;
+  window.wdw710CalcPercentMonthly=function(pfx){
+    normalizeBeforePercentCalc(pfx);
+    if(typeof oldCalc==='function') return oldCalc(pfx);
+    if(typeof window.wdw710Rebalance==='function') return window.wdw710Rebalance(pfx);
+  };
 })();
 </script>
 
