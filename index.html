@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v727CH | גישה</title>
+<title>Reports_Workers v728CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v727CH</span>
+      <span class="topbar-title">Reports_Workers v728CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8975,7 +8975,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v727CH | גישה</title>
+<title>Reports_Workers v728CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9236,7 +9236,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v727CH</span>
+      <span class="topbar-title">Reports_Workers v728CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18981,5 +18981,81 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 .v727-repl-badge{display:inline-block;margin-inline-start:6px;padding:3px 7px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:800;white-space:nowrap}
 </style>
 
+
+
+<script id="v728CH-replacement-annual-and-badges-fix">
+(function(){
+  'use strict';
+  function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,'').replace('%','').replace('—','').trim());return isFinite(x)?x:0;}
+  function fmt(v){v=Math.round(n(v)*10)/10;return v?(Number.isInteger(v)?String(v):v.toFixed(1))+'%':'—';}
+  function cls(v){v=n(v);return 'v486-pct v487-annual-cell '+(v>100?'bad':v>=90?'warn':v>=50?'ok':v>0?'low':'empty');}
+  function pctCells(row){return Array.prototype.slice.call(row.querySelectorAll('td.v486-pct')).filter(function(td){return !td.classList.contains('v487-annual-cell');});}
+  function avgFromRow(row){var cells=pctCells(row).slice(0,12); if(!cells.length)return 0; var sum=0; cells.forEach(function(td){sum+=n(td.textContent);}); return Math.round((sum/12)*10)/10;}
+  function setAnnual(row,val){var td=row.querySelector('td.v487-annual-cell'); if(!td)return; td.className=cls(val); td.textContent=fmt(val); td.title='ממוצע שנתי מחושב לפי 12 חודשי השנה, כולל בסיס והחלפות.';}
+  var applying=false;
+  function applyAnnuals(){
+    if(applying)return; applying=true;
+    try{
+      var root=document.getElementById('wdw-monthlypct'); if(!root)return;
+      root.querySelectorAll('table.v486-table > tbody > tr.v486-main-row').forEach(function(row){setAnnual(row,avgFromRow(row));});
+      root.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){setAnnual(row,avgFromRow(row));});
+    }finally{applying=false;}
+  }
+  function addDetailBadges(){
+    var root=document.getElementById('wdw-monthlypct'); if(!root)return;
+    root.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){
+      var first=row.querySelector('td.v486-donor-name'); if(!first||first.querySelector('.v728-repl-badge'))return;
+      var has=false;
+      row.querySelectorAll('td[title]').forEach(function(td){var t=td.getAttribute('title')||''; if(t.indexOf('החלפה')>=0||t.indexOf('מחליף')>=0)has=true;});
+      if(has) first.insertAdjacentHTML('beforeend','<span class="v728-repl-badge">כולל החלפה</span>');
+    });
+  }
+  function S0(){return window.S||(typeof S!=='undefined'?S:null);}
+  function ym(v){return String(v||'').substring(0,7);}
+  function repLabel(w){
+    var parts=[];
+    if(w&&(w.replaces||w.replacesPct||w.replacesAmt)){
+      var who=w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):(w.replaces||'');
+      parts.push((who?('מוחלף ע״י '+who):'כולל החלפה')+(w.replacesPct?' '+w.replacesPct+'%':'')+(w.replaceStartMonth||w.replacementStartMonth||w.replaceEndMonth||w.replacementEndMonth?' · '+(ym(w.replaceStartMonth||w.replacementStartMonth)||'—')+'–'+(ym(w.replaceEndMonth||w.replacementEndMonth)||'—') : ''));
+    }
+    (w&&w.extraReplaces||[]).forEach(function(r){
+      if(!(r.replaces||r.name||r.worker||r.pct))return;
+      var who=r.replaces==='__vacant__'?(r.vacantName||'משרה פנויה'):(r.replaces||r.name||r.worker||'');
+      parts.push((who?('מוחלף ע״י '+who):'כולל החלפה')+(r.pct?' '+r.pct+'%':'')+(r.startMonth||r.replaceStartMonth||r.endMonth||r.replaceEndMonth?' · '+(ym(r.startMonth||r.replaceStartMonth)||'—')+'–'+(ym(r.endMonth||r.replaceEndMonth)||'—') : ''));
+    });
+    return parts.join(' · ');
+  }
+  function replacementMap(){
+    var out={}, s=S0(), donors=(s&&s.wdw&&Array.isArray(s.wdw.donors))?s.wdw.donors:[];
+    donors.forEach(function(d){(d.workers||[]).forEach(function(w){var lab=repLabel(w); if(w&&w.name&&lab){out[w.name]=(out[w.name]||[]); out[w.name].push((d.name?d.name+': ':'')+lab);}});});
+    return out;
+  }
+  function markInputBadges(){
+    var root=document.getElementById('wdw-input'); if(!root)return;
+    var map=replacementMap();
+    Object.keys(map).forEach(function(name){
+      Array.prototype.slice.call(root.querySelectorAll('td,div,span,b')).forEach(function(el){
+        if(el.children.length>1)return;
+        var txt=(el.textContent||'').trim();
+        if(txt!==name)return;
+        var container=el.closest('tr')||el.closest('.wdw-mgmt-row')||el.parentElement;
+        if(!container||container.querySelector('.v728-original-repl-badge'))return;
+        el.insertAdjacentHTML('afterend',' <span class="v728-original-repl-badge" title="'+map[name].join(' | ').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];})+'">כולל החלפה</span>');
+      });
+    });
+  }
+  function run(){setTimeout(function(){applyAnnuals();addDetailBadges();markInputBadges();},0);setTimeout(function(){applyAnnuals();addDetailBadges();markInputBadges();},250);setTimeout(function(){applyAnnuals();addDetailBadges();markInputBadges();},750);}
+  function wrap(name){var old=window[name]; if(typeof old==='function'&&!old.__v728){window[name]=function(){var r=old.apply(this,arguments);run();return r;}; window[name].__v728=true;}}
+  wrap('v486RenderMonthlyPct'); wrap('v485RenderMonthlyPct'); wrap('v484RenderMonthlyPct'); wrap('v590RenderMonthlyPct'); wrap('renderWDWInput');
+  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct,#wdw-input,#wdw-btn-input'))run();},true);
+  document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-input'))run();},true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+  setTimeout(run,1200); setTimeout(run,2500);
+})();
+</script>
+<style id="v728CH-replacement-annual-and-badges-style">
+.v728-repl-badge,.v728-original-repl-badge{display:inline-block;margin-inline-start:6px;padding:3px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fb923c;color:#9a3412;font-size:11px;font-weight:800;white-space:nowrap;vertical-align:middle}
+.v728-original-repl-badge{background:#fffbeb;border-color:#f59e0b;color:#92400e}
+</style>
 </body>
 </html>
