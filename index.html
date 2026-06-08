@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v750CH | גישה</title>
+<title>Reports_Workers v751CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v750CH</span>
+      <span class="topbar-title">Reports_Workers v751CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9472,7 +9472,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v750CH | גישה</title>
+<title>Reports_Workers v751CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9733,7 +9733,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v750CH</span>
+      <span class="topbar-title">Reports_Workers v751CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -20077,130 +20077,154 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 #tab-wdw .v742-det-annual-cell{font-weight:900!important;border-inline-start:1px solid #d9e0e7!important;border-inline-end:1px solid #d9e0e7!important;text-align:center!important}
 </style>
 
-<script id="v749CH-detail-header-fix">
-/* v749CH: fixes only detail-matrix headers after v748:
-   - annual header text is always "שנתי" (not 0%).
-   - December header is restored.
-   - monthly values and annual calculations are not changed except rebuilding the same existing annual cell value from the 12 month cells.
-*/
+<script id="v751CH-detail-annual-header-only-fix">
 (function(){
   'use strict';
-  if(window.__v749DetailHeaderFix) return;
-  window.__v749DetailHeaderFix=true;
+  window.__v749DetailHeaderFix = true;
+  if(window.__v751DetailAnnualHeaderOnlyFix) return;
+  window.__v751DetailAnnualHeaderOnlyFix = true;
 
-  var MONTH_HEADS=['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];
+  var MONTH_HEADS = ['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];
 
   function parsePct(x){
-    x=String(x==null?'':x).replace(/[%\s,]/g,'').replace('−','-');
-    var n=parseFloat(x);
-    return isFinite(n)?n:0;
+    x = String(x == null ? '' : x).replace(/[%\s,]/g,'').replace('−','-');
+    var n = parseFloat(x);
+    return isFinite(n) ? n : 0;
   }
   function fmt(n){
-    n=Math.round((isFinite(n)?n:0)*10)/10;
-    return (Math.abs(n-Math.round(n))<0.0001?String(Math.round(n)):String(n).replace(/\.0$/,''))+'%';
+    n = Math.round((isFinite(n) ? n : 0) * 10) / 10;
+    return (Math.abs(n - Math.round(n)) < 0.0001 ? String(Math.round(n)) : String(n).replace(/\.0$/,'')) + '%';
   }
   function band(n){
-    n=isFinite(n)?n:0;
-    return n>100?'bad':n>=90?'warn':n>=50?'ok':n>0?'low':'empty';
-  }
-  function isAnnualCell(td){
-    return td && td.classList && (
-      td.classList.contains('v487-annual-cell') ||
-      td.classList.contains('v736-annual-cell') ||
-      td.classList.contains('v742-det-annual-cell') ||
-      td.classList.contains('v748-detail-annual-cell') ||
-      td.classList.contains('v749-detail-annual-cell')
-    );
+    n = isFinite(n) ? n : 0;
+    return n > 100 ? 'bad' : n >= 90 ? 'warn' : n >= 50 ? 'ok' : n > 0 ? 'low' : 'empty';
   }
   function makeTH(txt, cls){
-    var th=document.createElement('th');
-    th.textContent=txt;
-    if(cls) th.className=cls;
+    var th = document.createElement('th');
+    th.textContent = txt;
+    if(cls) th.className = cls;
     return th;
   }
   function rebuildHeader(tbl){
-    var tr=tbl.querySelector('thead tr');
+    var tr = tbl.querySelector('thead tr');
     if(!tr) return;
-    var firstText='תורם / פרויקט';
-    if(tr.children[0] && String(tr.children[0].textContent||'').trim()) firstText=tr.children[0].textContent;
+    var firstText = 'תורם / פרויקט';
+    if(tr.children[0] && String(tr.children[0].textContent || '').trim()){
+      firstText = tr.children[0].textContent;
+    }
     while(tr.firstChild) tr.removeChild(tr.firstChild);
-    tr.appendChild(makeTH(firstText,''));
-    tr.appendChild(makeTH('שנתי','v749-detail-annual-th v487-annual-th'));
-    MONTH_HEADS.forEach(function(m){ tr.appendChild(makeTH(m,'')); });
+    tr.appendChild(makeTH(firstText, ''));
+    tr.appendChild(makeTH('שנתי', 'v751-detail-annual-th'));
+    MONTH_HEADS.forEach(function(m){ tr.appendChild(makeTH(m, '')); });
+  }
+  function isExplicitAnnual(td){
+    return td && td.classList && (
+      td.classList.contains('v751-detail-annual-cell') ||
+      td.classList.contains('v749-detail-annual-cell') ||
+      td.classList.contains('v748-detail-annual-cell') ||
+      td.classList.contains('v742-det-annual-cell') ||
+      td.classList.contains('v736-annual-cell')
+    );
+  }
+  function isPct(td){
+    return td && td.tagName === 'TD' && td.classList && td.classList.contains('v486-pct');
   }
   function normalizeRow(tr){
-    if(!tr || tr.querySelector('.v486-empty')){
-      var e=tr&&tr.querySelector&&tr.querySelector('td');
-      if(e) e.setAttribute('colspan','14');
+    if(!tr) return;
+    var empty = tr.querySelector('td.v486-empty');
+    if(empty){
+      empty.setAttribute('colspan','14');
       return;
     }
-    var cells=Array.prototype.slice.call(tr.children);
-    if(cells.length<2) return;
-    var first=cells[0];
-    var rest=cells.slice(1);
-    var nonAnnual=rest.filter(function(td){return !isAnnualCell(td);});
 
-    /* The table must end with the 12 month cells. If older code inserted/duplicated annual cells,
-       the safest reconstruction is: first column + computed annual + last 12 non-annual cells. */
-    var months;
-    if(nonAnnual.length>=12) months=nonAnnual.slice(-12);
-    else {
-      months=nonAnnual.slice(0);
-      while(months.length<12){
-        var td=document.createElement('td');
-        td.className='v486-pct empty';
-        td.textContent='—';
-        months.unshift(td);
-      }
+    var cells = Array.prototype.slice.call(tr.children);
+    if(cells.length < 2) return;
+
+    var first = cells[0];
+    var rest = cells.slice(1);
+
+    var months = rest.slice(1).filter(function(td){ return isPct(td) && !isExplicitAnnual(td); });
+
+    if(months.length < 12){
+      months = rest.filter(function(td){ return isPct(td) && !isExplicitAnnual(td); }).slice(-12);
+    }
+    if(months.length > 12) months = months.slice(0,12);
+
+    while(months.length < 12){
+      var td = document.createElement('td');
+      td.className = 'v486-pct empty';
+      td.textContent = '—';
+      months.push(td);
     }
 
-    var sum=0;
-    months.forEach(function(td){sum+=parsePct(td.textContent);});
-    var av=sum/12;
-    var annual=document.createElement('td');
-    annual.className='v486-pct v749-detail-annual-cell v487-annual-cell '+band(av);
-    annual.textContent=fmt(av);
-    annual.title='אחוז שנתי לשורת הפירוט, מחושב לפי 12 חודשי השנה.';
+    var sum = 0;
+    months.forEach(function(td){ sum += parsePct(td.textContent); });
+    var av = sum / 12;
+
+    var annual = document.createElement('td');
+    annual.className = 'v486-pct v751-detail-annual-cell ' + band(av);
+    annual.textContent = fmt(av);
+    annual.title = 'שנתי';
 
     while(tr.firstChild) tr.removeChild(tr.firstChild);
     tr.appendChild(first);
     tr.appendChild(annual);
-    months.forEach(function(td){tr.appendChild(td);});
+    months.forEach(function(td){ tr.appendChild(td); });
   }
   function normalizeTable(tbl){
     if(!tbl) return;
     rebuildHeader(tbl);
     tbl.querySelectorAll('tbody tr').forEach(normalizeRow);
-    tbl.classList.add('v487-annual-added');
-    tbl.classList.add('v749-detail-header-fixed');
+    tbl.classList.add('v751-detail-annual-fixed');
   }
-  var running=false;
+  var running = false;
   function run(){
     if(running) return;
-    running=true;
+    running = true;
     try{
-      var root=document.getElementById('wdw-monthlypct');
+      var root = document.getElementById('wdw-monthlypct');
       if(!root) return;
       root.querySelectorAll('table.v486-detail-matrix').forEach(normalizeTable);
-    }finally{running=false;}
-  }
-  function schedule(){setTimeout(run,0);setTimeout(run,80);setTimeout(run,250);}
-  function wrap(name){
-    var old=window[name];
-    if(typeof old==='function' && !old.__v749Wrapped){
-      var f=function(){var r=old.apply(this,arguments);schedule();return r;};
-      f.__v749Wrapped=true;
-      window[name]=f;
+    } finally {
+      running = false;
     }
   }
-  function install(){wrap('v486RenderMonthlyPct');wrap('v590RenderMonthlyPct');schedule();}
-  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct'))schedule();},true);
-  document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))schedule();},true);
-  window.addEventListener('load',function(){setTimeout(install,0);setTimeout(install,300);});
-  var st=document.createElement('style');
-  st.id='v749CH-detail-header-fix-style';
-  st.textContent='#tab-wdw table.v486-detail-matrix th.v749-detail-annual-th{background:#eef8f6!important;color:#073f3d!important;font-weight:900!important;min-width:58px!important}#tab-wdw table.v486-detail-matrix td.v749-detail-annual-cell{font-weight:900!important;border-inline-start:1px solid #d0d5dd!important;border-inline-end:1px solid #d0d5dd!important;text-align:center!important}';
+  function schedule(){
+    setTimeout(run, 0);
+    setTimeout(run, 80);
+    setTimeout(run, 250);
+  }
+  function wrap(name){
+    var old = window[name];
+    if(typeof old === 'function' && !old.__v751Wrapped){
+      var f = function(){
+        var r = old.apply(this, arguments);
+        schedule();
+        return r;
+      };
+      f.__v751Wrapped = true;
+      window[name] = f;
+    }
+  }
+  function install(){
+    wrap('v486RenderMonthlyPct');
+    wrap('v590RenderMonthlyPct');
+    schedule();
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.closest && e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct')) schedule();
+  }, true);
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.closest && e.target.closest('#wdw-monthlypct')) schedule();
+  }, true);
+
+  var st = document.createElement('style');
+  st.id = 'v751CH-detail-annual-header-only-fix-style';
+  st.textContent = '#tab-wdw table.v486-detail-matrix th.v751-detail-annual-th{background:#eef8f6!important;color:#073f3d!important;font-weight:900!important;min-width:58px!important;text-align:center!important}#tab-wdw table.v486-detail-matrix td.v751-detail-annual-cell{font-weight:900!important;border-inline-start:1px solid #d0d5dd!important;border-inline-end:1px solid #d0d5dd!important;text-align:center!important}';
   document.head.appendChild(st);
+
+  window.addEventListener('load', function(){ setTimeout(install,0); setTimeout(install,300); });
   install();
 })();
 </script>
