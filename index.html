@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v729CH | גישה</title>
+<title>Reports_Workers v730CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v729CH</span>
+      <span class="topbar-title">Reports_Workers v730CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8975,7 +8975,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v729CH | גישה</title>
+<title>Reports_Workers v730CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9236,7 +9236,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v729CH</span>
+      <span class="topbar-title">Reports_Workers v730CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -19044,7 +19044,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
       });
     });
   }
-  function run(){setTimeout(function(){applyAnnuals();addDetailBadges();markInputBadges();},0);setTimeout(function(){applyAnnuals();addDetailBadges();markInputBadges();},250);setTimeout(function(){applyAnnuals();addDetailBadges();markInputBadges();},750);}
+  function run(){setTimeout(function(){applyAnnuals();addDetailBadges();},0);setTimeout(function(){applyAnnuals();addDetailBadges();},250);setTimeout(function(){applyAnnuals();addDetailBadges();},750);}
   function wrap(name){var old=window[name]; if(typeof old==='function'&&!old.__v728){window[name]=function(){var r=old.apply(this,arguments);run();return r;}; window[name].__v728=true;}}
   wrap('v486RenderMonthlyPct'); wrap('v485RenderMonthlyPct'); wrap('v484RenderMonthlyPct'); wrap('v590RenderMonthlyPct'); wrap('renderWDWInput');
   document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct,#wdw-input,#wdw-btn-input'))run();},true);
@@ -19058,105 +19058,36 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 .v728-original-repl-badge{background:#fffbeb;border-color:#f59e0b;color:#92400e}
 </style>
 
-
-<script id="v729CH-specific-replacement-badges-only">
+<script id="v730CH-clean-input-replacement-badges">
 (function(){
   'use strict';
-  function S0(){return window.S||(typeof S!=='undefined'?S:null);}
-  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function ym(v){return String(v||'').substring(0,7);}
-  function pct(v){var n=parseFloat(String(v==null?'':v).replace('%','').replace(',','').trim());return isFinite(n)&&n?((Math.round(n*10)/10)+(Number.isInteger(Math.round(n*10)/10)?'': ''))+'%':'';}
-  function findDonorByName(name){var s=S0(), ds=(s&&s.wdw&&Array.isArray(s.wdw.donors))?s.wdw.donors:[]; return ds.find(function(d){return String(d.name||'').trim()===String(name||'').trim();});}
-  function roleNameFromMain(w){return (w&&(w.role||w.roleInDonor||w.projectRole||w.title||w.position))||'';}
-  function describeMainReplacement(w){
-    if(!w) return '';
-    var role=(w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):(w.replaces||w.replacesRole||w.replaceRole||roleNameFromMain(w)||''));
-    var pc=pct(w.replacesPct||w.replacementPct||w.pct);
-    var dates=(ym(w.replaceStartMonth||w.replacementStartMonth||w.replacesStart||w.replacementStart)||'')+(ym(w.replaceEndMonth||w.replacementEndMonth||w.replacesEnd||w.replacementEnd)?'–'+ym(w.replaceEndMonth||w.replacementEndMonth||w.replacesEnd||w.replacementEnd):'');
-    var arr=[]; if(role) arr.push('תפקיד: '+role); if(pc) arr.push(pc); if(dates) arr.push(dates);
-    return arr.length?('החלפת '+arr.join(' · ')):'';
+  function clean(){
+    try{
+      var root=document.getElementById('wdw-input');
+      if(!root) return;
+      root.querySelectorAll('.v728-original-repl-badge,.v729-original-repl-badge,.v730-original-repl-badge').forEach(function(el){ el.remove(); });
+    }catch(e){}
   }
-  function describeExtraReplacement(w,r){
-    if(!r) return '';
-    var role=(r.replaces==='__vacant__'?(r.vacantName||'משרה פנויה'):(r.replaces||r.role||r.replacesRole||r.replaceRole||r.vacantRole||roleNameFromMain(w)||''));
-    var who=(r.name||r.worker||r.replacementWorker||r.employee||'');
-    var pc=pct(r.pct||r.percent||r.value||r.replacesPct);
-    var dates=(ym(r.startMonth||r.replaceStartMonth)||'')+(ym(r.endMonth||r.replaceEndMonth)?'–'+ym(r.endMonth||r.replaceEndMonth):'');
-    var arr=[]; if(role) arr.push('תפקיד: '+role); if(who) arr.push('מחליף/ה: '+who); if(pc) arr.push(pc); if(dates) arr.push(dates);
-    return arr.length?arr.join(' · '):'';
+  function wrap(name){
+    var old=window[name];
+    if(typeof old==='function' && !old.__v730CleanInputBadges){
+      window[name]=function(){
+        var r=old.apply(this,arguments);
+        setTimeout(clean,0);
+        setTimeout(clean,120);
+        return r;
+      };
+      window[name].__v730CleanInputBadges=true;
+    }
   }
-  function detailsFor(workerName,donorName){
-    var d=findDonorByName(donorName); if(!d) return [];
-    var out=[];
-    (d.workers||[]).forEach(function(w){
-      if(String(w&&w.name||'').trim()!==String(workerName||'').trim()) return;
-      var a=describeMainReplacement(w); if(a) out.push(a);
-      (w.extraReplaces||[]).forEach(function(r){var b=describeExtraReplacement(w,r); if(b) out.push(b);});
-    });
-    // Unique only, to prevent duplicated orange chips after repeated renders.
-    var seen={}; return out.filter(function(x){if(seen[x])return false; seen[x]=1; return true;});
-  }
-  function currentWorkerNameFromDetailBox(box){
-    var t=box&&box.querySelector('.v486-detail-title');
-    var txt=(t&&t.textContent||'').trim();
-    return txt.split('—')[0].trim();
-  }
-  function cleanOldBadges(root){
-    root.querySelectorAll('.v727-repl-badge,.v728-repl-badge,.v728-original-repl-badge,.v729-repl-chip,.v729-original-repl-chip').forEach(function(x){x.remove();});
-  }
-  function addMonthlyDetailChips(){
-    var root=document.getElementById('wdw-monthlypct'); if(!root) return;
-    cleanOldBadges(root);
-    root.querySelectorAll('.v486-detail-box').forEach(function(box){
-      var worker=currentWorkerNameFromDetailBox(box); if(!worker) return;
-      box.querySelectorAll('table.v486-detail-matrix tbody tr').forEach(function(tr){
-        var first=tr.querySelector('td.v486-donor-name'); if(!first) return;
-        var b=first.querySelector('b'); var donor=(b&&b.textContent||'').trim(); if(!donor) return;
-        var det=detailsFor(worker,donor);
-        if(!det.length){
-          // Fallback: use existing cell titles if the data object has no richer details.
-          var raw=[]; tr.querySelectorAll('td[title]').forEach(function(td){var tt=(td.getAttribute('title')||''); if(tt.indexOf('החלפה')>=0 || tt.indexOf('מחליף')>=0) raw.push(tt.split('\n')[0]);});
-          det=raw.filter(function(x,i,a){return x&&a.indexOf(x)===i;}).slice(0,3);
-        }
-        det.forEach(function(d){first.insertAdjacentHTML('beforeend','<span class="v729-repl-chip" title="'+esc(d)+'">'+esc(d)+'</span>');});
-      });
-    });
-  }
-  function addInputChips(){
-    var root=document.getElementById('wdw-input'); if(!root) return;
-    cleanOldBadges(root);
-    var s=S0(), donors=(s&&s.wdw&&Array.isArray(s.wdw.donors))?s.wdw.donors:[];
-    var byName={};
-    donors.forEach(function(d){(d.workers||[]).forEach(function(w){
-      if(!w||!w.name) return;
-      var parts=[]; var a=describeMainReplacement(w); if(a) parts.push((d.name?d.name+': ':'')+a);
-      (w.extraReplaces||[]).forEach(function(r){var b=describeExtraReplacement(w,r); if(b) parts.push((d.name?d.name+': ':'')+b);});
-      if(parts.length) byName[w.name]=(byName[w.name]||[]).concat(parts);
-    });});
-    Object.keys(byName).forEach(function(name){
-      var text=byName[name].filter(function(x,i,a){return a.indexOf(x)===i;}).join(' | ');
-      Array.prototype.slice.call(root.querySelectorAll('td,div,span,b')).forEach(function(el){
-        if(el.children.length>1) return;
-        if((el.textContent||'').trim()!==name) return;
-        var container=el.closest('tr')||el.closest('.wdw-mgmt-row')||el.parentElement;
-        if(!container||container.querySelector('.v729-original-repl-chip')) return;
-        el.insertAdjacentHTML('afterend',' <span class="v729-original-repl-chip" title="'+esc(text)+'">'+esc(text)+'</span>');
-      });
-    });
-  }
-  function run(){setTimeout(function(){addMonthlyDetailChips();addInputChips();},0);setTimeout(function(){addMonthlyDetailChips();addInputChips();},250);setTimeout(function(){addMonthlyDetailChips();addInputChips();},900);}
-  function wrap(fn){var old=window[fn]; if(typeof old==='function'&&!old.__v729){window[fn]=function(){var r=old.apply(this,arguments);run();return r;}; window[fn].__v729=true;}}
-  ['v486RenderMonthlyPct','v485RenderMonthlyPct','v484RenderMonthlyPct','v590RenderMonthlyPct','renderWDWInput','switchWDW'].forEach(wrap);
-  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-input,#wdw-btn-monthlypct,#wdw-btn-input'))run();},true);
-  document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-input'))run();},true);
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run); else run();
-  setTimeout(run,1200); setTimeout(run,2600);
+  wrap('renderWDWInput');
+  document.addEventListener('click',function(e){
+    if(e.target && e.target.closest && e.target.closest('#wdw-input,#wdw-btn-input')) setTimeout(clean,80);
+  },true);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',clean); else clean();
+  setTimeout(clean,500);
 })();
 </script>
-<style id="v729CH-specific-replacement-badges-only-style">
-.v729-repl-chip,.v729-original-repl-chip{display:block;margin-top:4px;padding:3px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fb923c;color:#9a3412;font-size:10.5px;font-weight:800;white-space:normal;line-height:1.35;max-width:310px}
-.v729-original-repl-chip{display:inline-block;margin-inline-start:6px;vertical-align:middle;background:#fffbeb;border-color:#f59e0b;color:#92400e;max-width:520px}
-</style>
 
 </body>
 </html>
