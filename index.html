@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v740CL | גישה</title>
+<title>Reports_Workers v741CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v740CL</span>
+      <span class="topbar-title">Reports_Workers v741CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9280,7 +9280,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
           monthly=monthly.filter(function(td){return td!==existing;});
         }
         // after filtering, keep only 12 monthly values, not the inserted annual
-        var vals=monthly.slice(-12).map(function(td){return parsePct(td.textContent);});
+        var vals=monthly.slice(0,12).map(function(td){return parsePct(td.textContent);});
         while(vals.length<12) vals.unshift(0);
         var annual=vals.reduce(function(s,v){return s+v;},0)/12;
         if(!existing){
@@ -9315,6 +9315,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 
 <script>
 window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.workers[i].active=true;S.workers[i].endMonth=null;if(typeof renderWorkerList==='function')renderWorkerList();if(typeof saveLocally==='function')saveLocally();if(typeof saveData==='function')saveData();};
+window.endWorker=function(i){if(typeof openEnd==='function')openEnd(i);};
 </script>
 </body>
 </htmlYPE html>
@@ -9329,7 +9330,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v740CL | גישה</title>
+<title>Reports_Workers v741CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9590,7 +9591,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v740CL</span>
+      <span class="topbar-title">Reports_Workers v741CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -19891,7 +19892,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
           monthly=monthly.filter(function(td){return td!==existing;});
         }
         // after filtering, keep only 12 monthly values, not the inserted annual
-        var vals=monthly.slice(-12).map(function(td){return parsePct(td.textContent);});
+        var vals=monthly.slice(0,12).map(function(td){return parsePct(td.textContent);});
         while(vals.length<12) vals.unshift(0);
         var annual=vals.reduce(function(s,v){return s+v;},0)/12;
         if(!existing){
@@ -19926,6 +19927,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 
 <script>
 window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.workers[i].active=true;S.workers[i].endMonth=null;if(typeof renderWorkerList==='function')renderWorkerList();if(typeof saveLocally==='function')saveLocally();if(typeof saveData==='function')saveData();};
+window.endWorker=function(i){if(typeof openEnd==='function')openEnd(i);};
 </script>
 </body>
 </html>
