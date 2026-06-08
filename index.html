@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v740CL | גישה</title>
+<title>Reports_Workers v741CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v740CL</span>
+      <span class="topbar-title">Reports_Workers v741CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8905,22 +8905,9 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
         setCell(annualCell,maps.main[name]);
       }
     });
-    root.querySelectorAll('tr.v486-detail-row').forEach(function(drow){
-      var title=drow.querySelector('.v486-detail-title');
-      var worker='';
-      if(title){worker=(title.textContent||'').split('—')[0].trim();}
-      drow.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){
-        // v740CL: skip replacement rows — their annual was already computed correctly by detail()
-        if(row.classList&&row.classList.contains('v731-repl-row')) return;
-        var b=row.querySelector('td.v486-donor-name b');
-        var donor=(b&&b.textContent||'').trim();
-        var key=worker+'|||'+donor;
-        if(Object.prototype.hasOwnProperty.call(maps.detail,key)){
-          var annualCell=row.querySelector('td.v487-annual-cell');
-          setCell(annualCell,maps.detail[key]);
-        }
-      });
-    });
+    // v741CL: detail() already computes correct annual for every row (base and replacement).
+    // apply() must NOT overwrite detail-matrix cells — doing so corrupts flexible-percent rows.
+    // (previously only repl-rows were skipped; now all detail-matrix rows are skipped)
   }
   function run(){setTimeout(apply,0);setTimeout(apply,120);setTimeout(apply,350);}
   ['click','change','input'].forEach(function(ev){document.addEventListener(ev,function(e){
@@ -9327,7 +9314,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v740CL | גישה</title>
+<title>Reports_Workers v741CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9588,7 +9575,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v740CL</span>
+      <span class="topbar-title">Reports_Workers v741CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -19208,22 +19195,9 @@ window.calcWorkerPct = function(workerRow, monthKey) {
         setCell(annualCell,maps.main[name]);
       }
     });
-    root.querySelectorAll('tr.v486-detail-row').forEach(function(drow){
-      var title=drow.querySelector('.v486-detail-title');
-      var worker='';
-      if(title){worker=(title.textContent||'').split('—')[0].trim();}
-      drow.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){
-        // v740CL: skip replacement rows — their annual was already computed correctly by detail()
-        if(row.classList&&row.classList.contains('v731-repl-row')) return;
-        var b=row.querySelector('td.v486-donor-name b');
-        var donor=(b&&b.textContent||'').trim();
-        var key=worker+'|||'+donor;
-        if(Object.prototype.hasOwnProperty.call(maps.detail,key)){
-          var annualCell=row.querySelector('td.v487-annual-cell');
-          setCell(annualCell,maps.detail[key]);
-        }
-      });
-    });
+    // v741CL: detail() already computes correct annual for every row (base and replacement).
+    // apply() must NOT overwrite detail-matrix cells — doing so corrupts flexible-percent rows.
+    // (previously only repl-rows were skipped; now all detail-matrix rows are skipped)
   }
   function run(){setTimeout(apply,0);setTimeout(apply,120);setTimeout(apply,350);}
   ['click','change','input'].forEach(function(ev){document.addEventListener(ev,function(e){
