@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v751CH | גישה</title>
+<title>Reports_Workers v752CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v751CH</span>
+      <span class="topbar-title">Reports_Workers v752CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9459,6 +9459,40 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 })();
 </script>
 
+
+<!-- v752CH header hotfix -->
+<script>
+(function(){
+  function fixMonthlyPctHeaders(){
+    document.querySelectorAll('#wdw-monthlypct .v486-detail-matrix').forEach(function(tbl){
+      var ths = tbl.querySelectorAll('thead th');
+      if(!ths || ths.length < 14) return;
+
+      if((ths[1].textContent||'').trim()==='0%'){
+        ths[1].textContent='שנתי';
+      }
+
+      if((ths[2].textContent||'').trim()===''){
+        ths[2].textContent='ינו';
+      }
+    });
+  }
+
+  var old = window.v486RenderMonthlyPct;
+  if(typeof old === 'function'){
+    window.v486RenderMonthlyPct = function(){
+      var r = old.apply(this, arguments);
+      setTimeout(fixMonthlyPctHeaders,0);
+      return r;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(fixMonthlyPctHeaders,500);
+  });
+})();
+</script>
+
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -9472,7 +9506,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v751CH | גישה</title>
+<title>Reports_Workers v752CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9733,7 +9767,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v751CH</span>
+      <span class="topbar-title">Reports_Workers v752CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
