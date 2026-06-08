@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v746CL | גישה</title>
+<title>Reports_Workers v747CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v746CL</span>
+      <span class="topbar-title">Reports_Workers v747CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8931,7 +8931,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function addBadges(){
     var root=document.getElementById('wdw-monthlypct'); if(!root) return;
-    root.querySelectorAll('.v486-DISABLED-detail-matrix tr').forEach(function(tr){// v746CL: disabled
+    root.querySelectorAll('.v486-DISABLED-matrix tr').forEach(function(tr){// v747CL
       var first=tr.querySelector('td.v486-donor-name'); if(!first || first.querySelector('.v727-repl-badge')) return;
       var notes=[];
       tr.querySelectorAll('td[title]').forEach(function(td){var t=td.getAttribute('title')||''; if(t.indexOf('החלפה')>=0) notes.push(t.split('\n')[0]);});
@@ -9235,7 +9235,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
     return;
     var root=document.getElementById('wdw-monthlypct');
     if(!root) return;
-    root.querySelectorAll('table.v486-DISABLED-detail-matrix').forEach(function(tbl){// v746CL
+    root.querySelectorAll('table.v486-detail-matrix').forEach(function(tbl){
       var hr=tbl.querySelector('thead tr');
       if(hr){
         var heads=Array.prototype.slice.call(hr.children).filter(function(th){return th.classList&&th.classList.contains('v736-annual-th');});
@@ -9319,7 +9319,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v746CL | גישה</title>
+<title>Reports_Workers v747CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9580,7 +9580,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v746CL</span>
+      <span class="topbar-title">Reports_Workers v747CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18128,8 +18128,8 @@ window.wdw447CloseDonorEdit=function(){
     });
 
     // Detail donor matrix: תורם | שנתי | ינואר...
-    root.querySelectorAll('table.v486-DISABLED-detail-matrix').forEach(function(table){
-      if(table.classList.contains('v487-annual-added')) return; // v746CL: disabled
+    root.querySelectorAll('table.v486-DISABLED-matrix').forEach(function(table){
+      if(table.classList.contains('v487-annual-added')) return; // v747CL
       var headRow = table.querySelector('thead tr');
       if(!headRow) return;
       var th = document.createElement('th');
@@ -19314,7 +19314,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function addBadges(){
     var root=document.getElementById('wdw-monthlypct'); if(!root) return;
-    root.querySelectorAll('.v486-DISABLED-detail-matrix tr').forEach(function(tr){// v746CL: disabled
+    root.querySelectorAll('.v486-DISABLED-matrix tr').forEach(function(tr){// v747CL
       var first=tr.querySelector('td.v486-donor-name'); if(!first || first.querySelector('.v727-repl-badge')) return;
       var notes=[];
       tr.querySelectorAll('td[title]').forEach(function(td){var t=td.getAttribute('title')||''; if(t.indexOf('החלפה')>=0) notes.push(t.split('\n')[0]);});
@@ -19349,12 +19349,12 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     try{
       var root=document.getElementById('wdw-monthlypct'); if(!root)return;
       root.querySelectorAll('table.v486-table > tbody > tr.v486-main-row').forEach(function(row){setAnnual(row,avgFromRow(row));});
-      // v746CL: detail-matrix annual handled by ensureDetailAnnuals only
+      // v747CL: detail-matrix annual is v747-det-annual protected class, not touched here
     }finally{applying=false;}
   }
   function addDetailBadges(){
     var root=document.getElementById('wdw-monthlypct'); if(!root)return;
-    root.querySelectorAll('table.v486-DISABLED-matrix > tbody > tr').forEach(function(row){// v746CL
+    root.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){
       var first=row.querySelector('td.v486-donor-name'); if(!first||first.querySelector('.v728-repl-badge'))return;
       var has=false;
       row.querySelectorAll('td[title]').forEach(function(td){var t=td.getAttribute('title')||''; if(t.indexOf('החלפה')>=0||t.indexOf('מחליף')>=0)has=true;});
@@ -19852,7 +19852,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     return;
     var root=document.getElementById('wdw-monthlypct');
     if(!root) return;
-    root.querySelectorAll('table.v486-DISABLED-detail-matrix').forEach(function(tbl){// v746CL
+    root.querySelectorAll('table.v486-detail-matrix').forEach(function(tbl){
       var hr=tbl.querySelector('thead tr');
       if(hr){
         var heads=Array.prototype.slice.call(hr.children).filter(function(th){return th.classList&&th.classList.contains('v736-annual-th');});
