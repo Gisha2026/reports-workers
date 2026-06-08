@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v752CH | גישה</title>
+<title>Reports_Workers v753CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v752CH</span>
+      <span class="topbar-title">Reports_Workers v753CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9460,36 +9460,54 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 </script>
 
 
-<!-- v752CH header hotfix -->
-<script>
+<!-- v753CH: fix ONLY the mistaken 0% label in the detail header row -->
+<style id="v753CH-detail-annual-label-style">
+#wdw-monthlypct table.v486-detail-matrix td.v753-annual-label{
+  background:#eef8f6!important;
+  color:#073f3d!important;
+  font-weight:900!important;
+  text-align:center!important;
+}
+</style>
+<script id="v753CH-detail-annual-label-fix">
 (function(){
-  function fixMonthlyPctHeaders(){
-    document.querySelectorAll('#wdw-monthlypct .v486-detail-matrix').forEach(function(tbl){
-      var ths = tbl.querySelectorAll('thead th');
-      if(!ths || ths.length < 14) return;
-
-      if((ths[1].textContent||'').trim()==='0%'){
-        ths[1].textContent='שנתי';
-      }
-
-      if((ths[2].textContent||'').trim()===''){
-        ths[2].textContent='ינו';
-      }
+  function fixDetailAnnualLabel(){
+    document.querySelectorAll('#wdw-monthlypct table.v486-detail-matrix tr').forEach(function(tr){
+      if(!/תורם\s*\/\s*פרויקט/.test(tr.textContent || '')) return;
+      tr.querySelectorAll('td').forEach(function(td){
+        if((td.textContent || '').trim() === '0%'){
+          td.textContent = 'שנתי';
+          td.title = 'שנתי';
+          td.className = 'v753-annual-label';
+        }
+      });
     });
   }
 
-  var old = window.v486RenderMonthlyPct;
-  if(typeof old === 'function'){
-    window.v486RenderMonthlyPct = function(){
-      var r = old.apply(this, arguments);
-      setTimeout(fixMonthlyPctHeaders,0);
-      return r;
-    };
+  function schedule(){
+    setTimeout(fixDetailAnnualLabel, 0);
+    setTimeout(fixDetailAnnualLabel, 80);
+    setTimeout(fixDetailAnnualLabel, 250);
+    setTimeout(fixDetailAnnualLabel, 600);
   }
 
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(fixMonthlyPctHeaders,500);
+  ['v486RenderMonthlyPct','v590RenderMonthlyPct'].forEach(function(name){
+    var old = window[name];
+    if(typeof old === 'function' && !old.__v753AnnualLabelWrapped){
+      var wrapped = function(){
+        var r = old.apply(this, arguments);
+        schedule();
+        return r;
+      };
+      wrapped.__v753AnnualLabelWrapped = true;
+      window[name] = wrapped;
+    }
   });
+
+  document.addEventListener('click', schedule, true);
+  document.addEventListener('change', schedule, true);
+  window.addEventListener('load', schedule);
+  schedule();
 })();
 </script>
 
@@ -9506,7 +9524,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v752CH | גישה</title>
+<title>Reports_Workers v753CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9767,7 +9785,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v752CH</span>
+      <span class="topbar-title">Reports_Workers v753CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
