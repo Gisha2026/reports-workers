@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v742CL | גישה</title>
+<title>Reports_Workers v743CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v742CL</span>
+      <span class="topbar-title">Reports_Workers v743CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9068,7 +9068,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   }
   function cleanupAnnualColumns(root){
     root=root||document;
-    root.querySelectorAll('#tab-wdw table.v486-table').forEach(function(tbl){
+    root.querySelectorAll('#tab-wdw table.v486-table, #tab-wdw table.v486-detail-matrix').forEach(function(tbl){
       var hs=Array.prototype.slice.call(tbl.querySelectorAll('thead th.v487-annual-th'));
       if(hs.length>1) hs.slice(1).forEach(function(h){h.remove();});
       tbl.querySelectorAll('tbody tr').forEach(function(tr){
@@ -9316,20 +9316,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <script>
 window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.workers[i].active=true;S.workers[i].endMonth=null;if(typeof renderWorkerList==='function')renderWorkerList();if(typeof saveLocally==='function')saveLocally();if(typeof saveData==='function')saveData();};
 </script>
-
-<script id="v742CL-reset-render-hooks">
-/* v742CL: reset render hook flags so installRenderHooks wraps the latest v486RenderMonthlyPct */
-(function(){
-  function resetAndInstall(){
-    window.__v733RenderHooked = false;
-    window.__v734MonthlyHook = false;
-    if(typeof installRenderHooks === 'function') installRenderHooks();
-    else if(typeof window.installRenderHooks === 'function') window.installRenderHooks();
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(resetAndInstall, 100); });
-  else setTimeout(resetAndInstall, 100);
-})();
-</script>
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -9343,7 +9329,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v742CL | גישה</title>
+<title>Reports_Workers v743CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9604,7 +9590,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v742CL</span>
+      <span class="topbar-title">Reports_Workers v743CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18082,7 +18068,7 @@ window.wdw447CloseDonorEdit=function(){
   function collect(year){var _S=window.S||(typeof S!=='undefined'?S:null), donors=(_S&&_S.wdw&&Array.isArray(_S.wdw.donors))?_S.wdw.donors:[], out=[];donors.forEach(function(d){(d.workers||[]).forEach(function(w){if(!w||!w.name||w.active===false)return;for(var i=0;i<12;i++){var m=mk(year,i);if(!donorOk(d,m)||!inRange(w,m))continue;if(Array.isArray(w.blockedMonths)&&w.blockedMonths.indexOf(m)!==-1)continue;var bp=basePct(w,m);if(bp)out.push({monthIndex:i,donor:d.name||'',project:d.code||d.project||'',worker:w.name||'',role:baseRoleOf(w),pct:bp,kind:'בסיס',replaces:'',start:w.startMonth||d.startDate||'',end:w.endMonth||d.endDate||''});replacementRecords(w,d,m,i).forEach(function(r){out.push(r);});}});});return out;}
   function group(records,mode){var map={};records.forEach(function(r){var k=mode==='role'?((r.worker||'ללא עובד')+'|||'+(r.role||'ללא תפקיד')):(r.worker||'ללא עובד');var display=mode==='role'?(r.role||'ללא תפקיד'):(r.worker||'ללא עובד');if(!map[k])map[k]={name:display,months:Array(12).fill(0),details:Array.from({length:12},function(){return[]})};map[k].months[r.monthIndex]+=n(r.pct);map[k].details[r.monthIndex].push(r);});return Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return a.name.localeCompare(b.name,'he')});}
   window.v590ToggleMonthlyPct=window.v486ToggleMonthlyPct=function(id){var el=document.getElementById(id);if(el)el.style.display=el.style.display==='table-row'?'none':'table-row';};
-  function detail(row){var dm={};row.details.forEach(function(list,mi){list.forEach(function(r){var k=(r.donor||'ללא תורם')+'||'+(r.project||'');if(!dm[k])dm[k]={donor:r.donor||'ללא תורם',project:r.project||'',months:Array(12).fill(0),notes:Array.from({length:12},function(){return[]})};dm[k].months[mi]+=n(r.pct);dm[k].notes[mi].push(r);});});var donors=Object.keys(dm).map(function(k){return dm[k]}).sort(function(a,b){return a.donor.localeCompare(b.donor,'he')});var h='<div class="v486-detail-box"><div class="v486-detail-title">'+esc(row.name)+' — פירוט לפי תורמים וחודשים</div><table class="v486-detail-matrix"><thead><tr><th>תורם / פרויקט</th>';for(var i=0;i<12;i++)h+='<th>'+esc(ml(i).slice(0,3))+'</th>';h+='</tr></thead><tbody>';if(!donors.length)h+='<tr><td colspan="13" class="v486-empty">אין פירוט</td></tr>';donors.forEach(function(d){h+='<tr><td class="v486-donor-name"><b>'+esc(d.donor)+'</b>'+(d.project?'<span>'+esc(d.project)+'</span>':'')+'</td>';d.months.forEach(function(v,mi){var title=(d.notes[mi]||[]).map(function(r){return (r.kind||'')+' '+fmt(r.pct)+(r.replaces?' | מחליף את: '+r.replaces:'')+' | '+(r.start||'—')+' עד '+(r.end||'—')}).join('\n');h+='<td class="v486-pct '+cls(v)+'" title="'+esc(title)+'">'+fmt(v)+'</td>';});h+='</tr>';});return h+'</tbody></table><div class="v486-detail-note">ריחוף על תא מציג בסיס/החלפה ותקופה.</div></div>';}
+  function detail(row){var dm={};row.details.forEach(function(list,mi){list.forEach(function(r){var k=(r.donor||'ללא תורם')+'||'+(r.project||'');if(!dm[k])dm[k]={donor:r.donor||'ללא תורם',project:r.project||'',months:Array(12).fill(0),notes:Array.from({length:12},function(){return[]})};dm[k].months[mi]+=n(r.pct);dm[k].notes[mi].push(r);});});var donors=Object.keys(dm).map(function(k){return dm[k]}).sort(function(a,b){return a.donor.localeCompare(b.donor,'he')});var h='<div class="v486-detail-box"><div class="v486-detail-title">'+esc(row.name)+' — פירוט לפי תורמים וחודשים</div><table class="v486-detail-matrix"><thead><tr><th>תורם / פרויקט</th><th class="v487-annual-th">שנתי</th>';for(var i=0;i<12;i++)h+='<th>'+esc(ml(i).slice(0,3))+'</th>';h+='</tr></thead><tbody>';if(!donors.length)h+='<tr><td colspan="14" class="v486-empty">אין פירוט</td></tr>';donors.forEach(function(d){var av=annual(d.months);h+='<tr><td class="v486-donor-name"><b>'+esc(d.donor)+'</b>'+(d.project?'<span>'+esc(d.project)+'</span>':'')+'</td><td class="v486-pct v487-annual-cell '+cls(av)+'">'+fmt(av)+'</td>';d.months.forEach(function(v,mi){var title=(d.notes[mi]||[]).map(function(r){return (r.kind||'')+' '+fmt(r.pct)+(r.replaces?' | מחליף את: '+r.replaces:'')+' | '+(r.start||'—')+' עד '+(r.end||'—')}).join('\n');h+='<td class="v486-pct '+cls(v)+'" title="'+esc(title)+'">'+fmt(v)+'</td>';});h+='</tr>';});return h+'</tbody></table><div class="v486-detail-note">ריחוף על תא מציג בסיס/החלפה ותקופה.</div></div>';}
   window.v590RenderMonthlyPct=window.v486RenderMonthlyPct=function(){var root=document.getElementById('wdw-monthlypct');if(!root)return;var _S=window.S||(typeof S!=='undefined'?S:null);var ye=document.getElementById('v486-monthlypct-year')||document.getElementById('v485-monthlypct-year')||document.getElementById('v484-monthlypct-year'), me=document.getElementById('v486-monthlypct-mode')||document.getElementById('v485-monthlypct-mode')||document.getElementById('v484-monthlypct-mode');var year=ye?parseInt(ye.value,10):((_S&&_S.year)||new Date().getFullYear()), mode=me?me.value:'worker', rows=group(collect(year),mode);var h='<div class="v486-monthly-shell"><div class="v486-head"><div><div class="v486-title">אחוז חודשי</div><div class="v486-sub">שיוך חודשי לתורמים לפי '+(mode==='role'?'תפקיד':'עובד')+' — בסיס + החלפות</div></div><div class="v486-controls"><label>שנה<select id="v486-monthlypct-year">';var end=Math.max(new Date().getFullYear()+5,year+2,2028);for(var y=2024;y<=end;y++)h+='<option value="'+y+'" '+(y===year?'selected':'')+'>'+y+'</option>';h+='</select></label><label>תצוגה<select id="v486-monthlypct-mode"><option value="worker" '+(mode==='worker'?'selected':'')+'>עובד</option><option value="role" '+(mode==='role'?'selected':'')+'>תפקיד</option></select></label><button onclick="v486RenderMonthlyPct()">הצג</button></div></div><div class="v486-note">לחיצה על שורת עובד/תפקיד פותחת או סוגרת פירוט לפי תורמים וחודשים.</div><div class="v486-table-wrap"><table class="v486-table"><thead><tr><th>'+(mode==='role'?'תפקיד':'עובד')+'</th>';for(var i=0;i<12;i++)h+='<th>'+esc(ml(i).slice(0,3))+'</th>';h+='</tr></thead><tbody>';if(!rows.length)h+='<tr><td colspan="13" class="v486-empty">אין נתוני שיוך להצגה לשנה זו</td></tr>';rows.forEach(function(r,idx){var id='v486MonthlyPctDetail_'+idx;h+='<tr class="v486-main-row" onclick="v486ToggleMonthlyPct(\''+id+'\')"><td class="v486-name">'+esc(r.name)+'</td>';r.months.forEach(function(v){h+='<td class="v486-pct '+cls(v)+'">'+fmt(v)+'</td>';});h+='</tr><tr id="'+id+'" class="v486-detail-row" style="display:none"><td colspan="13">'+detail(r)+'</td></tr>';});root.innerHTML=h+'</tbody></table></div></div>';};
   window.v484RenderMonthlyPct=window.v486RenderMonthlyPct;
   window.v485RenderMonthlyPct=window.v486RenderMonthlyPct;
@@ -19368,7 +19354,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     try{
       var root=document.getElementById('wdw-monthlypct'); if(!root)return;
       root.querySelectorAll('table.v486-table > tbody > tr.v486-main-row').forEach(function(row){setAnnual(row,avgFromRow(row));});
-      // v742CL: detail-matrix annual built by detail() directly
+      root.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){setAnnual(row,avgFromRow(row));});
     }finally{applying=false;}
   }
   function addDetailBadges(){
@@ -19645,7 +19631,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   }
   function cleanupAnnualColumns(root){
     root=root||document;
-    root.querySelectorAll('#tab-wdw table.v486-table').forEach(function(tbl){
+    root.querySelectorAll('#tab-wdw table.v486-table, #tab-wdw table.v486-detail-matrix').forEach(function(tbl){
       var hs=Array.prototype.slice.call(tbl.querySelectorAll('thead th.v487-annual-th'));
       if(hs.length>1) hs.slice(1).forEach(function(h){h.remove();});
       tbl.querySelectorAll('tbody tr').forEach(function(tr){
@@ -19760,7 +19746,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   }
   function cleanupAnnualColumns(root){
     root=root||document;
-    root.querySelectorAll('#tab-wdw table.v486-table').forEach(function(tbl){
+    root.querySelectorAll('#tab-wdw table.v486-table,#tab-wdw table.v486-detail-matrix').forEach(function(tbl){
       var heads=Array.prototype.slice.call(tbl.querySelectorAll('thead th.v487-annual-th'));
       heads.slice(1).forEach(function(h){h.remove();});
       tbl.querySelectorAll('tbody tr').forEach(function(tr){
@@ -19940,20 +19926,6 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 
 <script>
 window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.workers[i].active=true;S.workers[i].endMonth=null;if(typeof renderWorkerList==='function')renderWorkerList();if(typeof saveLocally==='function')saveLocally();if(typeof saveData==='function')saveData();};
-</script>
-
-<script id="v742CL-reset-render-hooks">
-/* v742CL: reset render hook flags so installRenderHooks wraps the latest v486RenderMonthlyPct */
-(function(){
-  function resetAndInstall(){
-    window.__v733RenderHooked = false;
-    window.__v734MonthlyHook = false;
-    if(typeof installRenderHooks === 'function') installRenderHooks();
-    else if(typeof window.installRenderHooks === 'function') window.installRenderHooks();
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(resetAndInstall, 100); });
-  else setTimeout(resetAndInstall, 100);
-})();
 </script>
 </body>
 </html>
