@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v738CL | גישה</title>
+<title>Reports_Workers v740CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v738CL</span>
+      <span class="topbar-title">Reports_Workers v740CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8910,6 +8910,8 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
       var worker='';
       if(title){worker=(title.textContent||'').split('—')[0].trim();}
       drow.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){
+        // v740CL: skip replacement rows — their annual was already computed correctly by detail()
+        if(row.classList&&row.classList.contains('v731-repl-row')) return;
         var b=row.querySelector('td.v486-donor-name b');
         var donor=(b&&b.textContent||'').trim();
         var key=worker+'|||'+donor;
@@ -9325,7 +9327,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v738CL | גישה</title>
+<title>Reports_Workers v740CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9586,7 +9588,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v738CL</span>
+      <span class="topbar-title">Reports_Workers v740CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16784,6 +16786,22 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
         '<div class="v437-row-actions" style="color:#9a3412;font-size:11px;justify-content:flex-start">תצוגה בלבד</div>'+
       '</div>';
     }
+    // v739CL: also show indicator rows for extraReplaces entries
+    (w.extraReplaces||[]).forEach(function(r){
+      var xPct=parseFloat(r.pct||r.percent||r.value||0)||0;
+      if(!r.replaces || !xPct) return;
+      var xStart=r.startMonth||r.replaceStartMonth||w.startMonth||'';
+      var xEnd=r.endMonth||r.replaceEndMonth||w.endMonth||'';
+      var xRange=(xStart||xEnd)?(esc(xStart||'')+' — '+esc(xEnd||'')):'—';
+      var xTarget=(r.replaces==='__vacant__')?(r.vacantName||'משרה פנויה'):esc(r.replaces||'—');
+      html+='<div class="v437-worker-row v594-replacement-row" style="background:#fff7ed;border-color:#fed7aa;margin-top:-4px;margin-bottom:6px;">'+
+        '<div><b style="color:#9a3412">'+esc(w.name||'—')+'</b><span style="color:#b45309">מחליף/ת</span></div>'+
+        '<div><span style="display:inline-block;background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800">החלפה</span></div>'+
+        '<div><b style="color:#9a3412">'+xTarget+'</b><span style="color:#9a3412">'+xPct+'%</span></div>'+
+        '<div>'+xRange+'</div>'+
+        '<div class="v437-row-actions" style="color:#9a3412;font-size:11px;justify-content:flex-start">תצוגה בלבד</div>'+
+      '</div>';
+    });
 
     if(open) html+=workerForm('edit',d,w);
     return html;
@@ -19195,6 +19213,8 @@ window.calcWorkerPct = function(workerRow, monthKey) {
       var worker='';
       if(title){worker=(title.textContent||'').split('—')[0].trim();}
       drow.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){
+        // v740CL: skip replacement rows — their annual was already computed correctly by detail()
+        if(row.classList&&row.classList.contains('v731-repl-row')) return;
         var b=row.querySelector('td.v486-donor-name b');
         var donor=(b&&b.textContent||'').trim();
         var key=worker+'|||'+donor;
