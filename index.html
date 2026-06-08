@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v739CH | גישה</title>
+<title>Reports_Workers v738CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v739CH</span>
+      <span class="topbar-title">Reports_Workers v738CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9312,185 +9312,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 })();
 </script>
 
-
-<!-- v739CH critical WDW period-amount/ended-worker fix -->
-<script id="v739CH-wdw-period-ended-fix">
-(function(){
-  'use strict';
-  if(window.__v739CH_wdwPeriodEndedFix) return;
-  window.__v739CH_wdwPeriodEndedFix = true;
-
-  function n(v){
-    var x=parseFloat(String(v==null?'':v).replace(/,/g,''));
-    return isFinite(x)?x:0;
-  }
-  function ym(v){
-    v=String(v||'').substring(0,7);
-    return /^\d{4}-\d{2}$/.test(v)?v:'';
-  }
-  function idx(m){
-    m=ym(m);
-    if(!m) return null;
-    var a=m.split('-').map(Number);
-    return a[0]*12+a[1];
-  }
-  function between(m,s,e){
-    var mi=idx(m), si=idx(s), ei=idx(e);
-    if(mi==null||si==null||ei==null) return false;
-    return mi>=si && mi<=ei;
-  }
-  function monthRange(s,e){
-    s=ym(s); e=ym(e);
-    if(!s||!e) return [];
-    var a=s.split('-').map(Number), b=e.split('-').map(Number);
-    var out=[];
-    var y=a[0], m=a[1];
-    while(y*12+m <= b[0]*12+b[1]){
-      out.push(y+'-'+String(m).padStart(2,'0'));
-      m++; if(m>12){m=1;y++;}
-    }
-    return out;
-  }
-  function el(id){ return document.getElementById(id); }
-  function setFundingToPeriodAmount(pfx){
-    var funding=el(pfx+'-funding') || el(pfx+'-ftype');
-    if(funding) funding.value='סכום לתקופה';
-  }
-  function applyPeriodAmount(pfx){
-    var totalEl=el(pfx+'-total-amt'), startEl=el(pfx+'-start'), endEl=el(pfx+'-end');
-    if(!totalEl||!startEl||!endEl) return false;
-    var total=n(totalEl.value);
-    var start=ym(startEl.value), end=ym(endEl.value);
-    if(!total || !start || !end) return false;
-
-    var months=monthRange(start,end);
-    if(!months.length) return false;
-
-    setFundingToPeriodAmount(pfx);
-
-    var cells=Array.prototype.slice.call(document.querySelectorAll('.v710-month-cell[data-pfx="'+CSS.escape(pfx)+'"]'));
-    var activeCells=[];
-    cells.forEach(function(cell){
-      var mk=ym(cell.getAttribute('data-month'));
-      var inPeriod=between(mk,start,end);
-      if(!inPeriod){
-        cell.setAttribute('data-state','blocked');
-        var pct=cell.querySelector('.v710-percent-input');
-        var amt=cell.querySelector('.v710-amount-input');
-        if(pct) pct.value='';
-        if(amt) amt.value='';
-        if(typeof window.wdw710ApplyCell==='function') window.wdw710ApplyCell(cell);
-        return;
-      }
-      if((cell.getAttribute('data-state')||'auto')!=='blocked') activeCells.push(cell);
-    });
-
-    var activeCount=activeCells.length || months.length;
-    var monthly=Math.round((total/activeCount)*100)/100;
-
-    var amtEl=el(pfx+'-amt');
-    if(amtEl) amtEl.value=monthly;
-    var pctEl=el(pfx+'-pct');
-    if(pctEl) pctEl.value='';
-
-    activeCells.forEach(function(cell){
-      cell.setAttribute('data-kind','amount');
-      if((cell.getAttribute('data-state')||'auto')==='blocked') return;
-      var amt=cell.querySelector('.v710-amount-input');
-      var pct=cell.querySelector('.v710-percent-input');
-      if(amt) amt.value=monthly;
-      if(pct) pct.value='';
-      if(typeof window.wdw710ApplyCell==='function') window.wdw710ApplyCell(cell);
-    });
-
-    return true;
-  }
-
-  var oldCalc = window.wdwCalcMonthlyFromPeriod;
-  window.wdwCalcMonthlyFromPeriod = function(pfx){
-    if(applyPeriodAmount(pfx)) return;
-    if(typeof oldCalc==='function') return oldCalc.apply(this, arguments);
-  };
-
-  var oldRebalance = window.wdw710Rebalance;
-  window.wdw710Rebalance = function(pfx){
-    var funding=el(pfx+'-funding') || el(pfx+'-ftype');
-    var totalEl=el(pfx+'-total-amt');
-    if(funding && funding.value==='סכום לתקופה' && totalEl && n(totalEl.value)>0){
-      if(applyPeriodAmount(pfx)) return;
-    }
-    if(typeof oldRebalance==='function') return oldRebalance.apply(this, arguments);
-  };
-
-  function installDateHooks(){
-    document.addEventListener('change', function(e){
-      var id=e.target && e.target.id || '';
-      var m=id.match(/^(.*)-(start|end)$/);
-      if(!m) return;
-      var pfx=m[1];
-      var totalEl=el(pfx+'-total-amt');
-      var funding=el(pfx+'-funding') || el(pfx+'-ftype');
-      if(totalEl && n(totalEl.value)>0 && funding && funding.value==='סכום לתקופה'){
-        setTimeout(function(){applyPeriodAmount(pfx);},0);
-      }
-    }, true);
-  }
-
-  function findWorker(did,wid){
-    var donors=(window.S&&S.wdw&&S.wdw.donors)||[];
-    var d=donors.find(function(x){return x.id===did;});
-    var w=d && (d.workers||[]).find(function(x){return x.id===wid;});
-    return {d:d,w:w};
-  }
-
-  function restore(did,wid){
-    var x=findWorker(did,wid);
-    if(x.w){
-      x.w.active=true;
-      window.WDW_EDIT_DONOR_ID=did;
-      window.WDW_EDIT_WORKER_ID=wid;
-      try{ if(typeof saveLocally==='function') saveLocally(); }catch(e){}
-      try{ if(typeof saveData==='function') saveData(); }catch(e){}
-      try{ if(typeof renderWDWInput==='function') renderWDWInput(); }catch(e){}
-    }
-  }
-  window.wdwRestoreWorker = restore;
-  window.wdw437RestoreWorker = restore;
-
-  var old437Save = window.wdw437SaveWorker;
-  if(typeof old437Save==='function' && !old437Save.__v739Wrapped){
-    window.wdw437SaveWorker=function(mode,did,wid){
-      var p='v437-worker-'+mode+'-'+did+'-'+wid;
-      var before={
-        total:n((el(p+'-total-amt')||{}).value),
-        start:ym((el(p+'-start')||{}).value),
-        end:ym((el(p+'-end')||{}).value),
-        funding:(el(p+'-funding')||{}).value||''
-      };
-      if(before.funding==='סכום לתקופה' && before.total>0) applyPeriodAmount(p);
-      var r=old437Save.apply(this,arguments);
-      try{
-        var x=findWorker(did,wid);
-        if(mode==='edit' && x.w){
-          x.w.active=true;
-          if(before.funding==='סכום לתקופה' && before.total>0){
-            x.w.totalPeriodAmount=before.total;
-            x.w.startMonth=before.start || x.w.startMonth;
-            x.w.endMonth=before.end || x.w.endMonth;
-            x.w.fundingType='סכום לתקופה';
-            x.w.valueType='amount';
-          }
-        }
-      }catch(e){}
-      return r;
-    };
-    window.wdw437SaveWorker.__v739Wrapped=true;
-  }
-
-  installDateHooks();
-})();
-</script>
-
 </body>
 </htmlYPE html>
 <html dir="rtl" lang="he">
@@ -9504,7 +9325,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v739CH | גישה</title>
+<title>Reports_Workers v738CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9765,7 +9586,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v739CH</span>
+      <span class="topbar-title">Reports_Workers v738CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
