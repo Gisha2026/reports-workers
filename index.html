@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v745CL | גישה</title>
+<title>Reports_Workers v742CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v745CL</span>
+      <span class="topbar-title">Reports_Workers v742CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9057,7 +9057,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   }
   function cleanupAnnualColumns(root){
     root=root||document;
-    root.querySelectorAll('#tab-wdw table.v486-table').forEach(function(tbl){// v745CL: detail-matrix excluded
+    root.querySelectorAll('#tab-wdw table.v486-table, #tab-wdw table.v486-detail-matrix').forEach(function(tbl){
       var hs=Array.prototype.slice.call(tbl.querySelectorAll('thead th.v487-annual-th'));
       if(hs.length>1) hs.slice(1).forEach(function(h){h.remove();});
       tbl.querySelectorAll('tbody tr').forEach(function(tr){
@@ -9288,8 +9288,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
     if(!root) return;
     ensureDetailAnnuals();
     if(!root.__v736Observer){
-      // v744CL: disabled — causes infinite loop with ensureTable
-      // root.__v736Observer=new MutationObserver(function(){setTimeout(ensureDetailAnnuals,0);});
+      root.__v736Observer=new MutationObserver(function(){setTimeout(ensureDetailAnnuals,0);});
       root.__v736Observer.observe(root,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class']});
     }
   }
@@ -9298,8 +9297,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct'))setTimeout(function(){install();ensureDetailAnnuals();},80);},true);
   document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))setTimeout(function(){install();ensureDetailAnnuals();},80);},true);
   window.addEventListener('load',function(){setTimeout(function(){install();ensureDetailAnnuals();},200);});
-  // v744CL: disabled setInterval ensureDetailAnnuals — causes loop
-  // setInterval(function(){install();ensureDetailAnnuals();},700);
+  setInterval(function(){install();ensureDetailAnnuals();},700);
 })();
 </script>
 
@@ -9321,7 +9319,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v745CL | גישה</title>
+<title>Reports_Workers v742CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9582,7 +9580,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v745CL</span>
+      <span class="topbar-title">Reports_Workers v742CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -19351,7 +19349,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     try{
       var root=document.getElementById('wdw-monthlypct'); if(!root)return;
       root.querySelectorAll('table.v486-table > tbody > tr.v486-main-row').forEach(function(row){setAnnual(row,avgFromRow(row));});
-      // v745CL: detail-matrix annual handled by ensureTable only
+      root.querySelectorAll('table.v486-detail-matrix > tbody > tr').forEach(function(row){setAnnual(row,avgFromRow(row));});
     }finally{applying=false;}
   }
   function addDetailBadges(){
@@ -19628,7 +19626,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   }
   function cleanupAnnualColumns(root){
     root=root||document;
-    root.querySelectorAll('#tab-wdw table.v486-table').forEach(function(tbl){// v745CL: detail-matrix excluded
+    root.querySelectorAll('#tab-wdw table.v486-table, #tab-wdw table.v486-detail-matrix').forEach(function(tbl){
       var hs=Array.prototype.slice.call(tbl.querySelectorAll('thead th.v487-annual-th'));
       if(hs.length>1) hs.slice(1).forEach(function(h){h.remove();});
       tbl.querySelectorAll('tbody tr').forEach(function(tr){
@@ -19743,7 +19741,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   }
   function cleanupAnnualColumns(root){
     root=root||document;
-    root.querySelectorAll('#tab-wdw table.v486-table').forEach(function(tbl){// v745CL: detail-matrix excluded
+    root.querySelectorAll('#tab-wdw table.v486-table,#tab-wdw table.v486-detail-matrix').forEach(function(tbl){
       var heads=Array.prototype.slice.call(tbl.querySelectorAll('thead th.v487-annual-th'));
       heads.slice(1).forEach(function(h){h.remove();});
       tbl.querySelectorAll('tbody tr').forEach(function(tr){
@@ -19907,8 +19905,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     if(!root) return;
     ensureDetailAnnuals();
     if(!root.__v736Observer){
-      // v744CL: disabled — causes infinite loop with ensureTable
-      // root.__v736Observer=new MutationObserver(function(){setTimeout(ensureDetailAnnuals,0);});
+      root.__v736Observer=new MutationObserver(function(){setTimeout(ensureDetailAnnuals,0);});
       root.__v736Observer.observe(root,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class']});
     }
   }
@@ -19917,8 +19914,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct'))setTimeout(function(){install();ensureDetailAnnuals();},80);},true);
   document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))setTimeout(function(){install();ensureDetailAnnuals();},80);},true);
   window.addEventListener('load',function(){setTimeout(function(){install();ensureDetailAnnuals();},200);});
-  // v744CL: disabled setInterval ensureDetailAnnuals — causes loop
-  // setInterval(function(){install();ensureDetailAnnuals();},700);
+  setInterval(function(){install();ensureDetailAnnuals();},700);
 })();
 </script>
 
@@ -19927,93 +19923,5 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 #tab-wdw .v742-det-annual-th{background:#eef8f6!important;color:#073f3d!important;font-weight:900!important;min-width:58px}
 #tab-wdw .v742-det-annual-cell{font-weight:900!important;border-inline-start:1px solid #d9e0e7!important;border-inline-end:1px solid #d9e0e7!important;text-align:center!important}
 </style>
-
-<script id="v743CH-monthly-detail-annual-project-lines-fix">
-/* v743CH: fix only the annual column in WDW monthly-percent detail tables.
-   Does not change monthly cells, December, replacement indicators, or management screens. */
-(function(){
-  'use strict';
-  function parsePct(txt){
-    txt=String(txt==null?'':txt).replace(/[%\s,]/g,'').replace('−','-');
-    if(!txt || txt==='—' || txt==='-' || txt==='–') return 0;
-    var n=parseFloat(txt);
-    return isFinite(n)?n:0;
-  }
-  function fmt(n){
-    n=Math.round((isFinite(n)?n:0)*10)/10;
-    if(!n) return '—';
-    return (Math.abs(n-Math.round(n))<0.0001?String(Math.round(n)):String(n).replace(/\.0$/,''))+'%';
-  }
-  function band(n){
-    n=isFinite(n)?n:0;
-    return n>100?'bad':n>=90?'warn':n>=50?'ok':n>0?'low':'empty';
-  }
-  function isAnnualCell(td){
-    return td && td.classList && (td.classList.contains('v743-detail-annual-cell') || td.classList.contains('v487-annual-cell') || td.classList.contains('v736-annual-cell')) && td.cellIndex===1;
-  }
-  function monthlyCells(tr){
-    var cells=Array.prototype.slice.call(tr.children).filter(function(td,i){return i>0;});
-    if(cells.length && isAnnualCell(cells[0])) cells=cells.slice(1);
-    return cells.slice(-12);
-  }
-  function ensureTable(tbl){
-    var hr=tbl.querySelector('thead tr');
-    if(hr){
-      var firstAnnual=null;
-      Array.prototype.slice.call(hr.children).forEach(function(th,i){
-        var txt=(th.textContent||'').replace(/\s+/g,' ').trim();
-        if(i>0 && txt==='שנתי'){
-          if(!firstAnnual) firstAnnual=th; else th.remove();
-        }
-      });
-      if(!firstAnnual){
-        firstAnnual=document.createElement('th');
-        firstAnnual.textContent='שנתי';
-        hr.insertBefore(firstAnnual,hr.children[1]||null);
-      }else if(firstAnnual.cellIndex!==1){
-        hr.insertBefore(firstAnnual,hr.children[1]||null);
-      }
-      firstAnnual.classList.add('v487-annual-th','v743-detail-annual-th');
-    }
-    tbl.querySelectorAll('tbody tr').forEach(function(tr){
-      var first=tr.children[0];
-      if(!first) return;
-      if(first.classList && first.classList.contains('v486-empty')){ first.setAttribute('colspan','14'); return; }
-      var annual=null;
-      Array.prototype.slice.call(tr.children).forEach(function(td,i){
-        if(i>0 && isAnnualCell(td)){
-          if(!annual) annual=td; else td.remove();
-        }
-      });
-      if(!annual){
-        annual=document.createElement('td');
-        annual.className='v486-pct v487-annual-cell v743-detail-annual-cell';
-        tr.insertBefore(annual,tr.children[1]||null);
-      }else if(annual.cellIndex!==1){
-        tr.insertBefore(annual,tr.children[1]||null);
-      }
-      var vals=monthlyCells(tr).map(function(td){return parsePct(td.textContent);});
-      while(vals.length<12) vals.unshift(0);
-      var avg=vals.reduce(function(s,v){return s+v;},0)/12;
-      annual.className='v486-pct v487-annual-cell v743-detail-annual-cell '+band(avg);
-      annual.textContent=fmt(avg);
-      annual.title='אחוז שנתי לשורת הפרויקט/בסיס/החלפה הזו בלבד, לפי ממוצע 12 החודשים.';
-    });
-  }
-  function run(){
-    var root=document.getElementById('wdw-monthlypct');
-    if(!root) return;
-    root.querySelectorAll('table.v486-detail-matrix').forEach(ensureTable);
-  }
-  function schedule(){setTimeout(run,0);setTimeout(run,80);setTimeout(run,250);}
-  var css='#tab-wdw table.v486-detail-matrix th.v743-detail-annual-th{background:#eef8f6!important;color:#073f3d!important;font-weight:900!important;min-width:58px!important}#tab-wdw table.v486-detail-matrix td.v743-detail-annual-cell{font-weight:900!important;border-inline-start:1px solid #d9e0e7!important;border-inline-end:1px solid #d9e0e7!important;text-align:center!important}';
-  if(!document.getElementById('v743CH-style')){var st=document.createElement('style');st.id='v743CH-style';st.textContent=css;document.head.appendChild(st);}
-  document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct,.v486-main-row'))schedule();},true);
-  document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))schedule();},true);
-  window.addEventListener('load',schedule);
-  setInterval(run,700);
-})();
-</script>
-
 </body>
 </html>
