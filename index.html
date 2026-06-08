@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v737CL | גישה</title>
+<title>Reports_Workers v738CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -318,7 +318,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v737CL</span>
+      <span class="topbar-title">Reports_Workers v738CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9242,6 +9242,8 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
     return n>100?'bad':n>=90?'warn':n>=50?'ok':n>0?'low':'empty';
   }
   function ensureDetailAnnuals(){
+    // v738CL: detail() already builds correct annual column from data. Skip entirely.
+    return;
     var root=document.getElementById('wdw-monthlypct');
     if(!root) return;
     root.querySelectorAll('table.v486-detail-matrix').forEach(function(tbl){
@@ -9278,7 +9280,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
           monthly=monthly.filter(function(td){return td!==existing;});
         }
         // after filtering, keep only 12 monthly values, not the inserted annual
-        var vals=monthly.slice(0,12).map(function(td){return parsePct(td.textContent);});
+        var vals=monthly.slice(-12).map(function(td){return parsePct(td.textContent);});
         while(vals.length<12) vals.unshift(0);
         var annual=vals.reduce(function(s,v){return s+v;},0)/12;
         if(!existing){
@@ -9323,7 +9325,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v737CL | גישה</title>
+<title>Reports_Workers v738CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9584,7 +9586,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v737CL</span>
+      <span class="topbar-title">Reports_Workers v738CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -16765,17 +16767,19 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
     '</div>';
 
     // v599CH: display-only replacement indicator under the base worker row.
+    // v738CL: extended to show indicator when replaces is a named worker too (not only __vacant__)
     // No calculation, saving, or editing logic is changed.
     var replPct=parseFloat(w.replacesPct||w.replacementPct||0)||0;
-    var isVacantReplacement=(w.replaces==='__vacant__' && replPct>0);
-    if(isVacantReplacement){
+    var hasReplacement=(w.replaces && replPct>0);
+    if(hasReplacement){
       var replStart=w.replaceStartMonth||w.replacementStartMonth||w.startMonth||'';
       var replEnd=w.replaceEndMonth||w.replacementEndMonth||w.endMonth||'';
       var replRange=(replStart||replEnd)?(esc(replStart||'')+' — '+esc(replEnd||'')):'—';
+      var replTarget=(w.replaces==='__vacant__')?(w.vacantName||'משרה פנויה'):esc(w.replaces||'—');
       html+='<div class="v437-worker-row v594-replacement-row" style="background:#fff7ed;border-color:#fed7aa;margin-top:-4px;margin-bottom:6px;">'+
-        '<div><b style="color:#9a3412">'+esc(w.name||'—')+'</b><span style="color:#b45309">מחליפה</span></div>'+
+        '<div><b style="color:#9a3412">'+esc(w.name||'—')+'</b><span style="color:#b45309">מחליף/ת</span></div>'+
         '<div><span style="display:inline-block;background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800">החלפה</span></div>'+
-        '<div><b style="color:#9a3412">'+esc(w.vacantName||'משרה פנויה')+'</b><span style="color:#9a3412">'+replPct+'%</span></div>'+
+        '<div><b style="color:#9a3412">'+replTarget+'</b><span style="color:#9a3412">'+replPct+'%</span></div>'+
         '<div>'+replRange+'</div>'+
         '<div class="v437-row-actions" style="color:#9a3412;font-size:11px;justify-content:flex-start">תצוגה בלבד</div>'+
       '</div>';
@@ -19759,18 +19763,15 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     return null;
   }
   function enhanceManagement(){
+    var did=activeDonorIdFromDOM(); if(!did) return;
+    var d=getDonor(did); if(!d) return;
     var screen=document.querySelector('#wdw-input .v437-workers-screen'); if(!screen) return;
-    var allDonors=donors();
     Array.prototype.slice.call(screen.querySelectorAll('.v734-inbound-note')).forEach(function(x){x.remove();});
     Array.prototype.slice.call(screen.querySelectorAll('.v437-worker-row')).forEach(function(row){
       if(row.classList.contains('v594-replacement-row')) return;
       var b=row.querySelector('b'); if(!b) return;
       var name=String(b.textContent||'').trim(); if(!name) return;
-      var lines=[];
-      allDonors.forEach(function(d){
-        inboundLines(d,name).forEach(function(l){lines.push(l);});
-      });
-      if(!lines.length) return;
+      var lines=inboundLines(d,name); if(!lines.length) return;
       row.insertAdjacentHTML('afterend','<div class="v734-inbound-note">'+lines.map(function(l){return '<div>'+esc(l)+'</div>';}).join('')+'</div>');
     });
   }
@@ -19848,6 +19849,8 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     return n>100?'bad':n>=90?'warn':n>=50?'ok':n>0?'low':'empty';
   }
   function ensureDetailAnnuals(){
+    // v738CL: detail() already builds correct annual column from data. Skip entirely.
+    return;
     var root=document.getElementById('wdw-monthlypct');
     if(!root) return;
     root.querySelectorAll('table.v486-detail-matrix').forEach(function(tbl){
@@ -19884,7 +19887,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
           monthly=monthly.filter(function(td){return td!==existing;});
         }
         // after filtering, keep only 12 monthly values, not the inserted annual
-        var vals=monthly.slice(0,12).map(function(td){return parsePct(td.textContent);});
+        var vals=monthly.slice(-12).map(function(td){return parsePct(td.textContent);});
         while(vals.length<12) vals.unshift(0);
         var annual=vals.reduce(function(s,v){return s+v;},0)/12;
         if(!existing){
