@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v744CL | גישה</title>
+<title>Reports_Workers v745CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -323,7 +323,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v744CL</span>
+      <span class="topbar-title">Reports_Workers v745CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9334,7 +9334,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v744CL | גישה</title>
+<title>Reports_Workers v745CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9600,7 +9600,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v744CL</span>
+      <span class="topbar-title">Reports_Workers v745CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18131,11 +18131,12 @@ window.wdw447CloseDonorEdit=function(){
       table.classList.add('v487-annual-added');
     });
 
-    // Detail donor matrix: תורם | שנתי | ינואר... (v744CL: unique class to prevent cleanupAnnualColumns from deleting)
+    // Detail donor matrix: תורם | שנתי | ינואר... (v745CL: remove ALL existing annual cols first)
     root.querySelectorAll('table.v486-detail-matrix').forEach(function(table){
+      // v745CL: always remove existing annual columns - both old v487 and new v747 classes
+      table.classList.remove('v747-detail-annual-added');
+      Array.prototype.slice.call(table.querySelectorAll('.v747-deva-detail-annual-th,.v747-deva-detail-annual-cell,.v487-annual-th,.v487-annual-cell')).forEach(function(el){el.remove();});
       if(table.classList.contains('v747-detail-annual-added')) return;
-      // clean up any previous unique-class cells to avoid duplicates on re-render
-      Array.prototype.slice.call(table.querySelectorAll('.v747-deva-detail-annual-th,.v747-deva-detail-annual-cell')).forEach(function(el){el.remove();});
       var headRow = table.querySelector('thead tr');
       if(!headRow) return;
       var th = document.createElement('th');
