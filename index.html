@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v751CL | גישה</title>
+<title>Reports_Workers v752CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -323,7 +323,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v751CL</span>
+      <span class="topbar-title">Reports_Workers v752CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -8496,8 +8496,15 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
       var pct=(clean.match(/([0-9]+(?:\.[0-9]+)?%)/)||[])[1] || '';
       var ym=clean.match(/(\d{4}-\d{2})/);
       var yr=clean.match(/^(\d{4})\s*[—-]/);
-      if(ym && pct){ months.push({label:ym[1], value:pct}); return; }
-      if(yr && pct){ years.push({label:yr[1], value:pct}); return; }
+      // v752CL: חלץ שם עובד — הפורמט: "שם — YYYY-MM — X%"
+      var parts=clean.split(/\s*[—\-]+\s*/);
+      var workerName='';
+      if(parts.length>=2 && ym){
+        var candidate=parts[0].trim();
+        if(!/^\d{4}$/.test(candidate) && !/^\d{4}-\d{2}$/.test(candidate)) workerName=candidate;
+      }
+      if(ym && pct){ months.push({label:(workerName?workerName+' | ':'')+ym[1], value:pct}); return; }
+      if(yr && pct){ years.push({label:(workerName?workerName+' | ':'')+yr[1], value:pct}); return; }
       other.push(line);
     });
     return {months:months, years:years, other:other};
@@ -9382,7 +9389,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v751CL | גישה</title>
+<title>Reports_Workers v752CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9648,7 +9655,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v751CL</span>
+      <span class="topbar-title">Reports_Workers v752CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -19055,15 +19062,14 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     var s=getS(), map={};
     try{ if(typeof window.wdwWorkersList==='function') window.wdwWorkersList().forEach(function(x){ if(x) map[String(x).trim()]=true; }); }catch(e){}
     try{ ((s&&s.workers)||[]).forEach(function(w){ var nm=(w&&w.name)||w; if(nm) map[String(nm).trim()]=true; }); }catch(e){}
-    try{ (((s&&s.wdw&&s.wdw.donors)||[])).forEach(function(d){ ((d.workers)||[]).forEach(function(w){ if(w&&w.name) map[String(w.name).trim()]=true; }); }); }catch(e){}
+    // v752CL: לא לאסוף שמות מ-donors.workers — גורם לחריגות שגויות
     return Object.keys(map).filter(Boolean).sort();
   }
   function pctMonthly(name,month){
     var p=0;
     try{
-      // v751CL: use wdwWorkerTotalPct directly to bypass getWorkerFundingPct chain
-      if(typeof window.wdwWorkerTotalPct==='function') p=n(window.wdwWorkerTotalPct(name,month));
-      else if(typeof window.getWorkerFundingPct==='function') p=n(window.getWorkerFundingPct(name,month,'monthly'));
+      if(typeof window.getWorkerFundingPct==='function') p=n(window.getWorkerFundingPct(name,month,'monthly'));
+      else if(typeof window.wdwWorkerTotalPct==='function') p=n(window.wdwWorkerTotalPct(name,month));
     }catch(e){ p=0; }
     return Math.round(p*10)/10;
   }
