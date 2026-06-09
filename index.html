@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v745CL | גישה</title>
+<title>Reports_Workers v746CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -323,7 +323,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v745CL</span>
+      <span class="topbar-title">Reports_Workers v746CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -335,6 +335,7 @@ async function initPyodide(){
   <div class="tabs">
     <div class="tab active" onclick="switchTab('leave')">חופש ומחלה</div>
     <div class="tab" onclick="switchTab('holidays')">חגים</div>
+    <div class="tab" onclick="switchTab('donor-timesheet')">תורמים לטיימשיט</div>
     <div class="tab" onclick="switchTab('annual')">סיכום שנתי</div>
     <div class="tab" onclick="switchTab('wdw')">WDW</div>
     <div class="tab" onclick="switchTab('timesheet')">Timesheet</div>
@@ -415,6 +416,13 @@ async function initPyodide(){
         <div class="wcbs" id="holWorkerCbs" style="direction:rtl;margin-bottom:8px;"></div>
       </div>
       <div id="holList"></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-donor-timesheet">
+    <div class="s-sec" style="direction:rtl;">
+      <h3>תורמים — שם בטיימשיט ותקופה</h3>
+      <div id="donorTimesheetTable"></div>
     </div>
   </div>
 
@@ -1675,6 +1683,38 @@ function renderHolList(){
   div.innerHTML=html;
 }
 
+function renderDonorTimesheetTable(){
+  var div=document.getElementById('donorTimesheetTable');
+  if(!div) return;
+  var donors=(S.wdw&&S.wdw.donors)||[];
+  if(!donors.length){div.innerHTML='<p style="color:#999;font-size:11px;direction:rtl;">אין תורמים</p>';return;}
+  var html='<table style="width:620px;max-width:100%;border-collapse:collapse;direction:rtl;font-size:12px;table-layout:fixed;">';
+  html+='<thead><tr style="background:#f5f5f5;border-bottom:2px solid #1B6B5A;">';
+  html+='<th style="padding:8px 12px;text-align:right;font-weight:800;color:#1B6B5A;width:200px;">שם תורם</th>';
+  html+='<th style="padding:8px 12px;text-align:right;font-weight:800;color:#1B6B5A;width:140px;">שם בטיימשיט</th>';
+  html+='<th style="padding:8px 12px;text-align:right;font-weight:800;color:#1B6B5A;width:110px;">מתאריך</th>';
+  html+='<th style="padding:8px 12px;text-align:right;font-weight:800;color:#1B6B5A;width:110px;">עד תאריך</th>';
+  html+='</tr></thead><tbody>';
+  donors.forEach(function(d,i){
+    var bg=i%2===0?'white':'#fafafa';
+    var tsName=d.timesheetName||d.name||'';
+    var start=d.startDate||d.startMonth||'';
+    var end=d.endDate||d.endMonth||'';
+    html+='<tr style="background:'+bg+';border-bottom:1px solid #e0e0e0;">';
+    html+='<td style="padding:7px 12px;font-weight:bold;color:#333;text-align:right;direction:rtl;">'+esc(d.name||'')+'</td>';
+    html+='<td style="padding:7px 12px;text-align:right;direction:rtl;"><input type="text" value="'+esc(tsName)+'" onchange="updateDonorTimesheetName(''+d.id+'',this.value)" style="padding:4px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;box-sizing:border-box;direction:rtl;"></td>';
+    html+='<td style="padding:7px 8px;color:#555;font-size:11px;text-align:right;direction:rtl;">'+esc(start)+'</td>';
+    html+='<td style="padding:7px 8px;color:#555;font-size:11px;text-align:right;direction:rtl;">'+esc(end)+'</td>';
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  div.innerHTML=html;
+}
+function updateDonorTimesheetName(id,val){
+  var donors=(S.wdw&&S.wdw.donors)||[];
+  var d=donors.find(function(x){return x.id===id;});
+  if(d){d.timesheetName=val;saveLocally();saveData();}
+}
 function delHol(i){var hol=S.holidays[i];if(!hol)return;if(!confirm('למחוק את החג "'+hol.name+'"?'))return;S.holidays.splice(i,1);renderHolList();renderTable();saveData();}
 
 // ===== ANNUAL =====
@@ -4054,6 +4094,7 @@ function startPresenceLoop(){
 
 // ===== TABS =====
 function switchTab(name){
+  if(name==='donor-timesheet') setTimeout(renderDonorTimesheetTable,0);
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['leave','holidays','annual','wdw','timesheet','accounting','export','email','settings'][i]===name));
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
@@ -9334,7 +9375,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v745CL | גישה</title>
+<title>Reports_Workers v746CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9600,7 +9641,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v745CL</span>
+      <span class="topbar-title">Reports_Workers v746CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
