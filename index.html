@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v754CL | גישה</title>
+<title>Reports_Workers v755CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -323,7 +323,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v754CL</span>
+      <span class="topbar-title">Reports_Workers v755CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9389,7 +9389,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v754CL | גישה</title>
+<title>Reports_Workers v755CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9655,7 +9655,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v754CL</span>
+      <span class="topbar-title">Reports_Workers v755CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18486,6 +18486,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 
   return res;
 };
+window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי שלא יידרס
 // ===== סוף calcWorkerPct =====
 </script>
 
@@ -18554,6 +18555,17 @@ window.calcWorkerPct = function(workerRow, monthKey) {
     var total = 0;
     rows.forEach(function(r) {
       var res = window.calcWorkerPct(r, month);
+      total += (res && isFinite(res.total)) ? res.total : 0;
+    });
+    return Math.max(0, Math.round(total * 10) / 10);
+  };
+  window.wdwWorkerTotalPctV557 = function(workerName, month) {
+    // v755CL: שימוש ב-calcWorkerPctV556 — גרסה שלא נידרסת
+    if (!window.calcWorkerPctV556 || !window.wdwWorkerDonorRows) return 0;
+    var rows = window.wdwWorkerDonorRows(workerName, month);
+    var total = 0;
+    rows.forEach(function(r) {
+      var res = window.calcWorkerPctV556(r, month);
       total += (res && isFinite(res.total)) ? res.total : 0;
     });
     return Math.max(0, Math.round(total * 10) / 10);
@@ -18947,7 +18959,8 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   window.calcWorkerPct=function(row,m){ var res={base:0,replacement:0,total:0}; if(!row||!row.worker||!row.donor||!m) return res; if(!rowActiveInMonth(row.worker,row.donor,m)) return res; res.base=Math.round(basePct(row.worker,row.donor,m)*10)/10; res.replacement=Math.round(replacementPct(row.worker,m)*10)/10; res.total=Math.round((res.base+res.replacement)*10)/10; return res; };
   window.wdwWorkerDonorRows=function(name,m){ return rowsForMonth(name,m); };
   window.wdwWorkerTotalPct=function(name,m){ return Math.round(rowsForMonth(name,m).reduce(function(s,r){return s+rowPct(r.worker,r.donor,m);},0)*10)/10; };
-  window.getWorkerFundingPct=function(name,month,mode){ if(mode==='annual'){ var y=month?String(month).substring(0,4):String((S0()&&S0().year)||new Date().getFullYear()); return annualPct(name,y); } return window.wdwWorkerTotalPct(name,month); };
+  window.wdwWorkerTotalPctDirect=window.wdwWorkerTotalPct; // v755CL: שם ייחודי שלא יידרס
+  window.getWorkerFundingPct=function(name,month,mode){ if(mode==='annual'){ var y=month?String(month).substring(0,4):String((S0()&&S0().year)||new Date().getFullYear()); return annualPct(name,y); } return window.wdwWorkerTotalPctDirect(name,month); };
 
   window.renderWDWWorker=function(){
     if(typeof initWDW==='function') try{initWDW();}catch(e){}
@@ -19068,15 +19081,7 @@ window.calcWorkerPct = function(workerRow, monthKey) {
   function pctMonthly(name,month){
     var p=0;
     try{
-      // v753CL: חישוב ישיר דרך wdwWorkerDonorRows+calcWorkerPct — עקיפת כל שרשרת wdwWorkerTotalPct/getWorkerFundingPct
-      if(typeof window.wdwWorkerDonorRows==='function' && typeof window.calcWorkerPct==='function'){
-        var rows=window.wdwWorkerDonorRows(name,month);
-        var total=0;
-        rows.forEach(function(r){ total+=n(window.calcWorkerPct(r,month).total); });
-        p=Math.round(total*10)/10;
-      } else if(typeof window.wdwWorkerTotalPct==='function'){
-        p=n(window.wdwWorkerTotalPct(name,month));
-      }
+      if(typeof window.wdwWorkerTotalPct==='function') p=n(window.wdwWorkerTotalPct(name,month));
     }catch(e){ p=0; }
     return Math.round(p*10)/10;
   }
