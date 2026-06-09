@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v749CL | גישה</title>
+<title>Reports_Workers v750CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -323,7 +323,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v749CL</span>
+      <span class="topbar-title">Reports_Workers v750CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -1556,6 +1556,11 @@ function addWorker(){
   if(!n) return;
   if(S.workers.find(w=>w.name===n)){alert('עובד זה כבר קיים');return;}
   S.workers.push({name:n,active:true,endMonth:null,workDays:[0,1,2,3,4]});
+  // v750CL: sync employerCosts from budget for new worker
+  if(S.wdw&&S.wdw.budget&&S.wdw.budget[n]){
+    if(!S.wdw.employerCosts) S.wdw.employerCosts={};
+    if(!S.wdw.employerCosts[n]) S.wdw.employerCosts[n]=S.wdw.budget[n];
+  }
   document.getElementById('newWorker').value='';
   renderWorkerList(); renderHolWorkers(); renderTable();
 }
@@ -9377,7 +9382,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v749CL | גישה</title>
+<title>Reports_Workers v750CL | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9643,7 +9648,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v749CL</span>
+      <span class="topbar-title">Reports_Workers v750CL</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -18970,12 +18975,16 @@ window.calcWorkerPct = function(workerRow, monthKey) {
       var c=n(window.wdwGetEmployerCostByName(name));
       if(c>0) return c;
     }
-    var key=norm(name);
     var ec=s.wdw.employerCosts||{};
     var b=s.wdw.budget||{};
-    // בגרסאות הקיימות תקציב/עלות מעביד נשמרים בשדות שונים; לא מוחקים ולא מעבירים נתונים.
-    var v=n(ec[key]); if(v>0) return v;
-    v=n(b[key]); if(v>0) return v;
+    // v750CL: check direct name match first, then normalized
+    var v=n(ec[name]); if(v>0) return v;
+    v=n(b[name]); if(v>0) return v;
+    var key=norm(name);
+    var ecKey=Object.keys(ec).find(function(k){return norm(k)===key;});
+    v=n(ecKey?ec[ecKey]:0); if(v>0) return v;
+    var bKey=Object.keys(b).find(function(k){return norm(k)===key;});
+    v=n(bKey?b[bKey]:0); if(v>0) return v;
     return 0;
   }
   function ym(y,m){ return String(y)+'-'+String(m).padStart(2,'0'); }
