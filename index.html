@@ -10,7 +10,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v768CH | גישה</title>
+<title>Reports_Workers v769CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -323,7 +323,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v768CH</span>
+      <span class="topbar-title">Reports_Workers v769CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -9478,7 +9478,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v768CH | גישה</title>
+<title>Reports_Workers v769CH | גישה</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -9744,7 +9744,7 @@ async function initPyodide(){
   <div class="topbar">
     <div class="topbar-right">
       <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v768CH</span>
+      <span class="topbar-title">Reports_Workers v769CH</span>
     </div>
     <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
     <div class="topbar-left">
@@ -20532,5 +20532,119 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 })();
 </script>
 
+
+<script id="v769CH-roles-order-and-replacement-count-fix">
+(function(){
+  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+  function norm(x){return String(x||'').trim().replace(/\s+/g,' ');}
+  function saveAndRefreshRoles(){
+    try{ if(typeof saveLocally==='function') saveLocally(); }catch(e){}
+    try{ if(typeof saveData==='function') saveData(); }catch(e){}
+    try{ if(typeof renderRolesList==='function') renderRolesList(); }catch(e){}
+    try{ if(typeof renderWorkerList==='function') renderWorkerList(); }catch(e){}
+    try{ if(typeof renderWDWInput==='function') renderWDWInput(); }catch(e){}
+    try{ if(typeof renderWDWWorker==='function') renderWDWWorker(); }catch(e){}
+  }
+
+  // v769CH: חיצי סדר בתפקידים, באותה התנהגות כמו חיצי עובדים.
+  window.moveRole=function(i,d){
+    if(!S.roles) S.roles=[];
+    var j=i+d;
+    if(j<0 || j>=S.roles.length) return;
+    var tmp=S.roles[i]; S.roles[i]=S.roles[j]; S.roles[j]=tmp;
+    saveAndRefreshRoles();
+  };
+
+  window.renderRolesList=function(){
+    var div=document.getElementById('rolesList');
+    if(!div) return;
+    if(!S.roles) S.roles=[];
+    if(!S.roles.length){
+      div.innerHTML='<p style="color:#999;font-size:12px;">אין תפקידים מוגדרים</p>';
+      return;
+    }
+    var html='<div style="overflow-x:auto;direction:rtl"><table style="width:auto;min-width:560px;border-collapse:collapse;direction:rtl;background:white;box-shadow:none"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white"><th style="padding:7px 8px;text-align:right;font-weight:500">תפקיד</th><th style="padding:7px 8px;text-align:center;font-weight:500;width:72px">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;width:160px">פעולות</th></tr></thead><tbody>';
+    S.roles.forEach(function(r,i){
+      html+='<tr style="border-bottom:1px solid #f0f0f0">';
+      html+='<td style="padding:7px 8px;font-size:13px;font-weight:500;white-space:nowrap">'+esc(r)+'</td>';
+      html+='<td style="padding:7px 8px;text-align:center"><span style="display:flex;gap:3px;justify-content:center"><button class="ord-btn" onclick="moveRole('+i+',-1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0">↑</button><button class="ord-btn" onclick="moveRole('+i+',1)" style="width:26px;height:26px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;padding:0">↓</button></span></td>';
+      html+='<td style="padding:7px 8px;white-space:nowrap"><button onclick="window.editRole('+i+')" style="padding:3px 10px;font-size:12px;border:1px solid #1565c0;background:#e3f2fd;color:#1565c0;border-radius:4px;cursor:pointer;margin-inline-end:6px">עריכה</button><button onclick="window.deleteRole('+i+')" style="padding:3px 10px;font-size:12px;border:1px solid #e53935;background:#ffebee;color:#e53935;border-radius:4px;cursor:pointer">מחק</button></td>';
+      html+='</tr>';
+    });
+    html+='</tbody></table></div>';
+    div.innerHTML=html;
+  };
+
+  // v769CH: ספירת החלפה נכונה = יעדים ייחודיים שהעובד מחליף בשנת התצוגה, לא חודשים ולא מופעים כפולים.
+  function monthKey(y,m){return String(y)+'-'+String(m).padStart(2,'0');}
+  function ym(v){return String(v||'').substring(0,7);}
+  function overlapsYear(start,end,year){
+    var ys=monthKey(year,1), ye=monthKey(year,12);
+    start=ym(start)||ys;
+    end=ym(end)||ye;
+    return start<=ye && end>=ys;
+  }
+  function replLabel(x){
+    if(!x) return '';
+    if(x.replaces==='__vacant__') return norm(x.vacantName||'משרה פנויה');
+    return norm(x.replaces||x.name||'');
+  }
+  window.wdwReplacementUniqueCountForYear=function(workerRow,year){
+    var set=new Set();
+    if(!workerRow) return 0;
+    year=parseInt(year)||((S&&S.year)||new Date().getFullYear());
+    var baseStart=workerRow.startMonth||workerRow.startDate||'';
+    var baseEnd=workerRow.endMonth||workerRow.endDate||'';
+    if(workerRow.replaces){
+      var lab=replLabel(workerRow);
+      var hasVal=(parseFloat(workerRow.replacesPct)||0) || (parseFloat(workerRow.replacesAmt)||0) || lab;
+      if(lab && hasVal && overlapsYear(workerRow.replaceStartMonth||workerRow.replacementStartMonth||workerRow.replacesStart||workerRow.replacementStart||baseStart, workerRow.replaceEndMonth||workerRow.replacementEndMonth||workerRow.replacesEnd||workerRow.replacementEnd||baseEnd, year)) set.add(lab);
+    }
+    (workerRow.extraReplaces||[]).forEach(function(r){
+      var lab=replLabel(r);
+      var hasVal=(parseFloat(r.pct)||0) || (parseFloat(r.amt)||0) || lab;
+      if(lab && hasVal && overlapsYear(r.startMonth||r.replaceStartMonth||r.replacementStartMonth||baseStart, r.endMonth||r.replaceEndMonth||r.replacementEndMonth||baseEnd, year)) set.add(lab);
+    });
+    return set.size;
+  };
+
+  function yearlyReplacementCount(workerRows,year){
+    var set=new Set();
+    (workerRows||[]).forEach(function(row){
+      if(!row||!row.worker) return;
+      var w=row.worker;
+      var add=function(label){ if(label) set.add(label); };
+      if(w.replaces && overlapsYear(w.replaceStartMonth||w.replacementStartMonth||w.replacesStart||w.replacementStart||w.startMonth||w.startDate, w.replaceEndMonth||w.replacementEndMonth||w.replacesEnd||w.replacementEnd||w.endMonth||w.endDate, year)) add(replLabel(w));
+      (w.extraReplaces||[]).forEach(function(r){
+        if(r.replaces && overlapsYear(r.startMonth||r.replaceStartMonth||w.startMonth||w.startDate, r.endMonth||r.replaceEndMonth||w.endMonth||w.endDate, year)) add(replLabel(r));
+      });
+    });
+    return set.size;
+  }
+
+  // החלפת renderWDWWorker של v768 רק לצורך מונה מחליף; שאר חישובי הכסף נשארים כפי שהם.
+  var oldRender = window.renderWDWWorker;
+  window.renderWDWWorker=function(){
+    if(typeof oldRender==='function') oldRender();
+    try{
+      var div=document.getElementById('wdw-worker');
+      if(!div || typeof rowsForYear!=='function') return;
+      var s=S||{};
+      var viewMonth=(s.wdw&&s.wdw.viewMonth)||String(s.year||new Date().getFullYear())+'-'+String((typeof curMI==='number'?curMI:new Date().getMonth())+1).padStart(2,'0');
+      var year=String(viewMonth).substring(0,4);
+      var names=(typeof officialWorkers==='function')?officialWorkers():(Array.isArray(S.workers)?S.workers.map(function(w){return w.name;}).filter(Boolean):[]);
+      names.forEach(function(name,i){
+        var count=yearlyReplacementCount(rowsForYear(name,year),year);
+        var detail='v768-detail-'+i;
+        var row=document.querySelector('tr[onclick*="'+detail+'"]');
+        if(!row) return;
+        var cells=row.children;
+        if(!cells || cells.length<9) return;
+        cells[8].innerHTML=count?'<span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;background:#fff7ed;color:#c2410c;border:1px solid #fb923c;display:inline-block">מחליף '+count+'</span>':'<span style="font-size:12px;padding:3px 10px;border-radius:10px;background:#f8fafc;color:#94a3b8;border:0.5px solid #e2e8f0;display:inline-block">אין</span>';
+      });
+    }catch(e){console.warn('v769 replacement count refresh failed',e);}
+  };
+})();
+</script>
 </body>
 </html>
