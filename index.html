@@ -1,7 +1,8 @@
 <!DOCTYPE html>
+
 <html dir="rtl" lang="he">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8"/>
 <!-- ============================================================ -->
 <!-- מתג מערכת הרשאות                                            -->
 <!-- false = פתוח לכולם (כמו היום, ברירת מחדל)                  -->
@@ -9,9 +10,9 @@
 <!-- שנה את הערך רק דרך כפתור "הפעל/כבה" בהגדרות               -->
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reports_Workers v775CH | גישה</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reports_Workers v777CH | גישה</title>
+<link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f5f5f5;font-size:13px;direction:rtl}
@@ -259,10 +260,6 @@ async function initPyodide(){
   line-height:1.35;
 }
 </style>
-
-
-
-
 <style id="v606CH-overfunding-modal-style">
 #v602-overfunding-backdrop{position:fixed;inset:0;z-index:999999;background:rgba(17,24,39,.56);display:none;align-items:center;justify-content:center;padding:24px;direction:rtl;font-family:Arial,sans-serif}
 #v602-overfunding-backdrop.open{display:flex}
@@ -286,400 +283,388 @@ async function initPyodide(){
 .v602-of-close:hover{background:#000}
 @media(max-width:620px){.v606-grid{grid-template-columns:1fr}}
 </style>
-
-
-
-
 <style id="v744CL-detail-annual-style">
 #tab-wdw table.v486-detail-matrix th.v747-deva-detail-annual-th{background:#eef8f6!important;color:#073f3d!important;font-weight:900!important;min-width:58px!important;}
 #tab-wdw table.v486-detail-matrix td.v747-deva-detail-annual-cell{font-weight:900!important;border-inline-start:1px solid #d9e0e7!important;border-inline-end:1px solid #d9e0e7!important;}
 </style>
 </head>
 <body>
-
 <div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">ג</div>
-    <h2>Reports_Workers</h2>
-    <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <input type="text" id="loginName" placeholder="הכנס את שמך" autocomplete="username">
-    <div id="loginPasswordWrap" style="display:none;">
-      <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;">
-      <div style="text-align:right;margin-top:-8px;margin-bottom:10px;">
-        <a href="#" onclick="resetAdminPassword();return false;" style="font-size:11px;color:#00897B;">שכחתי סיסמה</a>
-      </div>
-    </div>
-    <button onclick="doLogin()">כניסה</button>
-    <div class="login-divider"></div>
-    <p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
-    <label class="login-import-label">
+<div class="login-box">
+<div class="login-logo">ג</div>
+<h2>Reports_Workers</h2>
+<p>גישה — מערכת ניהול חופש ומחלה</p>
+<input autocomplete="username" id="loginName" placeholder="הכנס את שמך" type="text"/>
+<div id="loginPasswordWrap" style="display:none;">
+<input autocomplete="current-password" id="loginPassword" placeholder="סיסמה" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;" type="password"/>
+<div style="text-align:right;margin-top:-8px;margin-bottom:10px;">
+<a href="#" onclick="resetAdminPassword();return false;" style="font-size:11px;color:#00897B;">שכחתי סיסמה</a>
+</div>
+</div>
+<button onclick="doLogin()">כניסה</button>
+<div class="login-divider"></div>
+<p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
+<label class="login-import-label">
       ייבוא מקובץ אקסל
-      <input type="file" id="importFile" accept=".xlsx" style="display:none" onchange="importExcel(this)">
-    </label>
-  </div>
+      <input accept=".xlsx" id="importFile" onchange="importExcel(this)" style="display:none" type="file"/>
+</label>
+</div>
+</div>
+<div id="app">
+<div class="topbar">
+<div class="topbar-right">
+<div class="topbar-logo">ג</div>
+<span class="topbar-title">Reports_Workers v777CH</span>
+</div>
+<div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
+<div class="topbar-left">
+<span class="lock-warning" id="lockWarn"></span>
+<span class="user-badge" id="userBadge"></span>
+</div>
+</div>
+<div class="tabs"><div class="tab active" data-main="leave" onclick="switchTab('leave')">חופש ומחלה</div>
+    <div class="tab" data-main="annual" onclick="switchTab('annual')">סיכום שנתי</div>
+    <div class="tab" data-main="wdw" onclick="switchTab('wdw')">WDW</div>
+    <div class="tab" data-main="salary" onclick="switchTab('timesheet')">משכורות</div>
+    <div class="tab" data-main="settings" onclick="switchTab('settings')">הגדרות</div>
+    </div>
+<div class="tab-content active" id="tab-leave">
+<div class="month-nav">
+<div style="display:flex;align-items:center;gap:6px;">
+<select class="jump-sel" id="yearJump" onchange="jumpYear(this.value)"></select>
+<button class="view-btn on" id="editToggle" onclick="toggleView()">עריכה</button>
+</div>
+<!-- Arrows TIGHT around title -->
+<div class="nav-center">
+<button class="nav-btn" onclick="nextMonth()" title="חודש הבא">‹</button>
+<select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
+<span class="month-h2" id="monthTitle"></span>
+<button class="nav-btn" onclick="prevMonth()" title="חודש קודם">›</button>
+<button class="view-btn today-btn" onclick="goToday()" title="חזרה לחודש הנוכחי">Today</button>
+</div>
+<div style="width:100px;"></div>
+</div>
+<div class="cutoff-bar">
+<label>תאריך חיתוך:</label>
+<input id="cutoffInput" onchange="setCutoff()" type="date"/>
+<span class="cutoff-badge" id="cutoffBadge" style="display:none"></span>
+</div>
+<div class="table-wrap">
+<table id="mainTable">
+<thead><tr id="tHead"></tr></thead>
+<tbody id="tBody"></tbody>
+</table>
+</div>
+<div class="legend">
+<span><span class="ld" style="background:#c8e6c9"></span>חופש</span>
+<span><span class="ld" style="background:#ffcdd2"></span>מחלה</span>
+<span><span class="ld" style="background:#fffde7;border:1px solid #ddd"></span>חג</span>
+<span><span class="ld" style="background:#e1bee7"></span>אחר/אבל</span>
+<span><span class="ld" style="background:#fff8e1;border:1px solid #ddd"></span>מחודש קודם</span>
+<span><span class="ld" style="background:#e0e0e0"></span>סוף שבוע</span>
+<span><span class="ld" style="background:#ffebee"></span>כפילות</span>
+</div>
 </div>
 
-<div id="app">
-  <div class="topbar">
-    <div class="topbar-right">
-      <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v775CH</span>
-    </div>
-    <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
-    <div class="topbar-left">
-      <span class="lock-warning" id="lockWarn"></span>
-      <span class="user-badge" id="userBadge"></span>
-    </div>
-  </div>
+<!-- donor-timesheet in settings -->
+<div class="tab-content" id="tab-annual">
+<div class="s-sec">
+<h3>סיכום שנתי</h3>
+<div id="annualContent"></div>
+</div>
+</div>
+<div class="tab-content" id="tab-email">
+<div class="salary-subtabs" style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
+<button data-salary="timesheet" onclick="switchTab('timesheet')" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">Timesheet</button>
+<button data-salary="accounting" onclick="switchTab('accounting')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">הנהלת חשבונות</button>
+<button data-salary="export" onclick="exportExcel()" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">ייצוא לאקסל</button>
+<button data-salary="email" onclick="switchTab('email')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">מייל</button>
+</div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('leave')">חופש ומחלה</div>
-    <div class="tab" onclick="switchTab('holidays')">חגים</div>
-    <div class="tab" onclick="switchTab('annual')">סיכום שנתי</div>
-    <div class="tab" onclick="switchTab('wdw')">WDW</div>
-    <div class="tab" onclick="switchTab('timesheet')">Timesheet</div>
-    <div class="tab" onclick="switchTab('accounting')">הנהלת חשבונות</div>
-    <div class="tab" onclick="exportExcel()" style="cursor:pointer;">ייצוא לאקסל</div>
-    <div class="tab" onclick="switchTab('email')">מייל</div>
-    <div class="tab" onclick="switchTab('settings')">הגדרות</div>
-  </div>
+<div class="s-sec">
+<h3>שליחת מייל חודשי</h3>
+<div style="margin-bottom:12px;">
+<label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורת פתיחה (לעריכה בכל חודש):</label>
+<textarea id="emailOpening" placeholder="דיווח למשכורת חודש אפריל יש להגיש עד יום חמישי 23/04/2026 בשעה 12:00" rows="2" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;"></textarea>
+</div>
+<div style="margin-bottom:12px;">
+<label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורות קבועות (נשמרות בהגדרות):</label>
+<textarea id="emailFixed" rows="6" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;background:#f9f9f9;"></textarea>
+<button onclick="saveEmailFixed()" style="margin-top:6px;padding:5px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">שמור שורות קבועות</button>
+</div>
+<div style="border-top:1px solid #eee;padding-top:12px;">
+<div style="margin-bottom:10px;">
+<label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">בחר חודש לשליחה:</label>
+<select id="emailMonth" style="padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;direction:rtl;"></select>
+</div>
+<button onclick="sendEmail()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;">הורד מייל מוכן</button>
+<p id="emailCopyNote" style="display:none;font-size:12px;color:#2e7d32;margin-top:8px;font-weight:bold;"></p>
+<div id="emailPreview" style="display:none;margin-top:12px;overflow-x:auto;border:1px solid #ddd;border-radius:6px;padding:8px;background:white;"></div>
+</div>
+</div>
+</div>
+<div class="tab-content" id="tab-settings">
+<div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
+<button id="stab-workers" onclick="switchSettingsTab('workers')" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עובדים</button>
+<button id="stab-roles" onclick="switchSettingsTab('roles')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקידים</button>
+<button id="stab-donor-timesheet" onclick="switchSettingsTab('donor-timesheet')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תורמים לרישום</button>
+<button id="stab-holidays" onclick="switchSettingsTab('holidays')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">חגים</button>
+</div>
+<div id="stab-content-workers">
+<div class="s-sec">
+<h3>עובדים</h3>
+<div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
+<div style="margin-top:10px;direction:rtl;">
+<div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;">
+<div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<button onclick="addWorker()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;white-space:nowrap;">הוסף</button>
+<input id="newWorker" placeholder="שם עובד חדש" style="flex:1;max-width:300px;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;" type="text"/>
+</div>
+</div>
+<div id="auth-security-box" style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;direction:rtl;">
+<div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
+<div style="display:flex;gap:8px;margin-bottom:8px;">
+<button onclick="toggleAuthSystem(true)" style="padding:5px 16px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;">הפעל מערכת סיסמאות</button>
+<button onclick="toggleAuthSystem(false)" style="padding:5px 16px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;">כבה מערכת סיסמאות</button>
+<span id="authToggleStatus" style="font-size:11px;color:#666;align-self:center;"></span>
+</div>
+<div style="font-size:11px;color:#888;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<select id="secQ" style="flex:2;max-width:260px;font-size:11px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+<option>שם העיר שבה נולדתי</option>
+<option>שם הספר האהוב עלי</option>
+<option>שם בית הספר הראשון שלי</option>
+<option>שם החיה הראשונה שלי</option>
+</select>
+<input id="secA" placeholder="תשובה סודית" style="flex:1;max-width:200px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;" type="text"/>
+<button onclick="saveSecurityQuestion()" style="padding:4px 12px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
+</div>
+</div>
+<div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
+<div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">חיבור לגיטהאב</div>
+<div style="font-size:11px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב — ישמר לתמיד</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<input id="tokInput2" placeholder="ghp_..." style="flex:1;max-width:300px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:ltr;" type="password"/>
+<button onclick="saveTokenFromBox2()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
+</div>
+<div id="tokStatus2" style="font-size:11px;color:#4caf50;margin-top:4px;"></div>
+</div>
+</div>
+</div>
+<div class="s-sec" style="margin-top:16px;display:none;">
+<h3>חיבור לגיטהאב</h3>
+<p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
+<div class="tok-row">
+<input id="tokInput" placeholder="ghp_..." type="password"/>
+<button onclick="saveToken()">שמור</button>
+</div>
+<div id="tokStatus"></div>
+</div>
+</div>
+<div id="stab-content-donor-timesheet" style="display:none;">
+<div class="s-sec" style="direction:rtl;">
+<h3>תורמים — שם בטיימשיט ותקופה</h3>
+<div id="donorTimesheetTable"></div>
+</div>
+</div>
+<div id="stab-content-roles" style="display:none;">
+<div class="s-sec">
+<h3>תפקידים</h3>
+<p style="font-size:12px;color:#666;margin-bottom:12px;">רשימת התפקידים בעמותה. בעת הוספת עובד לתורם ניתן לבחור תפקיד מרשימה זו.</p>
+<div id="rolesList" style="margin-bottom:12px;min-height:30px;"></div>
+<div style="display:flex;gap:8px;align-items:center;direction:rtl;justify-content:flex-start;">
+<button onclick="addRole()" style="padding:7px 16px;background:#1B6B5A;color:#fff;border:none;border-radius:5px;cursor:pointer;white-space:nowrap;font-size:13px;">+ הוסף</button>
+<input id="newRoleInput" placeholder="שם תפקיד חדש" style="direction:rtl;padding:7px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:240px;" type="text"/>
+</div>
+</div>
+</div>
+<div id="stab-content-holidays" style="display:none;">
+<div class="s-sec">
+<h3>ניהול חגים</h3>
+<div class="hf" style="direction:rtl;">
+<div style="display:grid;grid-template-columns:130px 160px 160px 130px auto;gap:10px;align-items:end;margin-bottom:10px;direction:rtl;">
+<div>
+<label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">שם החג</label>
+<input id="holName" placeholder="פסח, עיד..." style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;box-sizing:border-box;" type="text"/>
+</div>
+<div>
+<label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך התחלה</label>
+<div class="he-date-wrap">
+<button class="he-date-btn" id="holStartTxt" onclick="openHiddenDate('holStart')" type="button">בחר תאריך</button>
+<input class="he-date-native" id="holStart" onchange="showIsraeliDate('holStart','holStartTxt')" type="date"/>
+</div>
+</div>
+<div>
+<label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך סיום</label>
+<div class="he-date-wrap">
+<button class="he-date-btn" id="holEndTxt" onclick="openHiddenDate('holEnd')" type="button">בחר תאריך</button>
+<input class="he-date-native" id="holEnd" onchange="showIsraeliDate('holEnd','holEndTxt');checkHolDates()" type="date"/>
+</div>
+</div>
+<div style="display:flex;align-items:flex-end;padding-bottom:6px;">
+<label style="font-size:11px;cursor:pointer;white-space:nowrap;"><input id="holAll" onchange="toggleAllCbs(this)" type="checkbox"/> כל העובדים</label>
+</div>
+<div style="display:flex;align-items:flex-end;">
+<button onclick="addHoliday()" style="padding:6px 16px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">הוסף</button>
+</div>
+</div>
+<div class="wcbs" id="holWorkerCbs" style="direction:rtl;margin-bottom:8px;"></div>
+</div>
+<div id="holList"></div>
+</div>
+</div></div>
+<div class="tab-content" id="tab-wdw">
+<div class="s-sec">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;direction:rtl;">
+<button id="wdw-btn-org" onclick="switchWDW('org')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#00897B;color:white;">עמותה</button>
+<button id="wdw-btn-donor" onclick="switchWDW('donor')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">תורמים</button>
+<button id="wdw-btn-worker" onclick="switchWDW('worker')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
+<button id="wdw-btn-input" onclick="switchWDW('input')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">ניהול</button>
+<button id="wdw-btn-reports" onclick="switchWDW('reports')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">דוחות</button>
+<button id="wdw-btn-monthlypct" onclick="switchWDW('monthlypct')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">אחוז חודשי</button>
+<button id="wdw-write-top-btn" onclick="wdwOpenWriteTimesheet()" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#1565C0;color:white;">כתיבה ל־Timesheet</button>
+</div>
+<div id="wdw-input"></div>
+<div id="wdw-org" style="display:none;"></div>
+<div id="wdw-donor" style="display:none;"></div>
+<div id="wdw-worker" style="display:none;"></div>
+<div id="wdw-reports" style="display:none;"></div>
+<div id="wdw-monthlypct" style="display:none;"></div>
+</div>
+</div>
+<div class="tab-content" id="tab-timesheet">
+<div class="salary-subtabs" style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
+<button data-salary="timesheet" onclick="switchTab('timesheet')" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">Timesheet</button>
+<button data-salary="accounting" onclick="switchTab('accounting')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">הנהלת חשבונות</button>
+<button data-salary="export" onclick="exportExcel()" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">ייצוא לאקסל</button>
+<button data-salary="email" onclick="switchTab('email')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">מייל</button>
+</div>
 
-  <div class="tab-content active" id="tab-leave">
-    <div class="month-nav">
-      <div style="display:flex;align-items:center;gap:6px;">
-        <select class="jump-sel" id="yearJump" onchange="jumpYear(this.value)"></select>
-        <button class="view-btn on" id="editToggle" onclick="toggleView()">עריכה</button>
-      </div>
-      <!-- Arrows TIGHT around title -->
-      <div class="nav-center">
-        <button class="nav-btn" onclick="nextMonth()" title="חודש הבא">&#8249;</button>
-        <select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
-        <span class="month-h2" id="monthTitle"></span>
-        <button class="nav-btn" onclick="prevMonth()" title="חודש קודם">&#8250;</button>
-        <button class="view-btn today-btn" onclick="goToday()" title="חזרה לחודש הנוכחי">Today</button>
-      </div>
-      <div style="width:100px;"></div>
-    </div>
-    <div class="cutoff-bar">
-      <label>תאריך חיתוך:</label>
-      <input type="date" id="cutoffInput" onchange="setCutoff()">
-      <span class="cutoff-badge" id="cutoffBadge" style="display:none"></span>
-    </div>
-    <div class="table-wrap">
-      <table id="mainTable">
-        <thead><tr id="tHead"></tr></thead>
-        <tbody id="tBody"></tbody>
-      </table>
-    </div>
-    <div class="legend">
-      <span><span class="ld" style="background:#c8e6c9"></span>חופש</span>
-      <span><span class="ld" style="background:#ffcdd2"></span>מחלה</span>
-      <span><span class="ld" style="background:#fffde7;border:1px solid #ddd"></span>חג</span>
-      <span><span class="ld" style="background:#e1bee7"></span>אחר/אבל</span>
-      <span><span class="ld" style="background:#fff8e1;border:1px solid #ddd"></span>מחודש קודם</span>
-      <span><span class="ld" style="background:#e0e0e0"></span>סוף שבוע</span>
-      <span><span class="ld" style="background:#ffebee"></span>כפילות</span>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-holidays">
-    <div class="s-sec">
-      <h3>ניהול חגים</h3>
-      <div class="hf" style="direction:rtl;">
-        <div style="display:grid;grid-template-columns:130px 160px 160px 130px auto;gap:10px;align-items:end;margin-bottom:10px;direction:rtl;">
-          <div>
-            <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">שם החג</label>
-            <input type="text" id="holName" placeholder="פסח, עיד..." style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך התחלה</label>
-            <div class="he-date-wrap">
-              <button type="button" class="he-date-btn" id="holStartTxt" onclick="openHiddenDate('holStart')">בחר תאריך</button>
-              <input type="date" id="holStart" class="he-date-native" onchange="showIsraeliDate('holStart','holStartTxt')">
-            </div>
-          </div>
-          <div>
-            <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך סיום</label>
-            <div class="he-date-wrap">
-              <button type="button" class="he-date-btn" id="holEndTxt" onclick="openHiddenDate('holEnd')">בחר תאריך</button>
-              <input type="date" id="holEnd" class="he-date-native" onchange="showIsraeliDate('holEnd','holEndTxt');checkHolDates()">
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-end;padding-bottom:6px;">
-            <label style="font-size:11px;cursor:pointer;white-space:nowrap;"><input type="checkbox" id="holAll" onchange="toggleAllCbs(this)"> כל העובדים</label>
-          </div>
-          <div style="display:flex;align-items:flex-end;">
-            <button onclick="addHoliday()" style="padding:6px 16px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">הוסף</button>
-          </div>
-        </div>
-        <div class="wcbs" id="holWorkerCbs" style="direction:rtl;margin-bottom:8px;"></div>
-      </div>
-      <div id="holList"></div>
-    </div>
-  </div>
-
-  <!-- donor-timesheet in settings -->
-
-  <div class="tab-content" id="tab-annual">
-    <div class="s-sec">
-      <h3>סיכום שנתי</h3>
-      <div id="annualContent"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-email">
-    <div class="s-sec">
-      <h3>שליחת מייל חודשי</h3>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורת פתיחה (לעריכה בכל חודש):</label>
-        <textarea id="emailOpening" rows="2" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;" placeholder="דיווח למשכורת חודש אפריל יש להגיש עד יום חמישי 23/04/2026 בשעה 12:00"></textarea>
-      </div>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורות קבועות (נשמרות בהגדרות):</label>
-        <textarea id="emailFixed" rows="6" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;background:#f9f9f9;"></textarea>
-        <button onclick="saveEmailFixed()" style="margin-top:6px;padding:5px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">שמור שורות קבועות</button>
-      </div>
-      <div style="border-top:1px solid #eee;padding-top:12px;">
-        <div style="margin-bottom:10px;">
-          <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">בחר חודש לשליחה:</label>
-          <select id="emailMonth" style="padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;direction:rtl;"></select>
-        </div>
-        <button onclick="sendEmail()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;">הורד מייל מוכן</button>
-        <p id="emailCopyNote" style="display:none;font-size:12px;color:#2e7d32;margin-top:8px;font-weight:bold;"></p>
-        <div id="emailPreview" style="display:none;margin-top:12px;overflow-x:auto;border:1px solid #ddd;border-radius:6px;padding:8px;background:white;"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-settings">
-    <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
-      <button onclick="switchSettingsTab('workers')" id="stab-workers" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עובדים</button>
-      <button onclick="switchSettingsTab('roles')" id="stab-roles" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקידים</button>
-      <button onclick="switchSettingsTab('donor-timesheet')" id="stab-donor-timesheet" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תורמים לטיימשיט</button>
-
-    </div>
-    <div id="stab-content-workers">
-      <div class="s-sec">
-        <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
-        <div style="margin-top:10px;direction:rtl;">
-
-          <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;">
-            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
-            <div style="display:flex;gap:6px;align-items:center;">
-              <button onclick="addWorker()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;white-space:nowrap;">הוסף</button>
-              <input type="text" id="newWorker" placeholder="שם עובד חדש" style="flex:1;max-width:300px;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-            </div>
-          </div>
-
-          <div id="auth-security-box" style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;direction:rtl;">
-            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
-            <div style="display:flex;gap:8px;margin-bottom:8px;">
-              <button onclick="toggleAuthSystem(true)" style="padding:5px 16px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;">הפעל מערכת סיסמאות</button>
-              <button onclick="toggleAuthSystem(false)" style="padding:5px 16px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;">כבה מערכת סיסמאות</button>
-              <span id="authToggleStatus" style="font-size:11px;color:#666;align-self:center;"></span>
-            </div>
-            <div style="font-size:11px;color:#888;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
-            <div style="display:flex;gap:6px;align-items:center;">
-              <select id="secQ" style="flex:2;max-width:260px;font-size:11px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-                <option>שם העיר שבה נולדתי</option>
-                <option>שם הספר האהוב עלי</option>
-                <option>שם בית הספר הראשון שלי</option>
-                <option>שם החיה הראשונה שלי</option>
-              </select>
-              <input type="text" id="secA" placeholder="תשובה סודית" style="flex:1;max-width:200px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-              <button onclick="saveSecurityQuestion()" style="padding:4px 12px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
-            </div>
-          </div>
-
-          <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
-            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">חיבור לגיטהאב</div>
-            <div style="font-size:11px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב — ישמר לתמיד</div>
-            <div style="display:flex;gap:6px;align-items:center;">
-              <input id="tokInput2" type="password" placeholder="ghp_..." style="flex:1;max-width:300px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:ltr;">
-              <button onclick="saveTokenFromBox2()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
-            </div>
-            <div id="tokStatus2" style="font-size:11px;color:#4caf50;margin-top:4px;"></div>
-          </div>
-
-        </div>
-      </div>
-      <div class="s-sec" style="margin-top:16px;display:none;">
-        <h3>חיבור לגיטהאב</h3>
-        <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
-        <div class="tok-row">
-          <input type="password" id="tokInput" placeholder="ghp_...">
-          <button onclick="saveToken()">שמור</button>
-        </div>
-        <div id="tokStatus"></div>
-      </div>
-    </div>
-    <div id="stab-content-donor-timesheet" style="display:none;">
-      <div class="s-sec" style="direction:rtl;">
-        <h3>תורמים — שם בטיימשיט ותקופה</h3>
-        <div id="donorTimesheetTable"></div>
-      </div>
-    </div>
-    <div id="stab-content-roles" style="display:none;">
-      <div class="s-sec">
-        <h3>תפקידים</h3>
-        <p style="font-size:12px;color:#666;margin-bottom:12px;">רשימת התפקידים בעמותה. בעת הוספת עובד לתורם ניתן לבחור תפקיד מרשימה זו.</p>
-        <div id="rolesList" style="margin-bottom:12px;min-height:30px;"></div>
-        <div style="display:flex;gap:8px;align-items:center;direction:rtl;justify-content:flex-start;">
-          <button onclick="addRole()" style="padding:7px 16px;background:#1B6B5A;color:#fff;border:none;border-radius:5px;cursor:pointer;white-space:nowrap;font-size:13px;">+ הוסף</button>
-          <input type="text" id="newRoleInput" placeholder="שם תפקיד חדש" style="direction:rtl;padding:7px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:240px;">
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="tab-content" id="tab-wdw">
-    <div class="s-sec">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;direction:rtl;">
-        <button onclick="switchWDW('org')" id="wdw-btn-org" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#00897B;color:white;">עמותה</button>
-        <button onclick="switchWDW('donor')" id="wdw-btn-donor" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">תורמים</button>
-        <button onclick="switchWDW('worker')" id="wdw-btn-worker" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
-        <button onclick="switchWDW('input')" id="wdw-btn-input" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">ניהול</button>
-        <button onclick="switchWDW('reports')" id="wdw-btn-reports" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">דוחות</button>
-        <button onclick="switchWDW('monthlypct')" id="wdw-btn-monthlypct" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">אחוז חודשי</button>
-        <button id="wdw-write-top-btn" onclick="wdwOpenWriteTimesheet()" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#1565C0;color:white;">כתיבה ל־Timesheet</button>
-      </div>
-      <div id="wdw-input"></div>
-      <div id="wdw-org" style="display:none;"></div>
-      <div id="wdw-donor" style="display:none;"></div>
-      <div id="wdw-worker" style="display:none;"></div>
-
-      <div id="wdw-reports" style="display:none;"></div>
-      <div id="wdw-monthlypct" style="display:none;"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-timesheet">
-    <div class="s-sec">
-      <h3>הפקת Timesheet</h3>
-      <div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-        <div>
-          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה:</label>
-          <select id="ts-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
-        </div>
-        <div>
-          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש:</label>
-          <select id="ts-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
-            <option value="">-- בחר חודש --</option>
-          </select>
-        </div>
-        <div style="padding-bottom:2px;margin-right:14px;">
-          <button onclick="setTsToday()" style="padding:7px 16px;background:#546e7a;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">Today</button>
-        </div>
-      </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ Timesheet:</label>
-        <input type="file" id="ts-file" accept=".xlsx" style="font-size:13px;">
-      </div>
+<div class="s-sec">
+<h3>הפקת Timesheet</h3>
+<div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+<div>
+<label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה:</label>
+<select id="ts-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
+</div>
+<div>
+<label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש:</label>
+<select id="ts-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
+<option value="">-- בחר חודש --</option>
+</select>
+</div>
+<div style="padding-bottom:2px;margin-right:14px;">
+<button onclick="setTsToday()" style="padding:7px 16px;background:#546e7a;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">Today</button>
+</div>
+</div>
+<div style="margin-bottom:16px;">
+<label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ Timesheet:</label>
+<input accept=".xlsx" id="ts-file" style="font-size:13px;" type="file"/>
+</div>
 <div id="ts-indicator" style="font-size:13px;margin-bottom:10px;color:#888;">⏳ טוען מנוע Python ברקע...</div>
-      <button onclick="generateTimesheet()" style="background:#1a7a4a;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">הפק Timesheet</button>
-      <div id="ts-status" style="margin-top:12px;font-size:13px;"></div>
-    </div>
-  </div>
+<button onclick="generateTimesheet()" style="background:#1a7a4a;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">הפק Timesheet</button>
+<div id="ts-status" style="margin-top:12px;font-size:13px;"></div>
+</div>
+</div>
+<div class="tab-content" id="tab-accounting">
+<div class="salary-subtabs" style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
+<button data-salary="timesheet" onclick="switchTab('timesheet')" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">Timesheet</button>
+<button data-salary="accounting" onclick="switchTab('accounting')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">הנהלת חשבונות</button>
+<button data-salary="export" onclick="exportExcel()" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">ייצוא לאקסל</button>
+<button data-salary="email" onclick="switchTab('email')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">מייל</button>
+</div>
 
-  <div class="tab-content" id="tab-accounting">
-    <div style="padding:20px 24px;max-width:600px;">
-      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:16px;">דוח הנהלת חשבונות</div>
-      <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 16px;font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;line-height:1.7;">
-        האפליקציה תמלא אוטומטית: חופש · מחלה · חג/אבל · ימי עבודה · שעות<br>
+<div style="padding:20px 24px;max-width:600px;">
+<div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:16px;">דוח הנהלת חשבונות</div>
+<div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 16px;font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;line-height:1.7;">
+        האפליקציה תמלא אוטומטית: חופש · מחלה · חג/אבל · ימי עבודה · שעות<br/>
         עדכון מכסת חופש בעמודה Q כשעובד עובר סף ותק
       </div>
-      <div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-        <div>
-          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה לדיווח:</label>
-          <select id="acc-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
-        </div>
-        <div>
-          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש לדיווח:</label>
-          <select id="acc-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
-            <option value="">-- בחר חודש --</option>
-          </select>
-        </div>
-      </div>
-      <div style="margin-bottom:18px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח הנהלת חשבונות:</label>
-        <input type="file" id="acc-file" accept=".xlsx" style="font-size:13px;">
-        <div id="acc-ts-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
-      </div>
-      <div style="margin-bottom:18px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח שעות:</label>
-        <input type="file" id="acc-ts-file" accept=".xlsx" style="font-size:13px;">
-        <div id="acc-ts-file-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
-      </div>
-      <hr style="border:none;border-top:0.5px solid var(--color-border-tertiary);margin:20px 0;">
-      <button onclick="generateAccounting()" style="padding:9px 20px;background:#00897B;color:white;border:none;border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;font-weight:500;">הפק דוח הנהלת חשבונות</button>
-      <div id="acc-status" style="margin-top:10px;font-size:13px;"></div>
-    </div>
-  </div>
-
-  <div class="save-bar">
-    <button class="save-btn" onclick="saveData()">שמור</button>
-    <span class="sst" id="saveStatus"></span>
-  </div>
+<div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+<div>
+<label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה לדיווח:</label>
+<select id="acc-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
 </div>
-
+<div>
+<label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש לדיווח:</label>
+<select id="acc-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
+<option value="">-- בחר חודש --</option>
+</select>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח הנהלת חשבונות:</label>
+<input accept=".xlsx" id="acc-file" style="font-size:13px;" type="file"/>
+<div id="acc-ts-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
+</div>
+<div style="margin-bottom:18px;">
+<label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח שעות:</label>
+<input accept=".xlsx" id="acc-ts-file" style="font-size:13px;" type="file"/>
+<div id="acc-ts-file-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
+</div>
+<hr style="border:none;border-top:0.5px solid var(--color-border-tertiary);margin:20px 0;"/>
+<button onclick="generateAccounting()" style="padding:9px 20px;background:#00897B;color:white;border:none;border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;font-weight:500;">הפק דוח הנהלת חשבונות</button>
+<div id="acc-status" style="margin-top:10px;font-size:13px;"></div>
+</div>
+</div>
+<div class="save-bar">
+<button class="save-btn" onclick="saveData()">שמור</button>
+<span class="sst" id="saveStatus"></span>
+</div>
+</div>
 <!-- EDIT WORKER MODAL -->
 <div class="mo" id="editWorkerModal">
-  <div class="mo-box">
-    <h3 style="margin:0 0 14px;font-size:15px;">עריכת עובד</h3>
-    <input type="hidden" id="editWorkerIdx">
-    <div style="margin-bottom:12px;">
-      <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שם העובד:</label>
-      <input type="text" id="editWorkerName" style="width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;">
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
-      <button onclick="closeModal('editWorkerModal')" style="padding:6px 14px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:12px;">ביטול</button>
-      <button onclick="saveEditWorker()" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">שמור</button>
-    </div>
-  </div>
+<div class="mo-box">
+<h3 style="margin:0 0 14px;font-size:15px;">עריכת עובד</h3>
+<input id="editWorkerIdx" type="hidden"/>
+<div style="margin-bottom:12px;">
+<label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שם העובד:</label>
+<input id="editWorkerName" style="width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;" type="text"/>
 </div>
-
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+<button onclick="closeModal('editWorkerModal')" style="padding:6px 14px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:12px;">ביטול</button>
+<button onclick="saveEditWorker()" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">שמור</button>
+</div>
+</div>
+</div>
 <!-- TOKEN MODAL -->
 <div class="mo" id="tokenModal">
-  <div class="mb" style="text-align:center;">
-    <div class="login-logo" style="margin:0 auto 12px;width:44px;height:44px;font-size:22px;">ג</div>
-    <h3>חיבור לגיטהאב</h3>
-    <p>הכנס טוקן פעם אחת — יישמר בדפדפן זה לתמיד</p>
-    <input type="password" id="tokModalInput" placeholder="ghp_..." style="direction:ltr;">
-    <div class="mbtns" style="justify-content:center;gap:10px;">
-      <button class="bx" onclick="skipToken()">דלג</button>
-      <button class="bc" onclick="saveTokenModal()">שמור וכנס</button>
-    </div>
-    <p style="font-size:10px;color:#aaa;margin-top:8px;">ניתן לעדכן בהגדרות בכל עת</p>
-  </div>
+<div class="mb" style="text-align:center;">
+<div class="login-logo" style="margin:0 auto 12px;width:44px;height:44px;font-size:22px;">ג</div>
+<h3>חיבור לגיטהאב</h3>
+<p>הכנס טוקן פעם אחת — יישמר בדפדפן זה לתמיד</p>
+<input id="tokModalInput" placeholder="ghp_..." style="direction:ltr;" type="password"/>
+<div class="mbtns" style="justify-content:center;gap:10px;">
+<button class="bx" onclick="skipToken()">דלג</button>
+<button class="bc" onclick="saveTokenModal()">שמור וכנס</button>
 </div>
-
+<p style="font-size:10px;color:#aaa;margin-top:8px;">ניתן לעדכן בהגדרות בכל עת</p>
+</div>
+</div>
 <!-- END WORK MODAL -->
 <div class="mo" id="endModal">
-  <div class="mb">
-    <h3>סיום עבודה</h3>
-    <p id="endModalName" style="font-weight:bold;margin-bottom:12px;font-size:14px;"></p>
-    <label style="font-size:12px;color:#666;display:block;margin-bottom:6px;">חודש סיום עבודה:</label>
-    <input type="month" id="endModalMonth" style="direction:ltr;">
-    <div class="mbtns">
-      <button class="bx" onclick="closeModal('endModal')">ביטול</button>
-      <button class="bd" onclick="confirmEnd()">אישור</button>
-    </div>
-  </div>
+<div class="mb">
+<h3>סיום עבודה</h3>
+<p id="endModalName" style="font-weight:bold;margin-bottom:12px;font-size:14px;"></p>
+<label style="font-size:12px;color:#666;display:block;margin-bottom:6px;">חודש סיום עבודה:</label>
+<input id="endModalMonth" style="direction:ltr;" type="month"/>
+<div class="mbtns">
+<button class="bx" onclick="closeModal('endModal')">ביטול</button>
+<button class="bd" onclick="confirmEnd()">אישור</button>
 </div>
-
+</div>
+</div>
 <!-- HOLIDAY CONFIRM MODAL -->
 <div class="mo" id="holConfirmModal">
-  <div class="mb" style="text-align:center;">
-    <h3 style="color:#00897B;">✓ חג נוסף בהצלחה</h3>
-    <p id="holConfirmMsg" style="font-size:13px;color:#333;margin-top:8px;"></p>
-    <div class="mbtns" style="justify-content:center;margin-top:12px;">
-      <button class="bc" onclick="closeModal('holConfirmModal')">אישור</button>
-    </div>
-  </div>
+<div class="mb" style="text-align:center;">
+<h3 style="color:#00897B;">✓ חג נוסף בהצלחה</h3>
+<p id="holConfirmMsg" style="font-size:13px;color:#333;margin-top:8px;"></p>
+<div class="mbtns" style="justify-content:center;margin-top:12px;">
+<button class="bc" onclick="closeModal('holConfirmModal')">אישור</button>
 </div>
-
+</div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ===== CONSTANTS =====
@@ -4778,7 +4763,6 @@ window.isAmountFunding = isAmountFunding;
 })();
 
 </script>
-
 <script>
 /* ===== WDW v206CH fix — clean add-donor state =====
    When adding a new donor, do not show another '+ הוסף תורם' button above the form.
@@ -5718,8 +5702,6 @@ window.wdwReportRoleRender = function(){
 
 })();
 </script>
-
-
 <script>
 /* ===== WDW v211 — definitive add donor separation =====
    This override is intentionally last. It prevents + הוסף תורם from using
@@ -5885,9 +5867,6 @@ window.wdwResetNewWorkerForm = function(did) {
   if(wrap) { wrap.style.display='block'; wrap.scrollIntoView({block:'nearest'}); }
 };
 </script>
-
-
-
 <script>
 /* ===== WDW v218CH final override — controlled management + worker tab fixes ===== */
 (function(){
@@ -6255,8 +6234,6 @@ window.wdwResetNewWorkerForm = function(did) {
   var style=document.createElement('style');style.id='wdw-v219-style';style.textContent='\n.wdw-v219-view{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:12px 16px;margin:10px 0}.wdw-v219-month-title{font-size:18px;font-weight:900;color:#00695c}.wdw-v219-controls{display:flex;gap:8px;align-items:center}.wdw-v219-controls select{padding:7px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-weight:700}.wdw-v219-controls button{padding:8px 18px;background:#00695c;color:#fff;border:none;border-radius:8px;font-weight:800;cursor:pointer}.v219-table-wrap{max-height:430px;overflow:auto;border-radius:10px;border:1px solid #e2e8f0}.v219-table-wrap .wdw-table thead th{position:sticky!important;top:0!important;z-index:10!important;background:#f8fafc!important;color:#475569!important}.v219-worker-summary{font-size:16px!important;font-weight:900!important;color:#111827!important;margin-top:4px}.v219-sub{font-size:13px;font-weight:800;color:#475569;margin-top:3px}.v219-repl-text{font-size:12.5px!important;color:#1f2937!important;font-weight:700!important}.v219-donor-summary{display:grid;grid-template-columns:130px minmax(220px,1.4fr) 100px minmax(170px,1fr) 110px 150px auto;gap:12px;align-items:center;padding:14px;border-bottom:1px solid #edf2f7}.v219-donor-summary:hover{background:#f8fafc}.v219-donor-card{overflow:hidden}.v219-mgmt-summary{grid-template-columns:minmax(260px,1.5fr) 100px 110px 120px 180px auto!important}.v219-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}.v219-worker-line{display:grid;grid-template-columns:1.3fr 90px 1.4fr 160px auto auto;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid #e5e7eb}.v219-worker-line button{padding:4px 9px;background:#fff;border:1px solid #cbd5e1;border-radius:5px;cursor:pointer}.v219-worker-line .danger{border-color:#fecaca;color:#b91c1c}.wdw-chip.repl{background:transparent!important;border:none!important;color:#1f2937!important;padding:0!important;font-weight:700!important}\n';document.head.appendChild(style);
 })();
 </script>
-
-
 <script>
 /* ===== WDW v225CH TODAY BUTTON PATCH — only adds היום button to WDW month controls ===== */
 (function(){
@@ -6340,8 +6317,6 @@ window.wdwResetNewWorkerForm = function(did) {
   }
 })();
 </script>
-
-
 <script>
 /* ===== WDW v226CH CRITICAL PATCH — add donor/add worker only ===== */
 (function(){
@@ -6437,8 +6412,6 @@ window.wdwResetNewWorkerForm = function(did) {
   },true);
 })();
 </script>
-
-
 <script>
 /* ===== WDW v228 CRITICAL FIXES — targeted only ===== */
 (function(){
@@ -6585,8 +6558,6 @@ window.wdwResetNewWorkerForm = function(did) {
   else document.addEventListener('DOMContentLoaded',function(){installStyle227();cleanupDonorDisplay227(document);});
 })();
 </script>
-
-
 <script>
 /* ===== v231CL critical WDW repair: donor button + add worker to new/existing donor ===== */
 (function(){
@@ -6653,9 +6624,6 @@ window.wdwResetNewWorkerForm = function(did) {
   },true);
 })();
 </script>
-
-
-
 <script>
 /* ===== v234CH FINAL WDW SAFETY PATCH — robust add-worker + compact workers ===== */
 (function(){
@@ -6718,8 +6686,6 @@ window.wdwResetNewWorkerForm = function(did) {
   function style(){if(document.getElementById('wdw-v234-style'))return;var st=document.createElement('style');st.id='wdw-v234-style';st.textContent='.v234-grid{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:10px}.v234-grid label{font-size:12px;color:#475569;font-weight:700;display:flex;flex-direction:column;gap:4px}.v234-worker-row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid #e5e7eb;cursor:pointer;background:#fff;direction:rtl}.v234-worker-row:hover{background:#f8fafc}.v234-worker-row.over{background:#fff1f2}.v234-worker-row.near{background:#fff7ed}.v234-worker-name{font-size:17px;font-weight:800;color:#111827;min-width:64px;text-align:right;flex-shrink:0}.v234-pct-block{display:flex;align-items:center;gap:18px;flex:1}.v234-pct-item{display:flex;flex-direction:column;align-items:center;gap:2px}.v234-pct-lbl{font-size:11px;color:#94a3b8}.v234-pct-val{font-size:17px;font-weight:700}.v234-pct-used{color:#d35400}.v234-pct-free{color:#374151}.v234-projects{font-size:13px;color:#6b7280;white-space:nowrap}.v234-budget-block{display:flex;align-items:center;gap:10px;background:#f1f5f9;border-radius:20px;padding:6px 16px;flex-shrink:0;direction:rtl;border:1px solid #e2e8f0}.v234-bnum{display:flex;flex-direction:column;align-items:center;gap:1px}.v234-bnum-lbl{font-size:11px;color:#64748b;font-weight:500}.v234-bnum-val{font-size:15px;font-weight:700}.v234-bnum-budget{color:#1e293b}.v234-bnum-used{color:#c0392b}.v234-bnum-remain{color:#16a34a}.v234-sep{color:#94a3b8;font-size:14px}.v234-badge{font-size:13px;font-weight:600;padding:4px 12px;border-radius:16px;border:1px solid #d1d5db;color:#374151;background:#fff;white-space:nowrap;flex-shrink:0}.v234-badge-repl{color:#c2410c;border-color:#fb923c;background:#fff7ed}.v234-fix-btn{font-size:13px;padding:5px 14px;border-radius:16px;border:1px solid #cbd5e1;background:#fff;color:#374151;cursor:pointer;flex-shrink:0;font-weight:500}.v234-worker-detail{padding:10px 16px 16px;background:#fbfdff;border-bottom:1px solid #e5e7eb}.wdw-inp{padding:8px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px}@media(max-width:1000px){.v234-grid{grid-template-columns:1fr 1fr}.v234-worker-row{flex-wrap:wrap}.v234-worker-detail{overflow:auto}}';document.head.appendChild(st);}style();
 })();
 </script>
-
-
 <script>
 /* ===== v238CL FINAL ONLY: clean add-worker form layout + FX helper. Based on v234CH; no button changes. ===== */
 (function(){
@@ -6805,8 +6771,6 @@ window.wdwResetNewWorkerForm = function(did) {
   function style(){if(document.getElementById('wdw-v238-style'))return;var st=document.createElement('style');st.id='wdw-v238-style';st.textContent='.v238-add-worker-box{background:#fff;border:1px solid #d5dce3;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}.v238-section{border:1px solid #e5eaf0;border-radius:12px;padding:12px;margin-bottom:10px;background:#fbfdff}.v238-title{font-size:13px;font-weight:900;color:#073f3d;margin-bottom:10px}.v238-grid{display:grid;gap:10px}.v238-grid.one{grid-template-columns:minmax(260px,1fr)}.v238-grid.two{grid-template-columns:repeat(2,minmax(190px,1fr))}.v238-grid.three{grid-template-columns:repeat(3,minmax(160px,1fr))}.v238-grid label{font-size:12px;color:#475569;font-weight:700;display:flex;flex-direction:column;gap:4px}.v238-help{font-size:11px;color:#64748b;margin-top:8px;line-height:1.45}.wdw-inp[disabled]{background:#f1f5f9;color:#64748b}@media(max-width:1000px){.v238-grid.one,.v238-grid.two,.v238-grid.three{grid-template-columns:1fr}}';document.head.appendChild(st);}style();
 })();
 </script>
-
-
 <!-- ===== v249CH ORG DASHBOARD REDESIGN — org tab only ===== -->
 <style>
 #wdw-org .org249-wrap{direction:rtl;background:#f4f6f8;padding:0 0 28px;color:#0f172a;font-family:Arial,sans-serif}
@@ -6893,9 +6857,6 @@ window.wdwResetNewWorkerForm = function(did) {
   window.renderWDWOrg=function(){init();var div=document.getElementById('wdw-org');if(!div)return;var m=month();var html='<div class="org249-wrap"><div class="org249-hero"><div class="org249-title">עמותה — מצב נוכחי</div><div class="org249-sub">סקירה כללית של מצב התורמים והעובדים בזמן אמת. חודש תצוגה: <b>'+fmtMonth(m)+'</b>.</div></div>'+kpis(m)+'<div class="org249-grid">'+alertsTable(m)+donorsTable(m)+'</div><div class="org249-grid">'+workersTable(m)+actions()+'</div></div>';div.innerHTML=html;};
 })();
 </script>
-
-
-
 <!-- ===== v250CH ORG DASHBOARD REFINEMENT — org tab only ===== -->
 <style>
 #wdw-org .org250-wrap{direction:rtl;background:#f4f6f8;padding:0 0 28px;color:#0f172a;font-family:Arial,sans-serif}
@@ -6977,9 +6938,6 @@ window.wdwResetNewWorkerForm = function(did) {
   window.renderWDWOrg=function(){init();var div=document.getElementById('wdw-org');if(!div)return;var m=month();div.innerHTML='<div class="org250-wrap"><div class="org250-hero"><div class="org250-title">עמותה — מצב נוכחי</div><div class="org250-sub">סקירה ניהולית נקייה של תורמים ועובדים. חודש תצוגה: <b>'+fmtMonth(m)+'</b>.</div></div>'+kpis(m)+'<div class="org250-grid">'+donorsTable(m)+alertsTable(m)+'</div><div class="org250-grid second">'+workersTable(m)+notesPanel(m)+'</div></div>';};
 })();
 </script>
-
-
-
 <!-- ===== v251CH — ORG/DONOR REPLACE ALLOCATION PERCENT WITH WORKER EXCEPTION INFO ===== -->
 <style>
 #wdw-org .org251-wrap{direction:rtl;background:#f4f6f8;padding:0 0 28px;color:#0f172a;font-family:Arial,sans-serif}
@@ -7069,14 +7027,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   window.renderWDWDonor=function(){init();var div=document.getElementById('wdw-donor');if(!div)return;var m=month();var list=donors().filter(function(d){return d.status!=='inactive';});var active=list.filter(function(d){return d.status!=='ended';}),ended=list.filter(function(d){return d.status==='ended';});var html=header('WDW — תורמים','במקום ניצול מוצג מידע על עובדים ב־90% ומעלה אצל כל תורם.');function card(d){var ws=donorWorkers(d,m), ex=exceptionWorkersForDonor(d,m), id='v251-donor-body-'+esc(d.id||Math.random());var exChip=ex.some(function(x){return x.total>100;})?'<span class="wdw-chip org251-chip bad">'+ex.length+' עובדים בחריגה</span>':ex.length?'<span class="wdw-chip org251-chip warn">'+ex.length+' עובדים 90%+</span>':'<span class="wdw-chip org251-chip ok">אין חריגה</span>';var summary='<div class="v251-donor-summary" onclick="var e=document.getElementById(\''+id+'\');if(e)e.style.display=e.style.display===\'none\'?\'block\':\'none\';"><div>'+statusChip(d,m)+'</div><div><b>'+esc(d.name||'—')+'</b><div class="wdw-muted">'+esc(d.code||'—')+'</div></div><div>'+range(d)+'</div><div>'+donorTypeChip(d)+'</div>'+'<div class="wdw-num">'+ws.length+' עובדים</div><div>'+exChip+'</div><div class="wdw-actions"><button onclick="event.stopPropagation();var e=document.getElementById(\''+id+'\');if(e)e.style.display=e.style.display===\'none\'?\'block\':\'none\';">פירוט</button></div></div>';var body='<div class="wdw-donor-body" id="'+id+'" style="display:none"><table class="wdw-table"><thead><tr><th>עובד</th><th class="wdw-num">אחוז בתורם</th><th class="wdw-num">עומס עובד בכלל התורמים</th><th>מצב עובד</th><th>מחליף את</th><th>תקופת שיוך</th></tr></thead><tbody>';if(!ws.length)body+='<tr><td colspan="6" style="text-align:center!important;color:#94a3b8">אין עובדים פעילים בחודש הנבחר</td></tr>';ws.forEach(function(w){var t=workerTotal(w.name,m),cls=t>100?'bad':t>=90?'warn':'ok',txt=t>100?'עובד בחריגה':t>=90?'עובד קרוב לתקרה':'תקין';body+='<tr><td><div class="wdw-worker">'+esc(w.name)+'</div></td><td class="wdw-num">'+pct(rowPct(w,m))+'</td><td class="wdw-num"><b>'+pct(t)+'</b></td><td><span class="wdw-chip org251-chip '+cls+'">'+txt+'</span></td><td>'+(replPct(w,m)?'<span class="wdw-chip repl">'+esc(w.replaces||w.replacesName||'מחליף')+' '+pct(replPct(w,m))+'</span>':'<span class="wdw-muted">—</span>')+'</td><td>'+fmtMonth(w.startMonth||w.startDate)+' — '+fmtMonth(w.endMonth||w.endDate)+'</td></tr>';});body+='</tbody></table></div>';return '<div class="wdw-donor-card">'+summary+body+'</div>';}if(!list.length)html+='<div class="wdw-panel"><div style="padding:14px;color:#64748b">אין תורמים מוגדרים.</div></div>';active.forEach(function(d){html+=card(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות שהסתיימו</div>';ended.forEach(function(d){html+=card(d);});}div.innerHTML=html+'</div>';};
 })();
 </script>
-
-
-
-
-
-
-
-
 <style id="v494CL-wdw-management-full-redesign-style">
 #tab-wdw .v437-shell{background:#f5f7f9!important;padding:10px 0 36px!important;color:#111827}
 #tab-wdw .v437-top{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:14px 18px;margin-bottom:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}
@@ -7122,11 +7072,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   #tab-wdw .v437-green{flex-direction:column}
 }
 </style>
-
-
-
-
-
 <style id="v494CL-worker-sections-style">
 #tab-wdw .v439-worker-form{padding:16px!important}
 #tab-wdw .v439-section{background:#fbfdff;border:1px solid #e5eaf0;border-radius:10px;padding:12px;margin-bottom:12px}
@@ -7145,11 +7090,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   #tab-wdw .v439-monthly-grid{grid-template-columns:1fr 1fr}
 }
 </style>
-
-
-
-
-
 <style id="v494CL-wdw-management-table-alignment-only">
 /* v494CL — ONLY table alignment in WDW > ניהול */
 
@@ -7261,12 +7201,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   }
 }
 </style>
-
-
-
-
-
-
 <style id="v494CL-annual-summary-display-only">
 /* v494CL — Annual summary display only. No data collection or calculation logic changed. */
 #tab-annual .v449-annual-head{
@@ -7377,11 +7311,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   }
 }
 </style>
-
-
-
-
-
 <style id="v494CL-annual-summary-final-style">
 #tab-annual .v451-annual-head{
   display:flex;
@@ -7415,10 +7344,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 #tab-annual .v451-empty{text-align:center!important;color:#64748b;padding:20px!important}
 @media(max-width:800px){#tab-annual .v451-annual-head{flex-direction:column;align-items:stretch}}
 </style>
-
-
-
-
 <style id="v494CL-donor-form-sections-and-timesheet-name">
 #tab-wdw .v452-donor-sectioned{
   padding:16px !important;
@@ -7442,18 +7367,12 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   margin-top:0 !important;
 }
 </style>
-
-
-
 <style id="v494CL-timesheet-name-field-style">
 #tab-wdw input[id*="-timesheet-name"]{
   direction:ltr;
   text-align:left;
 }
 </style>
-
-
-
 <style id="v494CL-clean-timesheet-name-layout-style">
 #tab-wdw .v456-timesheet-field{
   display:block !important;
@@ -7479,8 +7398,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   box-sizing:border-box !important;
 }
 </style>
-
-
 <script id="v494CL-timesheet-writer">
 (function(){
 window.wdwProcessTimesheetFile=function(arrayBuffer,rows,month,displayMode){
@@ -7631,9 +7548,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 };
 })();
 </script>
-
-
-
 <style id="v494CL-annual-summary-active-fix-style">
 #tab-annual .v472-annual-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:14px 16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(15,23,42,.05)}
 #tab-annual .v472-annual-note{font-size:12px;color:#64748b;margin-top:4px}
@@ -7655,9 +7569,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 #tab-annual .v472-empty{text-align:center!important;color:#64748b;padding:20px!important}
 @media(max-width:800px){#tab-annual .v472-annual-head{flex-direction:column;align-items:stretch}}
 </style>
-
-
-
 <style id="v494CL-reports-design-only-style">
 #tab-wdw #wdw-reports.v477-reports-root{direction:rtl;background:#f4f6f8;padding:0;color:#111827}
 #tab-wdw #wdw-reports .v477-report-intro{background:#fff;border:1px solid #d5dce3;border-radius:16px;padding:18px 22px;margin:0 0 16px;box-shadow:0 2px 10px rgba(15,23,42,.05)}
@@ -7678,9 +7589,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
 #tab-wdw #wdw-reports .wdw-chip,#tab-wdw #wdw-reports .chip{font-size:12px!important;padding:5px 9px!important;border-radius:999px!important;font-weight:800!important;background:#f2f4f7!important;color:#344054!important;border:1px solid #d0d5dd!important}
 #tab-wdw #wdw-reports .wdw-num,#tab-wdw #wdw-reports td[style*="direction:ltr"]{direction:ltr!important;text-align:left!important;font-weight:900!important;white-space:nowrap!important}
 </style>
-
-
-
 <style id="v494CL-annual-year-button-real-load-fix-style">
 #tab-annual .v480-year-control{
   display:grid !important;
@@ -7756,13 +7664,9 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   }
 }
 </style>
-
-
-
 <style id="v590CH-wdw-monthly-percent-unified-style">
 #tab-wdw .v486-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;background:#fff;border:1px solid #d5dce3;border-radius:16px;padding:18px 22px;margin-bottom:14px;box-shadow:0 2px 10px rgba(15,23,42,.05)}#tab-wdw .v486-title{font-size:24px;font-weight:900;color:#073f3d}#tab-wdw .v486-sub{font-size:13px;color:#667085;margin-top:5px}#tab-wdw .v486-controls{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}#tab-wdw .v486-controls label{font-size:12px;color:#475569;font-weight:800;display:flex;flex-direction:column;gap:4px}#tab-wdw .v486-controls select{height:36px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;padding:5px 10px;font-size:13px;min-width:120px}#tab-wdw .v486-controls button{height:36px;border:none;border-radius:8px;background:#073f3d;color:#fff;padding:0 18px;font-size:13px;font-weight:900;cursor:pointer}#tab-wdw .v486-note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:9px 12px;font-size:12px;margin-bottom:12px}#tab-wdw .v486-table-wrap{overflow:auto;background:#fff;border:1px solid #d5dce3;border-radius:16px;box-shadow:0 2px 10px rgba(15,23,42,.05)}#tab-wdw table.v486-table{width:100%;border-collapse:separate!important;border-spacing:0!important;table-layout:fixed;box-shadow:none!important;background:#fff}#tab-wdw table.v486-table th{position:sticky!important;top:0!important;z-index:3!important;background:#f6f7f9!important;color:#344054!important;font-size:12px!important;font-weight:900!important;padding:11px 10px!important;text-align:right!important;border-bottom:1px solid #d9e0e7!important}#tab-wdw table.v486-table td{font-size:12px!important;padding:10px!important;text-align:right!important;border-bottom:1px solid #edf1f5!important;vertical-align:middle!important}#tab-wdw table.v486-table th:first-child,#tab-wdw table.v486-table td:first-child{width:210px}.v486-main-row{cursor:pointer}.v486-main-row:hover td{background:#fafbfc!important}.v486-name{font-weight:900;color:#111827}.v486-pct{direction:ltr;text-align:center!important;font-weight:900;border-radius:6px}.v486-pct.empty{color:#94a3b8}.v486-pct.low{background:#f1f5f9!important;color:#475569}.v486-pct.ok{background:#ecfdf3!important;color:#027a48}.v486-pct.warn{background:#fff7ed!important;color:#b45309}.v486-pct.bad{background:#fef2f2!important;color:#b91c1c}.v486-detail-row>td{background:#fbfcfd!important;padding:12px!important}.v486-detail-box{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}.v486-detail-title{font-size:13px;font-weight:900;color:#073f3d;margin-bottom:8px}#tab-wdw table.v486-detail-matrix{width:100%;border-collapse:separate!important;border-spacing:0!important;table-layout:fixed;box-shadow:none!important}#tab-wdw table.v486-detail-matrix th{background:#f8fafc!important;color:#64748b!important;font-size:12px!important;padding:8px!important;text-align:right!important;border-bottom:1px solid #e5e7eb!important}#tab-wdw table.v486-detail-matrix td{font-size:12px!important;padding:8px!important;text-align:right!important;border-bottom:1px solid #f1f5f9!important}#tab-wdw table.v486-detail-matrix th:first-child,#tab-wdw table.v486-detail-matrix td:first-child{width:230px}.v486-donor-name b{display:block;color:#111827;font-size:12px}.v486-donor-name span{display:block;color:#667085;font-size:11px;margin-top:3px}.v486-detail-note{font-size:11px;color:#64748b;margin-top:8px}.v486-empty{text-align:center!important;color:#64748b!important;padding:22px!important}@media(max-width:1000px){#tab-wdw .v486-head{flex-direction:column;align-items:stretch}#tab-wdw table.v486-table{min-width:1000px}#tab-wdw table.v486-detail-matrix{min-width:1000px}}
 </style>
-
 <style id="v494CL-monthly-percent-annual-column-style">
 #tab-wdw table.v486-table th.v487-annual-th,
 #tab-wdw table.v486-detail-matrix th.v487-annual-th{
@@ -7784,9 +7688,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   width:230px !important;
 }
 </style>
-
-
-
 <script id="v599CH-wdw-flex-contract-and-employer-cost-validation">
 /*
   v599CH
@@ -8123,8 +8024,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   },0);
 })();
 </script>
-
-
 <script id="v599CH-wdw-save-edit-worker-validation-fix">
 /*
   v599CH
@@ -8167,8 +8066,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   window.wdwSaveEditWorker.__v598Wrapped = true;
 })();
 </script>
-
-
 <script id="v599CH-wdw-saveData-global-overfunding-alert">
 /*
   v599CH
@@ -8270,8 +8167,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   window.saveData.__v599Wrapped=true;
 })();
 </script>
-
-
 <script id="v600CL-save-edit-worker-overflow-fix">
 /* v600CL - תיקון: עטיפת wdwSaveEditWorker הסופית עם בדיקת חריגה */
 (function(){
@@ -8307,8 +8202,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   setTimeout(doFix, 1500);
 })();
 </script>
-
-
 <script id="v600CL-savedata-overflow-fix">
 /* v600CL - בדיקת חריגה גם אחרי שמירה מטבלת אחוז חודשי */
 (function(){
@@ -8347,8 +8240,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   setTimeout(doFix, 1500);
 })();
 </script>
-
-
 <script id="v606CH-overflow-modal">
 (function(){
   function showOverflowModal(workerName, monthly, annual){
@@ -8478,9 +8369,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   setTimeout(doInit, 1800);
 })();
 </script>
-
-
-
 <script id="v606CH-overfunding-modal-helper">
 (function(){
   function esc(s){
@@ -8564,10 +8452,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   };
 })();
 </script>
-
-
-
-
 <script id="v618CH-monthly-pct-year-and-zero-fix">
 (function(){
   'use strict';
@@ -8647,8 +8531,6 @@ window.wdwWriteAndDownload=function(wb,rows,month,displayMode){
   };
 })();
 </script>
-
-
 <script id="v629CL-delete-worker">
 window.wdwDeleteWorker = function(did, wid){
   if(!S.wdw || !S.wdw.donors) return;
@@ -8663,8 +8545,6 @@ window.wdwDeleteWorker = function(did, wid){
 };
 window.wdwDeleteWorker217 = window.wdwDeleteWorker;
 </script>
-
-
 <script id="v631CL-calc-monthly">
 window.wdwCalcMonthlyFromPeriod = function(pfx){
   var workerPfx = pfx;
@@ -8790,9 +8670,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   }
 };
 </script>
-
-
-
 <script id="v705CH-ended-donors-annual-employer-cost-fix">
 (function(){
   'use strict';
@@ -8849,8 +8726,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   };
 })();
 </script>
-
-
 <script id="v713CH-calc-button-override">
 (function(){
   var _oldCalc = window.wdwCalcMonthlyFromPeriod;
@@ -8863,7 +8738,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   };
 })();
 </script>
-
 <script id="v716CH-fixedMonths-calc-and-monthly-rebalance">
 (function(){
   var _origCalc = window.calcWorkerPct;
@@ -8893,8 +8767,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   };
 })();
 </script>
-
-
 <script id="v722CH-flexible-period-target-annual-fix">
 (function(){
   'use strict';
@@ -8994,9 +8866,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
 })();
 </script>
-
-
-
 <script id="v727CH-replacement-fixes">
 (function(){
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -9019,9 +8888,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 <style id="v727CH-replacement-fixes-style">
 .v727-repl-badge{display:inline-block;margin-inline-start:6px;padding:3px 7px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:800;white-space:nowrap}
 </style>
-
-
-
 <script id="v731CH-clean-monthly-replacement-display">
 (function(){
   'use strict';
@@ -9076,8 +8942,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
 #tab-wdw .v731-repl-row .v486-donor-name{border-inline-start:3px solid #f59e0b;background:#fffaf0!important}
 #tab-wdw .v731-base-row .v486-donor-name{background:#fff!important}
 </style>
-
-
 <script id="v733CH-management-monthly-fixes">
 /* v733CH: נקודתי בלבד — עמודת שנתי כפולה, פתיחת הוספת עובד, וחיווי החלפה קריא בניהול */
 (function(){
@@ -9199,8 +9063,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   setInterval(function(){installRenderHooks();cleanupAnnualColumns();enhanceManagement();},700);
 })();
 </script>
-
-
 <script id="v735CH-annual-per-detail-override">
 (function(){
   'use strict';
@@ -9249,7 +9111,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   setTimeout(rerenderIfOpen,200);
 })();
 </script>
-
 <script id="v735CH-org-kpi-cosmetic-remove-budget-used-free">
 (function(){
   function removeBudgetKpis(){
@@ -9281,8 +9142,6 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
 })();
 </script>
-
-
 <script id="v736CH-detail-annual-only-fix">
 /* v736CH: only fix missing annual percentage per detail row in Monthly Percent detail tables. */
 (function(){
@@ -9371,13 +9230,9 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   setInterval(function(){install();ensureDetailAnnuals();},700);
 })();
 </script>
-
-
 <script>
 window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.workers[i].active=true;S.workers[i].endMonth=null;if(typeof renderWorkerList==='function')renderWorkerList();if(typeof saveLocally==='function')saveLocally();if(typeof saveData==='function')saveData();};
 </script>
-
-
 <script id="v767CH-active-worker-amount-engine-fix">
 (function(){
   'use strict';
@@ -9464,8 +9319,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   };
 })();
 </script>
-
-
 <script id="v771CH-role-order-and-replacement-split-fix">
 (function(){
   'use strict';
@@ -9533,9 +9386,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
     var names=officialWorkers();var active=names.filter(workerStillActive),former=names.filter(function(x){return !workerStillActive(x);});active.forEach(function(name,i){renderName(name,i,false);});if(former.length){html+='<tr><td colspan="9" style="padding:8px 14px;background:#f8fafc;color:#64748b;font-size:12px;font-weight:600;border-top:2px solid #e5e7eb">עובדים לשעבר</td></tr>';former.forEach(function(name,i){renderName(name,i,true);});}html+='</tbody></table></div></div></div>';div.innerHTML=html;};
 })();
 </script>
-
-
-
 <script id="v772CH-single-money-engine-alert-fix">
 /*
   v772CH
@@ -9686,9 +9536,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   }
 })();
 </script>
-
-
-
 <script id="v775CH-reports-use-money-engine-only">
 /*
   v775CH — base: v772CH
@@ -9776,11 +9623,70 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 })();
 </script>
 
+<script id="v777CH-navigation-override">
+(function(){
+  function setMainTabActive(name){
+    var main = (name==='timesheet'||name==='accounting'||name==='email') ? 'salary' : name;
+    document.querySelectorAll('.tabs .tab').forEach(function(t){
+      t.classList.toggle('active', t.getAttribute('data-main')===main);
+    });
+  }
+  function setSalarySubActive(name){
+    document.querySelectorAll('.salary-subtabs button').forEach(function(btn){
+      var on = btn.getAttribute('data-salary')===name;
+      btn.style.borderBottomColor = on ? '#1B6B5A' : 'transparent';
+      btn.style.color = on ? '#1B6B5A' : '#6b7280';
+      btn.style.fontWeight = on ? 'bold' : 'normal';
+    });
+  }
+  window.switchTab = function(name){
+    if(name==='export'){ exportExcel(); return; }
+    setMainTabActive(name);
+    document.querySelectorAll('.tab-content').forEach(function(c){ c.classList.remove('active'); });
+    var el=document.getElementById('tab-'+name);
+    if(el) el.classList.add('active');
+    setSalarySubActive(name);
+    if(name==='annual' && typeof renderAnnual==='function') renderAnnual();
+    if(name==='wdw' && typeof initWDW==='function'){ initWDW(); if(typeof switchWDW==='function') switchWDW('org'); }
+    if(name==='email' && typeof renderEmailTab==='function') renderEmailTab();
+    if(name==='timesheet'){
+      if(typeof populateTsYearMonth==='function') setTimeout(populateTsYearMonth,0);
+    }
+    if(name==='accounting'){
+      if(typeof populateAccYearMonth==='function') setTimeout(populateAccYearMonth,0);
+    }
+    if(name==='settings'){
+      if(typeof renderWorkerList==='function') renderWorkerList();
+      var tok=document.getElementById('tokStatus');
+      if(tok && typeof getToken==='function') tok.innerHTML=getToken()?'<span class="tok-ok">✓ טוקן מוגדר</span>':'אין טוקן';
+    }
+  };
+  window.switchSettingsTab = function(name){
+    if(name==='donor-timesheet' && typeof renderDonorTimesheetTable==='function') setTimeout(renderDonorTimesheetTable,0);
+    ['workers','roles','donor-timesheet','holidays'].forEach(function(t){
+      document.querySelectorAll('#stab-'+t).forEach(function(btn){
+        var on=t===name;
+        btn.style.borderBottomColor=on?'#1B6B5A':'transparent';
+        btn.style.color=on?'#1B6B5A':'#6b7280';
+        btn.style.fontWeight=on?'bold':'normal';
+      });
+      document.querySelectorAll('#stab-content-'+t).forEach(function(sec){
+        sec.style.display=t===name?'':'none';
+      });
+    });
+    if(name==='roles' && typeof renderRolesList==='function') renderRolesList();
+    if(name==='holidays'){
+      if(typeof renderHolWorkers==='function') renderHolWorkers();
+      if(typeof renderHolList==='function') renderHolList();
+    }
+  };
+})();
+</script>
 </body>
-</htmlYPE html>
+
 <html dir="rtl" lang="he">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8"/>
 <!-- ============================================================ -->
 <!-- מתג מערכת הרשאות                                            -->
 <!-- false = פתוח לכולם (כמו היום, ברירת מחדל)                  -->
@@ -9788,9 +9694,9 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <!-- שנה את הערך רק דרך כפתור "הפעל/כבה" בהגדרות               -->
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Reports_Workers v775CH | גישה</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2300897B' rx='4'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>&#x05D2;</text></svg>">
+<link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f5f5f5;font-size:13px;direction:rtl}
@@ -10021,386 +9927,361 @@ async function initPyodide(){
   document.head.appendChild(sc);
 }
 </script>
-
 <style id="v744CL-detail-annual-style">
 #tab-wdw table.v486-detail-matrix th.v747-deva-detail-annual-th{background:#eef8f6!important;color:#073f3d!important;font-weight:900!important;min-width:58px!important;}
 #tab-wdw table.v486-detail-matrix td.v747-deva-detail-annual-cell{font-weight:900!important;border-inline-start:1px solid #d9e0e7!important;border-inline-end:1px solid #d9e0e7!important;}
 </style>
 </head>
 <body>
-
 <div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">ג</div>
-    <h2>Reports_Workers</h2>
-    <p>גישה — מערכת ניהול חופש ומחלה</p>
-    <input type="text" id="loginName" placeholder="הכנס את שמך" autocomplete="username">
-    <div id="loginPasswordWrap" style="display:none;">
-      <input type="password" id="loginPassword" placeholder="סיסמה" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;">
-      <div style="text-align:right;margin-top:-8px;margin-bottom:10px;">
-        <a href="#" onclick="resetAdminPassword();return false;" style="font-size:11px;color:#00897B;">שכחתי סיסמה</a>
-      </div>
-    </div>
-    <button onclick="doLogin()">כניסה</button>
-    <div class="login-divider"></div>
-    <p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
-    <label class="login-import-label">
-      ייבוא מקובץ אקסל
-      <input type="file" id="importFile" accept=".xlsx" style="display:none" onchange="importExcel(this)">
-    </label>
-  </div>
+<div class="login-box">
+<div class="login-logo">ג</div>
+<h2>Reports_Workers</h2>
+<p>גישה — מערכת ניהול חופש ומחלה</p>
+<input autocomplete="username" id="loginName" placeholder="הכנס את שמך" type="text"/>
+<div id="loginPasswordWrap" style="display:none;">
+<input autocomplete="current-password" id="loginPassword" placeholder="סיסמה" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:12px;direction:rtl;" type="password"/>
+<div style="text-align:right;margin-top:-8px;margin-bottom:10px;">
+<a href="#" onclick="resetAdminPassword();return false;" style="font-size:11px;color:#00897B;">שכחתי סיסמה</a>
 </div>
-
+</div>
+<button onclick="doLogin()">כניסה</button>
+<div class="login-divider"></div>
+<p style="font-size:11px;color:#999;margin-bottom:8px;">כניסה ראשונה או חירום</p>
+<label class="login-import-label">
+      ייבוא מקובץ אקסל
+      <input accept=".xlsx" id="importFile" onchange="importExcel(this)" style="display:none" type="file"/>
+</label>
+</div>
+</div>
 <div id="app">
-  <div class="topbar">
-    <div class="topbar-right">
-      <div class="topbar-logo">ג</div>
-      <span class="topbar-title">Reports_Workers v775CH</span>
-    </div>
-    <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
-    <div class="topbar-left">
-      <span class="lock-warning" id="lockWarn"></span>
-      <span class="user-badge" id="userBadge"></span>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('leave')">חופש ומחלה</div>
-    <div class="tab" onclick="switchTab('holidays')">חגים</div>
-    <div class="tab" onclick="switchTab('annual')">סיכום שנתי</div>
-    <div class="tab" onclick="switchTab('wdw')">WDW</div>
-    <div class="tab" onclick="switchTab('timesheet')">Timesheet</div>
-    <div class="tab" onclick="switchTab('accounting')">הנהלת חשבונות</div>
-    <div class="tab" onclick="exportExcel()" style="cursor:pointer;">ייצוא לאקסל</div>
-    <div class="tab" onclick="switchTab('email')">מייל</div>
-    <div class="tab" onclick="switchTab('settings')">הגדרות</div>
-  </div>
-
-  <div class="tab-content active" id="tab-leave">
-    <div class="month-nav">
-      <div style="display:flex;align-items:center;gap:6px;">
-        <select class="jump-sel" id="yearJump" onchange="jumpYear(this.value)"></select>
-        <button class="view-btn on" id="editToggle" onclick="toggleView()">עריכה</button>
-      </div>
-      <!-- Arrows TIGHT around title -->
-      <div class="nav-center">
-        <button class="nav-btn" onclick="nextMonth()" title="חודש הבא">&#8249;</button>
-        <select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
-        <span class="month-h2" id="monthTitle"></span>
-        <button class="nav-btn" onclick="prevMonth()" title="חודש קודם">&#8250;</button>
-        <button class="view-btn today-btn" onclick="goToday()" title="חזרה לחודש הנוכחי">Today</button>
-      </div>
-      <div style="width:100px;"></div>
-    </div>
-    <div class="cutoff-bar">
-      <label>תאריך חיתוך:</label>
-      <input type="date" id="cutoffInput" onchange="setCutoff()">
-      <span class="cutoff-badge" id="cutoffBadge" style="display:none"></span>
-    </div>
-    <div class="table-wrap">
-      <table id="mainTable">
-        <thead><tr id="tHead"></tr></thead>
-        <tbody id="tBody"></tbody>
-      </table>
-    </div>
-    <div class="legend">
-      <span><span class="ld" style="background:#c8e6c9"></span>חופש</span>
-      <span><span class="ld" style="background:#ffcdd2"></span>מחלה</span>
-      <span><span class="ld" style="background:#fffde7;border:1px solid #ddd"></span>חג</span>
-      <span><span class="ld" style="background:#e1bee7"></span>אחר/אבל</span>
-      <span><span class="ld" style="background:#fff8e1;border:1px solid #ddd"></span>מחודש קודם</span>
-      <span><span class="ld" style="background:#e0e0e0"></span>סוף שבוע</span>
-      <span><span class="ld" style="background:#ffebee"></span>כפילות</span>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-holidays">
-    <div class="s-sec">
-      <h3>ניהול חגים</h3>
-      <div class="hf" style="direction:rtl;">
-        <div style="display:grid;grid-template-columns:130px 160px 160px 130px auto;gap:10px;align-items:end;margin-bottom:10px;direction:rtl;">
-          <div>
-            <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">שם החג</label>
-            <input type="text" id="holName" placeholder="פסח, עיד..." style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך התחלה</label>
-            <div class="he-date-wrap">
-              <button type="button" class="he-date-btn" id="holStartTxt" onclick="openHiddenDate('holStart')">בחר תאריך</button>
-              <input type="date" id="holStart" class="he-date-native" onchange="showIsraeliDate('holStart','holStartTxt')">
-            </div>
-          </div>
-          <div>
-            <label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך סיום</label>
-            <div class="he-date-wrap">
-              <button type="button" class="he-date-btn" id="holEndTxt" onclick="openHiddenDate('holEnd')">בחר תאריך</button>
-              <input type="date" id="holEnd" class="he-date-native" onchange="showIsraeliDate('holEnd','holEndTxt');checkHolDates()">
-            </div>
-          </div>
-          <div style="display:flex;align-items:flex-end;padding-bottom:6px;">
-            <label style="font-size:11px;cursor:pointer;white-space:nowrap;"><input type="checkbox" id="holAll" onchange="toggleAllCbs(this)"> כל העובדים</label>
-          </div>
-          <div style="display:flex;align-items:flex-end;">
-            <button onclick="addHoliday()" style="padding:6px 16px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">הוסף</button>
-          </div>
-        </div>
-        <div class="wcbs" id="holWorkerCbs" style="direction:rtl;margin-bottom:8px;"></div>
-      </div>
-      <div id="holList"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-annual">
-    <div class="s-sec">
-      <h3>סיכום שנתי</h3>
-      <div id="annualContent"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-email">
-    <div class="s-sec">
-      <h3>שליחת מייל חודשי</h3>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורת פתיחה (לעריכה בכל חודש):</label>
-        <textarea id="emailOpening" rows="2" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;" placeholder="דיווח למשכורת חודש אפריל יש להגיש עד יום חמישי 23/04/2026 בשעה 12:00"></textarea>
-      </div>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורות קבועות (נשמרות בהגדרות):</label>
-        <textarea id="emailFixed" rows="6" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;background:#f9f9f9;"></textarea>
-        <button onclick="saveEmailFixed()" style="margin-top:6px;padding:5px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">שמור שורות קבועות</button>
-      </div>
-      <div style="border-top:1px solid #eee;padding-top:12px;">
-        <div style="margin-bottom:10px;">
-          <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">בחר חודש לשליחה:</label>
-          <select id="emailMonth" style="padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;direction:rtl;"></select>
-        </div>
-        <button onclick="sendEmail()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;">הורד מייל מוכן</button>
-        <p id="emailCopyNote" style="display:none;font-size:12px;color:#2e7d32;margin-top:8px;font-weight:bold;"></p>
-        <div id="emailPreview" style="display:none;margin-top:12px;overflow-x:auto;border:1px solid #ddd;border-radius:6px;padding:8px;background:white;"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-settings">
-    <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
-      <button onclick="switchSettingsTab('workers')" id="stab-workers" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עובדים</button>
-      <button onclick="switchSettingsTab('roles')" id="stab-roles" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקידים</button>
-
-    </div>
-    <div id="stab-content-workers">
-      <div class="s-sec">
-        <h3>עובדים</h3>
-        <div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
-        <div style="margin-top:10px;direction:rtl;">
-
-          <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;">
-            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
-            <div style="display:flex;gap:6px;align-items:center;">
-              <button onclick="addWorker()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;white-space:nowrap;">הוסף</button>
-              <input type="text" id="newWorker" placeholder="שם עובד חדש" style="flex:1;max-width:300px;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-            </div>
-          </div>
-
-          <div id="auth-security-box" style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;direction:rtl;">
-            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
-            <div style="display:flex;gap:8px;margin-bottom:8px;">
-              <button onclick="toggleAuthSystem(true)" style="padding:5px 16px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;">הפעל מערכת סיסמאות</button>
-              <button onclick="toggleAuthSystem(false)" style="padding:5px 16px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;">כבה מערכת סיסמאות</button>
-              <span id="authToggleStatus" style="font-size:11px;color:#666;align-self:center;"></span>
-            </div>
-            <div style="font-size:11px;color:#888;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
-            <div style="display:flex;gap:6px;align-items:center;">
-              <select id="secQ" style="flex:2;max-width:260px;font-size:11px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-                <option>שם העיר שבה נולדתי</option>
-                <option>שם הספר האהוב עלי</option>
-                <option>שם בית הספר הראשון שלי</option>
-                <option>שם החיה הראשונה שלי</option>
-              </select>
-              <input type="text" id="secA" placeholder="תשובה סודית" style="flex:1;max-width:200px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
-              <button onclick="saveSecurityQuestion()" style="padding:4px 12px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
-            </div>
-          </div>
-
-          <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
-            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">חיבור לגיטהאב</div>
-            <div style="font-size:11px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב — ישמר לתמיד</div>
-            <div style="display:flex;gap:6px;align-items:center;">
-              <input id="tokInput2" type="password" placeholder="ghp_..." style="flex:1;max-width:300px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:ltr;">
-              <button onclick="saveTokenFromBox2()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
-            </div>
-            <div id="tokStatus2" style="font-size:11px;color:#4caf50;margin-top:4px;"></div>
-          </div>
-
-        </div>
-      </div>
-      <div class="s-sec" style="margin-top:16px;display:none;">
-        <h3>חיבור לגיטהאב</h3>
-        <p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
-        <div class="tok-row">
-          <input type="password" id="tokInput" placeholder="ghp_...">
-          <button onclick="saveToken()">שמור</button>
-        </div>
-        <div id="tokStatus"></div>
-      </div>
-    </div>
-    <div id="stab-content-roles" style="display:none;">
-      <div class="s-sec">
-        <h3>תפקידים</h3>
-        <p style="font-size:12px;color:#666;margin-bottom:12px;">רשימת התפקידים בעמותה. בעת הוספת עובד לתורם ניתן לבחור תפקיד מרשימה זו.</p>
-        <div id="rolesList" style="margin-bottom:12px;min-height:30px;"></div>
-        <div style="display:flex;gap:8px;align-items:center;direction:rtl;justify-content:flex-start;">
-          <button onclick="addRole()" style="padding:7px 16px;background:#1B6B5A;color:#fff;border:none;border-radius:5px;cursor:pointer;white-space:nowrap;font-size:13px;">+ הוסף</button>
-          <input type="text" id="newRoleInput" placeholder="שם תפקיד חדש" style="direction:rtl;padding:7px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:240px;">
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="tab-content" id="tab-wdw">
-    <div class="s-sec">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;direction:rtl;">
-        <button onclick="switchWDW('org')" id="wdw-btn-org" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#00897B;color:white;">עמותה</button>
-        <button onclick="switchWDW('donor')" id="wdw-btn-donor" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">תורמים</button>
-        <button onclick="switchWDW('worker')" id="wdw-btn-worker" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
-        <button onclick="switchWDW('input')" id="wdw-btn-input" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">ניהול</button>
-        <button onclick="switchWDW('reports')" id="wdw-btn-reports" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">דוחות</button>
-        <button id="wdw-write-top-btn" onclick="wdwOpenWriteTimesheet()" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#1565C0;color:white;">כתיבה ל־Timesheet</button>
-      </div>
-      <div id="wdw-input"></div>
-      <div id="wdw-org" style="display:none;"></div>
-      <div id="wdw-donor" style="display:none;"></div>
-      <div id="wdw-worker" style="display:none;"></div>
-
-      <div id="wdw-reports" style="display:none;"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-timesheet">
-    <div class="s-sec">
-      <h3>הפקת Timesheet</h3>
-      <div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-        <div>
-          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה:</label>
-          <select id="ts-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
-        </div>
-        <div>
-          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש:</label>
-          <select id="ts-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
-            <option value="">-- בחר חודש --</option>
-          </select>
-        </div>
-        <div style="padding-bottom:2px;margin-right:14px;">
-          <button onclick="setTsToday()" style="padding:7px 16px;background:#546e7a;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">Today</button>
-        </div>
-      </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ Timesheet:</label>
-        <input type="file" id="ts-file" accept=".xlsx" style="font-size:13px;">
-      </div>
+<div class="topbar">
+<div class="topbar-right">
+<div class="topbar-logo">ג</div>
+<span class="topbar-title">Reports_Workers v777CH</span>
+</div>
+<div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
+<div class="topbar-left">
+<span class="lock-warning" id="lockWarn"></span>
+<span class="user-badge" id="userBadge"></span>
+</div>
+</div>
+<div class="tabs">
+<div class="tab active" onclick="switchTab('leave')">חופש ומחלה</div>
+<div class="tab" onclick="switchTab('holidays')">חגים</div>
+<div class="tab" onclick="switchTab('annual')">סיכום שנתי</div>
+<div class="tab" onclick="switchTab('wdw')">WDW</div>
+<div class="tab" onclick="switchTab('timesheet')">Timesheet</div>
+<div class="tab" onclick="switchTab('accounting')">הנהלת חשבונות</div>
+<div class="tab" onclick="exportExcel()" style="cursor:pointer;">ייצוא לאקסל</div>
+<div class="tab" onclick="switchTab('email')">מייל</div>
+<div class="tab" onclick="switchTab('settings')">הגדרות</div>
+</div>
+<div class="tab-content active" id="tab-leave">
+<div class="month-nav">
+<div style="display:flex;align-items:center;gap:6px;">
+<select class="jump-sel" id="yearJump" onchange="jumpYear(this.value)"></select>
+<button class="view-btn on" id="editToggle" onclick="toggleView()">עריכה</button>
+</div>
+<!-- Arrows TIGHT around title -->
+<div class="nav-center">
+<button class="nav-btn" onclick="nextMonth()" title="חודש הבא">‹</button>
+<select class="jump-sel" id="monthJump" onchange="jumpMonth(this.value)"></select>
+<span class="month-h2" id="monthTitle"></span>
+<button class="nav-btn" onclick="prevMonth()" title="חודש קודם">›</button>
+<button class="view-btn today-btn" onclick="goToday()" title="חזרה לחודש הנוכחי">Today</button>
+</div>
+<div style="width:100px;"></div>
+</div>
+<div class="cutoff-bar">
+<label>תאריך חיתוך:</label>
+<input id="cutoffInput" onchange="setCutoff()" type="date"/>
+<span class="cutoff-badge" id="cutoffBadge" style="display:none"></span>
+</div>
+<div class="table-wrap">
+<table id="mainTable">
+<thead><tr id="tHead"></tr></thead>
+<tbody id="tBody"></tbody>
+</table>
+</div>
+<div class="legend">
+<span><span class="ld" style="background:#c8e6c9"></span>חופש</span>
+<span><span class="ld" style="background:#ffcdd2"></span>מחלה</span>
+<span><span class="ld" style="background:#fffde7;border:1px solid #ddd"></span>חג</span>
+<span><span class="ld" style="background:#e1bee7"></span>אחר/אבל</span>
+<span><span class="ld" style="background:#fff8e1;border:1px solid #ddd"></span>מחודש קודם</span>
+<span><span class="ld" style="background:#e0e0e0"></span>סוף שבוע</span>
+<span><span class="ld" style="background:#ffebee"></span>כפילות</span>
+</div>
+</div>
+<div class="tab-content" id="tab-holidays">
+<div class="s-sec">
+<h3>ניהול חגים</h3>
+<div class="hf" style="direction:rtl;">
+<div style="display:grid;grid-template-columns:130px 160px 160px 130px auto;gap:10px;align-items:end;margin-bottom:10px;direction:rtl;">
+<div>
+<label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">שם החג</label>
+<input id="holName" placeholder="פסח, עיד..." style="padding:5px 7px;border:1px solid #ddd;border-radius:4px;font-size:12px;width:100%;box-sizing:border-box;" type="text"/>
+</div>
+<div>
+<label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך התחלה</label>
+<div class="he-date-wrap">
+<button class="he-date-btn" id="holStartTxt" onclick="openHiddenDate('holStart')" type="button">בחר תאריך</button>
+<input class="he-date-native" id="holStart" onchange="showIsraeliDate('holStart','holStartTxt')" type="date"/>
+</div>
+</div>
+<div>
+<label style="font-size:11px;color:#666;display:block;margin-bottom:3px;">תאריך סיום</label>
+<div class="he-date-wrap">
+<button class="he-date-btn" id="holEndTxt" onclick="openHiddenDate('holEnd')" type="button">בחר תאריך</button>
+<input class="he-date-native" id="holEnd" onchange="showIsraeliDate('holEnd','holEndTxt');checkHolDates()" type="date"/>
+</div>
+</div>
+<div style="display:flex;align-items:flex-end;padding-bottom:6px;">
+<label style="font-size:11px;cursor:pointer;white-space:nowrap;"><input id="holAll" onchange="toggleAllCbs(this)" type="checkbox"/> כל העובדים</label>
+</div>
+<div style="display:flex;align-items:flex-end;">
+<button onclick="addHoliday()" style="padding:6px 16px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">הוסף</button>
+</div>
+</div>
+<div class="wcbs" id="holWorkerCbs" style="direction:rtl;margin-bottom:8px;"></div>
+</div>
+<div id="holList"></div>
+</div>
+</div>
+<div class="tab-content" id="tab-annual">
+<div class="s-sec">
+<h3>סיכום שנתי</h3>
+<div id="annualContent"></div>
+</div>
+</div>
+<div class="tab-content" id="tab-email">
+<div class="s-sec">
+<h3>שליחת מייל חודשי</h3>
+<div style="margin-bottom:12px;">
+<label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורת פתיחה (לעריכה בכל חודש):</label>
+<textarea id="emailOpening" placeholder="דיווח למשכורת חודש אפריל יש להגיש עד יום חמישי 23/04/2026 בשעה 12:00" rows="2" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;"></textarea>
+</div>
+<div style="margin-bottom:12px;">
+<label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שורות קבועות (נשמרות בהגדרות):</label>
+<textarea id="emailFixed" rows="6" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:14px;resize:vertical;direction:rtl;background:#f9f9f9;"></textarea>
+<button onclick="saveEmailFixed()" style="margin-top:6px;padding:5px 12px;background:#00897B;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;">שמור שורות קבועות</button>
+</div>
+<div style="border-top:1px solid #eee;padding-top:12px;">
+<div style="margin-bottom:10px;">
+<label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">בחר חודש לשליחה:</label>
+<select id="emailMonth" style="padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;direction:rtl;"></select>
+</div>
+<button onclick="sendEmail()" style="padding:9px 22px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;">הורד מייל מוכן</button>
+<p id="emailCopyNote" style="display:none;font-size:12px;color:#2e7d32;margin-top:8px;font-weight:bold;"></p>
+<div id="emailPreview" style="display:none;margin-top:12px;overflow-x:auto;border:1px solid #ddd;border-radius:6px;padding:8px;background:white;"></div>
+</div>
+</div>
+</div>
+<div class="tab-content" id="tab-settings">
+<div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;direction:rtl;">
+<button id="stab-workers" onclick="switchSettingsTab('workers')" style="padding:8px 18px;border:none;border-bottom:3px solid #1B6B5A;background:none;cursor:pointer;font-size:13px;font-weight:bold;color:#1B6B5A;margin-bottom:-2px;">עובדים</button>
+<button id="stab-roles" onclick="switchSettingsTab('roles')" style="padding:8px 18px;border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;font-size:13px;color:#6b7280;margin-bottom:-2px;">תפקידים</button>
+</div>
+<div id="stab-content-workers">
+<div class="s-sec">
+<h3>עובדים</h3>
+<div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
+<div style="margin-top:10px;direction:rtl;">
+<div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;">
+<div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<button onclick="addWorker()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:12px;white-space:nowrap;">הוסף</button>
+<input id="newWorker" placeholder="שם עובד חדש" style="flex:1;max-width:300px;font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;" type="text"/>
+</div>
+</div>
+<div id="auth-security-box" style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;direction:rtl;">
+<div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הגדרות אבטחה</div>
+<div style="display:flex;gap:8px;margin-bottom:8px;">
+<button onclick="toggleAuthSystem(true)" style="padding:5px 16px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;">הפעל מערכת סיסמאות</button>
+<button onclick="toggleAuthSystem(false)" style="padding:5px 16px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;border-radius:5px;cursor:pointer;font-size:11px;">כבה מערכת סיסמאות</button>
+<span id="authToggleStatus" style="font-size:11px;color:#666;align-self:center;"></span>
+</div>
+<div style="font-size:11px;color:#888;margin-bottom:6px;">שאלת ביטחון לאיפוס סיסמת מנהל</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<select id="secQ" style="flex:2;max-width:260px;font-size:11px;padding:4px 6px;border:1px solid #ddd;border-radius:4px;direction:rtl;">
+<option>שם העיר שבה נולדתי</option>
+<option>שם הספר האהוב עלי</option>
+<option>שם בית הספר הראשון שלי</option>
+<option>שם החיה הראשונה שלי</option>
+</select>
+<input id="secA" placeholder="תשובה סודית" style="flex:1;max-width:200px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:rtl;" type="text"/>
+<button onclick="saveSecurityQuestion()" style="padding:4px 12px;background:white;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
+</div>
+</div>
+<div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;direction:rtl;">
+<div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">חיבור לגיטהאב</div>
+<div style="font-size:11px;color:#888;margin-bottom:6px;">הזן טוקן פעם אחת מכל מחשב — ישמר לתמיד</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<input id="tokInput2" placeholder="ghp_..." style="flex:1;max-width:300px;font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:4px;direction:ltr;" type="password"/>
+<button onclick="saveTokenFromBox2()" style="padding:4px 12px;background:#1B6B5A;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;white-space:nowrap;">שמור</button>
+</div>
+<div id="tokStatus2" style="font-size:11px;color:#4caf50;margin-top:4px;"></div>
+</div>
+</div>
+</div>
+<div class="s-sec" style="margin-top:16px;display:none;">
+<h3>חיבור לגיטהאב</h3>
+<p style="font-size:12px;color:#666;margin-bottom:6px;">הזן טוקן פעם אחת בכל מחשב — יישמר לתמיד.</p>
+<div class="tok-row">
+<input id="tokInput" placeholder="ghp_..." type="password"/>
+<button onclick="saveToken()">שמור</button>
+</div>
+<div id="tokStatus"></div>
+</div>
+</div>
+<div id="stab-content-roles" style="display:none;">
+<div class="s-sec">
+<h3>תפקידים</h3>
+<p style="font-size:12px;color:#666;margin-bottom:12px;">רשימת התפקידים בעמותה. בעת הוספת עובד לתורם ניתן לבחור תפקיד מרשימה זו.</p>
+<div id="rolesList" style="margin-bottom:12px;min-height:30px;"></div>
+<div style="display:flex;gap:8px;align-items:center;direction:rtl;justify-content:flex-start;">
+<button onclick="addRole()" style="padding:7px 16px;background:#1B6B5A;color:#fff;border:none;border-radius:5px;cursor:pointer;white-space:nowrap;font-size:13px;">+ הוסף</button>
+<input id="newRoleInput" placeholder="שם תפקיד חדש" style="direction:rtl;padding:7px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;width:240px;" type="text"/>
+</div>
+</div>
+</div>
+</div>
+<div class="tab-content" id="tab-wdw">
+<div class="s-sec">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;direction:rtl;">
+<button id="wdw-btn-org" onclick="switchWDW('org')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#00897B;color:white;">עמותה</button>
+<button id="wdw-btn-donor" onclick="switchWDW('donor')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">תורמים</button>
+<button id="wdw-btn-worker" onclick="switchWDW('worker')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">עובדים</button>
+<button id="wdw-btn-input" onclick="switchWDW('input')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">ניהול</button>
+<button id="wdw-btn-reports" onclick="switchWDW('reports')" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;background:#f0f0f0;color:#333;">דוחות</button>
+<button id="wdw-write-top-btn" onclick="wdwOpenWriteTimesheet()" style="padding:7px 18px;border:none;border-radius:5px;cursor:pointer;font-size:13px;font-weight:bold;background:#1565C0;color:white;">כתיבה ל־Timesheet</button>
+</div>
+<div id="wdw-input"></div>
+<div id="wdw-org" style="display:none;"></div>
+<div id="wdw-donor" style="display:none;"></div>
+<div id="wdw-worker" style="display:none;"></div>
+<div id="wdw-reports" style="display:none;"></div>
+</div>
+</div>
+<div class="tab-content" id="tab-timesheet">
+<div class="s-sec">
+<h3>הפקת Timesheet</h3>
+<div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+<div>
+<label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה:</label>
+<select id="ts-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
+</div>
+<div>
+<label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש:</label>
+<select id="ts-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
+<option value="">-- בחר חודש --</option>
+</select>
+</div>
+<div style="padding-bottom:2px;margin-right:14px;">
+<button onclick="setTsToday()" style="padding:7px 16px;background:#546e7a;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">Today</button>
+</div>
+</div>
+<div style="margin-bottom:16px;">
+<label style="font-size:13px;display:block;margin-bottom:6px;">העלה קובץ Timesheet:</label>
+<input accept=".xlsx" id="ts-file" style="font-size:13px;" type="file"/>
+</div>
 <div id="ts-indicator" style="font-size:13px;margin-bottom:10px;color:#888;">⏳ טוען מנוע Python ברקע...</div>
-      <button onclick="generateTimesheet()" style="background:#1a7a4a;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">הפק Timesheet</button>
-      <div id="ts-status" style="margin-top:12px;font-size:13px;"></div>
-    </div>
-  </div>
-
-  <div class="tab-content" id="tab-accounting">
-    <div style="padding:20px 24px;max-width:600px;">
-      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:16px;">דוח הנהלת חשבונות</div>
-      <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 16px;font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;line-height:1.7;">
-        האפליקציה תמלא אוטומטית: חופש · מחלה · חג/אבל · ימי עבודה · שעות<br>
+<button onclick="generateTimesheet()" style="background:#1a7a4a;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;">הפק Timesheet</button>
+<div id="ts-status" style="margin-top:12px;font-size:13px;"></div>
+</div>
+</div>
+<div class="tab-content" id="tab-accounting">
+<div style="padding:20px 24px;max-width:600px;">
+<div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:16px;">דוח הנהלת חשבונות</div>
+<div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 16px;font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;line-height:1.7;">
+        האפליקציה תמלא אוטומטית: חופש · מחלה · חג/אבל · ימי עבודה · שעות<br/>
         עדכון מכסת חופש בעמודה Q כשעובד עובר סף ותק
       </div>
-      <div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-        <div>
-          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה לדיווח:</label>
-          <select id="acc-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
-        </div>
-        <div>
-          <label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש לדיווח:</label>
-          <select id="acc-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
-            <option value="">-- בחר חודש --</option>
-          </select>
-        </div>
-      </div>
-      <div style="margin-bottom:18px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח הנהלת חשבונות:</label>
-        <input type="file" id="acc-file" accept=".xlsx" style="font-size:13px;">
-        <div id="acc-ts-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
-      </div>
-      <div style="margin-bottom:18px;">
-        <label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח שעות:</label>
-        <input type="file" id="acc-ts-file" accept=".xlsx" style="font-size:13px;">
-        <div id="acc-ts-file-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
-      </div>
-      <hr style="border:none;border-top:0.5px solid var(--color-border-tertiary);margin:20px 0;">
-      <button onclick="generateAccounting()" style="padding:9px 20px;background:#00897B;color:white;border:none;border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;font-weight:500;">הפק דוח הנהלת חשבונות</button>
-      <div id="acc-status" style="margin-top:10px;font-size:13px;"></div>
-    </div>
-  </div>
-
-  <div class="save-bar">
-    <button class="save-btn" onclick="saveData()">שמור</button>
-    <span class="sst" id="saveStatus"></span>
-  </div>
+<div style="margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+<div>
+<label style="font-size:13px;display:block;margin-bottom:6px;">בחר שנה לדיווח:</label>
+<select id="acc-year" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;"></select>
 </div>
-
+<div>
+<label style="font-size:13px;display:block;margin-bottom:6px;">בחר חודש לדיווח:</label>
+<select id="acc-month" style="padding:6px 12px;border-radius:6px;border:1px solid #ccc;font-size:13px;">
+<option value="">-- בחר חודש --</option>
+</select>
+</div>
+</div>
+<div style="margin-bottom:18px;">
+<label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח הנהלת חשבונות:</label>
+<input accept=".xlsx" id="acc-file" style="font-size:13px;" type="file"/>
+<div id="acc-ts-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
+</div>
+<div style="margin-bottom:18px;">
+<label style="font-size:13px;display:block;margin-bottom:6px;">העלה דוח שעות:</label>
+<input accept=".xlsx" id="acc-ts-file" style="font-size:13px;" type="file"/>
+<div id="acc-ts-file-status" style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;"></div>
+</div>
+<hr style="border:none;border-top:0.5px solid var(--color-border-tertiary);margin:20px 0;"/>
+<button onclick="generateAccounting()" style="padding:9px 20px;background:#00897B;color:white;border:none;border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;font-weight:500;">הפק דוח הנהלת חשבונות</button>
+<div id="acc-status" style="margin-top:10px;font-size:13px;"></div>
+</div>
+</div>
+<div class="save-bar">
+<button class="save-btn" onclick="saveData()">שמור</button>
+<span class="sst" id="saveStatus"></span>
+</div>
+</div>
 <!-- EDIT WORKER MODAL -->
 <div class="mo" id="editWorkerModal">
-  <div class="mo-box">
-    <h3 style="margin:0 0 14px;font-size:15px;">עריכת עובד</h3>
-    <input type="hidden" id="editWorkerIdx">
-    <div style="margin-bottom:12px;">
-      <label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שם העובד:</label>
-      <input type="text" id="editWorkerName" style="width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;">
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
-      <button onclick="closeModal('editWorkerModal')" style="padding:6px 14px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:12px;">ביטול</button>
-      <button onclick="saveEditWorker()" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">שמור</button>
-    </div>
-  </div>
+<div class="mo-box">
+<h3 style="margin:0 0 14px;font-size:15px;">עריכת עובד</h3>
+<input id="editWorkerIdx" type="hidden"/>
+<div style="margin-bottom:12px;">
+<label style="font-size:12px;color:#666;display:block;margin-bottom:4px;">שם העובד:</label>
+<input id="editWorkerName" style="width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;" type="text"/>
 </div>
-
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+<button onclick="closeModal('editWorkerModal')" style="padding:6px 14px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:12px;">ביטול</button>
+<button onclick="saveEditWorker()" style="padding:6px 14px;background:#00897B;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;">שמור</button>
+</div>
+</div>
+</div>
 <!-- TOKEN MODAL -->
 <div class="mo" id="tokenModal">
-  <div class="mb" style="text-align:center;">
-    <div class="login-logo" style="margin:0 auto 12px;width:44px;height:44px;font-size:22px;">ג</div>
-    <h3>חיבור לגיטהאב</h3>
-    <p>הכנס טוקן פעם אחת — יישמר בדפדפן זה לתמיד</p>
-    <input type="password" id="tokModalInput" placeholder="ghp_..." style="direction:ltr;">
-    <div class="mbtns" style="justify-content:center;gap:10px;">
-      <button class="bx" onclick="skipToken()">דלג</button>
-      <button class="bc" onclick="saveTokenModal()">שמור וכנס</button>
-    </div>
-    <p style="font-size:10px;color:#aaa;margin-top:8px;">ניתן לעדכן בהגדרות בכל עת</p>
-  </div>
+<div class="mb" style="text-align:center;">
+<div class="login-logo" style="margin:0 auto 12px;width:44px;height:44px;font-size:22px;">ג</div>
+<h3>חיבור לגיטהאב</h3>
+<p>הכנס טוקן פעם אחת — יישמר בדפדפן זה לתמיד</p>
+<input id="tokModalInput" placeholder="ghp_..." style="direction:ltr;" type="password"/>
+<div class="mbtns" style="justify-content:center;gap:10px;">
+<button class="bx" onclick="skipToken()">דלג</button>
+<button class="bc" onclick="saveTokenModal()">שמור וכנס</button>
 </div>
-
+<p style="font-size:10px;color:#aaa;margin-top:8px;">ניתן לעדכן בהגדרות בכל עת</p>
+</div>
+</div>
 <!-- END WORK MODAL -->
 <div class="mo" id="endModal">
-  <div class="mb">
-    <h3>סיום עבודה</h3>
-    <p id="endModalName" style="font-weight:bold;margin-bottom:12px;font-size:14px;"></p>
-    <label style="font-size:12px;color:#666;display:block;margin-bottom:6px;">חודש סיום עבודה:</label>
-    <input type="month" id="endModalMonth" style="direction:ltr;">
-    <div class="mbtns">
-      <button class="bx" onclick="closeModal('endModal')">ביטול</button>
-      <button class="bd" onclick="confirmEnd()">אישור</button>
-    </div>
-  </div>
+<div class="mb">
+<h3>סיום עבודה</h3>
+<p id="endModalName" style="font-weight:bold;margin-bottom:12px;font-size:14px;"></p>
+<label style="font-size:12px;color:#666;display:block;margin-bottom:6px;">חודש סיום עבודה:</label>
+<input id="endModalMonth" style="direction:ltr;" type="month"/>
+<div class="mbtns">
+<button class="bx" onclick="closeModal('endModal')">ביטול</button>
+<button class="bd" onclick="confirmEnd()">אישור</button>
 </div>
-
+</div>
+</div>
 <!-- HOLIDAY CONFIRM MODAL -->
 <div class="mo" id="holConfirmModal">
-  <div class="mb" style="text-align:center;">
-    <h3 style="color:#00897B;">✓ חג נוסף בהצלחה</h3>
-    <p id="holConfirmMsg" style="font-size:13px;color:#333;margin-top:8px;"></p>
-    <div class="mbtns" style="justify-content:center;margin-top:12px;">
-      <button class="bc" onclick="closeModal('holConfirmModal')">אישור</button>
-    </div>
-  </div>
+<div class="mb" style="text-align:center;">
+<h3 style="color:#00897B;">✓ חג נוסף בהצלחה</h3>
+<p id="holConfirmMsg" style="font-size:13px;color:#333;margin-top:8px;"></p>
+<div class="mbtns" style="justify-content:center;margin-top:12px;">
+<button class="bc" onclick="closeModal('holConfirmModal')">אישור</button>
 </div>
-
+</div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ===== CONSTANTS =====
@@ -15135,7 +15016,6 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 })();
 
 </script>
-
 <script>
 /* ===== WDW v206CH fix — clean add-donor state =====
    When adding a new donor, do not show another '+ הוסף תורם' button above the form.
@@ -15177,8 +15057,6 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   };
 })();
 </script>
-
-
 <script>
 /* ===== WDW v211 — definitive add donor separation =====
    This override is intentionally last. It prevents + הוסף תורם from using
@@ -15344,9 +15222,6 @@ window.wdwResetNewWorkerForm = function(did) {
   if(wrap) { wrap.style.display='block'; wrap.scrollIntoView({block:'nearest'}); }
 };
 </script>
-
-
-
 <script>
 /* ===== WDW v218CH final override — controlled management + worker tab fixes ===== */
 (function(){
@@ -15715,8 +15590,6 @@ window.wdwResetNewWorkerForm = function(did) {
   var style=document.createElement('style');style.id='wdw-v219-style';style.textContent='\n.wdw-v219-view{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:12px 16px;margin:10px 0}.wdw-v219-month-title{font-size:18px;font-weight:900;color:#00695c}.wdw-v219-controls{display:flex;gap:8px;align-items:center}.wdw-v219-controls select{padding:7px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-weight:700}.wdw-v219-controls button{padding:8px 18px;background:#00695c;color:#fff;border:none;border-radius:8px;font-weight:800;cursor:pointer}.v219-table-wrap{max-height:430px;overflow:auto;border-radius:10px;border:1px solid #e2e8f0}.v219-table-wrap .wdw-table thead th{position:sticky!important;top:0!important;z-index:10!important;background:#f8fafc!important;color:#475569!important}.v219-worker-summary{font-size:16px!important;font-weight:900!important;color:#111827!important;margin-top:4px}.v219-sub{font-size:13px;font-weight:800;color:#475569;margin-top:3px}.v219-repl-text{font-size:12.5px!important;color:#1f2937!important;font-weight:700!important}.v219-donor-summary{display:grid;grid-template-columns:130px minmax(220px,1.4fr) 100px minmax(170px,1fr) 110px 150px auto;gap:12px;align-items:center;padding:14px;border-bottom:1px solid #edf2f7}.v219-donor-summary:hover{background:#f8fafc}.v219-donor-card{overflow:hidden}.v219-mgmt-summary{grid-template-columns:minmax(260px,1.5fr) 100px 110px 120px 180px auto!important}.v219-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}.v219-worker-line{display:grid;grid-template-columns:1.3fr 90px 1.4fr 160px auto auto;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid #e5e7eb}.v219-worker-line button{padding:4px 9px;background:#fff;border:1px solid #cbd5e1;border-radius:5px;cursor:pointer}.v219-worker-line .danger{border-color:#fecaca;color:#b91c1c}.wdw-chip.repl{background:transparent!important;border:none!important;color:#1f2937!important;padding:0!important;font-weight:700!important}\n';document.head.appendChild(style);
 })();
 </script>
-
-
 <script>
 /* ===== WDW v225CH TODAY BUTTON PATCH — only adds היום button to WDW month controls ===== */
 (function(){
@@ -15800,8 +15673,6 @@ window.wdwResetNewWorkerForm = function(did) {
   }
 })();
 </script>
-
-
 <script>
 /* ===== WDW v226CH CRITICAL PATCH — add donor/add worker only ===== */
 (function(){
@@ -15897,8 +15768,6 @@ window.wdwResetNewWorkerForm = function(did) {
   },true);
 })();
 </script>
-
-
 <script>
 /* ===== WDW v228 CRITICAL FIXES — targeted only ===== */
 (function(){
@@ -16045,8 +15914,6 @@ window.wdwResetNewWorkerForm = function(did) {
   else document.addEventListener('DOMContentLoaded',function(){installStyle227();cleanupDonorDisplay227(document);});
 })();
 </script>
-
-
 <script>
 /* ===== v231CL critical WDW repair: donor button + add worker to new/existing donor ===== */
 (function(){
@@ -16113,9 +15980,6 @@ window.wdwResetNewWorkerForm = function(did) {
   },true);
 })();
 </script>
-
-
-
 <script>
 /* ===== v234CH FINAL WDW SAFETY PATCH — robust add-worker + compact workers ===== */
 (function(){
@@ -16196,8 +16060,6 @@ window.wdwResetNewWorkerForm = function(did) {
 
 })();
 </script>
-
-
 <script>
 /* ===== v238CL FINAL ONLY: clean add-worker form layout + FX helper. Based on v234CH; no button changes. ===== */
 (function(){
@@ -16315,8 +16177,6 @@ window.wdwResetNewWorkerForm = function(did) {
   function style(){if(document.getElementById('wdw-v238-style'))return;var st=document.createElement('style');st.id='wdw-v238-style';st.textContent='.v238-add-worker-box{background:#fff;border:1px solid #d5dce3;border-radius:14px;padding:16px;margin-top:12px;box-shadow:0 1px 5px rgba(15,23,42,.05)}.v238-section{border:1px solid #e5eaf0;border-radius:12px;padding:12px;margin-bottom:10px;background:#fbfdff}.v238-title{font-size:13px;font-weight:900;color:#073f3d;margin-bottom:10px}.v238-grid{display:grid;gap:10px}.v238-grid.one{grid-template-columns:minmax(260px,1fr)}.v238-grid.two{grid-template-columns:repeat(2,minmax(190px,1fr))}.v238-grid.three{grid-template-columns:repeat(3,minmax(160px,1fr))}.v238-grid label{font-size:12px;color:#475569;font-weight:700;display:flex;flex-direction:column;gap:4px}.v238-help{font-size:11px;color:#64748b;margin-top:8px;line-height:1.45}.wdw-inp[disabled]{background:#f1f5f9;color:#64748b}@media(max-width:1000px){.v238-grid.one,.v238-grid.two,.v238-grid.three{grid-template-columns:1fr}}';document.head.appendChild(st);}style();
 })();
 </script>
-
-
 <!-- ===== v249CH ORG DASHBOARD REDESIGN — org tab only ===== -->
 <style>
 #wdw-org .org249-wrap{direction:rtl;background:#f4f6f8;padding:0 0 28px;color:#0f172a;font-family:Arial,sans-serif}
@@ -16403,9 +16263,6 @@ window.wdwResetNewWorkerForm = function(did) {
   window.renderWDWOrg=function(){init();var div=document.getElementById('wdw-org');if(!div)return;var m=month();var html='<div class="org249-wrap"><div class="org249-hero"><div class="org249-title">עמותה — מצב נוכחי</div><div class="org249-sub">סקירה כללית של מצב התורמים והעובדים בזמן אמת. חודש תצוגה: <b>'+fmtMonth(m)+'</b>.</div></div>'+kpis(m)+'<div class="org249-grid">'+alertsTable(m)+donorsTable(m)+'</div><div class="org249-grid">'+workersTable(m)+actions()+'</div></div>';div.innerHTML=html;};
 })();
 </script>
-
-
-
 <!-- ===== v250CH ORG DASHBOARD REFINEMENT — org tab only ===== -->
 <style>
 #wdw-org .org250-wrap{direction:rtl;background:#f4f6f8;padding:0 0 28px;color:#0f172a;font-family:Arial,sans-serif}
@@ -16487,9 +16344,6 @@ window.wdwResetNewWorkerForm = function(did) {
   window.renderWDWOrg=function(){init();var div=document.getElementById('wdw-org');if(!div)return;var m=month();div.innerHTML='<div class="org250-wrap"><div class="org250-hero"><div class="org250-title">עמותה — מצב נוכחי</div><div class="org250-sub">סקירה ניהולית נקייה של תורמים ועובדים. חודש תצוגה: <b>'+fmtMonth(m)+'</b>.</div></div>'+kpis(m)+'<div class="org250-grid">'+donorsTable(m)+alertsTable(m)+'</div><div class="org250-grid second">'+workersTable(m)+notesPanel(m)+'</div></div>';};
 })();
 </script>
-
-
-
 <!-- ===== v251CH — ORG/DONOR REPLACE ALLOCATION PERCENT WITH WORKER EXCEPTION INFO ===== -->
 <style>
 #wdw-org .org251-wrap{direction:rtl;background:#f4f6f8;padding:0 0 28px;color:#0f172a;font-family:Arial,sans-serif}
@@ -16577,9 +16431,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   window.renderWDWDonor=function(){init();if(typeof wdwCheckEnded==='function')wdwCheckEnded();var div=document.getElementById('wdw-donor');if(!div)return;var m=month();var list=donors().filter(function(d){return d.status!=='inactive';});var active=list.filter(function(d){return d.status!=='ended';}),ended=list.filter(function(d){return d.status==='ended';});var html=header('WDW — תורמים','במקום ניצול מוצג מידע על עובדים ב־90% ומעלה אצל כל תורם.');function card(d){var ws=donorWorkers(d,m), ex=exceptionWorkersForDonor(d,m), id='v251-donor-body-'+esc(d.id||Math.random());var exChip=ex.some(function(x){return x.total>100;})?'<span class="wdw-chip org251-chip bad">'+ex.length+' עובדים בחריגה</span>':ex.length?'<span class="wdw-chip org251-chip warn">'+ex.length+' עובדים 90%+</span>':'<span class="wdw-chip org251-chip ok">אין חריגה</span>';var summary='<div class="v251-donor-summary" onclick="var e=document.getElementById(\''+id+'\');if(e)e.style.display=e.style.display===\'none\'?\'block\':\'none\';"><div>'+statusChip(d,m)+'</div><div><b>'+esc(d.name||'—')+'</b><div class="wdw-muted">'+esc(d.code||'—')+'</div></div><div>'+range(d)+'</div><div>'+donorTypeChip(d)+'</div>'+'<div class="wdw-num">'+ws.length+' עובדים</div><div>'+exChip+'</div><div class="wdw-actions"><button onclick="event.stopPropagation();var e=document.getElementById(\''+id+'\');if(e)e.style.display=e.style.display===\'none\'?\'block\':\'none\';">פירוט</button></div></div>';var body='<div class="wdw-donor-body" id="'+id+'" style="display:none"><table class="wdw-table"><thead><tr><th>עובד</th><th class="wdw-num">אחוז בתורם</th><th class="wdw-num">עומס עובד בכלל התורמים</th><th>מצב עובד</th><th>מחליף את</th><th>תקופת שיוך</th></tr></thead><tbody>';if(!ws.length)body+='<tr><td colspan="6" style="text-align:center!important;color:#94a3b8">אין עובדים פעילים בחודש הנבחר</td></tr>';ws.forEach(function(w){var t=workerTotal(w.name,m),cls=t>100?'bad':t>=90?'warn':'ok',txt=t>100?'עובד בחריגה':t>=90?'עובד קרוב לתקרה':'תקין';body+='<tr><td><div class="wdw-worker">'+esc(w.name)+'</div></td><td class="wdw-num">'+pct(rowPct(w,m))+'</td><td class="wdw-num"><b>'+pct(t)+'</b></td><td><span class="wdw-chip org251-chip '+cls+'">'+txt+'</span></td><td>'+(replPct(w,m)?'<span class="wdw-chip repl">'+esc(w.replaces||w.replacesName||'מחליף')+' '+pct(replPct(w,m))+'</span>':'<span class="wdw-muted">—</span>')+'</td><td>'+fmtMonth(w.startMonth||w.startDate)+' — '+fmtMonth(w.endMonth||w.endDate)+'</td></tr>';});body+='</tbody></table></div>';return '<div class="wdw-donor-card">'+summary+body+'</div>';}if(!list.length)html+='<div class="wdw-panel"><div style="padding:14px;color:#64748b">אין תורמים מוגדרים.</div></div>';active.forEach(function(d){html+=card(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות שהסתיימו</div>';ended.forEach(function(d){html+=card(d);});}div.innerHTML=html+'</div>';};
 })();
 </script>
-
-
-
 <!-- ===== v252CH — MANAGEMENT ROW REDESIGN: calculation status, exceptions, replacements, ending soon ===== -->
 <style id="wdw-v252-management-style">
 #wdw-input .v252-wrap{direction:rtl;background:#f4f6f8;color:#0f172a;font-family:Arial,sans-serif;padding-bottom:28px}
@@ -16703,9 +16554,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
 
 })();
 </script>
-
-
-
 <script id="v494CL-wdw-management-full-redesign">
 (function(){
   function esc(x){
@@ -17350,8 +17198,6 @@ function donorsTable(m){var html='<div class="org251-panel"><div class="org251-p
   #tab-wdw .v437-green{flex-direction:column}
 }
 </style>
-
-
 <script id="v494CL-worker-extra-helper">
 window.wdw439AddExtraReplace=function(p){
   var wrap=document.getElementById(p+'-extra-replaces-wrap');
@@ -17385,8 +17231,6 @@ window.wdw439AddExtraReplace=function(p){
   wrap.insertAdjacentHTML('beforeend',row);
 };
 </script>
-
-
 <style id="v494CL-worker-sections-style">
 #tab-wdw .v439-worker-form{padding:16px!important}
 #tab-wdw .v439-section{background:#fbfdff;border:1px solid #e5eaf0;border-radius:10px;padding:12px;margin-bottom:12px}
@@ -17405,8 +17249,6 @@ window.wdw439AddExtraReplace=function(p){
   #tab-wdw .v439-monthly-grid{grid-template-columns:1fr 1fr}
 }
 </style>
-
-
 <script id="v494CL-fx-project-total-helper">
 window.wdw440CalcFX=function(p){
   var amt=document.getElementById(p+'-fxamt');
@@ -17438,8 +17280,6 @@ window.wdw440CalcFXHelper=function(p){
   if(total) total.value=(a&&r)?Math.round(a*r*100)/100:'';
 };
 </script>
-
-
 <style id="v494CL-wdw-management-table-alignment-only">
 /* v494CL — ONLY table alignment in WDW > ניהול */
 
@@ -17551,8 +17391,6 @@ window.wdw440CalcFXHelper=function(p){
   }
 }
 </style>
-
-
 <script id="v494CL-close-donor-edit-only">
 window.wdw447CloseDonorEdit=function(){
   window.WDW_EDIT_DONOR_ID=null;
@@ -17561,9 +17399,6 @@ window.wdw447CloseDonorEdit=function(){
   if(typeof renderWDWInput==='function') renderWDWInput();
 };
 </script>
-
-
-
 <style id="v494CL-annual-summary-display-only">
 /* v494CL — Annual summary display only. No data collection or calculation logic changed. */
 #tab-annual .v449-annual-head{
@@ -17674,9 +17509,6 @@ window.wdw447CloseDonorEdit=function(){
   }
 }
 </style>
-
-
-
 <script id="v494CL-annual-summary-final-override">
 (function(){
   function fmt(v){
@@ -17798,7 +17630,6 @@ window.wdw447CloseDonorEdit=function(){
   };
 })();
 </script>
-
 <style id="v494CL-annual-summary-final-style">
 #tab-annual .v451-annual-head{
   display:flex;
@@ -17832,8 +17663,6 @@ window.wdw447CloseDonorEdit=function(){
 #tab-annual .v451-empty{text-align:center!important;color:#64748b;padding:20px!important}
 @media(max-width:800px){#tab-annual .v451-annual-head{flex-direction:column;align-items:stretch}}
 </style>
-
-
 <script id="v494CL-donor-form-section-layout-only">
 (function(){
   function groupDonorForm(){
@@ -17905,7 +17734,6 @@ window.wdw447CloseDonorEdit=function(){
   }
 })();
 </script>
-
 <style id="v494CL-donor-form-sections-and-timesheet-name">
 #tab-wdw .v452-donor-sectioned{
   padding:16px !important;
@@ -17929,16 +17757,12 @@ window.wdw447CloseDonorEdit=function(){
   margin-top:0 !important;
 }
 </style>
-
-
-
 <style id="v494CL-timesheet-name-field-style">
 #tab-wdw input[id*="-timesheet-name"]{
   direction:ltr;
   text-align:left;
 }
 </style>
-
 <script id="v494CL-clean-timesheet-name-layout">
 (function(){
   function cleanTimesheetNameField(){
@@ -18008,7 +17832,6 @@ window.wdw447CloseDonorEdit=function(){
   setTimeout(cleanTimesheetNameField, 0);
 })();
 </script>
-
 <style id="v494CL-clean-timesheet-name-layout-style">
 #tab-wdw .v456-timesheet-field{
   display:block !important;
@@ -18034,8 +17857,6 @@ window.wdw447CloseDonorEdit=function(){
   box-sizing:border-box !important;
 }
 </style>
-
-
 <script id="v494CL-annual-summary-active-fix">
 (function(){
   function fmtAnnual(v){
@@ -18194,7 +18015,6 @@ window.wdw447CloseDonorEdit=function(){
   };
 })();
 </script>
-
 <style id="v494CL-annual-summary-active-fix-style">
 #tab-annual .v472-annual-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;background:#fff;border:1px solid #dfe6ee;border-radius:12px;padding:14px 16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(15,23,42,.05)}
 #tab-annual .v472-annual-note{font-size:12px;color:#64748b;margin-top:4px}
@@ -18216,8 +18036,6 @@ window.wdw447CloseDonorEdit=function(){
 #tab-annual .v472-empty{text-align:center!important;color:#64748b;padding:20px!important}
 @media(max-width:800px){#tab-annual .v472-annual-head{flex-direction:column;align-items:stretch}}
 </style>
-
-
 <script id="v494CL-reports-design-only">
 (function(){
   function enhanceReportsUI(){
@@ -18280,7 +18098,6 @@ window.wdw447CloseDonorEdit=function(){
 #tab-wdw #wdw-reports .wdw-chip,#tab-wdw #wdw-reports .chip{font-size:12px!important;padding:5px 9px!important;border-radius:999px!important;font-weight:800!important;background:#f2f4f7!important;color:#344054!important;border:1px solid #d0d5dd!important}
 #tab-wdw #wdw-reports .wdw-num,#tab-wdw #wdw-reports td[style*="direction:ltr"]{direction:ltr!important;text-align:left!important;font-weight:900!important;white-space:nowrap!important}
 </style>
-
 <script id="v494CL-annual-year-button-real-load-fix">
 (function(){
   function keyForYear(y){
@@ -18421,7 +18238,6 @@ window.wdw447CloseDonorEdit=function(){
   run();
 })();
 </script>
-
 <style id="v494CL-annual-year-button-real-load-fix-style">
 #tab-annual .v480-year-control{
   display:grid !important;
@@ -18497,8 +18313,6 @@ window.wdw447CloseDonorEdit=function(){
   }
 }
 </style>
-
-
 <script id="v590CH-wdw-monthly-percent-unified">
 <!-- v723CH: monthly percent panel skips worker blockedMonths so blocked months display as empty/0, not base pct. -->
 (function(){
@@ -18542,8 +18356,6 @@ window.wdw447CloseDonorEdit=function(){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();setTimeout(init,300);setTimeout(init,1000);
 })();
 </script>
-
-
 <script id="v494CL-monthly-percent-annual-column">
 (function(){
   function annualPct(months){
@@ -18650,7 +18462,6 @@ window.wdw447CloseDonorEdit=function(){
   run();
 })();
 </script>
-
 <style id="v494CL-monthly-percent-annual-column-style">
 #tab-wdw table.v486-table th.v487-annual-th,
 #tab-wdw table.v486-detail-matrix th.v487-annual-th{
@@ -18672,8 +18483,6 @@ window.wdw447CloseDonorEdit=function(){
   width:230px !important;
 }
 </style>
-
-
 <script id="v531CL-employer-import">
 (function(){
   window.wdwImportEmployerCosts = function() {
@@ -18736,8 +18545,6 @@ window.wdw447CloseDonorEdit=function(){
   }
 })();
 </script>
-
-
 <script id="v534CL-calc-monthly">
 
 // עדכון אחוזים אוטומטי אחרי ייבוא עלות מעביד
@@ -18769,10 +18576,6 @@ window.wdwRecalcAmountWorkers = function() {
   }
 };
 </script>
-
-
-
-
 <script id="v556CL-calc-engine">
 // ===== v556CL: calcWorkerPct — מנוע חישוב מרכזי =====
 // Pure function — לא משנה שום אובייקט חיצוני
@@ -18889,7 +18692,6 @@ window.calcWorkerPct = function(workerRow, monthKey) {
 window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי שלא יידרס
 // ===== סוף calcWorkerPct =====
 </script>
-
 <script id="v557CL-global-wrappers">
 // ===== v557CL: wrappers גלובליים — מחברים wdwBasePct/wdwReplacePct/wdwTotalRowPct ל-calcWorkerPct =====
 // לא נוגע בשום IIFE קיים. רק מחליף את הגלובליות שנקראות מבחוץ.
@@ -18974,7 +18776,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
 })();
 // ===== סוף v557CL-global-wrappers =====
 </script>
-
 <script id="v559CL-getWorkerFundingPct-wrapper">
 // ===== v559CL: getWorkerFundingPct → wrapper ל-calcWorkerPct =====
 // ישיבה 4 של שלב 7: getWorkerFundingPct הופכת wrapper.
@@ -19017,8 +18818,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
 })();
 // ===== סוף v559CL-getWorkerFundingPct-wrapper =====
 </script>
-
-
 <script id="v600CL-save-edit-worker-overflow-fix">
 /* v600CL - תיקון: עטיפת wdwSaveEditWorker הסופית עם בדיקת חריגה */
 (function(){
@@ -19054,8 +18853,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   setTimeout(doFix, 1500);
 })();
 </script>
-
-
 <script id="v600CL-savedata-overflow-fix">
 /* v600CL - בדיקת חריגה גם אחרי שמירה מטבלת אחוז חודשי */
 (function(){
@@ -19094,8 +18891,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   setTimeout(doFix, 1500);
 })();
 </script>
-
-
 <script id="v606CH-overflow-modal">
 (function(){
   function showOverflowModal(workerName, monthly, annual){
@@ -19225,9 +19020,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   setTimeout(doInit, 1800);
 })();
 </script>
-
-
-
 <script id="v618CH-monthly-pct-year-and-zero-fix">
 (function(){
   'use strict';
@@ -19319,9 +19111,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
 
 })();
 </script>
-
-
-
 <script id="v705CH-ended-donors-annual-employer-cost-fix">
 (function(){
   'use strict';
@@ -19379,9 +19168,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   };
 })();
 </script>
-
-
-
 <script id="v707CH-annual-utilization-only-patch">
 (function(){
   // v707CH: תיקון חישוב ניצול שנתי בלבד, ללא שינוי נתונים/טבלאות/עיצוב.
@@ -19440,8 +19226,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   window.wdwAnnualUtilizationPct = annualPctByAmounts;
 })();
 </script>
-
-
 <script id="v709CH-overfunding-popup-final-fix">
 (function(){
   'use strict';
@@ -19562,8 +19346,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   setTimeout(install,1500);
 })();
 </script>
-
-
 <script id="v713CH-calc-button-override">
 (function(){
   var _oldCalc = window.wdwCalcMonthlyFromPeriod;
@@ -19576,7 +19358,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   };
 })();
 </script>
-
 <script id="v716CH-fixedMonths-calc-and-monthly-rebalance">
 (function(){
   var _origCalc = window.calcWorkerPct;
@@ -19606,8 +19387,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   };
 })();
 </script>
-
-
 <script id="v722CH-flexible-period-target-annual-fix">
 (function(){
   'use strict';
@@ -19707,7 +19486,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
 })();
 </script>
-
 <script>
 // ===== v724CH: funding type cleanup + integer money display =====
 (function(){
@@ -19731,7 +19509,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   },true);
 })();
 </script>
-
 <script>
 // ===== v725CH: robust funding-mode switching for worker allocation form =====
 (function(){
@@ -19795,9 +19572,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   };
 })();
 </script>
-
-
-
 <script id="v727CH-replacement-fixes">
 (function(){
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -19820,9 +19594,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
 <style id="v727CH-replacement-fixes-style">
 .v727-repl-badge{display:inline-block;margin-inline-start:6px;padding:3px 7px;border-radius:999px;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;font-weight:800;white-space:nowrap}
 </style>
-
-
-
 <script id="v728CH-replacement-annual-and-badges-fix">
 (function(){
   'use strict';
@@ -19897,8 +19668,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
 .v728-repl-badge,.v728-original-repl-badge{display:inline-block;margin-inline-start:6px;padding:3px 8px;border-radius:999px;background:#fff7ed;border:1px solid #fb923c;color:#9a3412;font-size:11px;font-weight:800;white-space:nowrap;vertical-align:middle}
 .v728-original-repl-badge{background:#fffbeb;border-color:#f59e0b;color:#92400e}
 </style>
-
-
 <script id="v731CH-clean-monthly-replacement-display">
 (function(){
   'use strict';
@@ -19953,9 +19722,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
 #tab-wdw .v731-repl-row .v486-donor-name{border-inline-start:3px solid #f59e0b;background:#fffaf0!important}
 #tab-wdw .v731-base-row .v486-donor-name{background:#fff!important}
 </style>
-
-
-
 <script>
 /* ===== v732CH — management tab only: replacement indication + collapsed add-worker ===== */
 (function(){
@@ -20063,8 +19829,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   window.addEventListener('load',function(){setTimeout(function(){wrapRender(); normalizeManagement();},0);});
 })();
 </script>
-
-
 <script id="v733CH-management-monthly-fixes">
 /* v733CH: נקודתי בלבד — עמודת שנתי כפולה, פתיחת הוספת עובד, וחיווי החלפה קריא בניהול */
 (function(){
@@ -20186,9 +19950,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   setInterval(function(){installRenderHooks();cleanupAnnualColumns();enhanceManagement();},700);
 })();
 </script>
-
-
-
 <script id="v734CH-targeted-replacement-management-fix">
 /* v734CH — targeted fixes only:
    1) + הוסף עובד opens the add-worker form in the v437 management screen.
@@ -20316,8 +20077,6 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   setInterval(function(){hookRender();enhanceManagement();cleanupAnnualColumns();},900);
 })();
 </script>
-
-
 <script id="v736CH-detail-annual-only-fix">
 /* v736CH: only fix missing annual percentage per detail row in Monthly Percent detail tables. */
 (function(){
@@ -20406,13 +20165,9 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   setInterval(function(){install();ensureDetailAnnuals();},700);
 })();
 </script>
-
-
 <script>
 window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.workers[i].active=true;S.workers[i].endMonth=null;if(typeof renderWorkerList==='function')renderWorkerList();if(typeof saveLocally==='function')saveLocally();if(typeof saveData==='function')saveData();};
 </script>
-
-
 <script id="v767CH-active-worker-amount-engine-fix">
 (function(){
   'use strict';
@@ -20499,8 +20254,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   };
 })();
 </script>
-
-
 <script id="v768CH-single-source-worker-calculation">
 /* v768CH
    Single source of truth for WDW worker utilization.
@@ -20842,8 +20595,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
 })();
 </script>
-
-
 <script id="v771CH-role-order-and-replacement-split-fix">
 (function(){
   'use strict';
@@ -20911,9 +20662,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
     var names=officialWorkers();var active=names.filter(workerStillActive),former=names.filter(function(x){return !workerStillActive(x);});active.forEach(function(name,i){renderName(name,i,false);});if(former.length){html+='<tr><td colspan="9" style="padding:8px 14px;background:#f8fafc;color:#64748b;font-size:12px;font-weight:600;border-top:2px solid #e5e7eb">עובדים לשעבר</td></tr>';former.forEach(function(name,i){renderName(name,i,true);});}html+='</tbody></table></div></div></div>';div.innerHTML=html;};
 })();
 </script>
-
-
-
 <script id="v772CH-single-money-engine-alert-fix">
 /*
   v772CH
@@ -21064,9 +20812,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   }
 })();
 </script>
-
-
-
 <script id="v775CH-reports-use-money-engine-only">
 /*
   v775CH — base: v772CH
@@ -21153,6 +20898,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   };
 })();
 </script>
-
 </body>
+</html>
 </html>
