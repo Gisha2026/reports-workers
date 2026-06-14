@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v779CH | גישה</title>
+<title>Reports_Workers v778CH | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -287,7 +287,6 @@ async function initPyodide(){
 #tab-wdw table.v486-detail-matrix th.v747-deva-detail-annual-th{background:#eef8f6!important;color:#073f3d!important;font-weight:900!important;min-width:58px!important;}
 #tab-wdw table.v486-detail-matrix td.v747-deva-detail-annual-cell{font-weight:900!important;border-inline-start:1px solid #d9e0e7!important;border-inline-end:1px solid #d9e0e7!important;}
 </style>
-<!-- v779CH: worker role occupancy date fields added; WDW calculations unchanged -->
 </head>
 <body>
 <div id="loginScreen">
@@ -315,7 +314,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v779CH</span>
+<span class="topbar-title">Reports_Workers v778CH</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -414,7 +413,7 @@ async function initPyodide(){
 <div id="stab-content-workers">
 <div class="s-sec">
 <h3>עובדים</h3>
-<div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">מאייש מ־</th><th style="padding:7px 8px;text-align:right;font-weight:500;">מאייש עד</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
+<div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
 <div style="margin-top:10px;direction:rtl;">
 <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;">
 <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
@@ -1438,7 +1437,6 @@ function renderWorkerList(){
 }
 
 function mkWRow(w,i){
-  const esc=function(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');};
   const r=document.createElement('div');
   r.className='w-row';
   const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
@@ -1475,8 +1473,6 @@ function mkWRow(w,i){
         <option value="">— תפקיד —</option>${roleOpts}
       </select>
     </span>
-    <span><input type="month" value="${esc(w.roleFromMonth||'')}" onchange="S.workers[${i}].roleFromMonth=this.value;saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;width:112px;direction:ltr;text-align:center;"></span>
-    <span><input type="month" value="${esc(w.roleToMonth||'')}" onchange="S.workers[${i}].roleToMonth=this.value;saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;width:112px;direction:ltr;text-align:center;"></span>
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
@@ -4326,8 +4322,6 @@ function sendEmail(){
       <td style="padding:7px 8px;text-align:center;">${daysAlert}</td>
       <td style="padding:7px 8px;text-align:center;"><span style="display:flex;gap:3px;justify-content:center;">${upBtn}${downBtn}</span></td>
       <td style="padding:7px 8px;"><select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();" style="width:100%;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;"><option value="">— תפקיד קבוע —</option>${roleOpts}</select></td>
-      <td style="padding:7px 8px;"><input type="month" value="${esc(w.roleFromMonth||'')}" onchange="S.workers[${i}].roleFromMonth=this.value;saveLocally();saveData();" style="width:112px;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;direction:ltr;text-align:center;"></td>
-      <td style="padding:7px 8px;"><input type="month" value="${esc(w.roleToMonth||'')}" onchange="S.workers[${i}].roleToMonth=this.value;saveLocally();saveData();" style="width:112px;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;direction:ltr;text-align:center;"></td>
       <td style="padding:7px 8px;">${permSpanW}</td>
       <td style="padding:7px 8px;">${pwdSpanW}</td>
       <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
@@ -9997,7 +9991,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v779CH</span>
+<span class="topbar-title">Reports_Workers v778CH</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -10125,7 +10119,7 @@ async function initPyodide(){
 <div id="stab-content-workers">
 <div class="s-sec">
 <h3>עובדים</h3>
-<div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">מאייש מ־</th><th style="padding:7px 8px;text-align:right;font-weight:500;">מאייש עד</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
+<div style="overflow-x:auto;direction:rtl;"><table style="width:auto;border-collapse:collapse;direction:rtl;"><thead><tr style="font-size:11px;border-bottom:1px solid #e5e7eb;background:#1B6B5A;color:white;"><th style="padding:7px 8px;text-align:right;font-weight:500;">שם</th><th style="padding:7px 8px;text-align:right;font-weight:500;">ימי עבודה</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סטטוס</th><th style="padding:7px 8px;text-align:center;font-weight:500;">חריג</th><th style="padding:7px 8px;text-align:center;font-weight:500;">סדר</th><th style="padding:7px 8px;text-align:right;font-weight:500;">תפקיד קבוע</th><th style="padding:7px 8px;text-align:right;font-weight:500;">הרשאה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיסמה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">עריכה</th><th style="padding:7px 8px;text-align:right;font-weight:500;">סיום עבודה</th></tr></thead><tbody id="workerList"></tbody></table></div>
 <div style="margin-top:10px;direction:rtl;">
 <div style="border:0.5px solid #e5e7eb;border-radius:6px;padding:10px 14px;margin-bottom:8px;">
 <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:8px;">הוספת עובד חדש</div>
@@ -11022,7 +11016,6 @@ function renderWorkerList(){
 }
 
 function mkWRow(w,i){
-  const esc=function(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\"/g,'&quot;');};
   const r=document.createElement('div');
   r.className='w-row';
   const stTxt=w.active?'פעיל':('סיום '+fmtMonth(w.endMonth));
@@ -11059,8 +11052,6 @@ function mkWRow(w,i){
         <option value="">— תפקיד —</option>${roleOpts}
       </select>
     </span>
-    <span><input type="month" value="${esc(w.roleFromMonth||'')}" onchange="S.workers[${i}].roleFromMonth=this.value;saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;width:112px;direction:ltr;text-align:center;"></span>
-    <span><input type="month" value="${esc(w.roleToMonth||'')}" onchange="S.workers[${i}].roleToMonth=this.value;saveLocally();saveData();" style="font-size:11px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;width:112px;direction:ltr;text-align:center;"></span>
     ${arrows}
     <span class="wdays-wrap">${daysHtml}</span>
     <span style="display:flex;align-items:center;gap:6px;">${statusHtml}</span>
@@ -14625,8 +14616,6 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
       <td style="padding:7px 8px;text-align:center;">${daysAlert}</td>
       <td style="padding:7px 8px;text-align:center;"><span style="display:flex;gap:3px;justify-content:center;">${upBtn}${downBtn}</span></td>
       <td style="padding:7px 8px;"><select onchange="S.workers[${i}].role=this.value;saveLocally();saveData();" style="width:100%;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;"><option value="">— תפקיד קבוע —</option>${roleOpts}</select></td>
-      <td style="padding:7px 8px;"><input type="month" value="${esc(w.roleFromMonth||'')}" onchange="S.workers[${i}].roleFromMonth=this.value;saveLocally();saveData();" style="width:112px;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;direction:ltr;text-align:center;"></td>
-      <td style="padding:7px 8px;"><input type="month" value="${esc(w.roleToMonth||'')}" onchange="S.workers[${i}].roleToMonth=this.value;saveLocally();saveData();" style="width:112px;font-size:11px;height:26px;border:1px solid #ccc;border-radius:4px;padding:0 4px;direction:ltr;text-align:center;"></td>
       <td style="padding:7px 8px;">${permSpanW}</td>
       <td style="padding:7px 8px;">${pwdSpanW}</td>
       <td style="padding:7px 8px;white-space:nowrap;">${editBtn}</td>
