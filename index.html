@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v777CH | גישה</title>
+<title>Reports_Workers v778CH | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -314,7 +314,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v777CH</span>
+<span class="topbar-title">Reports_Workers v778CH</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -9682,6 +9682,39 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   };
 })();
 </script>
+
+<script id="v778CH-main-tab-active-fix">
+(function(){
+  function mainFor(tab){
+    if(tab==='leave') return 'leave';
+    if(tab==='annual') return 'annual';
+    if(tab==='wdw') return 'wdw';
+    if(tab==='timesheet' || tab==='accounting' || tab==='email') return 'salary';
+    if(tab==='settings') return 'settings';
+    return tab;
+  }
+  function syncMainTab(tab){
+    var main = mainFor(tab);
+    document.querySelectorAll('.tabs > .tab').forEach(function(el){
+      el.classList.toggle('active', el.getAttribute('data-main') === main);
+    });
+  }
+  var oldSwitchTab = window.switchTab;
+  window.switchTab = function(tab){
+    if(typeof oldSwitchTab === 'function'){
+      oldSwitchTab.apply(this, arguments);
+    }
+    syncMainTab(tab);
+  };
+  document.addEventListener('DOMContentLoaded', function(){
+    var active = document.querySelector('.tab-content.active');
+    if(active && active.id && active.id.indexOf('tab-') === 0){
+      syncMainTab(active.id.replace('tab-',''));
+    }
+  });
+})();
+</script>
+
 </body>
 
 <html dir="rtl" lang="he">
@@ -9958,7 +9991,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v777CH</span>
+<span class="topbar-title">Reports_Workers v778CH</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -20898,6 +20931,39 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   };
 })();
 </script>
+
+<script id="v778CH-main-tab-active-fix">
+(function(){
+  function mainFor(tab){
+    if(tab==='leave') return 'leave';
+    if(tab==='annual') return 'annual';
+    if(tab==='wdw') return 'wdw';
+    if(tab==='timesheet' || tab==='accounting' || tab==='email') return 'salary';
+    if(tab==='settings') return 'settings';
+    return tab;
+  }
+  function syncMainTab(tab){
+    var main = mainFor(tab);
+    document.querySelectorAll('.tabs > .tab').forEach(function(el){
+      el.classList.toggle('active', el.getAttribute('data-main') === main);
+    });
+  }
+  var oldSwitchTab = window.switchTab;
+  window.switchTab = function(tab){
+    if(typeof oldSwitchTab === 'function'){
+      oldSwitchTab.apply(this, arguments);
+    }
+    syncMainTab(tab);
+  };
+  document.addEventListener('DOMContentLoaded', function(){
+    var active = document.querySelector('.tab-content.active');
+    if(active && active.id && active.id.indexOf('tab-') === 0){
+      syncMainTab(active.id.replace('tab-',''));
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
 </html>
