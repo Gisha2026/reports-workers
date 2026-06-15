@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v782CH | גישה</title>
+<title>Reports_Workers v783CH | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -314,7 +314,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v782CH</span>
+<span class="topbar-title">Reports_Workers v783CH</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -9715,173 +9715,6 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 })();
 </script>
 
-
-<script id="v782CH-two-fixes-only">
-(function(){
-  'use strict';
-
-  function S0(){ return window.S || (typeof S !== 'undefined' ? S : null); }
-  function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-  function n(x){ var v=parseFloat(x); return isFinite(v)?v:0; }
-  function pad(x){ return String(x).padStart(2,'0'); }
-  function currentMonth(){
-    var s=S0() || {};
-    var y=s.year || new Date().getFullYear();
-    var mi=(typeof window.curMI === 'number') ? window.curMI : new Date().getMonth();
-    return y + '-' + pad(mi+1);
-  }
-  function gen(prefix){
-    if(typeof window.wdwGenId === 'function') return window.wdwGenId(prefix);
-    return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-  }
-  function saveSoft(){
-    try{ if(typeof window.saveLocally === 'function') window.saveLocally(); }catch(e){}
-    try{ if(typeof window.saveData === 'function') window.saveData(); }catch(e){}
-  }
-  function donors(){
-    var s=S0();
-    if(!s) return [];
-    if(!s.wdw) s.wdw={};
-    if(!Array.isArray(s.wdw.donors)) s.wdw.donors=[];
-    return s.wdw.donors;
-  }
-  function normalizeStatus(v){
-    v=String(v||'active').trim();
-    if(v==='פעיל') return 'active';
-    if(v==='ממתין' || v==='ממתין לאישור') return 'pending';
-    if(v==='לא פעיל' || v==='inactive' || v==='ended') return 'inactive';
-    if(v!=='active' && v!=='pending' && v!=='inactive') return 'active';
-    return v;
-  }
-  function statusSelectHtml(id, value){
-    value=normalizeStatus(value);
-    return '<select id="'+esc(id)+'" class="wdw-inp">' +
-      '<option value="active" '+(value==='active'?'selected':'')+'>פעיל</option>' +
-      '<option value="pending" '+(value==='pending'?'selected':'')+'>ממתין</option>' +
-      '<option value="inactive" '+(value==='inactive'?'selected':'')+'>לא פעיל</option>' +
-      '</select>';
-  }
-
-  function fixStatusDropdowns(){
-    document.querySelectorAll('#wdw-input input[id^="v780-d-status-"]').forEach(function(inp){
-      var wrap=inp.parentNode;
-      if(!wrap) return;
-      var id=inp.id;
-      var val=inp.value;
-      var box=document.createElement('div');
-      box.innerHTML=statusSelectHtml(id,val);
-      wrap.replaceChild(box.firstChild, inp);
-    });
-  }
-
-  function addDonorFormHtml(){
-    var st=currentMonth();
-    var year=String(st).slice(0,4) || String(new Date().getFullYear());
-    var en=year+'-12';
-    return '<div id="v782-add-donor-panel" class="wdw-panel" style="margin-bottom:12px">' +
-      '<div class="wdw-panel-h"><div><div class="wdw-panel-title">הוספת תורם חדש</div></div></div>' +
-      '<div class="wdw-mgmt-body">' +
-      '<div class="v780-form-grid">' +
-      '<label><span>שם תורם</span><input id="v782-new-name" class="wdw-inp"></label>' +
-      '<label><span>Timesheet name</span><input id="v782-new-ts" class="wdw-inp"></label>' +
-      '<label><span>סוג</span><select id="v782-new-type" class="wdw-inp"><option value="budget">תקציב</option><option value="core">כללי</option><option value="project">פרויקט</option></select></label>' +
-      '<label><span>סטטוס</span>'+statusSelectHtml('v782-new-status','active')+'</label>' +
-      '<label><span>תקציב ₪</span><input id="v782-new-budget" class="wdw-inp" type="number"></label>' +
-      '<label><span>תחילת חוזה</span><input id="v782-new-start" class="wdw-inp" type="month" value="'+esc(st)+'"></label>' +
-      '<label><span>סיום חוזה</span><input id="v782-new-end" class="wdw-inp" type="month" value="'+esc(en)+'"></label>' +
-      '<label><span>קוד פרויקט</span><input id="v782-new-code" class="wdw-inp"></label>' +
-      '</div>' +
-      '<div style="display:flex;gap:8px;justify-content:flex-start;margin-top:12px">' +
-      '<button class="wdw-primary" onclick="v782SaveNewDonor()">שמור תורם</button>' +
-      '<button class="wdw-secondary" onclick="v782CancelAddDonor()">ביטול</button>' +
-      '</div></div></div>';
-  }
-
-  window.v782CancelAddDonor=function(){
-    var p=document.getElementById('v782-add-donor-panel');
-    if(p) p.remove();
-  };
-
-  window.v782SaveNewDonor=function(){
-    var name=(document.getElementById('v782-new-name')||{}).value || '';
-    name=name.trim();
-    if(!name){ alert('נא להזין שם תורם'); return; }
-
-    var st=(document.getElementById('v782-new-start')||{}).value || currentMonth();
-    var en=(document.getElementById('v782-new-end')||{}).value || st;
-
-    var d={
-      id: gen('d'),
-      name: name,
-      timesheetName: ((document.getElementById('v782-new-ts')||{}).value || '').trim(),
-      type: (document.getElementById('v782-new-type')||{}).value || 'budget',
-      status: normalizeStatus((document.getElementById('v782-new-status')||{}).value || 'active'),
-      totalBudget: n((document.getElementById('v782-new-budget')||{}).value) || 0,
-      startDate: st,
-      endDate: en,
-      code: (document.getElementById('v782-new-code')||{}).value || '',
-      workers: [],
-      fundedPositions: []
-    };
-
-    donors().push(d);
-    window.WDW_EDIT_DONOR_ID=d.id;
-    window.V780_EDIT_POSITION_ID=null;
-    saveSoft();
-    if(typeof window.renderWDWInput === 'function') window.renderWDWInput();
-  };
-
-  window.wdwShowAddDonor217=function(){
-    var div=document.getElementById('wdw-input');
-    if(!div){
-      if(typeof window.switchWDW === 'function') window.switchWDW('input');
-      div=document.getElementById('wdw-input');
-    }
-    if(!div) return;
-
-    var existing=document.getElementById('v782-add-donor-panel');
-    if(existing){
-      existing.scrollIntoView({block:'start'});
-      var exName=document.getElementById('v782-new-name');
-      if(exName) exName.focus();
-      return;
-    }
-
-    var firstPanel=div.querySelector('.wdw-panel');
-    if(firstPanel) firstPanel.insertAdjacentHTML('beforebegin', addDonorFormHtml());
-    else div.insertAdjacentHTML('afterbegin', addDonorFormHtml());
-
-    var name=document.getElementById('v782-new-name');
-    if(name) name.focus();
-  };
-
-  var oldRender=window.renderWDWInput;
-  if(typeof oldRender === 'function' && !window.__v782_two_fixes_hooked){
-    window.__v782_two_fixes_hooked=true;
-    window.renderWDWInput=function(){
-      var r=oldRender.apply(this, arguments);
-      setTimeout(fixStatusDropdowns, 0);
-      return r;
-    };
-  }
-
-  document.addEventListener('click', function(ev){
-    var btn=ev.target && ev.target.closest && ev.target.closest('button');
-    if(!btn || !btn.closest('#wdw-input')) return;
-    var txt=(btn.textContent||'').replace(/\s+/g,' ').trim();
-    if(txt.indexOf('הוסף תורם')>-1){
-      ev.preventDefault();
-      ev.stopPropagation();
-      window.wdwShowAddDonor217();
-    }
-  }, true);
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(fixStatusDropdowns, 0);
-  });
-})();
-</script>
-
 </body>
 
 <html dir="rtl" lang="he">
@@ -10158,7 +9991,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v782CH</span>
+<span class="topbar-title">Reports_Workers v783CH</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -21135,7 +20968,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 <script id="v780-funded-positions-ui">
 (function(){
   'use strict';
-  var V='v782CH';
+  var V='v780CH';
   function S0(){return window.S || (typeof S!=='undefined'?S:null);} 
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function n(x){var v=parseFloat(x);return isFinite(v)?v:0;}
@@ -21160,8 +20993,10 @@ p.assignments.push(a);return p;}
   function workerOptions(sel){return '<option value="">בחר עובד</option>'+workers().map(function(w){return '<option value="'+esc(w)+'" '+(w===sel?'selected':'')+'>'+esc(w)+'</option>';}).join('');}
   function donorStatusEnded(d){return ['ended','inactive','הסתיים','לא פעיל'].indexOf(String(d.status||'').toLowerCase())>-1;}
   function header(title,sub){return '<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">'+esc(title)+'</div><div class="wdw-sub">'+esc(sub||'')+'</div></div><div class="wdw-month">'+V+'</div></div>';}
+  function statusSelect(id,val){val=String(val||'active');return '<select id="'+id+'" class="wdw-inp"><option value="active" '+(val==='active'?'selected':'')+'>פעיל</option><option value="pending" '+(val==='pending'?'selected':'')+'>ממתין</option><option value="inactive" '+(val==='inactive'?'selected':'')+'>לא פעיל</option></select>';}
+  function addDonorForm(){var st=monthNow(), en=String((S0().year||new Date().getFullYear()))+'-12';return '<div class="wdw-mgmt-body" style="border-bottom:1px solid #edf2f7"><div class="wdw-panel-title" style="margin-bottom:10px">הוספת תורם חדש</div><div class="v780-form-grid">'+field('שם תורם','<input id="v217-new-name" class="wdw-inp">')+field('Timesheet name','<input id="v217-new-ts" class="wdw-inp">')+field('סוג','<select id="v217-new-type" class="wdw-inp"><option value="budget">תקציב</option><option value="core">כללי</option><option value="project">פרויקט</option></select>')+field('סטטוס',statusSelect('v217-new-status','active'))+field('תקציב ₪','<input id="v217-new-budget" class="wdw-inp" type="number">')+field('תחילת חוזה','<input id="v217-new-start" class="wdw-inp" type="month" value="'+esc(st)+'">')+field('סיום חוזה','<input id="v217-new-end" class="wdw-inp" type="month" value="'+esc(en)+'">')+field('קוד פרויקט','<input id="v217-new-code" class="wdw-inp">')+field('כתובת','<input id="v217-new-address" class="wdw-inp">')+'</div><div style="display:none"><label><input type="radio" name="v217-new-flex" value="yes" checked> גמיש</label><select id="v217-new-strategy"><option value="even">even</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="wdw-primary" onclick="wdwSaveNewDonor217()">שמור תורם</button><button class="wdw-secondary" onclick="wdwCancelAddDonor217()">ביטול</button></div></div>';}
   function donorRow(d){var open=window.WDW_EDIT_DONOR_ID===d.id;var count=(d.fundedPositions||[]).length;var workersCount=(d.workers||[]).filter(function(w){return w&&w.active!==false;}).length;var out='<div class="wdw-mgmt-row"><div class="wdw-mgmt-summary" style="grid-template-columns:1.5fr 110px 130px 130px 140px auto"><div><b>'+esc(d.name||'—')+'</b><div class="wdw-muted">'+esc(d.code||'אין קוד')+' · '+esc(d.address||'אין כתובת ידועה')+'</div></div><div><span class="wdw-chip gray">'+esc(d.type||'—')+'</span></div><div><span class="wdw-chip '+(donorStatusEnded(d)?'warn':'budget')+'">'+esc(d.status||'פעיל')+'</span></div><div class="wdw-num">'+count+' משרות</div><div class="wdw-muted">ישן: '+workersCount+' עובדים</div><div class="wdw-actions"><button onclick="wdwEditDonor217(\''+esc(d.id)+'\')">ערוך</button></div></div>';if(open)out+=editDonor(d);return out+'</div>';}
-  function editDonor(d){var html='<div class="wdw-mgmt-body"><div style="display:flex;gap:8px;justify-content:flex-start;margin-bottom:12px"><button class="wdw-primary" onclick="v780SaveDonor(\''+esc(d.id)+'\')">שמור פרטי תורם</button><button class="wdw-secondary" onclick="wdwCloseEditDonor217()">סגור עריכה</button></div>';html+='<div class="v780-note">v780: ניהול משרות ממומנות במקביל למבנה העובדים הישן. הדוחות והחישובים הקיימים עדיין לא קוראים מהמבנה החדש.</div>';html+='<div class="v780-form-grid">'+field('שם תורם','<input id="v780-d-name-'+esc(d.id)+'" class="wdw-inp" value="'+esc(d.name||'')+'">')+field('Timesheet name','<input id="v780-d-ts-'+esc(d.id)+'" class="wdw-inp" value="'+esc(d.timesheetName||'')+'">')+field('סוג','<select id="v780-d-type-'+esc(d.id)+'" class="wdw-inp"><option value="budget" '+(d.type==='budget'?'selected':'')+'>תקציב</option><option value="core" '+(d.type==='core'?'selected':'')+'>כללי</option><option value="project" '+(d.type==='project'?'selected':'')+'>פרויקט</option></select>')+field('סטטוס','<input id="v780-d-status-'+esc(d.id)+'" class="wdw-inp" value="'+esc(d.status||'')+'">')+field('תקציב ₪','<input id="v780-d-budget-'+esc(d.id)+'" class="wdw-inp" type="number" value="'+esc(d.totalBudget||'')+'">')+field('תחילת חוזה','<input id="v780-d-start-'+esc(d.id)+'" class="wdw-inp" type="month" value="'+esc(d.startDate||'')+'">')+field('סיום חוזה','<input id="v780-d-end-'+esc(d.id)+'" class="wdw-inp" type="month" value="'+esc(d.endDate||'')+'">')+field('קוד פרויקט','<input id="v780-d-code-'+esc(d.id)+'" class="wdw-inp" value="'+esc(d.code||'')+'">')+'</div>';
+  function editDonor(d){var html='<div class="wdw-mgmt-body"><div style="display:flex;gap:8px;justify-content:flex-start;margin-bottom:12px"><button class="wdw-primary" onclick="v780SaveDonor(\''+esc(d.id)+'\')">שמור פרטי תורם</button><button class="wdw-secondary" onclick="wdwCloseEditDonor217()">סגור עריכה</button></div>';html+='<div class="v780-note">v780: ניהול משרות ממומנות במקביל למבנה העובדים הישן. הדוחות והחישובים הקיימים עדיין לא קוראים מהמבנה החדש.</div>';html+='<div class="v780-form-grid">'+field('שם תורם','<input id="v780-d-name-'+esc(d.id)+'" class="wdw-inp" value="'+esc(d.name||'')+'">')+field('Timesheet name','<input id="v780-d-ts-'+esc(d.id)+'" class="wdw-inp" value="'+esc(d.timesheetName||'')+'">')+field('סוג','<select id="v780-d-type-'+esc(d.id)+'" class="wdw-inp"><option value="budget" '+(d.type==='budget'?'selected':'')+'>תקציב</option><option value="core" '+(d.type==='core'?'selected':'')+'>כללי</option><option value="project" '+(d.type==='project'?'selected':'')+'>פרויקט</option></select>')+field('סטטוס',statusSelect('v780-d-status-'+esc(d.id),d.status))+field('תקציב ₪','<input id="v780-d-budget-'+esc(d.id)+'" class="wdw-inp" type="number" value="'+esc(d.totalBudget||'')+'">')+field('תחילת חוזה','<input id="v780-d-start-'+esc(d.id)+'" class="wdw-inp" type="month" value="'+esc(d.startDate||'')+'">')+field('סיום חוזה','<input id="v780-d-end-'+esc(d.id)+'" class="wdw-inp" type="month" value="'+esc(d.endDate||'')+'">')+field('קוד פרויקט','<input id="v780-d-code-'+esc(d.id)+'" class="wdw-inp" value="'+esc(d.code||'')+'">')+'</div>';
     html+='<div class="wdw-panel-title" style="margin:16px 0 8px">משרות ממומנות</div><div id="v780-position-list-'+esc(d.id)+'">';
     (d.fundedPositions||[]).forEach(function(p,idx){html+=positionCard(d,p,idx);});
     if(!(d.fundedPositions||[]).length)html+='<div class="v780-empty">אין משרות ממומנות במבנה החדש. אפשר ליצור משרה, או שהמערכת תיצור אותן מנתוני העובדים הקיימים.</div>';
@@ -21185,8 +21020,8 @@ p.assignments.push(a);return p;}
   function addStyle(){if(document.getElementById('v780-style'))return;var st=document.createElement('style');st.id='v780-style';st.textContent='.v780-note{background:#eef8f6;border:1px solid #b2dfdb;color:#073f3d;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;font-weight:700}.v780-form-grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:10px;margin-bottom:12px}.v780-form-grid label,.v780-budget-row label,.v780-asg-grid label{display:block;font-size:12px;color:#555;font-weight:700}.v780-form-grid label span,.v780-budget-row label span,.v780-asg-grid label span{display:block;margin-bottom:4px}.v780-empty{padding:14px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;color:#64748b;font-size:13px}.v780-pos-card{border:1px solid #dfe6ee;border-radius:14px;background:white;margin-bottom:12px;overflow:hidden}.v780-pos-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;background:#fbfdff;border-bottom:1px solid #edf2f7}.v780-pos-form{padding:14px;background:#fff}.v780-budget-row{display:grid;grid-template-columns:1.3fr 140px 150px 130px 130px;gap:10px;padding:12px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:12px;margin-bottom:12px}.v780-asg{border:1px solid #e2e8f0;border-radius:12px;background:#fff;margin-bottom:10px;padding:0}.v780-asg summary{cursor:pointer;padding:10px 12px;font-weight:800;color:#073f3d;background:#f8fafc;border-radius:12px}.v780-asg[open] summary{border-bottom:1px solid #e2e8f0;border-radius:12px 12px 0 0}.v780-asg-grid{display:grid;grid-template-columns:1.5fr 130px 130px 130px;gap:10px;padding:12px}.v780-month-wrap{overflow:auto;padding:0 12px 12px}.v780-month-table{width:auto!important;min-width:100%;box-shadow:none!important;border:1px solid #e5e7eb}.v780-month-table th{position:static!important;background:#f1f5f9!important;color:#334155!important;font-size:11px!important}.v780-month-table td{font-size:11px!important;padding:5px!important}.v780-month-table input{width:75px;padding:4px;border:1px solid #cbd5e1;border-radius:5px;text-align:center;direction:ltr}.wdw-primary{background:#00897B;color:white;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:800}.wdw-secondary{background:white;color:#334155;border:1px solid #cbd5e1;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:700}.wdw-actions .del{color:#b91c1c;border-color:#fecaca}@media(max-width:1000px){.v780-form-grid,.v780-budget-row,.v780-asg-grid{grid-template-columns:1fr 1fr}}';document.head.appendChild(st);}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
-  window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="if(typeof wdwShowAddDonor217===\'function\')wdwShowAddDonor217();else alert(\'הוספת תורם נשארה במנגנון הישן\')">+ הוסף תורם</button></div>';var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v782CH';if(document.title.indexOf('v782CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v782CH');},0);});
+  window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v783CH';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
 })();
 </script>
 
