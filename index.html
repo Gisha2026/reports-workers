@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v785CH | גישה</title>
+<title>Reports_Workers v786CH | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -2689,7 +2689,7 @@ function wdwShowAddWorker(did){
   if(form){ form.style.display='block'; form.scrollIntoView({block:'nearest'}); }
 }
 
-let _ndWorkers=[];
+var _ndWorkers = window._ndWorkers = window._ndWorkers || [];
 function wdwAddWorkerToNewDonor(){
   _ndWorkers.push({id:wdwGenId('tmp'),name:'',valueType:'percent',value:0,startMonth:'',endMonth:''});
   wdwRenderNdWorkers();
@@ -9712,6 +9712,74 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
       syncMainTab(active.id.replace('tab-',''));
     }
   });
+})();
+</script>
+
+
+<script id="v785CH-add-donor-button-final-fix">
+/* v785CH final fix: make + הוסף תורם open the add-donor panel, without changing other logic */
+(function(){
+  function ensureInputTab(){
+    try{
+      if(typeof switchWDW === 'function') switchWDW('input');
+      var input = document.getElementById('wdw-input');
+      if(input) input.style.display = 'block';
+    }catch(e){}
+  }
+  function syncWorkersArray(){
+    try{
+      if(!window._ndWorkers) window._ndWorkers = [];
+      if(typeof _ndWorkers !== 'undefined' && _ndWorkers !== window._ndWorkers){
+        window._ndWorkers = _ndWorkers;
+      }
+    }catch(e){ window._ndWorkers = window._ndWorkers || []; }
+  }
+  window.wdwShowAddDonorPanel = function(){
+    try{ if(typeof initWDW === 'function') initWDW(); }catch(e){}
+    ensureInputTab();
+    var p = document.getElementById('wdw-new-donor-panel');
+    if(!p && typeof renderWDWInput === 'function'){
+      try{ renderWDWInput(); }catch(e){ console.error('renderWDWInput failed', e); }
+      p = document.getElementById('wdw-new-donor-panel');
+    }
+    syncWorkersArray();
+    if(p){
+      p.style.setProperty('display','block','important');
+      p.style.visibility = 'visible';
+      p.style.opacity = '1';
+      p.removeAttribute('hidden');
+      try{ p.scrollIntoView({block:'start', behavior:'smooth'}); }catch(e){ try{ p.scrollIntoView(true); }catch(_){} }
+      setTimeout(function(){ var name=document.getElementById('nd-name'); if(name) name.focus(); }, 50);
+    } else {
+      alert('לא נמצא פאנל הוספת תורם. נסה לרענן את הדף.');
+    }
+  };
+  window.wdwHideAddDonorPanel = function(){
+    var p = document.getElementById('wdw-new-donor-panel');
+    if(p) p.style.setProperty('display','none','important');
+  };
+  var oldAddWorker = window.wdwAddWorkerToNewDonor;
+  window.wdwAddWorkerToNewDonor = function(){
+    syncWorkersArray();
+    try{
+      if(typeof oldAddWorker === 'function') oldAddWorker();
+      else {
+        window._ndWorkers.push({id:(typeof wdwGenId==='function'?wdwGenId('tmp'):'tmp_'+Date.now()),name:'',valueType:'percent',value:0,startMonth:'',endMonth:''});
+        if(typeof wdwRenderNdWorkers === 'function') wdwRenderNdWorkers();
+      }
+    }catch(e){ console.error('wdwAddWorkerToNewDonor failed', e); }
+  };
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest && ev.target.closest('button');
+    if(!btn) return;
+    var txt = (btn.textContent || '').replace(/\s+/g,' ').trim();
+    var oc = btn.getAttribute('onclick') || '';
+    if(txt === '+ הוסף תורם' || txt === 'הוסף תורם' || oc.indexOf('wdwShowAddDonorPanel') !== -1){
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      window.wdwShowAddDonorPanel();
+    }
+  }, true);
 })();
 </script>
 
@@ -20969,7 +21037,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 function addDonorForm(){var y=S.year||2026;return '<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">הוספת תורם חדש</div><div class="wdw-panel-note">טופס ריק בלבד.</div></div></div><div style="padding:16px"><div class="v219-form-grid">'+field('שם תורם','<input id="v217-new-name" class="wdw-inp" placeholder="שם התורם">')+field('סוג','<select id="v217-new-type" class="wdw-inp"><option value="budget">תקציב (BUDGET)</option><option value="core">כללי (CORE)</option></select>')+field('סטטוס','<select id="v217-new-status" class="wdw-inp">'+statusOptions('active')+'</select>')+field('תקציב כולל ₪','<input id="v217-new-budget" class="wdw-inp" type="number">')+field('תחילת חוזה','<input id="v217-new-start" class="wdw-inp" type="month" value="'+y+'-01">')+field('סיום חוזה','<input id="v217-new-end" class="wdw-inp" type="month" value="'+y+'-12">')+field('קוד פרויקט','<input id="v217-new-code" class="wdw-inp">')+field('כתובת / הערה','<input id="v217-new-address" class="wdw-inp" placeholder="אין כתובת ידועה">')+'</div><div style="display:flex;gap:8px;margin-top:14px"><button class="wdw-primary" onclick="wdwSaveNewDonor217()">שמור תורם</button><button class="wdw-secondary" onclick="wdwCancelAddDonor217()">ביטול</button></div></div></div>';}
 (function(){
   'use strict';
-  var V='v785CH';
+  var V='v783CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null);} 
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function n(x){var v=parseFloat(x);return isFinite(v)?v:0;}
@@ -21063,6 +21131,74 @@ p.assignments.push(a);return p;}
   });
 })();
 </script>
+
+<script id="v785CH-add-donor-button-final-fix">
+/* v785CH final fix: make + הוסף תורם open the add-donor panel, without changing other logic */
+(function(){
+  function ensureInputTab(){
+    try{
+      if(typeof switchWDW === 'function') switchWDW('input');
+      var input = document.getElementById('wdw-input');
+      if(input) input.style.display = 'block';
+    }catch(e){}
+  }
+  function syncWorkersArray(){
+    try{
+      if(!window._ndWorkers) window._ndWorkers = [];
+      if(typeof _ndWorkers !== 'undefined' && _ndWorkers !== window._ndWorkers){
+        window._ndWorkers = _ndWorkers;
+      }
+    }catch(e){ window._ndWorkers = window._ndWorkers || []; }
+  }
+  window.wdwShowAddDonorPanel = function(){
+    try{ if(typeof initWDW === 'function') initWDW(); }catch(e){}
+    ensureInputTab();
+    var p = document.getElementById('wdw-new-donor-panel');
+    if(!p && typeof renderWDWInput === 'function'){
+      try{ renderWDWInput(); }catch(e){ console.error('renderWDWInput failed', e); }
+      p = document.getElementById('wdw-new-donor-panel');
+    }
+    syncWorkersArray();
+    if(p){
+      p.style.setProperty('display','block','important');
+      p.style.visibility = 'visible';
+      p.style.opacity = '1';
+      p.removeAttribute('hidden');
+      try{ p.scrollIntoView({block:'start', behavior:'smooth'}); }catch(e){ try{ p.scrollIntoView(true); }catch(_){} }
+      setTimeout(function(){ var name=document.getElementById('nd-name'); if(name) name.focus(); }, 50);
+    } else {
+      alert('לא נמצא פאנל הוספת תורם. נסה לרענן את הדף.');
+    }
+  };
+  window.wdwHideAddDonorPanel = function(){
+    var p = document.getElementById('wdw-new-donor-panel');
+    if(p) p.style.setProperty('display','none','important');
+  };
+  var oldAddWorker = window.wdwAddWorkerToNewDonor;
+  window.wdwAddWorkerToNewDonor = function(){
+    syncWorkersArray();
+    try{
+      if(typeof oldAddWorker === 'function') oldAddWorker();
+      else {
+        window._ndWorkers.push({id:(typeof wdwGenId==='function'?wdwGenId('tmp'):'tmp_'+Date.now()),name:'',valueType:'percent',value:0,startMonth:'',endMonth:''});
+        if(typeof wdwRenderNdWorkers === 'function') wdwRenderNdWorkers();
+      }
+    }catch(e){ console.error('wdwAddWorkerToNewDonor failed', e); }
+  };
+  document.addEventListener('click', function(ev){
+    var btn = ev.target && ev.target.closest && ev.target.closest('button');
+    if(!btn) return;
+    var txt = (btn.textContent || '').replace(/\s+/g,' ').trim();
+    var oc = btn.getAttribute('onclick') || '';
+    if(txt === '+ הוסף תורם' || txt === 'הוסף תורם' || oc.indexOf('wdwShowAddDonorPanel') !== -1){
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+      window.wdwShowAddDonorPanel();
+    }
+  }, true);
+})();
+</script>
+
 </body>
 </html>
 </html>
