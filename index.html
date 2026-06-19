@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v873CL | גישה</title>
+<title>Reports_Workers v874CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -314,7 +314,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v873CL</span>
+<span class="topbar-title">Reports_Workers v874CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -9963,8 +9963,8 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v873CL');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v873CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v874CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v874CL';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
@@ -9972,6 +9972,51 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   setInterval(function(){installMonthUiHook();transformMonthTables();finalVersion();},700);
 })();
 </script>
+
+
+<script id="v874CL-reports-toolbar-only">
+(function(){
+  function esc2(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function years2(){var y=(window.S&&S.year)||new Date().getFullYear(), a=[]; for(var i=y-3;i<=y+3;i++) a.push(i); return a;}
+  function toolbar2(prefix, entityHtml, renderFn){
+    var y=(window.S&&S.year)||new Date().getFullYear();
+    var ys=years2().map(function(v){return '<option value="'+v+'" '+(v===y?'selected':'')+'>'+v+'</option>';}).join('');
+    var ms=(window.rptMonthsHe?rptMonthsHe():['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']).map(function(n,i){var v=String(i+1).padStart(2,'0');return '<option value="'+v+'" '+(i===0?'selected':'')+'>'+n+'</option>';}).join('');
+    return '<div class="v874-rptbar">'+entityHtml+
+      '<select id="'+prefix+'-mode"><option value="annual" selected>שנתי</option><option value="month">חודשי</option></select>'+
+      '<select id="'+prefix+'-year">'+ys+'</select><select id="'+prefix+'-month">'+ms+'</select>'+
+      '<button onclick="'+renderFn+'()">תצוגה</button></div>'+
+      '<input type="hidden" id="'+prefix+'-from" value="'+y+'-01"><input type="hidden" id="'+prefix+'-to" value="'+y+'-12">'+
+      '<div id="'+prefix+'-note" class="v874-rptnote">תצוגה: שנתי '+y+'</div>';
+  }
+  function apply2(prefix){
+    var mode=document.getElementById(prefix+'-mode').value, y=document.getElementById(prefix+'-year').value, m=document.getElementById(prefix+'-month').value;
+    document.getElementById(prefix+'-from').value=y+'-'+(mode==='annual'?'01':m);
+    document.getElementById(prefix+'-to').value=y+'-'+(mode==='annual'?'12':m);
+    document.getElementById(prefix+'-note').textContent='תצוגה: '+(mode==='annual'?'שנתי '+y:'חודשי '+((window.rptMonthsHe?rptMonthsHe()[parseInt(m,10)-1]:m))+' '+y);
+  }
+  window.wdwReportDonor=function(container){
+    var donors=(S.wdw&&S.wdw.donors||[]);
+    var opts=donors.map(function(d){return '<option value="'+esc2(d.id||d.name||'')+'">'+esc2(d.name||'')+'</option>';}).join('');
+    container.innerHTML=toolbar2('rpt-donor','<select id="rpt-donor-sel">'+opts+'</select>','wdwReportDonorApply')+'<div id="rpt-donor-body"></div>';
+    window.wdwReportDonorApply();
+  };
+  window.wdwReportDonorApply=function(){apply2('rpt-donor'); if(window.wdwReportDonorRender) window.wdwReportDonorRender();};
+  window.wdwReportWorker=function(container){
+    var ws=(S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';}).filter(Boolean);
+    var opts=ws.map(function(w){return '<option>'+esc2(w)+'</option>';}).join('');
+    container.innerHTML=toolbar2('rpt-worker','<select id="rpt-worker-sel">'+opts+'</select>','wdwReportWorkerApply')+'<div id="rpt-worker-body"></div>';
+    window.wdwReportWorkerApply();
+  };
+  window.wdwReportWorkerApply=function(){apply2('rpt-worker'); if(window.wdwReportWorkerRender) window.wdwReportWorkerRender();};
+})();
+</script>
+<style id="v874CL-reports-toolbar-style">
+.v874-rptbar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin:0 0 8px;padding:12px;background:#f3f4f6;border-bottom:1px solid #d1d5db;direction:rtl}
+.v874-rptbar select{height:36px;padding:6px 12px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;font-size:13px}
+.v874-rptbar button{height:36px;padding:0 24px;background:#00897B;color:#fff;border:0;border-radius:7px;font-weight:700;cursor:pointer}
+.v874-rptnote{text-align:center;font-size:12px;color:#111827;font-weight:700;margin:4px 0 14px}
+</style>
 
 </body>
 
@@ -10249,7 +10294,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v873CL</span>
+<span class="topbar-title">Reports_Workers v874CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -21368,7 +21413,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v873CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v874CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
 
   // v866CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -21426,10 +21471,10 @@ p.assignments.push(a);return p;}
     if(typeof renderWDWInput === 'function') renderWDWInput();
   };
 
-  // v873CL: annual/monthly toggle — fixed
+  // v874CL: annual/monthly toggle — fixed
   if(!window.WDW_VIEW_MODE) window.WDW_VIEW_MODE = 'annual';
 
-  // v873CL: auto-repair empty monthlyPct — runs after data load
+  // v874CL: auto-repair empty monthlyPct — runs after data load
   function repairMonthlyPct873(){
     try {
       if(!window.S || !window.S.wdw || !window.S.wdw.donors) return;
@@ -21643,12 +21688,57 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v873CL';
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v874CL';
       document.title=document.title.replace(/v\d+(CH|CL)/,'v787CH');
     },0);
   });
 })();
 </script>
+
+<script id="v874CL-reports-toolbar-only">
+(function(){
+  function esc2(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function years2(){var y=(window.S&&S.year)||new Date().getFullYear(), a=[]; for(var i=y-3;i<=y+3;i++) a.push(i); return a;}
+  function toolbar2(prefix, entityHtml, renderFn){
+    var y=(window.S&&S.year)||new Date().getFullYear();
+    var ys=years2().map(function(v){return '<option value="'+v+'" '+(v===y?'selected':'')+'>'+v+'</option>';}).join('');
+    var ms=(window.rptMonthsHe?rptMonthsHe():['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']).map(function(n,i){var v=String(i+1).padStart(2,'0');return '<option value="'+v+'" '+(i===0?'selected':'')+'>'+n+'</option>';}).join('');
+    return '<div class="v874-rptbar">'+entityHtml+
+      '<select id="'+prefix+'-mode"><option value="annual" selected>שנתי</option><option value="month">חודשי</option></select>'+
+      '<select id="'+prefix+'-year">'+ys+'</select><select id="'+prefix+'-month">'+ms+'</select>'+
+      '<button onclick="'+renderFn+'()">תצוגה</button></div>'+
+      '<input type="hidden" id="'+prefix+'-from" value="'+y+'-01"><input type="hidden" id="'+prefix+'-to" value="'+y+'-12">'+
+      '<div id="'+prefix+'-note" class="v874-rptnote">תצוגה: שנתי '+y+'</div>';
+  }
+  function apply2(prefix){
+    var mode=document.getElementById(prefix+'-mode').value, y=document.getElementById(prefix+'-year').value, m=document.getElementById(prefix+'-month').value;
+    document.getElementById(prefix+'-from').value=y+'-'+(mode==='annual'?'01':m);
+    document.getElementById(prefix+'-to').value=y+'-'+(mode==='annual'?'12':m);
+    document.getElementById(prefix+'-note').textContent='תצוגה: '+(mode==='annual'?'שנתי '+y:'חודשי '+((window.rptMonthsHe?rptMonthsHe()[parseInt(m,10)-1]:m))+' '+y);
+  }
+  window.wdwReportDonor=function(container){
+    var donors=(S.wdw&&S.wdw.donors||[]);
+    var opts=donors.map(function(d){return '<option value="'+esc2(d.id||d.name||'')+'">'+esc2(d.name||'')+'</option>';}).join('');
+    container.innerHTML=toolbar2('rpt-donor','<select id="rpt-donor-sel">'+opts+'</select>','wdwReportDonorApply')+'<div id="rpt-donor-body"></div>';
+    window.wdwReportDonorApply();
+  };
+  window.wdwReportDonorApply=function(){apply2('rpt-donor'); if(window.wdwReportDonorRender) window.wdwReportDonorRender();};
+  window.wdwReportWorker=function(container){
+    var ws=(S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';}).filter(Boolean);
+    var opts=ws.map(function(w){return '<option>'+esc2(w)+'</option>';}).join('');
+    container.innerHTML=toolbar2('rpt-worker','<select id="rpt-worker-sel">'+opts+'</select>','wdwReportWorkerApply')+'<div id="rpt-worker-body"></div>';
+    window.wdwReportWorkerApply();
+  };
+  window.wdwReportWorkerApply=function(){apply2('rpt-worker'); if(window.wdwReportWorkerRender) window.wdwReportWorkerRender();};
+})();
+</script>
+<style id="v874CL-reports-toolbar-style">
+.v874-rptbar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin:0 0 8px;padding:12px;background:#f3f4f6;border-bottom:1px solid #d1d5db;direction:rtl}
+.v874-rptbar select{height:36px;padding:6px 12px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;font-size:13px}
+.v874-rptbar button{height:36px;padding:0 24px;background:#00897B;color:#fff;border:0;border-radius:7px;font-weight:700;cursor:pointer}
+.v874-rptnote{text-align:center;font-size:12px;color:#111827;font-weight:700;margin:4px 0 14px}
+</style>
+
 </body>
 </html>
 </html>
