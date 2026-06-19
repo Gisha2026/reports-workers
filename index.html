@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v869CL | גישה</title>
+<title>Reports_Workers v870CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -314,7 +314,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v869CL</span>
+<span class="topbar-title">Reports_Workers v870CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -9963,8 +9963,8 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v869CL');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v869CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v870CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v870CL';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
@@ -10249,7 +10249,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v869CL</span>
+<span class="topbar-title">Reports_Workers v870CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -21368,7 +21368,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v869CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v870CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
 
   // v866CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -21426,67 +21426,57 @@ p.assignments.push(a);return p;}
     if(typeof renderWDWInput === 'function') renderWDWInput();
   };
 
-  // v869CL: add annual/monthly toggle to wdwHeader, default = annual
+  // v870CL: annual/monthly toggle — clean implementation
   if(!window.WDW_VIEW_MODE) window.WDW_VIEW_MODE = 'annual';
 
-  var _origHeader = window.wdwHeader;
+  // v870CL: auto-repair empty monthlyPct for percent workers
+  (function repairMonthlyPct(){
+    try {
+      if(!window.S || !window.S.wdw || !window.S.wdw.donors) return;
+      var changed = false;
+      window.S.wdw.donors.forEach(function(d){
+        (d.workers||[]).forEach(function(w){
+          if(w.valueType === 'percent' && w.value > 0 && w.startMonth && w.endMonth){
+            var mp = w.monthlyPct || {};
+            var hasValues = Object.keys(mp).some(function(k){ return parseFloat(mp[k]) > 0; });
+            if(!hasValues){
+              var mp2 = {};
+              var sy = parseInt(w.startMonth.substring(0,4));
+              var sm = parseInt(w.startMonth.substring(5,7));
+              var ey = parseInt(w.endMonth.substring(0,4));
+              var em = parseInt(w.endMonth.substring(5,7));
+              for(var y=sy; y<=ey; y++){
+                var m0 = (y===sy?sm:1);
+                var m1 = (y===ey?em:12);
+                for(var m=m0; m<=m1; m++){
+                  mp2[y+'-'+String(m).padStart(2,'0')] = w.value;
+                }
+              }
+              w.monthlyPct = mp2;
+              changed = true;
+            }
+          }
+        });
+      });
+      if(changed){ try{ saveLocally(); saveData(); }catch(e){} }
+    } catch(e){ console.error('repairMonthlyPct error', e); }
+  })();
+
+  var _origHeader870 = window.wdwHeader;
   window.wdwHeader = function(title, sub){
-    var base = _origHeader ? _origHeader(title, sub) : '';
-    // inject view mode toggle after wdw-top
-    var toggle = '<div style="display:flex;align-items:center;gap:8px;padding:6px 0 0 0;direction:rtl">'
-      + '<b style="font-size:12px;color:#475569">תצוגה:</b>'
-      + '<button id="wdw-view-annual-btn" onclick="window.WDW_VIEW_MODE=\'annual\';window.wdwRefreshPanel&&window.wdwRefreshPanel();" style="padding:4px 12px;border-radius:5px;border:1px solid #00897B;cursor:pointer;font-size:12px;background:'+(window.WDW_VIEW_MODE==='annual'?'#00897B':'#fff')+';color:'+(window.WDW_VIEW_MODE==='annual'?'#fff':'#00897B')+'">שנתי</button>'
-      + '<button id="wdw-view-monthly-btn" onclick="window.WDW_VIEW_MODE=\'monthly\';window.wdwRefreshPanel&&window.wdwRefreshPanel();" style="padding:4px 12px;border-radius:5px;border:1px solid #00897B;cursor:pointer;font-size:12px;background:'+(window.WDW_VIEW_MODE==='monthly'?'#00897B':'#fff')+';color:'+(window.WDW_VIEW_MODE==='monthly'?'#fff':'#00897B')+'">חודשי</button>'
-      + '<span id="wdw-month-selector" style="display:'+(window.WDW_VIEW_MODE==='monthly'?'inline-flex':'none')+';align-items:center;gap:6px;font-size:12px">'
-      + '<select id="wdw-view-month-quick" style="padding:3px 6px;border-radius:4px;border:1px solid #cbd5e1"></select>'
-      + '<button onclick="window.wdwApplyMonthView&&window.wdwApplyMonthView()" style="padding:3px 10px;border-radius:4px;border:1px solid #00897B;background:#00897B;color:#fff;font-size:12px;cursor:pointer">הצג</button>'
-      + '</span>'
+    var base = _origHeader870 ? _origHeader870(title, sub) : '';
+    var isAnnual = window.WDW_VIEW_MODE !== 'monthly';
+    // Replace existing controls block with enhanced version that includes annual toggle
+    var annualBtn = '<button onclick="window.WDW_VIEW_MODE=\'annual\';if(typeof renderAll===\'function\')renderAll();else if(typeof refreshPanel===\'function\')refreshPanel();" style="padding:6px 16px;border-radius:5px;border:none;cursor:pointer;font-size:13px;background:'+(isAnnual?'#00897B':'#f0f0f0')+';color:'+(isAnnual?'#fff':'#333')+'">שנתי</button>';
+    var monthlyBtn = '<button onclick="window.WDW_VIEW_MODE=\'monthly\';if(typeof renderAll===\'function\')renderAll();else if(typeof refreshPanel===\'function\')refreshPanel();" style="padding:6px 16px;border-radius:5px;border:none;cursor:pointer;font-size:13px;background:'+(!isAnnual?'#00897B':'#f0f0f0')+';color:'+(!isAnnual?'#fff':'#333')+'">חודשי</button>';
+    var monthControls = isAnnual ? '' : '<div><label>חודש</label><select id="wdw-view-month" onchange="wdwApplyView()"></select></div><div><label>שנה</label><select id="wdw-view-year" onchange="wdwApplyView()"></select></div>';
+    var newControls = '<div class="wdw-view-controls wdw-v219-controls" style="gap:6px">'
+      + annualBtn + monthlyBtn
+      + (isAnnual ? '' : '<div style="width:1px;background:#e5e7eb;margin:0 4px"></div>')
+      + monthControls
+      + (isAnnual ? '' : '<button class="wdw-show-btn" onclick="wdwApplyView()">הצג</button><button class="wdw-today-btn-225" onclick="wdwToday225&&wdwToday225()">היום</button>')
       + '</div>';
-    // inject after closing wdw-top div
-    return base.replace('</div><div class="wdw-current-month-label">', toggle+'</div><div class="wdw-current-month-label">');
-  };
-
-  // populate month selector and handle apply
-  window.wdwApplyMonthView = function(){
-    var sel = document.getElementById('wdw-view-month-quick');
-    if(sel && sel.value && window.S && window.S.wdw){
-      window.S.wdw.viewMonth = sel.value;
-      window.wdwRefreshPanel && window.wdwRefreshPanel();
-    }
-  };
-
-  // populate month dropdown when shown
-  var _origRefresh = window.refreshPanel;
-  window.wdwRefreshPanel = function(){
-    // populate month selector
-    setTimeout(function(){
-      var sel = document.getElementById('wdw-view-month-quick');
-      if(sel && !sel.options.length){
-        var year = (window.S && window.S.year) || new Date().getFullYear();
-        var HEB = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-        for(var m=0;m<12;m++){
-          var key = year+'-'+String(m+1).padStart(2,'0');
-          var opt = document.createElement('option');
-          opt.value = key;
-          opt.textContent = HEB[m]+' '+year;
-          sel.appendChild(opt);
-        }
-        var cur = (window.S && window.S.wdw && window.S.wdw.viewMonth) || '';
-        if(cur) sel.value = cur;
-      }
-      // show/hide month selector
-      var ms = document.getElementById('wdw-month-selector');
-      if(ms) ms.style.display = window.WDW_VIEW_MODE==='monthly'?'inline-flex':'none';
-    }, 50);
-    // call active panel render
-    var panels = ['worker','donor','org'];
-    for(var i=0;i<panels.length;i++){
-      var el = document.getElementById('wdw-'+panels[i]);
-      if(el && el.style.display !== 'none'){
-        var fn = window['renderWDW'+panels[i].charAt(0).toUpperCase()+panels[i].slice(1)];
-        if(typeof fn === 'function'){ fn(); return; }
-      }
-    }
+    return base.replace(/<div class="wdw-view-controls[^"]*">.*?<\/div>(?=<div class="wdw-current-month-label)/, newControls);
   };
 })();
 </script>
@@ -21607,7 +21597,7 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v869CL';
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v870CL';
       document.title=document.title.replace(/v\d+(CH|CL)/,'v787CH');
     },0);
   });
