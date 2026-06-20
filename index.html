@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v888CL | גישה</title>
+<title>Reports_Workers v889CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -314,7 +314,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v888CL</span>
+<span class="topbar-title">Reports_Workers v889CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -9985,8 +9985,8 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v888CL');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v888CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v889CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v889CL';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
@@ -10271,7 +10271,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v888CL</span>
+<span class="topbar-title">Reports_Workers v889CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -21390,7 +21390,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v888CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v889CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
 
   // v866CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -21554,47 +21554,7 @@ p.assignments.push(a);return p;}
   setTimeout(cleanDeletedWorkers, 1500);
   setTimeout(cleanDeletedWorkers, 4000);
 
-  function repairMonthlyPct879(){
-    try {
-      if(!window.S || !window.S.wdw || !window.S.wdw.donors || !window.S.wdw.donors.length) return;
-      var changed = false;
-      window.S.wdw.donors.forEach(function(d){
-        (d.workers||[]).forEach(function(w){
-          if(w.valueType === 'percent' && w.value > 0 && w.startMonth && w.endMonth){
-            var mp = w.monthlyPct || {};
-            // Check for any month in the worker's period that has a missing or zero value
-            var sy = parseInt(w.startMonth.substring(0,4));
-            var sm = parseInt(w.startMonth.substring(5,7));
-            var ey = parseInt(w.endMonth.substring(0,4));
-            var em = parseInt(w.endMonth.substring(5,7));
-            var needsFill = false;
-            outer: for(var y=sy; y<=ey; y++){
-              var m0=(y===sy?sm:1), m1=(y===ey?em:12);
-              for(var m=m0; m<=m1; m++){
-                var key=y+'-'+String(m).padStart(2,'0');
-                if(!mp[key] || parseFloat(mp[key])===0){ needsFill=true; break outer; }
-              }
-            }
-            if(needsFill){
-              var mp2 = {};
-              for(var y2=sy; y2<=ey; y2++){
-                var m0b=(y2===sy?sm:1), m1b=(y2===ey?em:12);
-                for(var m2=m0b; m2<=m1b; m2++){
-                  mp2[y2+'-'+String(m2).padStart(2,'0')] = w.value;
-                }
-              }
-              w.monthlyPct = mp2;
-              changed = true;
-            }
-          }
-        });
-      });
-      if(changed){ try{ saveLocally(); saveData(); }catch(e){} }
-    } catch(e){}
-  }
-  setTimeout(repairMonthlyPct879, 500);
-  setTimeout(repairMonthlyPct879, 2000);
-  setTimeout(repairMonthlyPct879, 5000);
+  // repairMonthlyPct removed v889CL
 
   };
 
@@ -21824,7 +21784,7 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v888CL';
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v889CL';
       document.title=document.title.replace(/v\d+(CH|CL)/,'v787CH');
     },0);
   });
