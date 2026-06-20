@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v924CL | גישה</title>
+<title>Reports_Workers v925CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -335,7 +335,7 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v924CL</span>
+<span class="topbar-title">Reports_Workers v925CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -10026,8 +10026,8 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v924CL');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v924CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v925CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v925CL';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
@@ -10051,6 +10051,82 @@ window.wdwCheckEnded = function(){};
     if(typeof renderWDWOrg==='function') renderWDWOrg();
   };
 </script><script></script>
+
+<script>
+// v925: final overrides
+
+// Fix switchWDW to render monthlycost tab
+(function(){
+  var _origSwitch = window.switchWDW;
+  window.switchWDW = function(panel){
+    _origSwitch && _origSwitch(panel);
+    if(panel==='monthlycost' && typeof window.renderWDWMonthlyCost==='function'){
+      window.renderWDWMonthlyCost();
+    }
+  };
+})();
+
+// Fix renderWDWInput to group donors
+(function(){
+  var _origInput = window.renderWDWInput;
+  window.renderWDWInput = function(){
+    _origInput && _origInput.apply(this, arguments);
+    // After rendering, regroup donors
+    setTimeout(function(){
+      var mgmtDiv = document.getElementById('wdw-input');
+      if(!mgmtDiv) return;
+      if(!window.S||!window.S.wdw||!window.S.wdw.donors) return;
+      var donors = window.S.wdw.donors;
+      var active = donors.filter(function(d){ return d.status==='active'; });
+      var pending = donors.filter(function(d){ return d.status==='pending'||d.status==='review'; });
+      var ended = donors.filter(function(d){ 
+        var today = new Date().toISOString().substring(0,7);
+        return d.status==='ended'||d.status==='inactive'||(d.endDate&&d.endDate<today);
+      });
+      // Find the donor list container
+      var rows = mgmtDiv.querySelectorAll('.wdw-mgmt-row');
+      if(!rows.length) return;
+      // Build a map of donor id to row element
+      var rowMap = {};
+      rows.forEach(function(row){
+        // Find donor id from edit button onclick
+        var btn = row.querySelector('button[onclick*="wdwEditDonor"]');
+        if(!btn) return;
+        var match = btn.getAttribute('onclick').match(/'([^']+)'/);
+        if(match) rowMap[match[1]] = row;
+      });
+      // Find container that holds the rows
+      var container = rows[0].parentNode;
+      // Clear and rebuild with headers
+      var frag = document.createDocumentFragment();
+      function addGroup(group, label){
+        if(!group.length) return;
+        var hdr = document.createElement('div');
+        hdr.style.cssText = 'font-size:13px;font-weight:700;color:#475569;padding:10px 4px 6px;border-bottom:2px solid #e2e8f0;margin-bottom:8px;margin-top:18px;direction:rtl';
+        hdr.textContent = label;
+        frag.appendChild(hdr);
+        group.forEach(function(d){
+          if(rowMap[d.id]) frag.appendChild(rowMap[d.id]);
+        });
+      }
+      addGroup(active, 'תורמים פעילים');
+      addGroup(pending, 'תורמים ממתינים');
+      addGroup(ended, 'תורמים שהסתיימו / לא פעילים');
+      // Also append any rows not matched
+      rows.forEach(function(row){ frag.appendChild(row); });
+      // Replace container children (keep non-row elements like add button, form)
+      var nonRows = [];
+      Array.from(container.childNodes).forEach(function(node){
+        if(!node.classList||!node.classList.contains('wdw-mgmt-row')) nonRows.push(node);
+      });
+      // Remove all children and re-add
+      while(container.firstChild) container.removeChild(container.firstChild);
+      nonRows.forEach(function(n){ container.appendChild(n); });
+      container.appendChild(frag);
+    }, 100);
+  };
+})();
+</script>
 </body>
 
 <html dir="rtl" lang="he">
@@ -10327,7 +10403,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v924CL</span>
+<span class="topbar-title">Reports_Workers v925CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -21606,7 +21682,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v924CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v925CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
 
   // v866CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -22036,7 +22112,7 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v924CL';
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v925CL';
       document.title=document.title.replace(/v\d+(CH|CL)/,'v787CH');
     },0);
   });
