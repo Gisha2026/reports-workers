@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v903CL | גישה</title>
+<title>Reports_Workers v906CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -314,7 +314,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v903CL</span>
+<span class="topbar-title">Reports_Workers v906CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -1950,8 +1950,10 @@ function wdwWorkerTotalPct(wname, month){
     (d.workers||[]).forEach(w=>{
       if(w.name!==wname) return;
       if(month){
-        if(w.startMonth&&month<w.startMonth) return;
-        if(w.endMonth&&month>w.endMonth) return;
+        var _ws1=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth;
+        var _we1=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth;
+        if(_ws1&&month<_ws1) return;
+        if(_we1&&month>_we1) return;
       }
       if(w.valueType==='percent'){
         total+=parseFloat(w.value)||0;
@@ -4349,7 +4351,7 @@ function sendEmail(){
   function mLabel(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
   function dateRangeLabel(a,b){return mLabel(a)+'–'+mLabel(b);}
   function periodKind(d){ if(!d||!d.startDate||!d.endDate) return 'לא הוגדר'; var sy=String(d.startDate).slice(0,4), ey=String(d.endDate).slice(0,4); var sm=String(d.startDate).slice(5,7), em=String(d.endDate).slice(5,7); return (sy===ey && sm==='01' && em==='12') ? 'שנה קלנדרית' : 'חוצה שנים/תקופה'; }
-  function inSelectedMonth(w,month){ if(!w||w.active===false) return false; if(!isOfficialWorker(w.name)) return false; if(month){ if(w.startMonth&&month<w.startMonth) return false; if(w.endMonth&&month>w.endMonth) return false; } return true; }
+  function inSelectedMonth(w,month){ if(!w||w.active===false) return false; if(!isOfficialWorker(w.name)) return false; if(month){ var _ws2=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we2=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws2&&month<_ws2) return false; if(_we2&&month>_we2) return false; } return true; }
   function activeWorkerRowsForDonor(d,month){ return (d.workers||[]).filter(function(w){return inSelectedMonth(w,month);}); }
 
 // ===== v533CL: isAmountFunding - מוגדרת לפני basePct =====
@@ -5713,7 +5715,7 @@ window.wdwReportRoleRender = function(){
   function esc209(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
   function month209(){return (typeof wdwMonthKey==='function')?wdwMonthKey():((S.year||2026)+'-'+String((typeof curMI==='number'?curMI:0)+1).padStart(2,'0'));}
   function fmtM209(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
-  function isActive209(w,m){if(typeof wdwIsActiveInMonth==='function') return wdwIsActiveInMonth(w,m); if(!w||w.active===false)return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}
+  function isActive209(w,m){if(typeof wdwIsActiveInMonth==='function') return wdwIsActiveInMonth(w,m); if(!w||w.active===false)return false; if(m){var _ws6=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we6=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws6&&m<_ws6)return false;if(_we6&&m>_we6)return false;} return true;}
   function replPct209(w,m){if(typeof wdwReplacePct==='function') return wdwReplacePct(w,m); let n=parseFloat(w&&w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}
   function typeChip209(d){if(typeof wdwDonorTypeChip==='function')return wdwDonorTypeChip(d);return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
   function statusLabel209(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
@@ -5886,7 +5888,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function fmtM217(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
   function type217(d){return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
   function status217(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
-  function isActive217(w,m){try{return wdwIsActiveInMonth(w,m);}catch(e){ if(!w||w.active===false)return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}}
+  function isActive217(w,m){try{return wdwIsActiveInMonth(w,m);}catch(e){ if(!w||w.active===false)return false; if(m){var _ws7=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we7=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws7&&m<_ws7)return false;if(_we7&&m>_we7)return false;} return true;}}
   function base217(w,m){try{return wdwBasePct(w,m);}catch(e){return (w&&w.valueType==='percent'&&isActive217(w,m))?(parseFloat(w.value)||0):0;}}
   function repl217(w,m){try{return wdwReplacePct(w,m);}catch(e){var n=0;if(w&&w.replaces&&isActive217(w,m)) n+=parseFloat(w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}}
   function totalRow217(w,m){return Math.round((base217(w,m)+repl217(w,m))*10)/10;}
@@ -6638,7 +6640,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function donor(id){return donors().find(function(d){return String(d.id)===String(id);});}
   function names(){try{return (typeof wdwWorkersList==='function'?wdwWorkersList():[]).filter(Boolean);}catch(e){return (S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';}).filter(Boolean);}}
   function workerOptions(){return names().map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join('');}
-  function active(w,m){if(!w||w.active===false)return false;if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;return true;}
+  function active(w,m){if(!w||w.active===false)return false;var _ws8=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we8=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws8&&m<_ws8)return false;if(_we8&&m>_we8)return false;return true;}
   function base(w,m){if(!active(w,m))return 0;if(w.monthlyPct&&w.monthlyPct[m]!=null&&w.monthlyPct[m]!==''&&!isNaN(parseFloat(w.monthlyPct[m])))return n(w.monthlyPct[m]);if(w.valueType==='percent')return n(w.value); if(w.totalPeriodAmount){var _name=(w.name||'').trim();var _costs=(typeof S!=='undefined'&&S.wdw&&S.wdw.employerCosts)||{};var _cost=parseFloat(_costs[_name]||_costs[Object.keys(_costs).find(function(k){return k.trim()===_name;})||'']||0);if(_cost>0){var _total=parseFloat(w.totalPeriodAmount)||0;var _wSt=String(w.startMonth||'').substring(0,7);var _wEn=String(w.endMonth||'').substring(0,7);var _months=0;if(_wSt&&_wEn&&_wSt<=_wEn){var _sy=parseInt(_wSt.substring(0,4)),_sm=parseInt(_wSt.substring(5,7));var _ey=parseInt(_wEn.substring(0,4)),_em=parseInt(_wEn.substring(5,7));_months=(_ey-_sy)*12+(_em-_sm)+1;}if(_months>0)return Math.round((_total/_months/_cost)*100*10)/10;}}return 0;}
   function replParts(w,m){var out=[];if(!active(w,m))return out;function ok(st,en){if(st&&m<st)return false;if(en&&m>en)return false;return true;}var rs=w.replacesStart||w.replaceStartMonth||w.startMonth, re=w.replacesEnd||w.replaceEndMonth||w.endMonth;if((w.replaces||w.vacantName||w.replacesPct||w.replacesAmt)&&ok(rs,re)){out.push({who:w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):(w.replaces||w.vacantName||'משרה פנויה'),pct:n(w.replacesPct),amt:n(w.replacesAmt)});} (w.extraReplaces||[]).forEach(function(r){if(ok(r.startMonth||w.startMonth,r.endMonth||w.endMonth)){out.push({who:r.replaces==='__vacant__'?(r.vacantName||'משרה פנויה'):(r.replaces||r.vacantName||'משרה פנויה'),pct:n(r.pct),amt:n(r.amt)});}});return out;}
   function repl(w,m){return replParts(w,m).reduce(function(s,r){return s+n(r.pct);},0);}
@@ -9593,7 +9595,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   }
   function monthlyCost(name){return annualCost(name)/12;}
   function activeDonor(d,m){if(!d||d.status==='inactive'||(window.WDW_STATUS&&d.status===window.WDW_STATUS.INACTIVE))return false;var st=ym(d.startDate||d.startMonth),en=ym(d.endDate||d.endMonth);if(st&&m<st)return false;if(en&&m>en)return false;return true;}
-  function rowActive(w,d,m){if(!w||w.active===false||!activeDonor(d,m))return false;var st=ym(w.startMonth||w.startDate)||ym(d&&d.startDate||d&&d.startMonth),en=ym(w.endMonth||w.endDate)||ym(d&&d.endDate||d&&d.endMonth);if(st&&m<st)return false;if(en&&m>en)return false;if(Array.isArray(w.blockedMonths)&&w.blockedMonths.indexOf(m)!==-1)return false;return true;}
+  function rowActive(w,d,m){if(!w||w.active===false||!activeDonor(d,m))return false;var _rs9=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):(w.startMonth||w.startDate||''); var _re9=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):(w.endMonth||w.endDate||''); var st=ym(_rs9)||ym(d&&d.startDate||d&&d.startMonth),en=ym(_re9)||ym(d&&d.endDate||d&&d.endMonth);if(st&&m<st)return false;if(en&&m>en)return false;if(Array.isArray(w.blockedMonths)&&w.blockedMonths.indexOf(m)!==-1)return false;return true;}
   function rowAmount(w,d,m){
     if(window.wdwCH768&&typeof window.wdwCH768.rowAmount==='function'){try{return n(window.wdwCH768.rowAmount(w,d,m));}catch(e){}}
     if(window.wdwMoneyEngine772&&typeof window.wdwMoneyEngine772.monthlyAmount==='function'&&w&&w.name){
@@ -9986,8 +9988,8 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v903CL');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v903CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v906CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v906CL';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
@@ -10276,7 +10278,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v903CL</span>
+<span class="topbar-title">Reports_Workers v906CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -11811,8 +11813,10 @@ function wdwWorkerTotalPct(wname, month){
     (d.workers||[]).forEach(w=>{
       if(w.name!==wname) return;
       if(month){
-        if(w.startMonth&&month<w.startMonth) return;
-        if(w.endMonth&&month>w.endMonth) return;
+        var _ws1=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth;
+        var _we1=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth;
+        if(_ws1&&month<_ws1) return;
+        if(_we1&&month>_we1) return;
       }
       if(w.valueType==='percent'){
         total+=parseFloat(w.value)||0;
@@ -14689,7 +14693,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
   window.wdwMonthKey=function(){return (S.year||2026)+'-'+String((typeof curMI==='number'?curMI:0)+1).padStart(2,'0');};
   window.wdwFmtM=function(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}};
-  window.wdwIsActiveInMonth=function(w,month){if(!w) return false; if(w.active===false) return false; if(month){ if(w.startMonth&&month<w.startMonth) return false; if(w.endMonth&&month>w.endMonth) return false; } return true;};
+  window.wdwIsActiveInMonth=function(w,month){if(!w) return false; if(w.active===false) return false; if(month){ var _ws4=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we4=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws4&&month<_ws4) return false; if(_we4&&month>_we4) return false; } return true;};
   window.wdwBasePct=function(w,month){ if(!wdwIsActiveInMonth(w,month)) return 0; if(w&&w.monthlyPct&&month&&w.monthlyPct[month]!=null&&w.monthlyPct[month]!=='') return parseFloat(w.monthlyPct[month])||0; if(w&&w.valueType==='percent')return parseFloat(w.value)||0; if(w&&w.totalPeriodAmount){var _name=(w.name||'').trim();var _costs=(typeof S!=='undefined'&&S.wdw&&S.wdw.employerCosts)||{};var _cost=parseFloat(_costs[_name]||_costs[Object.keys(_costs).find(function(k){return k.trim()===_name;})||'']||0);if(_cost>0){var _total=parseFloat(w.totalPeriodAmount)||0;var _wSt=String(w.startMonth||'').substring(0,7);var _wEn=String(w.endMonth||'').substring(0,7);var _months=0;if(_wSt&&_wEn&&_wSt<=_wEn){var _sy=parseInt(_wSt.substring(0,4)),_sm=parseInt(_wSt.substring(5,7));var _ey=parseInt(_wEn.substring(0,4)),_em=parseInt(_wEn.substring(5,7));_months=(_ey-_sy)*12+(_em-_sm)+1;}if(_months>0)return Math.round((_total/_months/_cost)*100*10)/10;}}return 0; };
   window.wdwReplacePct=function(w,month){ if(!wdwIsActiveInMonth(w,month)) return 0; let n=parseFloat(w&&w.replacesPct)||0; (w&&w.extraReplaces||[]).forEach(r=>{n+=parseFloat(r.pct)||0;}); return n; };
   window.wdwTotalRowPct=function(w,month){return Math.round((wdwBasePct(w,month)+wdwReplacePct(w,month))*10)/10;};
@@ -14948,7 +14952,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   function mLabel(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
   function dateRangeLabel(a,b){return mLabel(a)+'–'+mLabel(b);}
   function periodKind(d){ if(!d||!d.startDate||!d.endDate) return 'לא הוגדר'; var sy=String(d.startDate).slice(0,4), ey=String(d.endDate).slice(0,4); var sm=String(d.startDate).slice(5,7), em=String(d.endDate).slice(5,7); return (sy===ey && sm==='01' && em==='12') ? 'שנה קלנדרית' : 'חוצה שנים/תקופה'; }
-  function inSelectedMonth(w,month){ if(!w||w.active===false) return false; if(!isOfficialWorker(w.name)) return false; if(month){ if(w.startMonth&&month<w.startMonth) return false; if(w.endMonth&&month>w.endMonth) return false; } return true; }
+  function inSelectedMonth(w,month){ if(!w||w.active===false) return false; if(!isOfficialWorker(w.name)) return false; if(month){ var _ws2=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we2=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws2&&month<_ws2) return false; if(_we2&&month>_we2) return false; } return true; }
   function activeWorkerRowsForDonor(d,month){ return (d.workers||[]).filter(function(w){return inSelectedMonth(w,month);}); }
   function basePct(w,month){ if(!inSelectedMonth(w,month)) return 0; if(w.monthlyPct&&month&&w.monthlyPct[month]!=null&&w.monthlyPct[month]!=='') return parseFloat(w.monthlyPct[month])||0; if(w.valueType==='percent')return parseFloat(w.value)||0; var _amtPct=0;if(isAmountFunding(w)){var _name=(w.name||'').trim();var _costs=(typeof S!=='undefined'&&S.wdw&&S.wdw.employerCosts)||{};var _cost=parseFloat(_costs[_name]||_costs[Object.keys(_costs).find(function(k){return k.trim()===_name;})||'']||0);if(_cost>0){var _total=parseFloat(w.totalPeriodAmount)||parseFloat(w.value)||0;var _wSt=String(w.startMonth||w.startDate||'').substring(0,7);var _wEn=String(w.endMonth||w.endDate||'').substring(0,7);var _months=0;if(_wSt&&_wEn&&_wSt<=_wEn){var _sy=parseInt(_wSt.substring(0,4)),_sm=parseInt(_wSt.substring(5,7));var _ey=parseInt(_wEn.substring(0,4)),_em=parseInt(_wEn.substring(5,7));_months=(_ey-_sy)*12+(_em-_sm)+1;}if(_months>0)_amtPct=Math.round((_total/_months/_cost)*100*10)/10;}} return _amtPct; }
   function replPct(w,month){ if(!inSelectedMonth(w,month)) return 0; var n=parseFloat(w.replacesPct)||0; (w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;}); return n; }
@@ -15405,7 +15409,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   function esc209(x){return String(x==null?'':x).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
   function month209(){return (typeof wdwMonthKey==='function')?wdwMonthKey():((S.year||2026)+'-'+String((typeof curMI==='number'?curMI:0)+1).padStart(2,'0'));}
   function fmtM209(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
-  function isActive209(w,m){if(typeof wdwIsActiveInMonth==='function') return wdwIsActiveInMonth(w,m); if(!w||w.active===false)return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}
+  function isActive209(w,m){if(typeof wdwIsActiveInMonth==='function') return wdwIsActiveInMonth(w,m); if(!w||w.active===false)return false; if(m){var _ws6=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we6=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws6&&m<_ws6)return false;if(_we6&&m>_we6)return false;} return true;}
   function replPct209(w,m){if(typeof wdwReplacePct==='function') return wdwReplacePct(w,m); let n=parseFloat(w&&w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}
   function typeChip209(d){if(typeof wdwDonorTypeChip==='function')return wdwDonorTypeChip(d);return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
   function statusLabel209(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
@@ -15578,7 +15582,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function fmtM217(m){try{return m?fmtMonth(m):'—';}catch(e){return m||'—';}}
   function type217(d){return '<span class="wdw-chip '+(d&&d.type==='core'?'core':'budget')+'">'+(d&&d.type==='core'?'CORE':'BUDGET')+'</span>';}
   function status217(d){try{return wdwStatusLabel(d.status,d.endDate);}catch(e){return d&&d.status||'פעיל';}}
-  function isActive217(w,m){try{return wdwIsActiveInMonth(w,m);}catch(e){ if(!w||w.active===false)return false; if(m){if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;} return true;}}
+  function isActive217(w,m){try{return wdwIsActiveInMonth(w,m);}catch(e){ if(!w||w.active===false)return false; if(m){var _ws7=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we7=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws7&&m<_ws7)return false;if(_we7&&m>_we7)return false;} return true;}}
   function base217(w,m){try{return wdwBasePct(w,m);}catch(e){return (w&&w.valueType==='percent'&&isActive217(w,m))?(parseFloat(w.value)||0):0;}}
   function repl217(w,m){try{return wdwReplacePct(w,m);}catch(e){var n=0;if(w&&w.replaces&&isActive217(w,m)) n+=parseFloat(w.replacesPct)||0;(w&&w.extraReplaces||[]).forEach(function(r){n+=parseFloat(r.pct)||0;});return Math.round(n*10)/10;}}
   function totalRow217(w,m){return Math.round((base217(w,m)+repl217(w,m))*10)/10;}
@@ -16331,7 +16335,7 @@ window.wdwResetNewWorkerForm = function(did) {
   function donor(id){return donors().find(function(d){return String(d.id)===String(id);});}
   function names(){try{return (typeof wdwWorkersList==='function'?wdwWorkersList():[]).filter(Boolean);}catch(e){return (S.workers||[]).map(function(w){return typeof w==='string'?w:(w&&w.name)||'';}).filter(Boolean);}}
   function workerOptions(){return names().map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join('');}
-  function active(w,m){if(!w||w.active===false)return false;if(w.startMonth&&m<w.startMonth)return false;if(w.endMonth&&m>w.endMonth)return false;return true;}
+  function active(w,m){if(!w||w.active===false)return false;var _ws8=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):w.startMonth; var _we8=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):w.endMonth; if(_ws8&&m<_ws8)return false;if(_we8&&m>_we8)return false;return true;}
   function base(w,m){if(!active(w,m))return 0;if(w.monthlyPct&&w.monthlyPct[m]!=null&&w.monthlyPct[m]!==''&&!isNaN(parseFloat(w.monthlyPct[m])))return n(w.monthlyPct[m]);if(w.valueType==='percent')return n(w.value); if(w.totalPeriodAmount){var _name=(w.name||'').trim();var _costs=(typeof S!=='undefined'&&S.wdw&&S.wdw.employerCosts)||{};var _cost=parseFloat(_costs[_name]||_costs[Object.keys(_costs).find(function(k){return k.trim()===_name;})||'']||0);if(_cost>0){var _total=parseFloat(w.totalPeriodAmount)||0;var _wSt=String(w.startMonth||'').substring(0,7);var _wEn=String(w.endMonth||'').substring(0,7);var _months=0;if(_wSt&&_wEn&&_wSt<=_wEn){var _sy=parseInt(_wSt.substring(0,4)),_sm=parseInt(_wSt.substring(5,7));var _ey=parseInt(_wEn.substring(0,4)),_em=parseInt(_wEn.substring(5,7));_months=(_ey-_sy)*12+(_em-_sm)+1;}if(_months>0)return Math.round((_total/_months/_cost)*100*10)/10;}}return 0;}
   function replParts(w,m){var out=[];if(!active(w,m))return out;function ok(st,en){if(st&&m<st)return false;if(en&&m>en)return false;return true;}var rs=w.replacesStart||w.replaceStartMonth||w.startMonth, re=w.replacesEnd||w.replaceEndMonth||w.endMonth;if((w.replaces||w.vacantName||w.replacesPct||w.replacesAmt)&&ok(rs,re)){out.push({who:w.replaces==='__vacant__'?(w.vacantName||'משרה פנויה'):(w.replaces||w.vacantName||'משרה פנויה'),pct:n(w.replacesPct),amt:n(w.replacesAmt)});} (w.extraReplaces||[]).forEach(function(r){if(ok(r.startMonth||w.startMonth,r.endMonth||w.endMonth)){out.push({who:r.replaces==='__vacant__'?(r.vacantName||'משרה פנויה'):(r.replaces||r.vacantName||'משרה פנויה'),pct:n(r.pct),amt:n(r.amt)});}});return out;}
   function repl(w,m){return replParts(w,m).reduce(function(s,r){return s+n(r.pct);},0);}
@@ -20677,8 +20681,9 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
     return true;
   }
   function rowPeriod(w,d){
-    var st=ym(w&&(w.startMonth||w.startDate)) || ym(d&&(d.startDate||d.startMonth));
-    var en=ym(w&&(w.endMonth||w.endDate)) || ym(d&&(d.endDate||d.endMonth));
+    var _rs10=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):(w&&(w.startMonth||w.startDate)||''); var _re10=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):(w&&(w.endMonth||w.endDate)||'');
+    var st=ym(_rs10) || ym(d&&(d.startDate||d.startMonth));
+    var en=ym(_re10) || ym(d&&(d.endDate||d.endMonth));
     return {start:st,end:en,months:monthRange(st,en)};
   }
   function rowActiveInMonth(w,d,m){
@@ -21242,7 +21247,7 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
   }
   function monthlyCost(name){return annualCost(name)/12;}
   function activeDonor(d,m){if(!d||d.status==='inactive'||(window.WDW_STATUS&&d.status===window.WDW_STATUS.INACTIVE))return false;var st=ym(d.startDate||d.startMonth),en=ym(d.endDate||d.endMonth);if(st&&m<st)return false;if(en&&m>en)return false;return true;}
-  function rowActive(w,d,m){if(!w||w.active===false||!activeDonor(d,m))return false;var st=ym(w.startMonth||w.startDate)||ym(d&&d.startDate||d&&d.startMonth),en=ym(w.endMonth||w.endDate)||ym(d&&d.endDate||d&&d.endMonth);if(st&&m<st)return false;if(en&&m>en)return false;if(Array.isArray(w.blockedMonths)&&w.blockedMonths.indexOf(m)!==-1)return false;return true;}
+  function rowActive(w,d,m){if(!w||w.active===false||!activeDonor(d,m))return false;var _rs9=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'start'):(w.startMonth||w.startDate||''); var _re9=window._getRealWorkerMonth?window._getRealWorkerMonth(w,'end'):(w.endMonth||w.endDate||''); var st=ym(_rs9)||ym(d&&d.startDate||d&&d.startMonth),en=ym(_re9)||ym(d&&d.endDate||d&&d.endMonth);if(st&&m<st)return false;if(en&&m>en)return false;if(Array.isArray(w.blockedMonths)&&w.blockedMonths.indexOf(m)!==-1)return false;return true;}
   function rowAmount(w,d,m){
     if(window.wdwCH768&&typeof window.wdwCH768.rowAmount==='function'){try{return n(window.wdwCH768.rowAmount(w,d,m));}catch(e){}}
     if(window.wdwMoneyEngine772&&typeof window.wdwMoneyEngine772.monthlyAmount==='function'&&w&&w.name){
@@ -21415,7 +21420,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v903CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v906CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
 
   // v866CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -21854,7 +21859,7 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v903CL';
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v906CL';
       document.title=document.title.replace(/v\d+(CH|CL)/,'v787CH');
     },0);
   });
@@ -21911,7 +21916,25 @@ p.assignments.push(a);return p;}
   window.renderWDWDonor  = wrap(_origDonor);
 
   // Also fix worker annual pct — read directly from S.wdw.donors monthlyPct
-  window.wdwWorkerTotalPct = function(name, month){
+  
+  window._getRealWorkerMonth = function(w, type){
+    if(!w) return '';
+    var base = type==='start' ? (w.startMonth||'') : (w.endMonth||'');
+    if(!window.S||!window.S.wdw||!window.S.wdw.donors) return base;
+    var real = base;
+    window.S.wdw.donors.forEach(function(d){
+      (d.fundedPositions||[]).forEach(function(p){
+        if(p.positionTitle !== w.roleInDonor) return;
+        (p.assignments||[]).forEach(function(a){
+          if(!a||a.workerName!==w.name) return;
+          if(type==='start'&&a.startMonth) real=a.startMonth;
+          if(type==='end'&&a.endMonth) real=a.endMonth;
+        });
+      });
+    });
+    return real;
+  };
+window.wdwWorkerTotalPct = function(name, month){
     if(!window.S||!window.S.wdw||!window.S.wdw.donors) return 0;
     var isAnnual = (window.WDW_VIEW_MODE === 'annual');
     var viewMonth = (window.S.wdw&&window.S.wdw.viewMonth)||'';
