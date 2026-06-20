@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v880CL | גישה</title>
+<title>Reports_Workers v881CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -314,7 +314,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v880CL</span>
+<span class="topbar-title">Reports_Workers v881CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -9963,8 +9963,8 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v880CL');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v880CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v881CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v881CL';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
@@ -10249,7 +10249,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v880CL</span>
+<span class="topbar-title">Reports_Workers v881CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -21368,7 +21368,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v880CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v881CL';if(document.title.indexOf('v783CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v783CH');},0);});
 
   // v866CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -21700,7 +21700,7 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v880CL';
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v881CL';
       document.title=document.title.replace(/v\d+(CH|CL)/,'v787CH');
     },0);
   });
@@ -21708,34 +21708,92 @@ p.assignments.push(a);return p;}
 </script>
 
 <script>
-// v880CL: wrap renderWDWWorker and renderWDWDonor to use correct wdwHeader and viewMonth
+// v881CL: final fix for wdwHeader and worker annual pct
 (function(){
+
+  // Define our wdwHeader inline — not by reference
+  function myHeader(title, sub){
+    var isAnnual = window.WDW_VIEW_MODE !== 'monthly';
+    var HEB_M = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+    var viewMonth = (window.S&&window.S.wdw&&window.S.wdw.viewMonth)||'';
+    var curYear = viewMonth ? parseInt(viewMonth.substring(0,4)) : ((window.S&&window.S.year)||2026);
+    var curMonthIdx = viewMonth ? parseInt(viewMonth.substring(5,7))-1 : new Date().getMonth();
+    var curLabel = isAnnual ? ('שנת '+curYear) : (HEB_M[curMonthIdx]+' '+curYear);
+    var monthOpts = '';
+    for(var i=0;i<12;i++) monthOpts += '<option value="'+i+'" '+(i===curMonthIdx?'selected':'')+'>'+HEB_M[i]+'</option>';
+    var yearOpts = '';
+    for(var y=2024;y<=2030;y++) yearOpts += '<option value="'+y+'" '+(y===curYear?'selected':'')+'>'+y+'</option>';
+    var btn = 'padding:7px 20px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:600;';
+    var sel = 'padding:6px 10px;border-radius:6px;border:1px solid #cbd5e1;font-size:13px;';
+    return '<div class="wdw-shell">'
+      +'<div class="wdw-top"><div><div class="wdw-title">'+title+'</div><div class="wdw-sub">'+sub+'</div></div></div>'
+      +'<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 0 6px;direction:rtl;flex-wrap:wrap">'
+        +'<button onclick="wdwGoAnnual()" style="'+btn+'background:'+(isAnnual?'#00897B':'#f0f0f0')+';color:'+(isAnnual?'#fff':'#333')+'">שנתי</button>'
+        +'<select id="wdw-view-month" style="'+sel+'">'+monthOpts+'</select>'
+        +'<select id="wdw-view-year" style="'+sel+'">'+yearOpts+'</select>'
+        +'<button onclick="wdwGoMonthly()" style="'+btn+'background:'+(!isAnnual?'#00897B':'#f0f0f0')+';color:'+(!isAnnual?'#fff':'#333')+'">בחר</button>'
+        +'<span style="font-size:12px;color:#64748b;border-right:1px solid #e5e7eb;padding-right:10px;margin-right:2px">תצוגה: <b style="color:#0f172a">'+curLabel+'</b></span>'
+      +'</div>'
+    +'</div>';
+  }
+
+  // Override wdwHeader permanently
+  window.wdwHeader = myHeader;
+
+  // Override renderWDWWorker and renderWDWDonor to always use myHeader
   var _origWorker = window.renderWDWWorker;
   var _origDonor  = window.renderWDWDonor;
 
-  function patchRender(origFn){
+  function wrap(fn){
     return function(){
-      // Ensure viewMonth is set correctly before render
-      if(!window.S) window.S = {};
-      if(!window.S.wdw) window.S.wdw = {};
-      if(!window.S.wdw.viewMonth){
-        var year = window.S.year || new Date().getFullYear();
-        var mi   = typeof curMI === 'number' ? curMI : new Date().getMonth();
-        window.S.wdw.viewMonth = year + '-' + String(mi+1).padStart(2,'0');
-      }
-      // Temporarily override wdwHeader to our version
-      var savedHeader = window.wdwHeader;
-      window.wdwHeader = window._wdwHeader880 || savedHeader;
-      origFn && origFn();
-      window.wdwHeader = savedHeader;
+      var saved = window.wdwHeader;
+      window.wdwHeader = myHeader;
+      fn && fn();
+      window.wdwHeader = myHeader; // keep it after render too
     };
   }
 
-  // Store our wdwHeader reference
-  window._wdwHeader880 = window.wdwHeader;
+  window.renderWDWWorker = wrap(_origWorker);
+  window.renderWDWDonor  = wrap(_origDonor);
 
-  window.renderWDWWorker = patchRender(_origWorker);
-  window.renderWDWDonor  = patchRender(_origDonor);
+  // Also fix worker annual pct — read directly from S.wdw.donors monthlyPct
+  window.wdwWorkerTotalPct = function(name, month){
+    if(!window.S||!window.S.wdw||!window.S.wdw.donors) return 0;
+    var isAnnual = (window.WDW_VIEW_MODE === 'annual');
+    var viewMonth = (window.S.wdw&&window.S.wdw.viewMonth)||'';
+    var y = isAnnual ? String((window.S&&window.S.year)||new Date().getFullYear()) : (viewMonth?viewMonth.substring(0,4):String(new Date().getFullYear()));
+    var m = month || viewMonth;
+    var total = 0;
+    window.S.wdw.donors.forEach(function(d){
+      (d.workers||[]).forEach(function(w){
+        if(w.name !== name) return;
+        if(w.valueType !== 'percent' || !(w.value > 0)) return;
+        if(!w.startMonth || !w.endMonth) return;
+        if(isAnnual){
+          if(w.startMonth.substring(0,4) > y || w.endMonth.substring(0,4) < y) return;
+          var mp = w.monthlyPct || {};
+          var keys = Object.keys(mp).filter(function(k){ return k.startsWith(y); });
+          if(keys.length > 0){
+            var sum = 0;
+            keys.forEach(function(k){ sum += parseFloat(mp[k])||0; });
+            total += sum / 12;
+          } else {
+            var sy = parseInt(w.startMonth.substring(0,4)), sm = parseInt(w.startMonth.substring(5,7));
+            var ey = parseInt(w.endMonth.substring(0,4)),   em = parseInt(w.endMonth.substring(5,7));
+            var yi = parseInt(y);
+            total += w.value * ((yi===ey?em:12)-(yi===sy?sm:1)+1) / 12;
+          }
+        } else {
+          if(!m) return;
+          if(w.startMonth > m || w.endMonth < m) return;
+          var mp2 = w.monthlyPct || {};
+          total += (mp2[m]!==undefined) ? (parseFloat(mp2[m])||0) : w.value;
+        }
+      });
+    });
+    return Math.round(total*10)/10;
+  };
+
 })();
 </script>
 </body>
