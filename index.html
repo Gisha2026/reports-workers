@@ -11,7 +11,7 @@
 <!-- ============================================================ -->
 <script>window.AUTH_ENABLED = false;</script>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v1018CH | גישה</title>
+<title>Reports_Workers v1015CH | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -335,7 +335,7 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v1018CH</span>
+<span class="topbar-title">Reports_Workers v1015CH</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -7711,14 +7711,14 @@ def run(wb_b64, writes_json):
     ver_sheets = [s for s in wb.sheetnames if s.strip() in ['תורמים','donors']]
     if ver_sheets:
         vs = wb[ver_sheets[0]]
-        vs.cell(1, 5).value = 'v1018CH'
+        vs.cell(1, 5).value = 'v1015CH'
     # כתוב גרסה בשורה אחרי הנתונים של כל גיליון עובד
     skip_s = {'תורמים','donors','_gisha_data'}
     for sname in wb.sheetnames:
         if sname.strip() in skip_s: continue
         ws2 = wb[sname]
         lr = ws2.max_row + 2
-        ws2.cell(lr, 1).value = 'v1018CH'
+        ws2.cell(lr, 1).value = 'v1015CH'
 
     out = io.BytesIO()
     wb.save(out)
@@ -10345,8 +10345,8 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1018CH';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1015CH';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
@@ -10452,7 +10452,7 @@ window.wdwCheckEnded = function(){};
 })();
 </script>
 
-<style id="v1018CH-main-row-tighten-style">
+<style id="v1015CH-main-row-tighten-style">
 #tab-wdw .v929-main-row td{padding-top:8px!important;padding-bottom:8px!important;line-height:1.1!important}
 #tab-wdw .v929-worker-col{width:142px!important}
 #tab-wdw .v929-row-col{width:104px!important}
@@ -10463,12 +10463,12 @@ window.wdwCheckEnded = function(){};
 #tab-wdw .v929-main-row .v929-num{font-size:12px!important}
 #tab-wdw .v929-main-row .v929-annual{font-size:12px!important}
 </style>
-<script id="v1018CH-dom-balance-calc-fix">
+<script id="v1015CH-dom-balance-calc-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}catch(e){}}
   function donor(){var S=window.S||{}, id=window.WDW_EDIT_DONOR_ID;return (S.wdw&&S.wdw.donors||[]).find(function(d){return String(d.id)===String(id);})||null;}
   function donorBudget(d){return n(d&&(d.totalBudget||d.budget||d.totalAmount||d.totalPeriodAmount));}
   function pfxSeenBefore(current){
@@ -10505,269 +10505,6 @@ window.wdwCheckEnded = function(){};
   };
   document.addEventListener('DOMContentLoaded',setVersion);
   setTimeout(setVersion,30);
-})();
-</script>
-
-
-<script id="v1018CH-timesheet-cache-and-data-final">
-(function(){
-  'use strict';
-  var VERSION='v1018CH';
-  var FULL_VERSION='Reports_Workers v1018CH';
-  function ym(v){ var m=String(v||'').match(/^(\d{4})-(\d{2})/); return m?m[1]+'-'+m[2]:''; }
-  window.v1016ProcessTimesheetFile=function(arrayBuffer,rows,month,displayMode,absences){
-    var ymKey=ym(month), bytes=new Uint8Array(arrayBuffer), bin='', chunk=8192;
-    for(var i=0;i<bytes.length;i+=chunk) bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk));
-    var b64=btoa(bin);
-    var PY=`
-import io, base64, json, re, datetime, zipfile, xml.etree.ElementTree as ET
-from copy import copy
-from openpyxl import load_workbook
-from openpyxl.utils.datetime import from_excel
-from openpyxl.utils import get_column_letter
-
-VERSION='v1018CH'
-NS_MAIN='http://schemas.openxmlformats.org/spreadsheetml/2006/main'
-NS_REL='http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-ET.register_namespace('', NS_MAIN)
-
-def norm(s):
-    return re.sub(r'\\s+',' ',str(s or '').strip())
-
-def cell_date(cell):
-    v=cell.value
-    if isinstance(v, datetime.datetime): return v.date()
-    if isinstance(v, datetime.date): return v
-    if isinstance(v, (int,float)):
-        try: return from_excel(v).date()
-        except Exception: return None
-    return None
-
-def pct_text(v):
-    try:
-        x=round(float(v),4)
-        return ('%g' % x)
-    except Exception:
-        return '0'
-
-def num(v):
-    try:
-        if isinstance(v, str):
-            v=v.replace(',','').replace('%','').strip()
-        return float(v)
-    except Exception:
-        return None
-
-def formula_eval_basic(expr, ws):
-    # Minimal evaluator for the template's simple hour formulas only.
-    if expr is None: return None
-    if isinstance(expr,(int,float)): return float(expr)
-    s=str(expr).strip()
-    if not s: return None
-    if not s.startswith('='):
-        return num(s)
-    s=s[1:].replace('$','').replace(' ','')
-    def cell_val(m):
-        ref=m.group(0)
-        v=ws[ref].value
-        if isinstance(v,(int,float)): return str(float(v))
-        if isinstance(v,str) and v.startswith('='):
-            ev=formula_eval_basic(v, ws)
-            return '0' if ev is None else str(ev)
-        nv=num(v)
-        return '0' if nv is None else str(nv)
-    s=re.sub(r'[A-Z]+[0-9]+', cell_val, s)
-    if not re.match(r'^[0-9.()+\-*/]+$', s):
-        return None
-    try:
-        return float(eval(s, {'__builtins__':{}}, {}))
-    except Exception:
-        return None
-
-def header_row(ws):
-    for r in range(1, min(ws.max_row,80)+1):
-        a=norm(ws.cell(r,1).value).lower()
-        c=norm(ws.cell(r,3).value).lower()
-        if a=='date' or c=='hours worked':
-            return r
-    return 7
-
-def lookup_rows(ws, hr):
-    # Use the exact A-row references from the donor header formulas whenever possible.
-    refs=[]
-    for c in range(4,19):
-        val=ws.cell(hr,c).value
-        m=re.search(r'\$?A\$?(\d+)', str(val or ''))
-        if m:
-            refs.append((c,int(m.group(1))))
-    if refs:
-        refs.sort()
-        return [rr for c,rr in refs[:15]]
-    core_row=None
-    for rr in range(max(1, ws.max_row-100), ws.max_row+1):
-        if norm(ws.cell(rr,1).value) == 'Core & Others':
-            core_row=rr
-            break
-    if core_row:
-        return [core_row-15+i for i in range(15)]
-    return [max(hr+1, ws.max_row-16)+i for i in range(15)]
-
-def safe_set(ws, r, c, value):
-    cell=ws.cell(r,c)
-    if cell.__class__.__name__ == 'MergedCell':
-        return False
-    cell.value=value
-    return True
-
-def write_version(ws):
-    start=max(1, ws.max_row-40)
-    for r in range(start, ws.max_row+1):
-        v=ws.cell(r,1).value
-        if isinstance(v,str) and re.search(r'v\d+(CH|CL)', v):
-            safe_set(ws, r, 1, VERSION)
-            return
-    safe_set(ws, ws.max_row+2, 1, VERSION)
-
-def colnum_to_letters(n):
-    s=''
-    while n:
-        n,rem=divmod(n-1,26)
-        s=chr(65+rem)+s
-    return s
-
-def set_formula_cached_values(xlsx_bytes, cache_map):
-    zin=zipfile.ZipFile(io.BytesIO(xlsx_bytes), 'r')
-    out=io.BytesIO()
-    zout=zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED)
-    # sheet name -> path
-    wb_root=ET.fromstring(zin.read('xl/workbook.xml'))
-    rel_root=ET.fromstring(zin.read('xl/_rels/workbook.xml.rels'))
-    rels={rel.attrib['Id']:rel.attrib['Target'] for rel in rel_root}
-    sheet_paths={}
-    for sh in wb_root.findall('.//{%s}sheet' % NS_MAIN):
-        name=sh.attrib.get('name')
-        rid=sh.attrib.get('{%s}id' % NS_REL)
-        target=rels.get(rid,'').lstrip('/')
-        if not target.startswith('xl/'):
-            target='xl/'+target
-        sheet_paths[name]=target
-    path_to_cache={sheet_paths.get(name):vals for name,vals in cache_map.items() if sheet_paths.get(name)}
-    for item in zin.infolist():
-        data=zin.read(item.filename)
-        if item.filename in path_to_cache:
-            vals=path_to_cache[item.filename]
-            root=ET.fromstring(data)
-            for c in root.findall('.//{%s}c' % NS_MAIN):
-                ref=c.attrib.get('r')
-                if ref not in vals:
-                    continue
-                cv=vals[ref]
-                v=c.find('{%s}v' % NS_MAIN)
-                if v is None:
-                    v=ET.SubElement(c, '{%s}v' % NS_MAIN)
-                if isinstance(cv, str):
-                    c.attrib['t']='str'
-                    v.text=cv
-                else:
-                    c.attrib.pop('t', None)
-                    try:
-                        v.text=('%.10f' % float(cv)).rstrip('0').rstrip('.')
-                    except Exception:
-                        v.text='0'
-            data=ET.tostring(root, encoding='utf-8', xml_declaration=True)
-        zout.writestr(item, data)
-    zin.close(); zout.close()
-    return out.getvalue()
-
-def run(wb_b64, rows_json, abs_json, ym_key, display_mode):
-    wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
-    try:
-        wb.calculation.calcMode='auto'
-        wb.calculation.fullCalcOnLoad=True
-        wb.calculation.forceFullCalc=True
-    except Exception:
-        pass
-    all_rows=json.loads(rows_json)
-    absences=json.loads(abs_json or '{}')
-    by_worker={}
-    for r in all_rows:
-        by_worker.setdefault(norm(r.get('worker')),[]).append(r)
-    touched=0; formulas=0; missing=[]; cache_map={}
-    sheet_map={norm(s):s for s in wb.sheetnames}
-    for worker, donor_rows in by_worker.items():
-        sname=sheet_map.get(norm(worker))
-        if not sname:
-            missing.append(worker); continue
-        ws=wb[sname]
-        hr=header_row(ws)
-        lrows=lookup_rows(ws,hr)
-        cache={}
-        # donor lookup rows and cached header formula results
-        for i, rr in enumerate(lrows[:15]):
-            cur=norm(ws.cell(rr,1).value)
-            if cur == 'Core & Others':
-                continue
-            name=donor_rows[i].get('tsName','-') if i < len(donor_rows) else '-'
-            safe_set(ws, rr, 1, name)
-            hcell=f'{colnum_to_letters(4+i)}{hr}'
-            cache[hcell]=name
-        # write daily formulas and cached numeric results so the file is not blank in viewers that do not recalculate.
-        for r in range(hr+1, ws.max_row+1):
-            d=cell_date(ws.cell(r,1))
-            if not d or d.strftime('%Y-%m') != ym_key: continue
-            if d.weekday() in (4,5): continue
-            cval=ws.cell(r,3).value
-            if isinstance(cval,str) and cval.strip().lower()=='weekend': continue
-            hours=formula_eval_basic(cval, ws)
-            if hours is None:
-                hours=0
-            for c in range(4,19):
-                safe_set(ws, r, c, None)
-            ds=d.strftime('%Y-%m-%d')
-            absent=bool(absences.get(ds,{}).get(worker) or absences.get(ds,{}).get('__all__'))
-            for i, dr in enumerate(donor_rows[:15]):
-                c=4+i
-                cell=ws.cell(r,c)
-                if cell.__class__.__name__ == 'MergedCell':
-                    continue
-                pct=float(dr.get('pct') or 0)
-                cell.value='='+pct_text(pct)+'%*C'+str(r)
-                cache[f'{colnum_to_letters(c)}{r}']=hours*pct/100.0
-                if display_mode=='transparent' and absent:
-                    f=copy(cell.font); f.color='FFFFFF'; cell.font=f
-                formulas+=1
-        write_version(ws)
-        cache_map[ws.title]=cache
-        touched+=1
-    for sn in wb.sheetnames:
-        if norm(sn) in ['תורמים','donors']:
-            safe_set(wb[sn], 1, 5, VERSION)
-    out=io.BytesIO(); wb.save(out)
-    final_bytes=set_formula_cached_values(out.getvalue(), cache_map)
-    return json.dumps({'b64':base64.b64encode(final_bytes).decode(),'stats':{'workers':touched,'formulas':formulas,'missing':missing}}, ensure_ascii=False)
-
-result = run(wb_b64, rows_json, abs_json, ym_key, display_mode)
-result
-`;
-    pyodide.globals.set('wb_b64',b64);
-    pyodide.globals.set('rows_json',JSON.stringify(rows));
-    pyodide.globals.set('abs_json',JSON.stringify(absences||{}));
-    pyodide.globals.set('ym_key',ymKey);
-    pyodide.globals.set('display_mode',displayMode||'visible');
-    pyodide.runPythonAsync(PY).then(function(txt){
-      var res=JSON.parse(txt), binStr=atob(res.b64), outBytes=new Uint8Array(binStr.length);
-      for(var i=0;i<binStr.length;i++) outBytes[i]=binStr.charCodeAt(i);
-      var blob=new Blob([outBytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-      var url=URL.createObjectURL(blob), a=document.createElement('a');
-      a.href=url; a.download='Timesheet_'+ymKey+'.xlsx'; a.click(); URL.revokeObjectURL(url);
-      if(typeof wdwCloseWriteTimesheet==='function') wdwCloseWriteTimesheet();
-      var msg='נכתב Timesheet: '+res.stats.workers+' עובדים, '+res.stats.formulas+' נוסחאות עם ערכים שמורים.';
-      if(res.stats.missing&&res.stats.missing.length) msg+=' חסרים טאבים: '+res.stats.missing.join(', ');
-      alert(msg);
-    }).catch(function(err){ alert('שגיאה בכתיבת Timesheet: '+(err&&err.message?err.message:err)); console.error(err); });
-  };
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=FULL_VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
-  setVersion(); document.addEventListener('DOMContentLoaded',setVersion); setTimeout(setVersion,250);
 })();
 </script>
 
@@ -11047,7 +10784,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v1018CH</span>
+<span class="topbar-title">Reports_Workers v1015CH</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -22499,7 +22236,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','v780: ניהול תורמים לפי משרות ממומנות, במקביל למבנה העובדים הישן.');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note">כפתור ערוך פותח את התורם ומציג משרות ממומנות.</div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1018CH';if(document.title.indexOf('v1018CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1015CH';if(document.title.indexOf('v1015CH')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');},0);});
 
   // v866CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -22948,8 +22685,8 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1018CH';
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1015CH';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');
     },0);
   });
 })();
@@ -22976,10 +22713,10 @@ p.assignments.push(a);return p;}
 </script>
 
 
-<script id="v1018CH-monthly-cost-final-fix">
+<script id="v1015CH-monthly-cost-final-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -23000,15 +22737,15 @@ p.assignments.push(a);return p;}
   window.renderWDWMonthlyCost=function(){var div=document.getElementById('wdw-monthlycost');if(!div)return;var s=S0();if(!s.wdw)s.wdw={};var y=yearNow(), months=monthsOfYear(y), names=workers(), monthNames=['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];var opts='';for(var yy=2024;yy<=2030;yy++)opts+='<option value="'+yy+'" '+(String(yy)===String(y)?'selected':'')+'>'+yy+'</option>';var html='<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">WDW — עלות חודשית</div><div class="wdw-sub">עלות עובד, ניצול ושארית לפי חודשים — '+esc(y)+'</div></div><label style="font-size:13px;font-weight:700">שנה <select onchange="if(!window.S.wdw)window.S.wdw={};window.S.wdw.viewMonth=this.value+\'-01\';renderWDWMonthlyCost();" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px">'+opts+'</select></label></div>';html+='<div class="wdw-panel"><div style="overflow-x:auto"><table class="wdw-table" style="min-width:1100px;width:max-content"><thead><tr><th>עובד</th><th>שורה</th>';months.forEach(function(m,i){html+='<th style="text-align:center!important">'+monthNames[i]+'</th>';});html+='<th style="text-align:center!important">שנתי</th></tr></thead><tbody>';if(!names.length){html+='<tr><td colspan="15" style="text-align:center!important;color:#64748b;padding:24px!important">אין עובדים להצגה</td></tr>';}names.forEach(function(name,idx){var annual=costAnnual(name), monthly=annual/12, used=months.map(function(m){return usedFor(name,m,monthly);}), totalUsed=used.reduce(function(a,b){return a+b;},0), bg=idx%2?'#fff':'#f8fafc', labels=['עלות חודשית','נוצל ₪','נוצל %','נשאר ₪','נשאר %'];labels.forEach(function(label,ri){html+='<tr style="background:'+bg+'">';if(ri===0)html+='<td rowspan="5"><b>'+esc(name)+'</b><div class="wdw-muted">'+money(annual)+' שנתי</div></td>';html+='<td><b>'+label+'</b></td>';used.forEach(function(u){var v='',color='#334155';if(ri===0)v=money(monthly);if(ri===1){v=money(u);color=(u>monthly*1.001?'#b91c1c':(u>=monthly*.9?'#b45309':'#1d4ed8'));}if(ri===2){var p=monthly?u/monthly*100:0;v=pct(p);color=(p>100?'#b91c1c':(p>=90?'#b45309':'#1d4ed8'));}if(ri===3){v=money(Math.max(0,monthly-u));color='#15803d';}if(ri===4){v=pct(monthly?Math.max(0,monthly-u)/monthly*100:0);color='#15803d';}html+='<td style="text-align:center!important;color:'+color+'">'+v+'</td>';});var av='';if(ri===0)av=money(annual);if(ri===1)av=money(totalUsed);if(ri===2)av=pct(annual?totalUsed/annual*100:0);if(ri===3)av=money(Math.max(0,annual-totalUsed));if(ri===4)av=pct(annual?Math.max(0,annual-totalUsed)/annual*100:0);html+='<td style="text-align:center!important;font-weight:800;background:#edf2f7">'+av+'</td></tr>';});});html+='</tbody></table></div></div></div>';div.innerHTML=html;};
   function showMonthly(){['org','donor','worker','input','reports','monthlypct','monthlycost'].forEach(function(p){var d=document.getElementById('wdw-'+p);if(d)d.style.display=(p==='monthlycost')?'':'none';var b=document.getElementById('wdw-btn-'+p);if(b){b.style.background=(p==='monthlycost')?'#00897B':'#f0f0f0';b.style.color=(p==='monthlycost')?'white':'#333';b.style.fontWeight=(p==='monthlycost')?'bold':'normal';}});var box=document.querySelector('#tab-wdw .s-sec');if(box){box.style.background='transparent';box.style.boxShadow='none';box.style.padding='0';}window.renderWDWMonthlyCost();}
   var oldSwitch=window.switchWDW;window.switchWDW=function(panel){if(panel==='monthlycost'){showMonthly();return;}if(typeof oldSwitch==='function')return oldSwitch.apply(this,arguments);};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');},0);});
 })();
 </script>
 
 
-<script id="v1018CH-monthly-cost-polish-collapse">
+<script id="v1015CH-monthly-cost-polish-collapse">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
   window.v929MonthlyCostOpen = window.v929MonthlyCostOpen || {};
 
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
@@ -23030,7 +22767,7 @@ p.assignments.push(a);return p;}
   function monthCount(st,en){st=ym(st);en=ym(en);if(!st||!en)return 12;var sy=+st.slice(0,4), sm=+st.slice(5,7), ey=+en.slice(0,4), em=+en.slice(5,7);return Math.max(1,(ey-sy)*12+(em-sm)+1);}
   function rowAmount(w,d,m,monthlyCost){if(!rowActive(w,d,m))return 0;var amount=0, vt=String(w.valueType||w.fundingType||'');if(w.fixedMonths&&w.fixedMonths[m]!=null&&String(w.fixedMonths[m]).trim()!=='') amount+=n(w.fixedMonths[m]);else if((vt.indexOf('amount')!==-1||vt.indexOf('סכום')!==-1||w.totalPeriodAmount)&&n(w.totalPeriodAmount)>0){amount+=n(w.totalPeriodAmount)/monthCount(w.startMonth||w.startDate||d.startDate||d.startMonth,w.endMonth||w.endDate||d.endDate||d.endMonth);}else{var p=(w.monthlyPct&&w.monthlyPct[m]!=null&&String(w.monthlyPct[m]).trim()!=='')?n(w.monthlyPct[m]):n(w.value);amount+=monthlyCost*p/100;}if(w.replaces){amount+=monthlyCost*n(w.replacesPct||w.replacementPct)/100;}(w.extraReplaces||[]).forEach(function(r){var st=ym(r.startMonth||r.replaceStartMonth||w.startMonth), en=ym(r.endMonth||r.replaceEndMonth||w.endMonth);if(st&&m<st)return;if(en&&m>en)return;amount+=monthlyCost*n(r.pct||r.percent||r.value)/100;});return amount;}
   function usedFor(name,m,monthlyCost){var total=0, nn=norm(name);donors().forEach(function(d){(d.workers||[]).forEach(function(w){if(norm(w&&w.name)===nn)total+=rowAmount(w,d,m,monthlyCost);});});return total;}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}catch(e){}}
 
   function cellMoney(v, cls){return '<td class="v929-num '+(cls||'')+'">'+money(v)+'</td>';}
   function detailRow(key,label,values,annual,kind){
@@ -23088,7 +22825,7 @@ p.assignments.push(a);return p;}
   setTimeout(setVersion,50);
 })();
 </script>
-<style id="v1018CH-monthly-cost-polish-style">
+<style id="v1015CH-monthly-cost-polish-style">
 #tab-wdw .v929-cost-shell{background:#f4f7f9!important;padding:0 0 32px!important;color:#0f172a!important}
 #tab-wdw .v929-head{background:#fff;border:1px solid #d8e0e7;border-radius:16px;padding:22px 28px;margin:0 0 18px;display:flex;justify-content:space-between;align-items:center;gap:16px;box-shadow:0 2px 10px rgba(15,23,42,.05)}
 #tab-wdw .v929-title{font-size:30px;font-weight:900;color:#073f3d;letter-spacing:-.4px;line-height:1.15}
@@ -23110,9 +22847,9 @@ p.assignments.push(a);return p;}
 </style>
 
 
-<script id="v1018CH-wdw-management-groups-and-tabs-fix">
+<script id="v1015CH-wdw-management-groups-and-tabs-fix">
 (function(){
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
   var PANELS=['org','donor','worker','monthlycost','input','reports','monthlypct'];
   var TITLES={active:'פעילים',pending:'ממתינים',ended:'הסתיימו',inactive:'לא פעילים'};
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -23129,7 +22866,7 @@ p.assignments.push(a);return p;}
     var end=ym(d&&d.endDate); if(end && end < thisMonth()) return 'ended';
     return 'active';
   }
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}catch(e){}}
   function setPanelButtons(active){
     PANELS.forEach(function(p){
       var b=document.getElementById('wdw-btn-'+p); if(!b)return;
@@ -23218,7 +22955,7 @@ p.assignments.push(a);return p;}
   setTimeout(setVersion,30);
 })();
 </script>
-<style id="v1018CH-wdw-management-groups-style">
+<style id="v1015CH-wdw-management-groups-style">
 #tab-wdw .v931-group-sep{margin:14px 0 8px;padding:8px 14px;border-radius:10px;background:#f8fafc;border:1px solid #dbe3eb;color:#334155;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:space-between}
 #tab-wdw .v931-group-sep small{font-size:11px;color:#64748b;font-weight:800}
 #tab-wdw .v931-active{background:#eef8f6;color:#00695c;border-color:#b2dfdb}
@@ -23227,20 +22964,20 @@ p.assignments.push(a);return p;}
 #tab-wdw .v931-inactive{background:#fef2f2;color:#991b1b;border-color:#fecaca}
 </style>
 
-<script id="v1018CH-replacement-budget-balance-patch">
-/* v1018CH — Replacement balance layer.
+<script id="v1015CH-replacement-budget-balance-patch">
+/* v1015CH — Replacement balance layer.
    Adds role-level used/remaining display, allocation balance for replacement/new workers,
    inactive after-end month display, and balance-based amount distribution.
    Existing saved data and existing calculation functions are not rewritten. */
 (function(){
   'use strict';
 
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
 
   function setVersion(){
     try{
       var t=document.querySelector('.topbar-title'); if(t)t.textContent=VERSION;
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');
     }catch(e){}
   }
   function S0(){return window.S || {};}
@@ -23421,7 +23158,7 @@ p.assignments.push(a);return p;}
   setTimeout(enhance,50);
 })();
 </script>
-<style id="v1018CH-replacement-budget-balance-style">
+<style id="v1015CH-replacement-budget-balance-style">
 #tab-wdw .v932-project-summary{
   margin:0 0 12px;padding:11px 14px;border-radius:12px;background:#eef8f6;border:1px solid #b2dfdb;color:#073f3d;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap
 }
@@ -23445,10 +23182,10 @@ p.assignments.push(a);return p;}
 
 
 
-<script id="v1018CH-lana-ended-worker-active-month-cost-fix">
+<script id="v1015CH-lana-ended-worker-active-month-cost-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,'').replace('%','').replace('—','').trim());return isFinite(x)?x:0;}
   function norm(s){return String(s||'').trim().replace(/\s+/g,' ');}
@@ -23552,7 +23289,7 @@ p.assignments.push(a);return p;}
     window.v486RenderMonthlyPct=function(){var r=oldRender.apply(this,arguments);patchLater();return r;};
     window.v590RenderMonthlyPct=window.v486RenderMonthlyPct;window.v485RenderMonthlyPct=window.v486RenderMonthlyPct;window.v484RenderMonthlyPct=window.v486RenderMonthlyPct;
   }
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}catch(e){}}
   document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-btn-monthlypct,#wdw-monthlypct'))patchLater();},true);
   document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))patchLater();},true);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setV();patchLater();});else{setV();patchLater();}
@@ -23560,7 +23297,7 @@ p.assignments.push(a);return p;}
 })();
 </script>
 
-<script id="v1018CH-disable-overfunding-alerts-final">
+<script id="v1015CH-disable-overfunding-alerts-final">
 (function(){
   'use strict';
   function noop(){return false;}
@@ -23579,277 +23316,14 @@ p.assignments.push(a);return p;}
   document.addEventListener('click',function(){setTimeout(removeOverfundingUi,0);},true);
 })();
 </script>
-
-<script id="v1018CH-timesheet-cache-and-data-final">
-(function(){
-  'use strict';
-  var VERSION='v1018CH';
-  var FULL_VERSION='Reports_Workers v1018CH';
-  function ym(v){ var m=String(v||'').match(/^(\d{4})-(\d{2})/); return m?m[1]+'-'+m[2]:''; }
-  window.v1016ProcessTimesheetFile=function(arrayBuffer,rows,month,displayMode,absences){
-    var ymKey=ym(month), bytes=new Uint8Array(arrayBuffer), bin='', chunk=8192;
-    for(var i=0;i<bytes.length;i+=chunk) bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk));
-    var b64=btoa(bin);
-    var PY=`
-import io, base64, json, re, datetime, zipfile, xml.etree.ElementTree as ET
-from copy import copy
-from openpyxl import load_workbook
-from openpyxl.utils.datetime import from_excel
-from openpyxl.utils import get_column_letter
-
-VERSION='v1018CH'
-NS_MAIN='http://schemas.openxmlformats.org/spreadsheetml/2006/main'
-NS_REL='http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-ET.register_namespace('', NS_MAIN)
-
-def norm(s):
-    return re.sub(r'\\s+',' ',str(s or '').strip())
-
-def cell_date(cell):
-    v=cell.value
-    if isinstance(v, datetime.datetime): return v.date()
-    if isinstance(v, datetime.date): return v
-    if isinstance(v, (int,float)):
-        try: return from_excel(v).date()
-        except Exception: return None
-    return None
-
-def pct_text(v):
-    try:
-        x=round(float(v),4)
-        return ('%g' % x)
-    except Exception:
-        return '0'
-
-def num(v):
-    try:
-        if isinstance(v, str):
-            v=v.replace(',','').replace('%','').strip()
-        return float(v)
-    except Exception:
-        return None
-
-def formula_eval_basic(expr, ws):
-    # Minimal evaluator for the template's simple hour formulas only.
-    if expr is None: return None
-    if isinstance(expr,(int,float)): return float(expr)
-    s=str(expr).strip()
-    if not s: return None
-    if not s.startswith('='):
-        return num(s)
-    s=s[1:].replace('$','').replace(' ','')
-    def cell_val(m):
-        ref=m.group(0)
-        v=ws[ref].value
-        if isinstance(v,(int,float)): return str(float(v))
-        if isinstance(v,str) and v.startswith('='):
-            ev=formula_eval_basic(v, ws)
-            return '0' if ev is None else str(ev)
-        nv=num(v)
-        return '0' if nv is None else str(nv)
-    s=re.sub(r'[A-Z]+[0-9]+', cell_val, s)
-    if not re.match(r'^[0-9.()+\-*/]+$', s):
-        return None
-    try:
-        return float(eval(s, {'__builtins__':{}}, {}))
-    except Exception:
-        return None
-
-def header_row(ws):
-    for r in range(1, min(ws.max_row,80)+1):
-        a=norm(ws.cell(r,1).value).lower()
-        c=norm(ws.cell(r,3).value).lower()
-        if a=='date' or c=='hours worked':
-            return r
-    return 7
-
-def lookup_rows(ws, hr):
-    # Use the exact A-row references from the donor header formulas whenever possible.
-    refs=[]
-    for c in range(4,19):
-        val=ws.cell(hr,c).value
-        m=re.search(r'\$?A\$?(\d+)', str(val or ''))
-        if m:
-            refs.append((c,int(m.group(1))))
-    if refs:
-        refs.sort()
-        return [rr for c,rr in refs[:15]]
-    core_row=None
-    for rr in range(max(1, ws.max_row-100), ws.max_row+1):
-        if norm(ws.cell(rr,1).value) == 'Core & Others':
-            core_row=rr
-            break
-    if core_row:
-        return [core_row-15+i for i in range(15)]
-    return [max(hr+1, ws.max_row-16)+i for i in range(15)]
-
-def safe_set(ws, r, c, value):
-    cell=ws.cell(r,c)
-    if cell.__class__.__name__ == 'MergedCell':
-        return False
-    cell.value=value
-    return True
-
-def write_version(ws):
-    start=max(1, ws.max_row-40)
-    for r in range(start, ws.max_row+1):
-        v=ws.cell(r,1).value
-        if isinstance(v,str) and re.search(r'v\d+(CH|CL)', v):
-            safe_set(ws, r, 1, VERSION)
-            return
-    safe_set(ws, ws.max_row+2, 1, VERSION)
-
-def colnum_to_letters(n):
-    s=''
-    while n:
-        n,rem=divmod(n-1,26)
-        s=chr(65+rem)+s
-    return s
-
-def set_formula_cached_values(xlsx_bytes, cache_map):
-    zin=zipfile.ZipFile(io.BytesIO(xlsx_bytes), 'r')
-    out=io.BytesIO()
-    zout=zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED)
-    # sheet name -> path
-    wb_root=ET.fromstring(zin.read('xl/workbook.xml'))
-    rel_root=ET.fromstring(zin.read('xl/_rels/workbook.xml.rels'))
-    rels={rel.attrib['Id']:rel.attrib['Target'] for rel in rel_root}
-    sheet_paths={}
-    for sh in wb_root.findall('.//{%s}sheet' % NS_MAIN):
-        name=sh.attrib.get('name')
-        rid=sh.attrib.get('{%s}id' % NS_REL)
-        target=rels.get(rid,'').lstrip('/')
-        if not target.startswith('xl/'):
-            target='xl/'+target
-        sheet_paths[name]=target
-    path_to_cache={sheet_paths.get(name):vals for name,vals in cache_map.items() if sheet_paths.get(name)}
-    for item in zin.infolist():
-        data=zin.read(item.filename)
-        if item.filename in path_to_cache:
-            vals=path_to_cache[item.filename]
-            root=ET.fromstring(data)
-            for c in root.findall('.//{%s}c' % NS_MAIN):
-                ref=c.attrib.get('r')
-                if ref not in vals:
-                    continue
-                cv=vals[ref]
-                v=c.find('{%s}v' % NS_MAIN)
-                if v is None:
-                    v=ET.SubElement(c, '{%s}v' % NS_MAIN)
-                if isinstance(cv, str):
-                    c.attrib['t']='str'
-                    v.text=cv
-                else:
-                    c.attrib.pop('t', None)
-                    try:
-                        v.text=('%.10f' % float(cv)).rstrip('0').rstrip('.')
-                    except Exception:
-                        v.text='0'
-            data=ET.tostring(root, encoding='utf-8', xml_declaration=True)
-        zout.writestr(item, data)
-    zin.close(); zout.close()
-    return out.getvalue()
-
-def run(wb_b64, rows_json, abs_json, ym_key, display_mode):
-    wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
-    try:
-        wb.calculation.calcMode='auto'
-        wb.calculation.fullCalcOnLoad=True
-        wb.calculation.forceFullCalc=True
-    except Exception:
-        pass
-    all_rows=json.loads(rows_json)
-    absences=json.loads(abs_json or '{}')
-    by_worker={}
-    for r in all_rows:
-        by_worker.setdefault(norm(r.get('worker')),[]).append(r)
-    touched=0; formulas=0; missing=[]; cache_map={}
-    sheet_map={norm(s):s for s in wb.sheetnames}
-    for worker, donor_rows in by_worker.items():
-        sname=sheet_map.get(norm(worker))
-        if not sname:
-            missing.append(worker); continue
-        ws=wb[sname]
-        hr=header_row(ws)
-        lrows=lookup_rows(ws,hr)
-        cache={}
-        # donor lookup rows and cached header formula results
-        for i, rr in enumerate(lrows[:15]):
-            cur=norm(ws.cell(rr,1).value)
-            if cur == 'Core & Others':
-                continue
-            name=donor_rows[i].get('tsName','-') if i < len(donor_rows) else '-'
-            safe_set(ws, rr, 1, name)
-            hcell=f'{colnum_to_letters(4+i)}{hr}'
-            cache[hcell]=name
-        # write daily formulas and cached numeric results so the file is not blank in viewers that do not recalculate.
-        for r in range(hr+1, ws.max_row+1):
-            d=cell_date(ws.cell(r,1))
-            if not d or d.strftime('%Y-%m') != ym_key: continue
-            if d.weekday() in (4,5): continue
-            cval=ws.cell(r,3).value
-            if isinstance(cval,str) and cval.strip().lower()=='weekend': continue
-            hours=formula_eval_basic(cval, ws)
-            if hours is None:
-                hours=0
-            for c in range(4,19):
-                safe_set(ws, r, c, None)
-            ds=d.strftime('%Y-%m-%d')
-            absent=bool(absences.get(ds,{}).get(worker) or absences.get(ds,{}).get('__all__'))
-            for i, dr in enumerate(donor_rows[:15]):
-                c=4+i
-                cell=ws.cell(r,c)
-                if cell.__class__.__name__ == 'MergedCell':
-                    continue
-                pct=float(dr.get('pct') or 0)
-                cell.value='='+pct_text(pct)+'%*C'+str(r)
-                cache[f'{colnum_to_letters(c)}{r}']=hours*pct/100.0
-                if display_mode=='transparent' and absent:
-                    f=copy(cell.font); f.color='FFFFFF'; cell.font=f
-                formulas+=1
-        write_version(ws)
-        cache_map[ws.title]=cache
-        touched+=1
-    for sn in wb.sheetnames:
-        if norm(sn) in ['תורמים','donors']:
-            safe_set(wb[sn], 1, 5, VERSION)
-    out=io.BytesIO(); wb.save(out)
-    final_bytes=set_formula_cached_values(out.getvalue(), cache_map)
-    return json.dumps({'b64':base64.b64encode(final_bytes).decode(),'stats':{'workers':touched,'formulas':formulas,'missing':missing}}, ensure_ascii=False)
-
-result = run(wb_b64, rows_json, abs_json, ym_key, display_mode)
-result
-`;
-    pyodide.globals.set('wb_b64',b64);
-    pyodide.globals.set('rows_json',JSON.stringify(rows));
-    pyodide.globals.set('abs_json',JSON.stringify(absences||{}));
-    pyodide.globals.set('ym_key',ymKey);
-    pyodide.globals.set('display_mode',displayMode||'visible');
-    pyodide.runPythonAsync(PY).then(function(txt){
-      var res=JSON.parse(txt), binStr=atob(res.b64), outBytes=new Uint8Array(binStr.length);
-      for(var i=0;i<binStr.length;i++) outBytes[i]=binStr.charCodeAt(i);
-      var blob=new Blob([outBytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-      var url=URL.createObjectURL(blob), a=document.createElement('a');
-      a.href=url; a.download='Timesheet_'+ymKey+'.xlsx'; a.click(); URL.revokeObjectURL(url);
-      if(typeof wdwCloseWriteTimesheet==='function') wdwCloseWriteTimesheet();
-      var msg='נכתב Timesheet: '+res.stats.workers+' עובדים, '+res.stats.formulas+' נוסחאות עם ערכים שמורים.';
-      if(res.stats.missing&&res.stats.missing.length) msg+=' חסרים טאבים: '+res.stats.missing.join(', ');
-      alert(msg);
-    }).catch(function(err){ alert('שגיאה בכתיבת Timesheet: '+(err&&err.message?err.message:err)); console.error(err); });
-  };
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=FULL_VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
-  setVersion(); document.addEventListener('DOMContentLoaded',setVersion); setTimeout(setVersion,250);
-})();
-</script>
-
 </body>
 </html>
 </html>
-<script id="v1018CH-final-balance-override">
+<script id="v1015CH-final-balance-override">
 (function(){
-var VERSION='Reports_Workers v1018CH';
+var VERSION='Reports_Workers v1015CH';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}
 function d(){var S=window.S||{},id=window.WDW_EDIT_DONOR_ID;return (S.wdw&&S.wdw.donors||[]).find(x=>String(x.id)===String(id));}
 function budget(x){return n(x&&(x.totalBudget||x.budget||x.totalAmount||x.totalPeriodAmount));}
 function pfxsBefore(p){var a=[],s={};[...document.querySelectorAll('#wdw-input .v710-month-cell[data-pfx]')].some(c=>{var q=c.getAttribute('data-pfx');if(q===p)return true;if(q&&!s[q]){s[q]=1;a.push(q)}return false});return a;}
@@ -23865,11 +23339,11 @@ setV();
 })();
 </script>
 
-<script id="v1018CH-v780-manual-free-balance-fix">
+<script id="v1015CH-v780-manual-free-balance-fix">
 (function(){
-var VERSION='Reports_Workers v1018CH';
+var VERSION='Reports_Workers v1015CH';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}
 function nextM(m){m=String(m||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(m))return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0')}
 function months(a,b){var out=[],c=String(a||'').slice(0,7),e=String(b||'').slice(0,7),g=0;if(!c||!e)return out;while(c<=e&&g++<80){out.push(c);c=nextM(c)}return out}
 function by(id){return document.getElementById(id)}
@@ -23902,11 +23376,11 @@ setV();
 })();
 </script>
 
-<script id="v1018CH-v780-no-date-override-calc-fix">
+<script id="v1015CH-v780-no-date-override-calc-fix">
 (function(){
-var VERSION='Reports_Workers v1018CH';
+var VERSION='Reports_Workers v1015CH';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}
 function nextM(m){m=String(m||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(m))return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0')}
 function months(a,b){var out=[],c=String(a||'').slice(0,7),e=String(b||'').slice(0,7),g=0;if(!c||!e)return out;while(c<=e&&g++<80){out.push(c);c=nextM(c)}return out}
 function by(id){return document.getElementById(id)}
@@ -23929,10 +23403,10 @@ setV();
 })();
 </script>
 
-<script id="v1018CH-monthly-cost-display-only-active-months">
+<script id="v1015CH-monthly-cost-display-only-active-months">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
   window.v929MonthlyCostOpen = window.v929MonthlyCostOpen || {};
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
@@ -23966,7 +23440,7 @@ setV();
     return amount;
   }
   function usedFor(name,m,monthlyCost){var total=0,nn=norm(name);donors().forEach(function(d){(d.workers||[]).forEach(function(w){if(norm(w&&w.name)===nn)total+=rowAmount(w,d,m,monthlyCost);});});return total;}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}catch(e){}}
   function td(v,cls){return '<td class="v929-num '+(cls||'')+'">'+v+'</td>';}
   function detailRow(key,label,values,annual,kind){var html='<tr class="v929-detail-row" data-detail="'+esc(key)+'" style="display:'+(window.v929MonthlyCostOpen[key]?'table-row':'none')+'"><td></td><td class="v929-label">'+esc(label)+'</td>';values.forEach(function(v){html+=td(v,kind||'');});html+='<td class="v929-num v929-annual '+(kind||'')+'">'+annual+'</td></tr>';return html;}
   window.v929ToggleCostWorker=function(key){window.v929MonthlyCostOpen[key]=!window.v929MonthlyCostOpen[key];var open=!!window.v929MonthlyCostOpen[key];document.querySelectorAll('[data-detail="'+CSS.escape(key)+'"]').forEach(function(tr){tr.style.display=open?'table-row':'none';});var ar=document.querySelector('[data-arrow="'+CSS.escape(key)+'"]');if(ar)ar.textContent=open?'▾':'◂';var row=document.querySelector('[data-main="'+CSS.escape(key)+'"]');if(row)row.classList.toggle('open',open);};
@@ -23995,16 +23469,16 @@ setV();
 })();
 </script>
 
-<script id="v1018CH-calc-monthly-button-fix">
+<script id="v1015CH-calc-monthly-button-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
   function by(id){return document.getElementById(id);}
   function ym(v){var m=String(v||'').match(/^(\d{4})-(\d{2})/);return m?m[1]+'-'+m[2]:'';}
   function nextM(m){m=ym(m);if(!m)return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0');}
   function months(a,b){var out=[],c=ym(a),e=ym(b),g=0;if(!c||!e)return out;while(c<=e&&g++<120){out.push(c);c=nextM(c)}return out;}
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}catch(e){}}
   function findPosition(posid){var S=window.S||{}, found=null;((S.wdw&&S.wdw.donors)||[]).forEach(function(d){(d.fundedPositions||[]).forEach(function(p){if(String(p.positionId)===String(posid))found=p;});});return found;}
   function readApproved(posid,p){var ft=(by('v780-pos-ft-'+posid)||{}).value||(p&&p.fundingType)||'amount';var val=n((by('v780-pos-val-'+posid)||{}).value||(ft==='amount'?(p&&p.approvedAmount):(p&&p.approvedPct)));return {ft:ft,val:val};}
   window.v780AutoRedistribute=function(posid,idx,m){var el=by('v780-month-'+posid+'-'+idx+'-'+m);if(el)el.setAttribute('data-manual','1');};
@@ -24043,17 +23517,17 @@ setV();
 </script>
 
 
-<style id="v1018CH-monthly-cost-one-scroll">
+<style id="v1015CH-monthly-cost-one-scroll">
 #wdw-monthlycost .wdw-panel{max-height:none!important;overflow:visible!important;}
 #wdw-monthlycost .wdw-table{margin-bottom:24px;}
 </style>
-<script id="v1018CH-budget-employer-costs">
+<script id="v1015CH-budget-employer-costs">
 (function(){
-  var VERSION='Reports_Workers v1018CH';
+  var VERSION='Reports_Workers v1015CH';
   var BUDGET_COSTS={"תניה":346430.16,"דווה":310828.32,"אדם":107663.54,"סתיו":251870.94,"מעיין":98476.53,"אודיה":106400.0,"נעה":215994.36,"שי":222861.24,"ליטל":186240.28,"אסנת":296399.16,"סיגי":210502.86,"מוחמד":191387.48,"שאדי":228353.28,"סועאד":226889.76,"ניהאיה":104400.0,"עלא":279649.26,"לנא":38465.14};
   function norm(s){return String(s||'').trim().replace(/\s+/g,' ');}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1015CH');}catch(e){}}
   var old=window.wdwGetEmployerCostByName;
   window.wdwGetEmployerCostByName=function(name){
     var nn=norm(name);
@@ -24158,312 +23632,4 @@ window.wdwExportMonthlyPctXlsx=function(){
     a.download='WDW_אחוז_חודשי_'+year+'.xlsx';a.click();
   }).catch(function(e){alert('שגיאה: '+e);});
 };
-</script>
-
-<script id="v1018CH-timesheet-donor-writer-final">
-(function(){
-  'use strict';
-  var VERSION='v1018CH';
-  var FULL_VERSION='Reports_Workers v1018CH';
-  function S0(){ return window.S || (typeof S!=='undefined'?S:null); }
-  function n(v){ var x=parseFloat(String(v==null?'':v).replace(/,/g,'')); return isFinite(x)?x:0; }
-  function norm(s){ return String(s||'').trim().replace(/\s+/g,' '); }
-  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-  function ym(v){ var m=String(v||'').match(/^(\d{4})-(\d{2})/); return m?m[1]+'-'+m[2]:''; }
-  function nextMonth(m){ var y=+m.slice(0,4), mo=+m.slice(5,7)+1; if(mo>12){mo=1;y++;} return y+'-'+String(mo).padStart(2,'0'); }
-  function monthsBetween(a,b){ a=ym(a); b=ym(b); var out=[], g=0; if(!a||!b) return out; while(a<=b&&g++<240){out.push(a); a=nextMonth(a);} return out; }
-  function monthKeyFromModal(){
-    var y=parseInt(document.getElementById('wdw-write-year-only')?.value,10)||((S0()&&S0().year)||new Date().getFullYear());
-    var mv=document.getElementById('wdw-write-month-only')?.value;
-    if(/^\d{4}-\d{2}$/.test(String(mv||''))) return mv;
-    var mi=parseInt(mv,10); if(!isFinite(mi)) mi=new Date().getMonth();
-    if(mi>=1&&mi<=12 && String(mv).length<=2) mi=mi-1;
-    return y+'-'+String(mi+1).padStart(2,'0');
-  }
-  function monthOptions(selected){
-    var m=ym(selected), y=m?parseInt(m.slice(0,4),10):((S0()&&S0().year)||new Date().getFullYear()), sm=m?parseInt(m.slice(5,7),10)-1:new Date().getMonth();
-    var arr=window.MONTHS||['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
-    return arr.map(function(x,i){return '<option value="'+i+'" '+(i===sm?'selected':'')+'>'+x+'</option>';}).join('');
-  }
-  function yearOptions(selected){
-    var y=selected?parseInt(String(selected).slice(0,4),10):((S0()&&S0().year)||new Date().getFullYear()), out='';
-    for(var yy=2024;yy<=2030;yy++) out+='<option value="'+yy+'" '+(yy===y?'selected':'')+'>'+yy+'</option>';
-    return out;
-  }
-  function statusKey(st){
-    st=String(st||'active').trim().toLowerCase();
-    if(st==='inactive'||st==='לא פעיל'||st==='לא-פעיל') return 'inactive';
-    if(st==='pending'||st==='ממתין'||st==='ממתין לאישור') return 'pending';
-    if(st==='ended'||st==='הסתיים'||st==='סתיים') return 'ended';
-    return 'active';
-  }
-  function donorActiveForTimesheet(d,m){
-    if(!d) return false;
-    var sk=statusKey(d.status);
-    if(sk==='inactive'||sk==='pending'||sk==='ended') return false;
-    var st=ym(d.startDate||d.startMonth), en=ym(d.endDate||d.endMonth);
-    if(st&&m<st) return false;
-    if(en&&m>en) return false;
-    return true;
-  }
-  function rowActive(row, donor, m){
-    if(!row||row.active===false) return false;
-    if(!donorActiveForTimesheet(donor,m)) return false;
-    var st=ym(row.startMonth||row.startDate)||ym(donor&&donor.startDate||donor&&donor.startMonth);
-    var en=ym(row.endMonth||row.endDate)||ym(donor&&donor.endDate||donor&&donor.endMonth);
-    if(st&&m<st) return false;
-    if(en&&m>en) return false;
-    var blocked=row.blockedMonths||[]; if(blocked.indexOf(m)!==-1) return false;
-    return true;
-  }
-  function workerRec(name){ var S=S0(); return ((S&&S.workers)||[]).find(function(w){return norm(w&&w.name)===norm(name);})||null; }
-  function annualCost(name){
-    if(typeof window.wdwGetEmployerCostByName==='function'){ var c=n(window.wdwGetEmployerCostByName(name)); if(c>0) return c; }
-    var S=S0(), costs=(S&&S.wdw&&S.wdw.employerCosts)||{}, nn=norm(name), k=Object.keys(costs).find(function(x){return norm(x)===nn;});
-    return n(costs[nn] || (k?costs[k]:0));
-  }
-  function activeMonthsForWorkerYear(name, year){
-    var rec=workerRec(name), st=year+'-01', en=year+'-12';
-    if(rec){
-      var rs=ym(rec.startMonth||rec.startDate); if(rs&&rs.slice(0,4)===String(year)) st=rs;
-      var re=ym(rec.endMonth||rec.endDate); if(re&&re.slice(0,4)===String(year)) en=re;
-    }
-    var ms=monthsBetween(st,en); return ms.length||12;
-  }
-  function monthlyCost(name,m){ var c=annualCost(name), y=parseInt(String(m).slice(0,4),10); var am=activeMonthsForWorkerYear(name,y); return c>0?c/(am||12):0; }
-  function mapVal(map,m){ if(!map) return null; if(Object.prototype.hasOwnProperty.call(map,m)&&String(map[m]).trim()!=='') return n(map[m]); return null; }
-  function amountMonth(row, donor, m){
-    var mv=mapVal(row.v780MonthlyAmount||row.monthlyAmount||row.fixedMonths,m); if(mv!==null) return mv;
-    var vt=String(row.valueType||row.fundingType||'');
-    var total=n(row.totalPeriodAmount||row.approvedAmount||row.value);
-    if(total>0 && (vt.indexOf('amount')!==-1||vt.indexOf('סכום')!==-1||row.totalPeriodAmount||row.approvedAmount)){
-      var st=ym(row.startMonth||row.startDate)||ym(donor&&donor.startDate||donor&&donor.startMonth)||m;
-      var en=ym(row.endMonth||row.endDate)||ym(donor&&donor.endDate||donor&&donor.endMonth)||m;
-      var ms=monthsBetween(st,en).filter(function(x){return !(row.blockedMonths||[]).includes(x);});
-      return ms.length?total/ms.length:0;
-    }
-    return null;
-  }
-  function pctFor(row, donor, m, name){
-    var mp=mapVal(row.monthlyPct,m); if(mp!==null) return mp;
-    var amt=amountMonth(row,donor,m); if(amt!==null){ var mc=monthlyCost(name,m); return mc>0?amt/mc*100:0; }
-    if(String(row.valueType||'')==='percent'||String(row.fundingType||'').indexOf('אחוז')!==-1) return n(row.value);
-    return 0;
-  }
-  function addRow(out, worker, donor, pct){
-    pct=Math.round(n(pct)*10)/10; if(pct<=0) return;
-    var tsName=norm(donor.timesheetName||donor.tsName||donor.name); if(!tsName) return;
-    var ex=out.find(function(r){return norm(r.worker)===norm(worker)&&norm(r.tsName)===norm(tsName);});
-    if(ex) ex.pct=Math.round((ex.pct+pct)*10)/10;
-    else out.push({worker:worker, donor:donor.name||tsName, tsName:tsName, pct:pct});
-  }
-  window.v1016BuildTimesheetDonorRows=function(m, selectedWorkers){
-    var S=S0(), donors=(S&&S.wdw&&S.wdw.donors)||[], want=(selectedWorkers||[]).map(norm), out=[];
-    donors.forEach(function(d){
-      if(!donorActiveForTimesheet(d,m)) return;
-      (d.workers||[]).forEach(function(w){
-        var wn=norm(w&&w.name); if(!wn||want.indexOf(wn)===-1) return;
-        if(!rowActive(w,d,m)) return;
-        addRow(out, w.name, d, pctFor(w,d,m,w.name));
-      });
-      (d.fundedPositions||[]).forEach(function(p){
-        (p.assignments||[]).forEach(function(a){
-          var wn=norm(a&& (a.workerName||a.name||a.worker)); if(!wn||want.indexOf(wn)===-1) return;
-          var row={
-            name:wn, active:a.active!==false, roleInDonor:p.positionTitle||'',
-            startMonth:a.startMonth||p.startMonth||d.startDate||d.startMonth,
-            endMonth:a.endMonth||p.endMonth||d.endDate||d.endMonth,
-            value:a.approvedPct||p.approvedPct||0,
-            valueType:(String(p.fundingType||'').indexOf('amount')!==-1||String(p.fundingType||'').indexOf('סכום')!==-1)?'amount':'percent',
-            fundingType:p.fundingType||'', totalPeriodAmount:n(a.approvedAmount||p.approvedAmount||p.totalPeriodAmount),
-            approvedAmount:n(a.approvedAmount||0), monthlyPct:a.monthlyPct||{}, monthlyAmount:a.monthlyAmount||{}, fixedMonths:a.fixedMonths||{}, blockedMonths:a.blockedMonths||p.blockedMonths||[]
-          };
-          if(!rowActive(row,d,m)) return;
-          addRow(out, wn, d, pctFor(row,d,m,wn));
-        });
-      });
-    });
-    return out;
-  };
-  function absencesForMonth(m){
-    var S=S0(), out={}, ymKey=ym(m);
-    if(S&&S.months){ Object.keys(S.months).forEach(function(k){ var md=S.months[k]||{}; ['prev','cur'].forEach(function(part){ (md[part]||[]).forEach(function(day){ var ds=String(day.date||'').substring(0,10); if(ds.substring(0,7)!==ymKey) return; Object.keys(day.cells||{}).forEach(function(w){ if(!out[ds])out[ds]={}; out[ds][norm(w)]=true; }); }); }); }); }
-    (S&&S.holidays||[]).forEach(function(h){ var st=String(h.start||'').substring(0,10), en=String(h.end||h.start||'').substring(0,10); if(!st) return; var d=new Date(st+'T00:00:00Z'), e=new Date(en+'T00:00:00Z'); while(d<=e){ var ds=d.toISOString().substring(0,10); if(ds.substring(0,7)===ymKey){ if(!out[ds])out[ds]={}; if(h.workers==='all') out[ds]['__all__']=true; else (h.workers||[]).forEach(function(w){out[ds][norm(w)]=true;}); } d.setUTCDate(d.getUTCDate()+1); } });
-    return out;
-  }
-  window.wdwOpenWriteTimesheet=function(){
-    var old=document.getElementById('wdw-write-modal'); if(old) old.remove();
-    var m=(typeof wdwMonthKey==='function'?wdwMonthKey():((S0()&&S0().year)||new Date().getFullYear())+'-01');
-    var workers=(typeof wdwWorkersList==='function'?wdwWorkersList():((S0()&&S0().workers)||[]).map(function(w){return w.name;})).filter(Boolean);
-    var checks=workers.map(function(w){return '<label style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:#f9fafb;border-radius:6px;cursor:pointer;direction:rtl"><input class="wdw-write-worker" type="checkbox" value="'+esc(w)+'" checked> '+esc(w)+'</label>';}).join('');
-    var html='<div class="wdw-modal-backdrop" id="wdw-write-modal" onclick="if(event.target===this)wdwCloseWriteTimesheet()"><div class="wdw-modal" style="max-width:680px;width:90vw;direction:rtl;max-height:90vh;overflow-y:auto">'+
-      '<h3 style="margin:0 0 6px;font-size:16px">אחוזי תורמים</h3>'+ 
-      '<div class="wdw-muted" style="margin-bottom:14px">כתיבה לקובץ Timesheet בלי שינוי עיצוב, נוסחאות קיימות או Core & Others.</div>'+ 
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px"><div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">חודש</label><select id="wdw-write-month-only" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px">'+monthOptions(m)+'</select></div><div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">שנה</label><select id="wdw-write-year-only" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px">'+yearOptions(m)+'</select></div></div>'+ 
-      '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">קובץ Timesheet (xlsx)</label><input type="file" id="wdw-write-file" accept=".xlsx" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:13px"></div>'+ 
-      '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">ימי היעדרות</label><div style="display:flex;gap:16px"><label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="wdw-write-display" value="visible" checked> גלוי</label><label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="wdw-write-display" value="transparent"> שקוף</label></div></div>'+ 
-      '<div style="margin-bottom:8px"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">עובדים</label><div style="margin-bottom:6px;display:flex;gap:6px"><button class="wdw-navbtn" onclick="document.querySelectorAll(\'.wdw-write-worker\').forEach(function(c){c.checked=true})">בחר הכל</button><button class="wdw-navbtn" onclick="document.querySelectorAll(\'.wdw-write-worker\').forEach(function(c){c.checked=false})">נקה</button></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:4px">'+checks+'</div></div>'+ 
-      '<div class="wdw-modal-actions" style="margin-top:14px"><button class="wdw-write-btn" onclick="wdwConfirmWriteTimesheet()">אשר וכתוב</button><button class="wdw-navbtn" onclick="wdwCloseWriteTimesheet()">בטל</button></div></div></div>';
-    document.body.insertAdjacentHTML('beforeend',html);
-  };
-  window.wdwCloseWriteTimesheet=function(){ var el=document.getElementById('wdw-write-modal'); if(el) el.remove(); };
-  window.wdwConfirmWriteTimesheet=function(){
-    var m=monthKeyFromModal();
-    var workers=[].slice.call(document.querySelectorAll('.wdw-write-worker:checked')).map(function(c){return c.value;});
-    if(!workers.length){alert('בחר לפחות עובד אחד');return;}
-    var fileInput=document.getElementById('wdw-write-file');
-    if(!fileInput||!fileInput.files||!fileInput.files.length){alert('יש לבחור קובץ Timesheet');return;}
-    if(typeof pyodide==='undefined'||!pyodide){alert('מנוע Python עדיין לא טעון');return;}
-    var rows=window.v1016BuildTimesheetDonorRows(m,workers);
-    if(!rows.length){alert('לא נמצאו אחוזי תורמים לכתיבה בחודש שנבחר');return;}
-    var displayMode=document.querySelector('input[name="wdw-write-display"]:checked')?.value||'visible';
-    var reader=new FileReader();
-    reader.onload=function(e){window.v1016ProcessTimesheetFile(e.target.result,rows,m,displayMode,absencesForMonth(m));};
-    reader.readAsArrayBuffer(fileInput.files[0]);
-  };
-  window.v1016ProcessTimesheetFile=function(arrayBuffer,rows,month,displayMode,absences){
-    var ymKey=ym(month), bytes=new Uint8Array(arrayBuffer), bin='', chunk=8192;
-    for(var i=0;i<bytes.length;i+=chunk) bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk));
-    var b64=btoa(bin);
-    var PY=`
-import io, base64, json, re, datetime
-from copy import copy
-from openpyxl import load_workbook
-from openpyxl.utils.datetime import from_excel
-
-VERSION='v1018CH'
-
-def norm(s):
-    return re.sub(r'\\s+',' ',str(s or '').strip())
-
-def cell_date(cell):
-    v=cell.value
-    if isinstance(v, datetime.datetime): return v.date()
-    if isinstance(v, datetime.date): return v
-    if isinstance(v, (int,float)):
-        try: return from_excel(v).date()
-        except Exception: return None
-    return None
-
-def pct_text(v):
-    try: return ('%g' % round(float(v),4))
-    except Exception: return '0'
-
-def header_row(ws):
-    for r in range(1, min(ws.max_row,80)+1):
-        a=norm(ws.cell(r,1).value).lower()
-        c=norm(ws.cell(r,3).value).lower()
-        if a=='date' or c=='hours worked': return r
-    return 7
-
-def lookup_rows(ws, hr):
-    # Robustly find the lookup rows used by the template header.
-    # Ignore accidental formulas like =A9 inside old/duplicate sheets; donor lookup is near the bottom.
-    core_row=None
-    for rr in range(max(1, ws.max_row-80), ws.max_row+1):
-        if norm(ws.cell(rr,1).value) == 'Core & Others':
-            core_row=rr
-            break
-    if core_row:
-        base=max(hr+1, core_row-15)
-        return [base+i for i in range(15)]
-    refs=[]
-    for c in range(4,19):
-        val=ws.cell(hr,c).value
-        m=re.search(r'\$?A\$?(\d+)', str(val or ''))
-        if m:
-            rr=int(m.group(1))
-            if rr >= hr+100:
-                refs.append((c,rr))
-    if refs:
-        base=refs[0][1]-(refs[0][0]-4)
-        return [base+i for i in range(15)]
-    base=max(hr+1, ws.max_row-16)
-    return [base+i for i in range(15)]
-
-
-def safe_set(ws, r, c, value):
-    cell=ws.cell(r,c)
-    if cell.__class__.__name__ == 'MergedCell':
-        return False
-    cell.value=value
-    return True
-
-def write_version(ws):
-    start=max(1, ws.max_row-30)
-    for r in range(start, ws.max_row+1):
-        v=ws.cell(r,1).value
-        if isinstance(v,str) and re.search(r'v\d+(CH|CL)', v):
-            safe_set(ws, r, 1, VERSION)
-            return
-    safe_set(ws, ws.max_row+2, 1, VERSION)
-
-def run(wb_b64, rows_json, abs_json, ym_key, display_mode):
-    wb=load_workbook(io.BytesIO(base64.b64decode(wb_b64)))
-    all_rows=json.loads(rows_json)
-    absences=json.loads(abs_json or '{}')
-    by_worker={}
-    for r in all_rows:
-        by_worker.setdefault(norm(r.get('worker')),[]).append(r)
-    touched=0; formulas=0; missing=[]
-    sheet_map={norm(s):s for s in wb.sheetnames}
-    for worker, donor_rows in by_worker.items():
-        sname=sheet_map.get(norm(worker))
-        if not sname:
-            missing.append(worker); continue
-        ws=wb[sname]
-        hr=header_row(ws)
-        lrows=lookup_rows(ws,hr)
-        for i, rr in enumerate(lrows[:15]):
-            cur=norm(ws.cell(rr,1).value)
-            if cur == 'Core & Others':
-                continue
-            safe_set(ws, rr, 1, donor_rows[i].get('tsName','-') if i < len(donor_rows) else '-')
-        for r in range(hr+1, ws.max_row+1):
-            d=cell_date(ws.cell(r,1))
-            if not d or d.strftime('%Y-%m') != ym_key: continue
-            if d.weekday() in (4,5): continue  # Friday/Saturday
-            cval=ws.cell(r,3).value
-            if isinstance(cval,str) and cval.strip().lower()=='weekend': continue
-            for c in range(4,19):
-                safe_set(ws, r, c, None)
-            ds=d.strftime('%Y-%m-%d')
-            absent = bool(absences.get(ds,{}).get(worker) or absences.get(ds,{}).get('__all__'))
-            for i, dr in enumerate(donor_rows[:15]):
-                cell=ws.cell(r,4+i)
-                if cell.__class__.__name__ == 'MergedCell':
-                    continue
-                cell.value='='+pct_text(dr.get('pct'))+'%*C'+str(r)
-                if display_mode=='transparent' and absent:
-                    f=copy(cell.font); f.color='FFFFFF'; cell.font=f
-                formulas+=1
-        write_version(ws); touched+=1
-    for sn in wb.sheetnames:
-        if norm(sn) in ['תורמים','donors']:
-            safe_set(wb[sn], 1, 5, VERSION)
-    out=io.BytesIO(); wb.save(out)
-    return json.dumps({'b64':base64.b64encode(out.getvalue()).decode(),'stats':{'workers':touched,'formulas':formulas,'missing':missing}}, ensure_ascii=False)
-result = run(wb_b64, rows_json, abs_json, ym_key, display_mode)
-result
-`;
-    pyodide.globals.set('wb_b64',b64);
-    pyodide.globals.set('rows_json',JSON.stringify(rows));
-    pyodide.globals.set('abs_json',JSON.stringify(absences||{}));
-    pyodide.globals.set('ym_key',ymKey);
-    pyodide.globals.set('display_mode',displayMode||'visible');
-    pyodide.runPythonAsync(PY).then(function(txt){
-      var res=JSON.parse(txt), binStr=atob(res.b64), outBytes=new Uint8Array(binStr.length);
-      for(var i=0;i<binStr.length;i++) outBytes[i]=binStr.charCodeAt(i);
-      var blob=new Blob([outBytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-      var url=URL.createObjectURL(blob), a=document.createElement('a');
-      a.href=url; a.download='Timesheet_'+ymKey+'.xlsx'; a.click(); URL.revokeObjectURL(url);
-      if(typeof wdwCloseWriteTimesheet==='function') wdwCloseWriteTimesheet();
-      var msg='נכתב Timesheet: '+res.stats.workers+' עובדים, '+res.stats.formulas+' נוסחאות.';
-      if(res.stats.missing&&res.stats.missing.length) msg+=' חסרים טאבים: '+res.stats.missing.join(', ');
-      alert(msg);
-    }).catch(function(err){ alert('שגיאה בכתיבת Timesheet: '+(err&&err.message?err.message:err)); console.error(err); });
-  };
-  function setVersion(){ try{ var t=document.querySelector('.topbar-title'); if(t)t.textContent=FULL_VERSION; document.title=document.title.replace(/v\d+(CH|CL)/,'v1018CH'); }catch(e){} }
-  setVersion(); document.addEventListener('DOMContentLoaded',setVersion); setTimeout(setVersion,250);
-})();
 </script>
