@@ -7595,6 +7595,33 @@ window.wdwProcessTimesheetFile=function(arrayBuffer,rows,month,displayMode){
         else result.push({tsName:tsName,pct:Math.round(pct*10)/10});
       });
     });
+    // מקור 2: fundedPositions — Norway, UNDP, UNDP Sida וכו'
+    (window.S&&window.S.wdw&&window.S.wdw.donors||[]).forEach(function(d){
+      if(d.status==='inactive'||d.status==='pending'||d.status==='הסתיים') return;
+      var tsName=d.timesheetName||'';
+      if(!tsName) return;
+      // אל תכפיל תורמים שכבר נמצאים מ-d.workers
+      if(result.find(function(x){return x.tsName===tsName;})) return;
+      var dEnd=d.endDate||d.endMonth||'';
+      var dStart=d.startDate||d.startMonth||'';
+      if(dEnd&&dEnd.substring(0,7)<ym) return;
+      if(dStart&&dStart.substring(0,7)>ym) return;
+      (d.fundedPositions||[]).forEach(function(p){
+        (p.assignments||[]).forEach(function(a){
+          if(!a||(a.workerName||'').trim()!==(workerName||'').trim()) return;
+          var aStart=a.startMonth||p.startMonth||'';
+          var aEnd=a.endMonth||p.endMonth||'';
+          if(aStart&&ym<aStart) return;
+          if(aEnd&&ym>aEnd) return;
+          var monthly=a.monthlyAmount&&a.monthlyAmount[ym];
+          if(!monthly) return;
+          if(!result.find(function(x){return x.tsName===tsName;})){
+            result.push({tsName:tsName,pct:0}); // pct=0 כי אין עלות מעביד — שם בלבד
+          }
+        });
+      });
+    });
+
     return result;
   }
 
