@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v1261CL | גישה</title>
+<title>Reports_Workers v1262CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -351,7 +351,7 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v1261CL</span>
+<span class="topbar-title">Reports_Workers v1262CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות ותרומות</div>
 <div class="topbar-left">
@@ -460,10 +460,15 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
 </div>
 <div class="tab-content" id="tab-expenses">
 <div style="padding:12px 4px">
-  <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid #e5e7eb">
-    <div id="expensesSubTab1" onclick="switchExpensesSubTab(1)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#073f3d;border-bottom:3px solid #073f3d">סיכום</div>
-    <div id="expensesSubTab2" onclick="switchExpensesSubTab(2)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">תורמים</div>
-    <div id="expensesSubTab3" onclick="switchExpensesSubTab(3)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">שיוך</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:2px solid #e5e7eb">
+    <div style="display:flex;gap:0">
+      <div id="expensesSubTab1" onclick="switchExpensesSubTab(1)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#073f3d;border-bottom:3px solid #073f3d">סיכום</div>
+      <div id="expensesSubTab2" onclick="switchExpensesSubTab(2)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">תורמים</div>
+      <div id="expensesSubTab3" onclick="switchExpensesSubTab(3)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">שיוך</div>
+      <div id="expensesSubTab4" onclick="switchExpensesSubTab(4)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">תרומה</div>
+      <div id="expensesSubTab5" onclick="switchExpensesSubTab(5)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">מספר</div>
+    </div>
+    <button id="expensesActionBtn" style="display:none;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#073f3d;color:#fff;margin-bottom:6px"></button>
   </div>
 
   <div id="expensesSubContent1">
@@ -475,26 +480,28 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
   </div>
 
   <div id="expensesSubContent2" style="display:none">
-    <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:14px">
-      <button onclick="openDonorCommitmentModal()" style="border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#073f3d;color:#fff">+ התחייבות תורם</button>
-    </div>
     <div id="expensesDonorsListWrap"></div>
   </div>
 
   <div id="expensesSubContent3" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div style="display:flex;gap:6px">
-        <select id="recExpFilterCat" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px"><option value="">כל הקטגוריות</option></select>
-        <select id="recExpFilterDonor" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px"><option value="">כל התורמים</option></select>
-        <input id="recExpFilterNum" oninput="renderExpenseRecordsList()" placeholder="חיפוש מספר הוצאה" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px;width:140px"/>
-        <select id="recExpFilterStatus" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px">
-          <option value="">כל הסטטוסים</option>
-          <option value="partial">לא שויך במלואו</option>
-        </select>
-      </div>
-      <button onclick="openExpenseRecordModal()" style="border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#073f3d;color:#fff">+ הוצאה חדשה</button>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <select id="recExpFilterCat" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px"><option value="">כל הקטגוריות</option></select>
+      <select id="recExpFilterDonor" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px"><option value="">כל התורמים</option></select>
+      <input id="recExpFilterNum" oninput="renderExpenseRecordsList()" placeholder="חיפוש מספר הוצאה" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px;width:140px"/>
+      <select id="recExpFilterStatus" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px">
+        <option value="">כל הסטטוסים</option>
+        <option value="partial">לא שויך במלואו</option>
+      </select>
     </div>
     <div id="expenseRecordsListWrap"></div>
+  </div>
+
+  <div id="expensesSubContent4" style="display:none">
+    <div id="tromahListWrap"></div>
+  </div>
+
+  <div id="expensesSubContent5" style="display:none">
+    <div id="misparListWrap"></div>
   </div>
 </div>
 </div>
@@ -7844,7 +7851,7 @@ def run(wb_b64, writes_json, employer_costs_json='{}'):
     ver_sheets = [s for s in wb.sheetnames if s.strip() in ['תורמים','donors']]
     if ver_sheets:
         vs = wb[ver_sheets[0]]
-        vs.cell(1, 5).value = 'v1261CL'
+        vs.cell(1, 5).value = 'v1262CL'
 
     out = io.BytesIO()
     wb.save(out)
@@ -9461,7 +9468,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   var st=document.createElement('style'); st.id='v733CH-style'; st.textContent=css; document.head.appendChild(st);
   installRenderHooks();
   window.addEventListener('load',function(){setTimeout(function(){installRenderHooks();cleanupAnnualColumns();enhanceManagement();},0);});
-  /* v1261CL: setInterval הוסר - installRenderHooks מוגן ולכן די בקריאה החד-פעמית למעלה */
+  /* v1262CL: setInterval הוסר - installRenderHooks מוגן ולכן די בקריאה החד-פעמית למעלה */
 })();
 </script>
 <script id="v735CH-annual-per-detail-override">
@@ -9628,7 +9635,7 @@ window.wdwCalcMonthlyFromPeriod = function(pfx){
   document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct'))setTimeout(function(){install();ensureDetailAnnuals();},80);},true);
   document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))setTimeout(function(){install();ensureDetailAnnuals();},80);},true);
   window.addEventListener('load',function(){setTimeout(function(){install();ensureDetailAnnuals();},200);});
-  /* v1261CL: setInterval הוסר - די בקריאות החד-פעמיות */
+  /* v1262CL: setInterval הוסר - די בקריאות החד-פעמיות */
 })();
 </script>
 <script>
@@ -10368,13 +10375,13 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;S.wo
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1261CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1262CL';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
   setTimeout(function(){installMonthUiHook();transformMonthTables();finalVersion();},50);
-  /* v1261CL: setInterval הוסר - די בקריאה החד-פעמית */
+  /* v1262CL: setInterval הוסר - די בקריאה החד-פעמית */
 })();
 </script>
 
@@ -10490,9 +10497,9 @@ window.wdwCheckEnded = function(){};
 <script id="v1133CH-dom-balance-calc-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}}
   function donor(){var S=window.S||{}, id=window.WDW_EDIT_DONOR_ID;return (S.wdw&&S.wdw.donors||[]).find(function(d){return String(d.id)===String(id);})||null;}
   function donorBudget(d){return n(d&&(d.totalBudget||d.budget||d.totalAmount||d.totalPeriodAmount));}
   function pfxSeenBefore(current){
@@ -10654,11 +10661,11 @@ window.v780AutoRedistribute=function(posid,workerIdx,changedMonth){
 <script id="v1133CH-annual-dropdown-only">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
 
   function setV(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');
       var t=document.querySelector('.topbar-title');
       if(t) t.textContent=VERSION;
     }catch(e){}
@@ -11015,7 +11022,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v1261CL</span>
+<span class="topbar-title">Reports_Workers v1262CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -11137,10 +11144,15 @@ async function initPyodide(){
 </div>
 <div class="tab-content" id="tab-expenses">
 <div style="padding:12px 4px">
-  <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid #e5e7eb">
-    <div id="expensesSubTab1" onclick="switchExpensesSubTab(1)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#073f3d;border-bottom:3px solid #073f3d">סיכום</div>
-    <div id="expensesSubTab2" onclick="switchExpensesSubTab(2)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">תורמים</div>
-    <div id="expensesSubTab3" onclick="switchExpensesSubTab(3)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">שיוך</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:2px solid #e5e7eb">
+    <div style="display:flex;gap:0">
+      <div id="expensesSubTab1" onclick="switchExpensesSubTab(1)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#073f3d;border-bottom:3px solid #073f3d">סיכום</div>
+      <div id="expensesSubTab2" onclick="switchExpensesSubTab(2)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">תורמים</div>
+      <div id="expensesSubTab3" onclick="switchExpensesSubTab(3)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">שיוך</div>
+      <div id="expensesSubTab4" onclick="switchExpensesSubTab(4)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">תרומה</div>
+      <div id="expensesSubTab5" onclick="switchExpensesSubTab(5)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">מספר</div>
+    </div>
+    <button id="expensesActionBtn" style="display:none;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#073f3d;color:#fff;margin-bottom:6px"></button>
   </div>
 
   <div id="expensesSubContent1">
@@ -11152,26 +11164,28 @@ async function initPyodide(){
   </div>
 
   <div id="expensesSubContent2" style="display:none">
-    <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:14px">
-      <button onclick="openDonorCommitmentModal()" style="border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#073f3d;color:#fff">+ התחייבות תורם</button>
-    </div>
     <div id="expensesDonorsListWrap"></div>
   </div>
 
   <div id="expensesSubContent3" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div style="display:flex;gap:6px">
-        <select id="recExpFilterCat" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px"><option value="">כל הקטגוריות</option></select>
-        <select id="recExpFilterDonor" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px"><option value="">כל התורמים</option></select>
-        <input id="recExpFilterNum" oninput="renderExpenseRecordsList()" placeholder="חיפוש מספר הוצאה" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px;width:140px"/>
-        <select id="recExpFilterStatus" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px">
-          <option value="">כל הסטטוסים</option>
-          <option value="partial">לא שויך במלואו</option>
-        </select>
-      </div>
-      <button onclick="openExpenseRecordModal()" style="border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#073f3d;color:#fff">+ הוצאה חדשה</button>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <select id="recExpFilterCat" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px"><option value="">כל הקטגוריות</option></select>
+      <select id="recExpFilterDonor" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px"><option value="">כל התורמים</option></select>
+      <input id="recExpFilterNum" oninput="renderExpenseRecordsList()" placeholder="חיפוש מספר הוצאה" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px;width:140px"/>
+      <select id="recExpFilterStatus" onchange="renderExpenseRecordsList()" style="border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:12px">
+        <option value="">כל הסטטוסים</option>
+        <option value="partial">לא שויך במלואו</option>
+      </select>
     </div>
     <div id="expenseRecordsListWrap"></div>
+  </div>
+
+  <div id="expensesSubContent4" style="display:none">
+    <div id="tromahListWrap"></div>
+  </div>
+
+  <div id="expensesSubContent5" style="display:none">
+    <div id="misparListWrap"></div>
   </div>
 </div>
 </div>
@@ -13870,7 +13884,7 @@ function startSyncLoop(){
         Object.assign(S,remote);
         S.currentUser=u; Object.assign(S.cutoffs,c);
         saveLocally(); renderAll();
-        // v1261CL: renderAll() לא מרנדר מחדש את מסכי ה-WDW (אחוז משרה/פיצול משרה/עלות
+        // v1262CL: renderAll() לא מרנדר מחדש את מסכי ה-WDW (אחוז משרה/פיצול משרה/עלות
         // משרה) - אחרי כל סנכרון מ-GitHub (כל 30 שניות) הם נשארו במצב לא-מתאים לנתונים
         // החדשים. זה קרה ברקע, בלי קשר לפעולה של המשתמש - בדיוק ה"אקראיות" שדווחה.
         try{
@@ -16206,9 +16220,9 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
   reader.onload=function(e){
     wdwProcessTimesheetFile(e.target.result,rows,m,displayMode);
     // v1147CL: גיבוי אוטומטי - הורדת טבלת "אחוז משרה" המלאה בכל פעם שכותבים אחוזי תורמים לטיימשיט
-    // v1261CL: מוריד שני קבצים - גם עובד וגם תפקיד - במקום רק המצב הנבחר כרגע
+    // v1262CL: מוריד שני קבצים - גם עובד וגם תפקיד - במקום רק המצב הנבחר כרגע
     try{ if(typeof window.wdwExportMonthlyPctXlsxBothModes==='function') window.wdwExportMonthlyPctXlsxBothModes(); else if(typeof window.wdwExportMonthlyPctXlsx==='function') window.wdwExportMonthlyPctXlsx(); }catch(bkErr){ console.warn('גיבוי אוטומטי של אחוז משרה נכשל', bkErr); }
-    // v1261CL: מוריד גם קובץ שלישי - אקסל חופש/מחלה (אותה פונקציה שכבר קיימת להורדה ידנית) -
+    // v1262CL: מוריד גם קובץ שלישי - אקסל חופש/מחלה (אותה פונקציה שכבר קיימת להורדה ידנית) -
     // בעיכוב קל כדי לא להתנגש עם שני הקבצים הקודמים בו-זמנית.
     try{ setTimeout(function(){ if(typeof window.exportExcel==='function') window.exportExcel(); }, 1500); }catch(bkErr2){ console.warn('גיבוי אוטומטי של חופש/מחלה נכשל', bkErr2); }
     // חיווי סיום
@@ -21165,7 +21179,7 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   var st=document.createElement('style'); st.id='v733CH-style'; st.textContent=css; document.head.appendChild(st);
   installRenderHooks();
   window.addEventListener('load',function(){setTimeout(function(){installRenderHooks();cleanupAnnualColumns();enhanceManagement();},0);});
-  /* v1261CL: setInterval הוסר - installRenderHooks מוגן ולכן די בקריאה החד-פעמית למעלה */
+  /* v1262CL: setInterval הוסר - installRenderHooks מוגן ולכן די בקריאה החד-פעמית למעלה */
 })();
 </script>
 <script id="v734CH-targeted-replacement-management-fix">
@@ -21292,7 +21306,7 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   var st=document.createElement('style');st.id='v734CH-style';st.textContent='\n#tab-wdw .v734-inbound-note{margin:-4px 12px 8px 12px;padding:7px 10px;border-inline-start:3px solid #f59e0b;background:#fffaf0;color:#92400e;font-size:11.5px;line-height:1.55;border-radius:8px;border-top:1px solid #fde68a}\n#tab-wdw .v734-inbound-note div+div{margin-top:2px}\n';document.head.appendChild(st);
   hookRender();
   window.addEventListener('load',function(){setTimeout(function(){hookRender();enhanceManagement();cleanupAnnualColumns();},0);});
-  /* v1261CL: setInterval הוסר - די בקריאה החד-פעמית */
+  /* v1262CL: setInterval הוסר - די בקריאה החד-פעמית */
 })();
 </script>
 <script id="v736CH-detail-annual-only-fix">
@@ -21370,7 +21384,7 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
     var root=document.getElementById('wdw-monthlypct');
     if(!root) return;
     ensureDetailAnnuals();
-    // v1261CL: הוסר ה-MutationObserver הקבוע - הוא רץ על כל שינוי קטן בדף, לתמיד,
+    // v1262CL: הוסר ה-MutationObserver הקבוע - הוא רץ על כל שינוי קטן בדף, לתמיד,
     // ותרם לחוסר יציבות אקראית שדווחה. הפעולה החד-פעמית מעל (ensureDetailAnnuals) מספיקה.
   }
   var css='#tab-wdw table.v486-detail-matrix th.v736-annual-th{background:#eef6f5!important;color:#00695c!important;font-weight:900!important;min-width:58px!important}#tab-wdw table.v486-detail-matrix td.v736-annual-cell{font-weight:900!important;border-inline-start:1px solid #d0d5dd!important;border-inline-end:1px solid #d0d5dd!important}';
@@ -21378,7 +21392,7 @@ window.calcWorkerPctV556 = window.calcWorkerPct; // v755CL: שם ייחודי ש
   document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct,#wdw-btn-monthlypct'))setTimeout(function(){ensureDetailAnnuals();},80);},true);
   document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))setTimeout(function(){ensureDetailAnnuals();},80);},true);
   window.addEventListener('load',function(){setTimeout(function(){ensureDetailAnnuals();},200);});
-  // v1261CL: setInterval(700ms) שרץ לתמיד הוסר - היה הגורם החשוד המרכזי לחוסר היציבות.
+  // v1262CL: setInterval(700ms) שרץ לתמיד הוסר - היה הגורם החשוד המרכזי לחוסר היציבות.
 })();
 </script>
 <script>
@@ -22496,7 +22510,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note"></div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1261CL';if(document.title.indexOf('v1261CL')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1262CL';if(document.title.indexOf('v1262CL')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');},0);});
 
   // v866CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -22866,8 +22880,8 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1261CL';
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1262CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');
     },0);
   });
 })();
@@ -22897,7 +22911,7 @@ p.assignments.push(a);return p;}
 <script id="v1133CH-monthly-cost-final-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -22918,7 +22932,7 @@ p.assignments.push(a);return p;}
   window.renderWDWMonthlyCost=function(){var div=document.getElementById('wdw-monthlycost');if(!div)return;var s=S0();if(!s.wdw)s.wdw={};var _vm=s.wdw&&s.wdw.viewMonth;var y=_vm?_vm.substring(0,4):yearNow(); months=monthsOfYear(y), names=workers(), monthNames=['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];var opts='';for(var yy=2024;yy<=2030;yy++)opts+='<option value="'+yy+'" '+(String(yy)===String(y)?'selected':'')+'>'+yy+'</option>';var html='<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">עלות משרה</div><div class="wdw-sub">עלות עובד, ניצול ושארית לפי חודשים — '+esc(y)+'</div></div><label style="font-size:13px;font-weight:700">שנה <select onchange="if(!window.S.wdw)window.S.wdw={};window.S.wdw.viewMonth=this.value+\'-01\';renderWDWMonthlyCost();" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px">'+opts+'</select></label></div>';html+='<div class="wdw-panel"><div style="overflow-x:auto"><table class="wdw-table" style="min-width:1100px;width:max-content"><thead><tr><th>עובד</th><th>שורה</th>';months.forEach(function(m,i){html+='<th style="text-align:center!important">'+monthNames[i]+'</th>';});html+='<th style="text-align:center!important">שנתי</th></tr></thead><tbody>';if(!names.length){html+='<tr><td colspan="15" style="text-align:center!important;color:#64748b;padding:24px!important">אין עובדים להצגה</td></tr>';}names.forEach(function(name,idx){var annual=costAnnual(name), monthly=annual/12, used=months.map(function(m){return usedFor(name,m,monthly);}), totalUsed=used.reduce(function(a,b){return a+b;},0), bg=idx%2?'#fff':'#f8fafc', labels=['עלות חודשית','נוצל ₪','נוצל %','נשאר ₪','נשאר %'];labels.forEach(function(label,ri){html+='<tr style="background:'+bg+'">';if(ri===0)html+='<td rowspan="5"><b>'+esc(name)+'</b><div class="wdw-muted">'+money(annual)+' שנתי</div></td>';html+='<td><b>'+label+'</b></td>';used.forEach(function(u){var v='',color='#334155';if(ri===0)v=money(monthly);if(ri===1){v=money(u);color=(u>monthly*1.001?'#b91c1c':(u>=monthly*.9?'#b45309':'#1d4ed8'));}if(ri===2){var p=monthly?u/monthly*100:0;v=pct(p);color=(p>100?'#b91c1c':(p>=90?'#b45309':'#1d4ed8'));}if(ri===3){v=money(Math.max(0,monthly-u));color='#15803d';}if(ri===4){v=pct(monthly?Math.max(0,monthly-u)/monthly*100:0);color='#15803d';}html+='<td style="text-align:center!important;color:'+color+'">'+v+'</td>';});var av='';if(ri===0)av=money(annual);if(ri===1)av=money(totalUsed);if(ri===2)av=pct(annual?totalUsed/annual*100:0);if(ri===3)av=money(Math.max(0,annual-totalUsed));if(ri===4)av=pct(annual?Math.max(0,annual-totalUsed)/annual*100:0);html+='<td style="text-align:center!important;font-weight:800;background:#edf2f7">'+av+'</td></tr>';});});html+='</tbody></table></div></div></div>';div.innerHTML=html;};
   function showMonthly(){['org','donor','worker','input','reports','monthlypct','monthlycost'].forEach(function(p){var d=document.getElementById('wdw-'+p);if(d)d.style.display=(p==='monthlycost')?'':'none';var b=document.getElementById('wdw-btn-'+p);if(b){b.style.background=(p==='monthlycost')?'#00897B':'#f0f0f0';b.style.color=(p==='monthlycost')?'white':'#333';b.style.fontWeight=(p==='monthlycost')?'bold':'normal';}});var box=document.querySelector('#tab-wdw .s-sec');if(box){box.style.background='transparent';box.style.boxShadow='none';box.style.padding='0';}window.renderWDWMonthlyCost();}
   var oldSwitch=window.switchWDW;window.switchWDW=function(panel){if(panel==='monthlycost'){showMonthly();return;}if(typeof oldSwitch==='function')return oldSwitch.apply(this,arguments);};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');},0);});
 })();
 </script>
 
@@ -22926,7 +22940,7 @@ p.assignments.push(a);return p;}
 <script id="v1133CH-monthly-cost-polish-collapse">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   window.v929MonthlyCostOpen = window.v929MonthlyCostOpen || {};
 
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
@@ -22948,7 +22962,7 @@ p.assignments.push(a);return p;}
   function monthCount(st,en){st=ym(st);en=ym(en);if(!st||!en)return 12;var sy=+st.slice(0,4), sm=+st.slice(5,7), ey=+en.slice(0,4), em=+en.slice(5,7);return Math.max(1,(ey-sy)*12+(em-sm)+1);}
   function rowAmount(w,d,m,monthlyCost){if(!rowActive(w,d,m))return 0;var amount=0, vt=String(w.valueType||w.fundingType||'');if(w.fixedMonths&&w.fixedMonths[m]!=null&&String(w.fixedMonths[m]).trim()!=='') amount+=n(w.fixedMonths[m]);else {var isAmt=(vt.indexOf('amount')!==-1||vt.indexOf('סכום')!==-1||(!w.valueType&&!w.fundingType&&w.totalPeriodAmount));if(isAmt&&n(w.totalPeriodAmount)>0){amount+=n(w.totalPeriodAmount)/monthCount(w.startMonth||w.startDate||d.startDate||d.startMonth,w.endMonth||w.endDate||d.endDate||d.endMonth);}else{var p=(w.monthlyPct&&w.monthlyPct[m]!=null&&String(w.monthlyPct[m]).trim()!=='')?n(w.monthlyPct[m]):n(w.value);amount+=monthlyCost*p/100;}}if(w.replaces){amount+=monthlyCost*n(w.replacesPct||w.replacementPct)/100;}(w.extraReplaces||[]).forEach(function(r){var st=ym(r.startMonth||r.replaceStartMonth||w.startMonth), en=ym(r.endMonth||r.replaceEndMonth||w.endMonth);if(st&&m<st)return;if(en&&m>en)return;amount+=monthlyCost*n(r.pct||r.percent||r.value)/100;});return amount;}
   function usedFor(name,m,monthlyCost){var total=0, nn=norm(name);donors().forEach(function(d){(d.workers||[]).forEach(function(w){if(norm(w&&w.name)===nn)total+=rowAmount(w,d,m,monthlyCost);});});return total;}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}}
 
   function cellMoney(v, cls){return '<td class="v929-num '+(cls||'')+'">'+money(v)+'</td>';}
   function detailRow(key,label,values,annual,kind){
@@ -23030,7 +23044,7 @@ p.assignments.push(a);return p;}
 
 <script id="v1133CH-wdw-management-groups-and-tabs-fix">
 (function(){
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   var PANELS=['org','donor','worker','monthlycost','input','reports','monthlypct','positions','splitcost'];
   var TITLES={active:'פעילים',pending:'ממתינים',ended:'הסתיימו',inactive:'לא פעילים'};
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -23047,7 +23061,7 @@ p.assignments.push(a);return p;}
     var end=ym(d&&d.endDate); if(end && end < thisMonth()) return 'ended';
     return 'active';
   }
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}}
   function setPanelButtons(active){
     PANELS.forEach(function(p){
       var b=document.getElementById('wdw-btn-'+p); if(!b)return;
@@ -23157,12 +23171,12 @@ p.assignments.push(a);return p;}
 (function(){
   'use strict';
 
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
 
   function setVersion(){
     try{
       var t=document.querySelector('.topbar-title'); if(t)t.textContent=VERSION;
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');
     }catch(e){}
   }
   function S0(){return window.S || {};}
@@ -23370,7 +23384,7 @@ p.assignments.push(a);return p;}
 <script id="v1133CH-lana-ended-worker-active-month-cost-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,'').replace('%','').replace('—','').trim());return isFinite(x)?x:0;}
   function norm(s){return String(s||'').trim().replace(/\s+/g,' ');}
@@ -23474,7 +23488,7 @@ p.assignments.push(a);return p;}
     window.v486RenderMonthlyPct=function(){var r=oldRender.apply(this,arguments);patchLater();return r;};
     window.v590RenderMonthlyPct=window.v486RenderMonthlyPct;window.v485RenderMonthlyPct=window.v486RenderMonthlyPct;window.v484RenderMonthlyPct=window.v486RenderMonthlyPct;
   }
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}}
   document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-btn-monthlypct,#wdw-monthlypct'))patchLater();},true);
   document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))patchLater();},true);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setV();patchLater();});else{setV();patchLater();}
@@ -23591,11 +23605,11 @@ p.assignments.push(a);return p;}
 <script id="v1133CH-annual-dropdown-only">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
 
   function setV(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');
       var t=document.querySelector('.topbar-title');
       if(t) t.textContent=VERSION;
     }catch(e){}
@@ -23691,7 +23705,7 @@ p.assignments.push(a);return p;}
 <script id="v1199CL-year-dropdown-stability-final">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   var MIN_YEAR=2026;
   function MAX_YEAR(){ return Math.max(2031, (new Date().getFullYear()+5)); }
   function S0(){ try{ if(typeof S!=='undefined' && S) return S; }catch(e){} return window.S || {}; }
@@ -23702,7 +23716,7 @@ p.assignments.push(a);return p;}
   function keyFor(y){ return 'rw_gisha_data_'+String(y||((S0()||{}).year)||MIN_YEAR); }
 
   function setVersion(){
-    try{ document.title=(document.title||VERSION+' | גישה').replace(/v\d+(CH|CL)/,'v1261CL'); }catch(e){}
+    try{ document.title=(document.title||VERSION+' | גישה').replace(/v\d+(CH|CL)/,'v1262CL'); }catch(e){}
     try{ var t=document.querySelector('.topbar-title'); if(t) t.textContent=VERSION; }catch(e){}
   }
 
@@ -23759,7 +23773,7 @@ p.assignments.push(a);return p;}
   }
   function skeletonFrom(cur,y){
     var next={};
-    next.version='v1261CL';
+    next.version='v1262CL';
     next.currentUser=cur.currentUser||'';
     next.currentUserLevel=cur.currentUserLevel||'';
     next.workers=clone(cur.workers||[]);
@@ -23970,7 +23984,7 @@ p.assignments.push(a);return p;}
             setS(s);
             if(typeof saveLocally==='function') saveLocally();
             if(typeof renderAll==='function') renderAll();
-            // v1261CL: זו ההעתקה האמיתית והפעילה של startSyncLoop (מוגנת עם __v1134SyncStarted) -
+            // v1262CL: זו ההעתקה האמיתית והפעילה של startSyncLoop (מוגנת עם __v1134SyncStarted) -
             // שונה מזו שתוקנה קודם ב-v1251CL, שהתבררה כלא-פעילה. renderAll() לא נוגע במסכי
             // ה-WDW - מרעננים אותם כאן ישירות אם אחד מהם פתוח כרגע.
             try{
@@ -24006,9 +24020,9 @@ p.assignments.push(a);return p;}
 </html>
 <script id="v1133CH-final-balance-override">
 (function(){
-var VERSION='Reports_Workers v1261CL';
+var VERSION='Reports_Workers v1262CL';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}
 function d(){var S=window.S||{},id=window.WDW_EDIT_DONOR_ID;return (S.wdw&&S.wdw.donors||[]).find(x=>String(x.id)===String(id));}
 function budget(x){return n(x&&(x.totalBudget||x.budget||x.totalAmount||x.totalPeriodAmount));}
 function pfxsBefore(p){var a=[],s={};[...document.querySelectorAll('#wdw-input .v710-month-cell[data-pfx]')].some(c=>{var q=c.getAttribute('data-pfx');if(q===p)return true;if(q&&!s[q]){s[q]=1;a.push(q)}return false});return a;}
@@ -24026,9 +24040,9 @@ setV();
 
 <script id="v1133CH-v780-manual-free-balance-fix">
 (function(){
-var VERSION='Reports_Workers v1261CL';
+var VERSION='Reports_Workers v1262CL';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}
 function nextM(m){m=String(m||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(m))return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0')}
 function months(a,b){var out=[],c=String(a||'').slice(0,7),e=String(b||'').slice(0,7),g=0;if(!c||!e)return out;while(c<=e&&g++<80){out.push(c);c=nextM(c)}return out}
 function by(id){return document.getElementById(id)}
@@ -24060,9 +24074,9 @@ setV();
 
 <script id="v1133CH-v780-no-date-override-calc-fix">
 (function(){
-var VERSION='Reports_Workers v1261CL';
+var VERSION='Reports_Workers v1262CL';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}
 function nextM(m){m=String(m||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(m))return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0')}
 function months(a,b){var out=[],c=String(a||'').slice(0,7),e=String(b||'').slice(0,7),g=0;if(!c||!e)return out;while(c<=e&&g++<80){out.push(c);c=nextM(c)}return out}
 function by(id){return document.getElementById(id)}
@@ -24088,7 +24102,7 @@ setV();
 <script id="v1133CH-monthly-cost-display-only-active-months">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   window.v929MonthlyCostOpen = window.v929MonthlyCostOpen || {};
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
@@ -24144,7 +24158,7 @@ setV();
     });
     return out;
   };
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}}
   function td(v,cls){return '<td class="v929-num '+(cls||'')+'">'+v+'</td>';}
   function detailRow(key,label,values,annual,kind){var html='<tr class="v929-detail-row" data-detail="'+esc(key)+'" style="display:'+(window.v929MonthlyCostOpen[key]?'table-row':'none')+'"><td></td><td class="v929-label">'+esc(label)+'</td>';values.forEach(function(v){html+=td(v,kind||'');});html+='<td class="v929-num v929-annual '+(kind||'')+'">'+annual+'</td></tr>';return html;}
   window.v929ToggleCostWorker=function(key){window.v929MonthlyCostOpen[key]=!window.v929MonthlyCostOpen[key];var open=!!window.v929MonthlyCostOpen[key];document.querySelectorAll('[data-detail="'+CSS.escape(key)+'"]').forEach(function(tr){tr.style.display=open?'table-row':'none';});var ar=document.querySelector('[data-arrow="'+CSS.escape(key)+'"]');if(ar)ar.textContent=open?'▾':'◂';var row=document.querySelector('[data-main="'+CSS.escape(key)+'"]');if(row)row.classList.toggle('open',open);};
@@ -24176,13 +24190,13 @@ setV();
 <script id="v1133CH-calc-monthly-button-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
   function by(id){return document.getElementById(id);}
   function ym(v){var m=String(v||'').match(/^(\d{4})-(\d{2})/);return m?m[1]+'-'+m[2]:'';}
   function nextM(m){m=ym(m);if(!m)return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0');}
   function months(a,b){var out=[],c=ym(a),e=ym(b),g=0;if(!c||!e)return out;while(c<=e&&g++<120){out.push(c);c=nextM(c)}return out;}
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}}
   function findPosition(posid){var S=window.S||{}, found=null;((S.wdw&&S.wdw.donors)||[]).forEach(function(d){(d.fundedPositions||[]).forEach(function(p){if(String(p.positionId)===String(posid))found=p;});});return found;}
   function readApproved(posid,p){var ft=(by('v780-pos-ft-'+posid)||{}).value||(p&&p.fundingType)||'amount';var val=n((by('v780-pos-val-'+posid)||{}).value||(ft==='amount'?(p&&p.approvedAmount):(p&&p.approvedPct)));return {ft:ft,val:val};}
   window.v780AutoRedistribute=function(posid,workerIdx,changedMonth){
@@ -24292,11 +24306,11 @@ setV();
 </style>
 <script id="v1133CH-budget-employer-costs">
 (function(){
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   var BUDGET_COSTS={"תניה":346430.16,"דווה":310828.32,"אדם":107663.54,"סתיו":251870.94,"מעיין":98476.53,"אודיה":106400.0,"נעה":215994.36,"שי":222861.24,"ליטל":186240.28,"אסנת":296399.16,"סיגי":210502.86,"מוחמד":191387.48,"שאדי":228353.28,"סועאד":226889.76,"ניהאיה":104400.0,"עלא":279649.26,"לנא":38465.14};
   function norm(s){return String(s||'').trim().replace(/\s+/g,' ');}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}}
   var old=window.wdwGetEmployerCostByName;
   // v1199CL: פונקציית מילוי-קדימה - מוצא את השנה האחרונה שהוגדרה בפועל, עד ואינו כולל שנים מאוחרות ממנה
   function forwardFillByYear(name, year){
@@ -24526,7 +24540,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
 <script id="v1133CH-donor-year-filter-final">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function ensure(){var s=S0(); if(!s.wdw)s.wdw={donors:[]}; if(!Array.isArray(s.wdw.donors))s.wdw.donors=[]; return s;}
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -24537,7 +24551,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
   function selectedYear(){var s=ensure(), vm=ym(s.wdw.viewMonth);return String(vm?parseInt(vm.slice(0,4),10):(s.year||new Date().getFullYear()));}
   function month(){return selectedYear()+'-01';}
   function donors(){return ensure().wdw.donors||[];}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}}
   function statusKey(d){
     var s=String((d&&d.status)||'active').trim().toLowerCase();
     if(s==='לא פעיל'||s==='inactive')return 'inactive';
@@ -24691,7 +24705,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
 
 <script id="v1133CH-version-guard">
 (function(){
-  function setV1030(){try{document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1261CL';}catch(e){}}
+  function setV1030(){try{document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1262CL';}catch(e){}}
   document.addEventListener('DOMContentLoaded',setV1030);
   setTimeout(setV1030,0);
 })();
@@ -24701,7 +24715,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
 <script id="v1133CH-single-source-calculation-only">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,'').replace('%','').trim());return isFinite(x)?x:0;}
   function norm(s){return String(s||'').trim().replace(/\s+/g,' ');}
@@ -24743,7 +24757,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
     window.calcWorkerPct=function(row,m){var res={base:0,replacement:0,total:0};if(!row||!row.worker||!row.donor||!m)return res;var active=(typeof window.rowActive==='function')?window.rowActive(row.worker,row.donor,m):true;if(!active)return res;var repl=replacementPct(row.worker,m), total=rowTotalPct(row.worker,row.donor,m), base=Math.max(0,total-repl);res.base=round1(base);res.replacement=round1(repl);res.total=round1(total);return res;};
     if(window.wdwCH768){window.wdwCH768.rowAmount=function(w,d,m){return sourceAmount(w,d,m);};window.wdwCH768.rowPct=function(w,d,m){return rowTotalPct(w,d,m);};window.wdwCH768.monthlyAmount=monthlyAmount;window.wdwCH768.annualAmount=annualAmount;window.wdwCH768.monthlyPct=monthlyPct;window.wdwCH768.annualPct=annualPct;}
     window.wdwMoneyEngine772={monthlyAmount:monthlyAmount,monthlyPct:monthlyPct,annualAmount:annualAmount,annualPct:annualPct,monthlyCost:monthlyCost,annualCost:annualCost};
-    try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}
+    try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}
   }
   wire();
   document.addEventListener('DOMContentLoaded',wire);
@@ -24871,7 +24885,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
 <script id="v1133CH-org-dashboard-clean-redesign">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
   function S0(){
     try{ if(typeof S!=='undefined' && S && (S.wdw||S.workers)) return S; }catch(e){}
     try{ if(window.S && (window.S.wdw||window.S.workers)) return window.S; }catch(e){}
@@ -24910,7 +24924,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
   function attentionRow(label,sub,count,cls){return '<div class="org1110-row"><div><b>'+esc(label)+'</b><small>'+esc(sub)+'</small></div><span class="org1110-count '+cls+'">'+esc(count)+'</span></div>';}
   function miniLink(txt,fn){return '<button class="org1110-link" onclick="'+fn+'">'+esc(txt)+' ‹</button>';}
   function render(){
-    try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1261CL');}catch(e){}
+    try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1262CL');}catch(e){}
     var div=document.getElementById('wdw-org');if(!div)return;var m=month(), y=year(), yMonths=monthList(y), ds=donors();
     var active=ds.filter(function(d){return statusKey(d)==='active'&&inRange(d,m);});
     var pending=ds.filter(function(d){return statusKey(d)==='pending'&&inRange(d,m);});
@@ -24936,11 +24950,11 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
 <script id="v1133CH-two-year-dropdowns-final-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
 
   function setVersion(){
     try{
-      document.title = (document.title||'Reports_Workers v1261CL | גישה').replace(/v\d+(CH|CL)/,'v1261CL');
+      document.title = (document.title||'Reports_Workers v1262CL | גישה').replace(/v\d+(CH|CL)/,'v1262CL');
       var t=document.querySelector('.topbar-title');
       if(t) t.textContent=VERSION;
     }catch(e){}
@@ -25095,7 +25109,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
 <script id="v1133CH-final-dropdown-and-syntax-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1261CL';
+  var VERSION='Reports_Workers v1262CL';
 
   function S0(){ try{ if(typeof S!=='undefined' && S) return S; }catch(e){} return window.S || {}; }
   function setS(obj){ try{ S=obj; }catch(e){} window.S=obj; }
@@ -25104,7 +25118,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
   function keyFor(y){ try{ if(typeof storeKey==='function') return storeKey(y); }catch(e){} return 'rw_gisha_data_'+y; }
 
   function setVersion(){
-    try{ document.title=(document.title||VERSION+' | גישה').replace(/v\d+(CH|CL)/,'v1261CL'); }catch(e){}
+    try{ document.title=(document.title||VERSION+' | גישה').replace(/v\d+(CH|CL)/,'v1262CL'); }catch(e){}
     try{ var t=document.querySelector('.topbar-title'); if(t) t.textContent=VERSION; }catch(e){}
   }
 
@@ -25720,8 +25734,8 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
 <!-- v1199CL: התיקון המרכזי (topbar+tabs+month-nav+cutoff-bar sticky) נמצא בסוף הקובץ,
      יחד עם סקריפט מדידת הגובה החד-פעמי. עדיין לא נבדק חזותית בדפדפן אמיתי. -->
 
-<style id="v1261CL-dynamic-columns">
-/* v1261CL: עמודות עובדים דינאמיות - יום/תאריך קבועות וצרות (colgroup ב-#mainColgroup),
+<style id="v1262CL-dynamic-columns">
+/* v1262CL: עמודות עובדים דינאמיות - יום/תאריך קבועות וצרות (colgroup ב-#mainColgroup),
    כל עמודות העובדים מתחלקות שווה ברוחב הנותר לפי calc() (מחושב מחדש בכל render לפי
    מספר העובדים הפעיל בפועל). אם אין מספיק מקום (הרבה עובדים על מסך צר) - min-width
    על ה-col שומר על רוחב קריא ומפעיל גלילה אופקית ב-.table-wrap במקום דחיסה מכוערת. */
@@ -25771,7 +25785,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
       if(above < 50) return; // מדידה שגויה/מוקדמת מדי - טופ-בר לבדו כבר גדול מזה, לא כותבים
       var legend = document.querySelector('#tab-leave .legend');
       var legendH = legend ? legend.getBoundingClientRect().height : 0;
-      // v1261CL: .save-bar הוא position:fixed בתחתית המסך - לא תפס מקום בזרימה הרגילה,
+      // v1262CL: .save-bar הוא position:fixed בתחתית המסך - לא תפס מקום בזרימה הרגילה,
       // אבל מכסה חזותית כל מה שבתחתית ה-viewport (כולל שורת הסיכום שהתארכה עם התיקון
       // הקודם). בלי זה, הכפתור הקבוע חוזר לכסות את שורת הסיכום בדיוק כמו שקרה בעבר.
       var saveBar = document.querySelector('.save-bar');
@@ -25870,15 +25884,15 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
   }
 })();
 </script>
-<style id="v1261CL-split-role-worker-name">
-/* v1261CL: בטבלת "אחוז משרה" במצב "תפקיד" - כשכמה עובדים שונים מחזיקים באותה משרה
+<style id="v1262CL-split-role-worker-name">
+/* v1262CL: בטבלת "אחוז משרה" במצב "תפקיד" - כשכמה עובדים שונים מחזיקים באותה משרה
    אצל אותו תורם בתקופות שונות (למשל ליטל עד יולי, יונתן מאוגוסט), שם העובד הרלוונטי
    מוצג עכשיו במפורש ליד שם התורם בכל שורת פירוט - כדי שיהיה ברור מי מחזיק בתפקיד מתי. */
 #tab-wdw .v1224-worker-name{display:inline-block;margin-right:6px;font-size:11px;font-weight:700;color:#00695c;background:#e0f2f1;border-radius:8px;padding:1px 8px}
 #tab-wdw .v1225-worker-name{display:inline-block;margin-right:6px;font-size:11px;font-weight:700;color:#00695c;background:#e0f2f1;border-radius:8px;padding:1px 8px}
 </style>
-<style id="v1261CL-unified-wdw-typography">
-/* v1261CL: עיצוב אחיד לכל טבלאות ה-WDW (עובדים, עלות משרה, אחוז משרה, פיצול משרה) -
+<style id="v1262CL-unified-wdw-typography">
+/* v1262CL: עיצוב אחיד לכל טבלאות ה-WDW (עובדים, עלות משרה, אחוז משרה, פיצול משרה) -
    כותרת=12px/700, שם עובד/תפקיד=14px/700, מספרים=12px/500. עד עכשיו כל טבלה השתמשה
    בגדלים שונים (17px/14px/12px לשם, 11px/12px/13px לכותרת) - זה מאחד את כולן. */
 #tab-wdw .v768-table th,#tab-wdw table.v486-table th,#tab-wdw .v929-cost-table th{font-size:12px!important;font-weight:700!important;color:#344054!important}
@@ -25886,7 +25900,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
 #tab-wdw td.v768-name,#tab-wdw table.v486-table td.v486-name,#tab-wdw .v929-worker b{font-size:14px!important;font-weight:700!important;color:#111827!important}
 #tab-wdw .v768-num,#tab-wdw .v768-pct,#tab-wdw .v768-muted{font-size:12px!important;font-weight:500!important}
 </style>
-<script id="v1261CL-niztzul-calculator">
+<script id="v1262CL-niztzul-calculator">
 (function(){
   'use strict';
   var MONTH_NAMES_HE=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
@@ -25958,8 +25972,8 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
   };
 })();
 </script>
-<style id="v1261CL-sticky-header-fix">
-/* v1261CL: פריט 7 - שורת כותרת קפועה בטבלת חופש/מחלה.
+<style id="v1262CL-sticky-header-fix">
+/* v1262CL: פריט 7 - שורת כותרת קפועה בטבלת חופש/מחלה.
    הסיבה שנמצאה: העמוד השלם (html/body) גולל בעצמו כי סך התוכן (topbar+tabs+month-nav+
    cutoff-bar+table-wrap+legend+כפתור שמור) גבוה מהחלון. כש-table-wrap עצמו (שיש לו
    overflow-y:auto ו-th עם position:sticky) לא מגיע לגובה שדורש גלילה פנימית, הדפדפן
@@ -25970,7 +25984,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(){
    טאבים אחרים לא מושפעים כלל. */
 html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!important;height:100vh!important}
 </style>
-<script id="v1261CL-sticky-header-init">
+<script id="v1262CL-sticky-header-init">
 (function(){
   'use strict';
   function applyInitialLock(){
@@ -25986,10 +26000,10 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
   }
 })();
 </script>
-<script id="v1261CL-wdw-table-height">
+<script id="v1262CL-wdw-table-height">
 (function(){
   'use strict';
-  /* v1261CL: אחוז משרה / פיצול משרה / עלות משרה - המשתמש דיווח על "התכווצות אקראית,
+  /* v1262CL: אחוז משרה / פיצול משרה / עלות משרה - המשתמש דיווח על "התכווצות אקראית,
      בלי חוקיות" - זה סימן קלאסי ל-race condition בין JS שממדד גובה בזמן אמת לבין
      רינדור בפועל. הוסר החישוב המבוסס-JS לגמרי, והוחלף ב-CSS calc() קבוע - חישוב
      שהדפדפן עצמו עושה בכל פעם באופן טבעי ועקבי, בלי תלות בתזמון של אף סקריפט. */
@@ -26017,23 +26031,23 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
   }
 })();
 </script>
-<style id="v1261CL-wdw-scroll-lock">
-/* v1261CL: אימתתי בפועל (לא ניחוש) - htmlScrollHeight=1480 מול htmlClientHeight=700,
+<style id="v1262CL-wdw-scroll-lock">
+/* v1262CL: אימתתי בפועל (לא ניחוש) - htmlScrollHeight=1480 מול htmlClientHeight=700,
    כלומר העמוד החיצוני היה יכול לגלול בו-זמנית עם table-wrap. זו התחרות שגרמה לכותרת
    "להיעלם" - לפעמים הגלילה נתפסה ע"י העמוד השלם (שמזיז את כל הטבלה כולל הכותרת שלה
    למעלה, מחוץ למסך) במקום ע"י table-wrap הפנימי (שהיה נשאר עם הכותרת קבועה בגלילה
    שלו). נועלים את גלילת העמוד באותה שיטה שכבר עבדה בטבלת חופש/מחלה. */
-/* html.v1241-wdw-scroll-lock,body.v1241-wdw-scroll-lock{overflow:hidden!important;height:100vh!important} -- disabled v1261CL: no internal scroll container exists anymore, locking the page would hide content */
+/* html.v1241-wdw-scroll-lock,body.v1241-wdw-scroll-lock{overflow:hidden!important;height:100vh!important} -- disabled v1262CL: no internal scroll container exists anymore, locking the page would hide content */
 #wdw-monthlypct .v486-monthly-shell,#wdw-splitcost .v486-monthly-shell,#wdw-monthlycost{margin-bottom:70px!important}
 #tab-wdw .v486-head{margin-bottom:0!important;border-bottom-left-radius:0!important;border-bottom-right-radius:0!important}
 #tab-wdw .v486-table-wrap{border-top-left-radius:0!important;border-top-right-radius:0!important;border-top:none!important}
 #tab-wdw .v486-table-wrap,#tab-wdw .v929-scroll,#wdw-monthlycost .wdw-panel{scrollbar-gutter:stable!important}
 #tab-wdw .v486-head{margin-bottom:0!important}
 </style>
-<script id="v1261CL-debounce-multiple-rerenders">
+<script id="v1262CL-debounce-multiple-rerenders">
 (function(){
   'use strict';
-  /* v1261CL: נמצאו 7 מאזיני 'change' עצמאיים על #wdw-monthlypct, לפחות 3 מהם קוראים
+  /* v1262CL: נמצאו 7 מאזיני 'change' עצמאיים על #wdw-monthlypct, לפחות 3 מהם קוראים
      ל-rerenderIfOpen שקוראת ל-v486RenderMonthlyPct. משמעות: לחיצה אחת על "תפקיד"/"עובד"
      מפעילה בנייה מחדש של הטבלה (innerHTML) כמה פעמים ברצף מהיר (סביב 20-100 מ"ש).
      קריאות בנייה חופפות/רצופות כאלה יכולות לפגוע בחישוב table-layout:fixed אם הדפדפן
@@ -26056,13 +26070,11 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
   [0,50,150,300,600,1000].forEach(function(t){ setTimeout(wrapOnce,t); });
 })();
 </script>
-<script id="v1261CL-expenses-tab">
+<script id="v1262CL-expenses-tab">
 (function(){
   'use strict';
-  /* v1261CL: שלב 1 של מערכת ההוצאות החדשה - טאב "הוצאות" עם הטבלה הראשית.
-     שלב זה משתמש בנתוני דוגמה (קטגוריות ותקציב/ניצול/יתרה) כדי לראות את המבנה בפועל.
-     שמות התורמים נלקחים מרשימת התורמים האמיתית הקיימת (S.wdw.donors) אם קיימת. */
   window.EXPENSES_CATEGORIES = window.EXPENSES_CATEGORIES || ['שכר דירה','ארנונה','אלי','מחשוב','תקשורת',"רו\"ח","הנהח\"ש",'צילום','משרדי'];
+  var MONTH_NAMES_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
   function getDonorNames(){
     try{
@@ -26071,45 +26083,42 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
       var names = donors.map(function(d){ return d.name; }).filter(Boolean);
       if(names.length) return names;
     }catch(e){}
-    return ['BD','NORW','DEN','FIN','DUTCH','SIDA','MEDICO','Drosos','UNDP','BFDW','Misereor'];
+    return [];
   }
+  function fmt(v){ return v ? Math.round(v).toLocaleString('he-IL') : ''; }
+  function fmt0(v){ return Math.round(v||0).toLocaleString('he-IL'); }
 
-  // נתוני דוגמה זמניים - בשלבים הבאים יוחלפו בנתונים אמיתיים מהקצאות תורמים ורשומות הוצאה
-  var SAMPLE_ROWS = {
-    'שכר דירה': {vals:{BD:2128,NORW:50000,DEN:100000,FIN:10890,DUTCH:147000,UNDP:5982,BFDW:10000}, total:330000, used:327872},
-    'ארנונה': {vals:{DUTCH:75000,MEDICO:22000}, total:100000, used:97000},
-    'אלי': {vals:{NORW:35000}, total:42000, used:35000},
-    'מחשוב': {vals:{DUTCH:25000,Drosos:20500}, total:60000, used:45500},
-    'תקשורת': {vals:{DUTCH:50000}, total:60000, used:50000},
-    'רו"ח': {vals:{}, total:20000, used:0},
-    'הנהח"ש': {vals:{SIDA:20000}, total:48000, used:20000},
-    'צילום': {vals:{FIN:6500}, total:7200, used:6500},
-    'משרדי': {vals:{SIDA:12700}, total:32000, used:12700}
-  };
-
+  // ============================================================
+  // 1) סיכום - הטבלה הראשית
+  // ============================================================
   window.renderExpensesMainTable = function(){
     var wrap = document.getElementById('expensesMainTableWrap');
     if(!wrap) return;
     var donorNames = getDonorNames();
     var cats = window.EXPENSES_CATEGORIES;
-    var HDR_BG = '#e9edf1';
-    var HDR_COLOR = '#1e293b';
+    var HDR_BG = '#e9edf1', HDR_COLOR = '#1e293b';
     var yearSel = document.getElementById('expensesYearSel');
     var selectedYear = yearSel && yearSel.value ? parseInt(yearSel.value,10) : new Date().getFullYear();
 
+    var commitments = (window.S && window.S.expensesCommitments) || [];
+    var records = (window.S && window.S.expenseRecords) || [];
+
     var rowsData = {};
-    var realCommitments = (window.S && window.S.expensesCommitments) || [];
-    if(realCommitments.length){
-      cats.forEach(function(cat){ rowsData[cat] = {vals:{}, total:0, used:0}; });
-      realCommitments.forEach(function(c){
-        if(selectedYear < c.fromYear || selectedYear > c.toYear) return;
-        if(!rowsData[c.category]) rowsData[c.category] = {vals:{}, total:0, used:0};
-        rowsData[c.category].vals[c.donor] = (rowsData[c.category].vals[c.donor]||0) + c.amount;
-        rowsData[c.category].total += c.amount;
+    cats.forEach(function(cat){ rowsData[cat] = {vals:{}, total:0, used:0, usedVals:{}}; });
+    commitments.forEach(function(c){
+      if(selectedYear < c.fromYear || selectedYear > c.toYear) return;
+      if(!rowsData[c.category]) rowsData[c.category] = {vals:{}, total:0, used:0, usedVals:{}};
+      rowsData[c.category].vals[c.donor] = (rowsData[c.category].vals[c.donor]||0) + c.amount;
+      rowsData[c.category].total += c.amount;
+    });
+    records.forEach(function(r){
+      if(r.year !== selectedYear) return;
+      if(!rowsData[r.category]) rowsData[r.category] = {vals:{}, total:0, used:0, usedVals:{}};
+      (r.splits||[]).forEach(function(sp){
+        rowsData[r.category].usedVals[sp.donor] = (rowsData[r.category].usedVals[sp.donor]||0) + sp.amount;
+        rowsData[r.category].used += sp.amount;
       });
-    } else {
-      rowsData = SAMPLE_ROWS;
-    }
+    });
 
     var h = '<table style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:10px">';
     h += '<colgroup><col style="width:90px">';
@@ -26129,17 +26138,13 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     donorNames.forEach(function(dn){ donorBudgetTotals[dn]=0; donorUsedTotals[dn]=0; });
     var sumBudget=0, sumUsed=0;
 
-    function fmt(v){ return v ? Math.round(v).toLocaleString('he-IL') : ''; }
-
     cats.forEach(function(cat){
-      var row = rowsData[cat] || {vals:{}, total:0, used:0};
+      var row = rowsData[cat];
       var remaining = row.total - row.used;
-      var noFunding = row.total>0 && row.used===0 && Object.keys(row.vals).length===0;
-      var usageRatio = row.total>0 ? (row.used/row.total) : 0;
+      var noFunding = row.total===0;
       var nameColor = noFunding ? '#b91c1c' : '#111827';
       var summaryBg = noFunding ? '#fef2f2' : '#f8fafc';
 
-      // שורת "תקציב" - כמה כל תורם ייעד לקטגוריה הזו
       h += '<tr style="border-top:3px solid #cbd5e1">';
       h += '<td rowspan="2" style="padding:5px 4px;font-weight:700;color:'+nameColor+';border-bottom:1px solid #d9e0e7;border-top:3px solid #cbd5e1;vertical-align:middle">'+cat+'</td>';
       donorNames.forEach(function(dn){
@@ -26148,19 +26153,18 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
         h += '<td style="padding:4px 2px;text-align:center;color:#667085;border-bottom:1px solid #f5f5f5;border-top:3px solid #cbd5e1">'+fmt(v)+'</td>';
       });
       h += '<td style="padding:4px 4px;text-align:center;color:#667085;background:'+summaryBg+';font-size:9px;border-top:3px solid #cbd5e1">תקציב</td>';
-      h += '<td style="padding:4px 4px;text-align:center;background:'+summaryBg+';border-top:3px solid #cbd5e1">'+fmt(row.total)+'</td>';
-      h += '<td rowspan="2" style="padding:5px 4px;text-align:center;color:'+nameColor+';background:'+summaryBg+';font-weight:700;border-top:3px solid #cbd5e1;vertical-align:middle">'+fmt(remaining)+'</td>';
+      h += '<td style="padding:4px 4px;text-align:center;background:'+summaryBg+';border-top:3px solid #cbd5e1">'+fmt0(row.total)+'</td>';
+      h += '<td rowspan="2" style="padding:5px 4px;text-align:center;color:'+nameColor+';background:'+summaryBg+';font-weight:700;border-top:3px solid #cbd5e1;vertical-align:middle">'+fmt0(remaining)+'</td>';
       h += '</tr>';
 
-      // שורת "ניצול" - כמה נוצל בפועל מתוך מה שכל תורם ייעד (יחס זמני, עד שיהיו רשומות הוצאה אמיתיות)
       h += '<tr style="background:#fafbfc">';
       donorNames.forEach(function(dn){
-        var v = (row.vals[dn]||0) * usageRatio;
+        var v = row.usedVals[dn]||0;
         donorUsedTotals[dn] += v;
         h += '<td style="padding:4px 2px;text-align:center;font-weight:700;border-bottom:1px solid #d9e0e7">'+fmt(v)+'</td>';
       });
       h += '<td style="padding:4px 4px;text-align:center;font-weight:700;background:'+summaryBg+';font-size:9px">ניצול</td>';
-      h += '<td style="padding:4px 4px;text-align:center;font-weight:700;color:'+nameColor+';background:'+summaryBg+';border-bottom:1px solid #d9e0e7">'+fmt(row.used)+'</td>';
+      h += '<td style="padding:4px 4px;text-align:center;font-weight:700;color:'+nameColor+';background:'+summaryBg+';border-bottom:1px solid #d9e0e7">'+fmt0(row.used)+'</td>';
       h += '</tr>';
 
       sumBudget += row.total; sumUsed += row.used;
@@ -26168,16 +26172,15 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
 
     h += '</tbody><tfoot>';
     h += '<tr style="background:#f0f4f3;font-weight:700"><td style="padding:6px 4px">סה"כ תקציב</td>';
-    donorNames.forEach(function(dn){ h += '<td style="padding:6px 2px;text-align:center">'+fmt(donorBudgetTotals[dn])+'</td>'; });
-    h += '<td></td><td style="padding:6px 4px;text-align:center">'+fmt(sumBudget)+'</td><td></td></tr>';
+    donorNames.forEach(function(dn){ h += '<td style="padding:6px 2px;text-align:center">'+fmt0(donorBudgetTotals[dn])+'</td>'; });
+    h += '<td></td><td style="padding:6px 4px;text-align:center">'+fmt0(sumBudget)+'</td><td></td></tr>';
     h += '<tr style="background:#f0f4f3;font-weight:700"><td style="padding:6px 4px">סה"כ ניצול</td>';
-    donorNames.forEach(function(dn){ h += '<td style="padding:6px 2px;text-align:center">'+fmt(donorUsedTotals[dn])+'</td>'; });
-    h += '<td></td><td style="padding:6px 4px;text-align:center">'+fmt(sumUsed)+'</td><td></td></tr>';
+    donorNames.forEach(function(dn){ h += '<td style="padding:6px 2px;text-align:center">'+fmt0(donorUsedTotals[dn])+'</td>'; });
+    h += '<td></td><td style="padding:6px 4px;text-align:center">'+fmt0(sumUsed)+'</td><td></td></tr>';
     h += '<tr style="background:#f0f4f3;font-weight:700"><td style="padding:6px 4px;color:#027a48">יתרה תורם</td>';
-    donorNames.forEach(function(dn){ h += '<td style="padding:6px 2px;text-align:center;color:#027a48">'+fmt(donorBudgetTotals[dn]-donorUsedTotals[dn])+'</td>'; });
-    h += '<td></td><td style="padding:6px 4px;text-align:center;color:#027a48">'+fmt(sumBudget-sumUsed)+'</td><td></td></tr>';
+    donorNames.forEach(function(dn){ h += '<td style="padding:6px 2px;text-align:center;color:#027a48">'+fmt0(donorBudgetTotals[dn]-donorUsedTotals[dn])+'</td>'; });
+    h += '<td></td><td style="padding:6px 4px;text-align:center;color:#027a48">'+fmt0(sumBudget-sumUsed)+'</td><td></td></tr>';
     h += '</tfoot></table>';
-
     wrap.innerHTML = h;
   };
 
@@ -26193,16 +26196,44 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     }
   }
 
+  // ============================================================
+  // ניווט בין 5 טאבים משניים + כפתור פעולה משותף על שורת הטאבים
+  // ============================================================
+  var SUBTAB_COUNT = 5;
+  window.switchExpensesSubTab = function(n){
+    for(var i=1;i<=SUBTAB_COUNT;i++){
+      var content = document.getElementById('expensesSubContent'+i);
+      var tab = document.getElementById('expensesSubTab'+i);
+      if(content) content.style.display = (i===n ? 'block' : 'none');
+      if(tab){ tab.style.color = (i===n ? '#073f3d' : '#94a3b8'); tab.style.borderBottom = (i===n ? '3px solid #073f3d' : 'none'); }
+    }
+    var actionBtn = document.getElementById('expensesActionBtn');
+    if(actionBtn){
+      if(n===2){ actionBtn.style.display='inline-block'; actionBtn.textContent='+ התחייבות תורם'; actionBtn.onclick=function(){ openDonorCommitmentModal(); }; }
+      else if(n===3){ actionBtn.style.display='inline-block'; actionBtn.textContent='+ הוצאה חדשה'; actionBtn.onclick=function(){ openExpenseRecordModal(); }; }
+      else { actionBtn.style.display='none'; }
+    }
+    if(n===1){ populateYearSelect(); renderExpensesMainTable(); }
+    if(n===2) renderExpensesDonorsList();
+    if(n===3) renderExpenseRecordsList();
+    if(n===4) renderTromahTab();
+    if(n===5) renderMisparTab();
+  };
+
   var origSwitchTab4 = window.switchTab;
-  if(typeof origSwitchTab4 === 'function'){
-    window.switchTab = function(name){
+  if(typeof origSwitchTab4 === 'function' && !origSwitchTab4.__v1262Wrapped){
+    var wrapped4 = function(name){
       var r = origSwitchTab4.apply(this, arguments);
-      if(name === 'expenses'){ populateYearSelect(); renderExpensesMainTable(); }
+      if(name === 'expenses'){ switchExpensesSubTab(1); }
       return r;
     };
+    wrapped4.__v1262Wrapped = true;
+    window.switchTab = wrapped4;
   }
 
-  var MONTH_NAMES_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  // ============================================================
+  // 2) תורמים - התחייבויות תורם (עריכה/מחיקה/ביטול)
+  // ============================================================
   var commitRowCount = 0;
 
   function ensureCommitmentModal(){
@@ -26223,8 +26254,10 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
         '<div id="commitRowsWrap"></div>'+
         '<button onclick="addCommitRow()" style="width:100%;height:36px;border:1px dashed #073f3d;background:#fff;color:#073f3d;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:16px">+ הוסף קטגוריה</button>'+
         '<div id="commitTotalBox" style="background:#f0fdf4;border-radius:10px;padding:10px;text-align:center;font-size:13px;font-weight:700;color:#027a48;margin-bottom:16px"></div>'+
-        '<div style="display:flex;gap:8px"><button onclick="saveDonorCommitment()" style="flex:1;height:40px;border:none;border-radius:8px;background:#073f3d;color:#fff;font-size:13px;font-weight:700;cursor:pointer">שמור תורם</button>'+
-        '<button onclick="closeDonorCommitmentModal()" style="flex:1;height:40px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#475569;font-size:13px;font-weight:700;cursor:pointer">ביטול</button></div>'+
+        '<div style="display:flex;gap:8px">'+
+        '<button onclick="saveDonorCommitment()" style="flex:1;height:40px;border:none;border-radius:8px;background:#073f3d;color:#fff;font-size:13px;font-weight:700;cursor:pointer">שמור תורם</button>'+
+        '<button onclick="closeDonorCommitmentModal()" style="flex:1;height:40px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#475569;font-size:13px;font-weight:700;cursor:pointer">ביטול</button>'+
+        '</div>'+
       '</div>';
     document.body.appendChild(overlay);
   }
@@ -26262,11 +26295,10 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
   window.updateCommitTotal = function(){
     var total = 0;
     document.querySelectorAll('#commitRowsWrap .crowAmt').forEach(function(inp){
-      var v = parseFloat(String(inp.value).replace(/[^\d.]/g,''))||0;
-      total += v;
+      total += parseFloat(String(inp.value).replace(/[^\d.]/g,''))||0;
     });
     var box = document.getElementById('commitTotalBox');
-    if(box) box.textContent = 'סה"כ התחייבות התורם: ' + Math.round(total).toLocaleString('he-IL') + ' ₪';
+    if(box) box.textContent = 'סה"כ התחייבות התורם: ' + fmt0(total) + ' ₪';
   };
 
   window.openDonorCommitmentModal = function(editDonor){
@@ -26303,7 +26335,6 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
   window.saveDonorCommitment = function(){
     var donor = document.getElementById('commitDonorSel').value;
     window.S.expensesCommitments = window.S.expensesCommitments || [];
-    // מסירים את כל ההתחייבויות הקיימות של התורם הזה - נכתוב אותן מחדש במלואן, כדי שעריכה תעבוד נכון ולא תשכפל
     window.S.expensesCommitments = window.S.expensesCommitments.filter(function(c){ return c.donor!==donor; });
     document.querySelectorAll('#commitRowsWrap > div').forEach(function(row){
       var cat = row.querySelector('.crowCat').value;
@@ -26318,21 +26349,11 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     if(typeof window.saveLocally === 'function'){ try{ window.saveLocally(); }catch(e){} }
     closeDonorCommitmentModal();
     renderExpensesMainTable();
-    if(document.getElementById('expensesSubContent2') && document.getElementById('expensesSubContent2').style.display!=='none') renderExpensesDonorsList();
-  };
-  window.switchExpensesSubTab = function(n){
-    for(var i=1;i<=3;i++){
-      var content = document.getElementById('expensesSubContent'+i);
-      var tab = document.getElementById('expensesSubTab'+i);
-      if(content) content.style.display = (i===n ? 'block' : 'none');
-      if(tab){ tab.style.color = (i===n ? '#073f3d' : '#94a3b8'); tab.style.borderBottom = (i===n ? '3px solid #073f3d' : 'none'); }
-    }
-    if(n===2) renderExpensesDonorsList();
-    if(n===3) renderExpenseRecordsList();
+    renderExpensesDonorsList();
   };
 
   window.deleteDonorCommitments = function(donor){
-    if(!confirm('\u05dc\u05de\u05d7\u05d5\u05e7 \u05d0\u05ea \u05db\u05dc \u05d4\u05d4\u05ea\u05d7\u05d9\u05d9\u05d1\u05d5\u05ea \u05e9\u05dc '+donor+'?')) return;
+    if(!confirm('למחוק את כל ההתחייבויות של '+donor+'?')) return;
     window.S.expensesCommitments = ((window.S && window.S.expensesCommitments) || []).filter(function(c){ return c.donor!==donor; });
     if(typeof window.saveLocally === 'function'){ try{ window.saveLocally(); }catch(e){} }
     renderExpensesDonorsList();
@@ -26344,40 +26365,36 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     if(!wrap) return;
     var commitments = (window.S && window.S.expensesCommitments) || [];
     var donorNames = Array.from(new Set(commitments.map(function(c){ return c.donor; })));
-
-    function fmt(v){ return Math.round(v).toLocaleString('he-IL'); }
     function yearRangeText(c){ return c.fromYear===c.toYear ? String(c.fromYear) : (c.fromYear+'\u2013'+c.toYear); }
 
     var h = '';
     donorNames.forEach(function(dn){
-      var rows = commitments.map(function(c,idx){ return {c:c, idx:idx}; }).filter(function(o){ return o.c.donor===dn; });
-      var total = rows.reduce(function(s,o){ return s+o.c.amount; }, 0);
+      var rows = commitments.filter(function(c){ return c.donor===dn; });
+      var total = rows.reduce(function(s,c){ return s+c.amount; }, 0);
       h += '<div style="background:#fff;border:1px solid #d5dce3;border-radius:12px;padding:14px;margin-bottom:12px">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:'+(rows.length?'8px':'0')+'">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
       h += '<div style="font-size:14px;font-weight:700;color:#073f3d">'+dn+'</div>';
       h += '<div style="display:flex;align-items:center;gap:10px">';
-      h += '<div style="font-size:12px;color:#667085">\u05e1\u05d4"\u05db \u05d4\u05ea\u05d7\u05d9\u05d9\u05d1\u05d5\u05ea: <b style="color:#111827">'+fmt(total)+' \u20aa</b></div>';
-      h += '<span onclick="openDonorCommitmentModal(\''+dn+'\')" style="color:#073f3d;cursor:pointer;font-size:11px;font-weight:700">\u05e2\u05e8\u05d9\u05db\u05d4</span>';
-      h += '<span onclick="deleteDonorCommitments(\''+dn+'\')" style="color:#b91c1c;cursor:pointer;font-size:11px;font-weight:700">\u05de\u05d7\u05e7</span>';
+      h += '<div style="font-size:12px;color:#667085">סה"כ התחייבות: <b style="color:#111827">'+fmt0(total)+' ₪</b></div>';
+      h += '<span onclick="openDonorCommitmentModal(\''+dn+'\')" style="color:#073f3d;cursor:pointer;font-size:11px;font-weight:700">עריכה</span>';
+      h += '<span onclick="deleteDonorCommitments(\''+dn+'\')" style="color:#b91c1c;cursor:pointer;font-size:11px;font-weight:700">מחק</span>';
       h += '</div></div>';
-      if(rows.length){
-        h += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
-        h += '<thead><tr style="background:#f6f7f9"><th style="padding:5px 8px;text-align:right">\u05e7\u05d8\u05d2\u05d5\u05e8\u05d9\u05d4</th><th style="padding:5px 8px;text-align:center">\u05d8\u05d5\u05d5\u05d7 \u05e9\u05e0\u05d9\u05dd</th><th style="padding:5px 8px;text-align:center">\u05e1\u05db\u05d5\u05dd</th></tr></thead><tbody>';
-        rows.forEach(function(o){
-          h += '<tr><td style="padding:5px 8px;border-bottom:1px solid #edf1f5">'+o.c.category+'</td>';
-          h += '<td style="padding:5px 8px;text-align:center;border-bottom:1px solid #edf1f5">'+yearRangeText(o.c)+'</td>';
-          h += '<td style="padding:5px 8px;text-align:center;border-bottom:1px solid #edf1f5">'+fmt(o.c.amount)+'</td></tr>';
-        });
-        h += '</tbody></table>';
-      } else {
-        h += '<div style="font-size:12px;color:#94a3b8">\u05d0\u05d9\u05df \u05e2\u05d3\u05d9\u05d9\u05df \u05d4\u05ea\u05d7\u05d9\u05d9\u05d1\u05d5\u05ea \u05e8\u05e9\u05d5\u05de\u05d4</div>';
-      }
-      h += '</div>';
+      h += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+      h += '<thead><tr style="background:#f6f7f9"><th style="padding:5px 8px;text-align:right">קטגוריה</th><th style="padding:5px 8px;text-align:center">טווח שנים</th><th style="padding:5px 8px;text-align:center">סכום</th></tr></thead><tbody>';
+      rows.forEach(function(c){
+        h += '<tr><td style="padding:5px 8px;border-bottom:1px solid #edf1f5">'+c.category+'</td>';
+        h += '<td style="padding:5px 8px;text-align:center;border-bottom:1px solid #edf1f5">'+yearRangeText(c)+'</td>';
+        h += '<td style="padding:5px 8px;text-align:center;border-bottom:1px solid #edf1f5">'+fmt0(c.amount)+'</td></tr>';
+      });
+      h += '</tbody></table></div>';
     });
+    if(!donorNames.length) h = '<div style="font-size:12px;color:#94a3b8;padding:14px">אין עדיין אף התחייבות רשומה</div>';
     wrap.innerHTML = h;
   };
 
-  // ===== שיוך - רשומות הוצאה =====
+  // ============================================================
+  // 3) שיוך - רשומות הוצאה (עם בדיקת מספר הוצאה כפול)
+  // ============================================================
   var expRowCount = 0;
   var editingExpenseId = null;
 
@@ -26397,10 +26414,11 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
           '<div id="expModalTitle" style="font-size:16px;font-weight:700;color:#073f3d">הוצאה חדשה</div>'+
           '<span onclick="closeExpenseRecordModal()" style="cursor:pointer;font-size:20px;color:#94a3b8">&times;</span>'+
         '</div>'+
-        '<div style="display:flex;gap:10px;margin-bottom:8px">'+
+        '<div style="display:flex;gap:10px;margin-bottom:4px">'+
           '<div style="flex:1"><label style="font-size:12px;font-weight:700;color:#475569">מספר הוצאה</label><input id="expNumInp" style="width:100%;height:34px;border:1px solid #cbd5e1;border-radius:8px;padding:4px 8px;font-size:13px"/></div>'+
           '<div style="flex:1"><label style="font-size:12px;font-weight:700;color:#475569">קטגוריה</label><select id="expCatSel" style="width:100%;height:34px;border:1px solid #cbd5e1;border-radius:8px;padding:4px 8px;font-size:13px">'+catOpts+'</select></div>'+
         '</div>'+
+        '<div id="expNumWarning" style="display:none;color:#b91c1c;font-size:11px;margin-bottom:8px;font-weight:700">מספר הוצאה זה כבר קיים במערכת</div>'+
         '<label style="font-size:12px;font-weight:700;color:#475569">חודש</label>'+
         '<div style="display:flex;gap:8px;margin-bottom:8px">'+
           '<select id="expMonthSel" style="flex:1;height:34px;border:1px solid #cbd5e1;border-radius:8px;padding:4px 8px;font-size:13px">'+monthOpts+'</select>'+
@@ -26418,6 +26436,16 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
         '</div>'+
       '</div>';
     document.body.appendChild(overlay);
+    document.getElementById('expNumInp').addEventListener('input', checkDuplicateExpenseNumber);
+  }
+
+  function checkDuplicateExpenseNumber(){
+    var numField = document.getElementById('expNumInp');
+    var num = String(numField.value||'').trim();
+    var all = (window.S && window.S.expenseRecords) || [];
+    var dup = num && all.some(function(r){ return String(r.number).trim()===num && r.id!==editingExpenseId; });
+    document.getElementById('expNumWarning').style.display = dup ? 'block' : 'none';
+    return dup;
   }
 
   window.addExpenseRow = function(){
@@ -26446,9 +26474,9 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     var overLimit = assigned > totalBudget;
     var color = overLimit ? '#b91c1c' : '#027a48';
     box.innerHTML =
-      '<div><div style="color:#667085;font-size:11px">תקציב</div><div style="font-weight:700;color:#111827">'+Math.round(totalBudget).toLocaleString('he-IL')+' ₪</div></div>'+
-      '<div><div style="color:#667085;font-size:11px">שויך עד כה</div><div style="font-weight:700;color:'+color+'">'+Math.round(assigned).toLocaleString('he-IL')+' ₪</div></div>'+
-      '<div><div style="color:#667085;font-size:11px">נותר לשייך</div><div style="font-weight:700;color:'+color+'">'+Math.round(remaining).toLocaleString('he-IL')+' ₪</div></div>';
+      '<div><div style="color:#667085;font-size:11px">תקציב</div><div style="font-weight:700;color:#111827">'+fmt0(totalBudget)+' ₪</div></div>'+
+      '<div><div style="color:#667085;font-size:11px">שויך עד כה</div><div style="font-weight:700;color:'+color+'">'+fmt0(assigned)+' ₪</div></div>'+
+      '<div><div style="color:#667085;font-size:11px">נותר לשייך</div><div style="font-weight:700;color:'+color+'">'+fmt0(remaining)+' ₪</div></div>';
     box.style.background = overLimit ? '#fef2f2' : '#f0fdf4';
   };
 
@@ -26456,6 +26484,7 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     ensureExpenseModal();
     editingExpenseId = recId || null;
     document.getElementById('expModalTitle').textContent = recId ? 'עריכת הוצאה' : 'הוצאה חדשה';
+    document.getElementById('expNumWarning').style.display = 'none';
     document.getElementById('expRowsWrap').innerHTML = '';
     expRowCount = 0;
     var rec = null;
@@ -26491,6 +26520,9 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
   };
 
   window.saveExpenseRecord = function(){
+    var num = String(document.getElementById('expNumInp').value||'').trim();
+    if(!num){ alert('חובה להזין מספר הוצאה'); return; }
+    if(checkDuplicateExpenseNumber()){ alert('מספר הוצאה '+num+' כבר קיים במערכת - לא ניתן להזין אותה הוצאה פעמיים'); return; }
     window.S.expenseRecords = window.S.expenseRecords || [];
     var splits = [];
     document.querySelectorAll('#expRowsWrap > div').forEach(function(row){
@@ -26500,7 +26532,7 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     });
     var rec = {
       id: editingExpenseId || ('exp'+Date.now()),
-      number: document.getElementById('expNumInp').value,
+      number: num,
       category: document.getElementById('expCatSel').value,
       month: parseInt(document.getElementById('expMonthSel').value,10),
       year: parseInt(document.getElementById('expYearSel').value,10),
@@ -26515,6 +26547,7 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     if(typeof window.saveLocally === 'function'){ try{ window.saveLocally(); }catch(e){} }
     closeExpenseRecordModal();
     renderExpenseRecordsList();
+    renderExpensesMainTable();
   };
 
   window.deleteExpenseRecord = function(recId){
@@ -26522,6 +26555,7 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     window.S.expenseRecords = ((window.S && window.S.expenseRecords) || []).filter(function(r){ return r.id!==recId; });
     if(typeof window.saveLocally === 'function'){ try{ window.saveLocally(); }catch(e){} }
     renderExpenseRecordsList();
+    renderExpensesMainTable();
   };
 
   function populateExpenseFilterSelects(){
@@ -26564,7 +26598,6 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
       wrap.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:14px">אין הוצאות תואמות</div>';
       return;
     }
-
     var h = '<table style="width:100%;border-collapse:collapse;font-size:12px">';
     h += '<thead><tr style="background:#e9edf1"><th style="padding:6px 8px;text-align:right">מס\' הוצאה</th><th style="padding:6px 8px;text-align:right">קטגוריה</th><th style="padding:6px 8px;text-align:center">חודש</th><th style="padding:6px 8px;text-align:center">סכום</th><th style="padding:6px 8px;text-align:right">תורמים</th><th style="padding:6px 8px"></th></tr></thead><tbody>';
     filtered.forEach(function(r){
@@ -26573,7 +26606,7 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
       h += '<td style="padding:6px 8px;border-bottom:1px solid #edf1f5">'+r.number+'</td>';
       h += '<td style="padding:6px 8px;border-bottom:1px solid #edf1f5">'+r.category+'</td>';
       h += '<td style="padding:6px 8px;text-align:center;border-bottom:1px solid #edf1f5">'+MONTH_NAMES_HE[r.month-1]+' '+r.year+'</td>';
-      h += '<td style="padding:6px 8px;text-align:center;border-bottom:1px solid #edf1f5">'+Math.round(r.total).toLocaleString('he-IL')+'</td>';
+      h += '<td style="padding:6px 8px;text-align:center;border-bottom:1px solid #edf1f5">'+fmt0(r.total)+'</td>';
       h += '<td style="padding:6px 8px;border-bottom:1px solid #edf1f5">'+donorsText+'</td>';
       h += '<td style="padding:6px 8px;border-bottom:1px solid #edf1f5;white-space:nowrap">';
       h += '<span onclick="openExpenseRecordModal(\''+r.id+'\')" style="color:#073f3d;cursor:pointer;font-size:11px;font-weight:700;margin-left:8px">עריכה</span>';
@@ -26581,6 +26614,134 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
       h += '</td></tr>';
     });
     h += '</tbody></table>';
+    wrap.innerHTML = h;
+  };
+
+  // ============================================================
+  // 4) תרומה - פירוט מלא לכל תורם (אקורדיון, א'-ב')
+  // ============================================================
+  window.toggleTromahRow = function(donor){
+    var body = document.getElementById('tromahBody_'+donor.replace(/[^a-zA-Z0-9]/g,'_'));
+    var allBodies = document.querySelectorAll('.tromahBodyRow');
+    allBodies.forEach(function(b){ if(b!==body) b.style.display='none'; });
+    document.querySelectorAll('.tromahArrow').forEach(function(a){ if(a.dataset.donor!==donor) a.textContent='\u25b8'; });
+    if(body){
+      var isOpen = body.style.display==='block';
+      body.style.display = isOpen ? 'none' : 'block';
+      var arrow = document.querySelector('.tromahArrow[data-donor="'+donor+'"]');
+      if(arrow) arrow.textContent = isOpen ? '\u25b8' : '\u25be';
+    }
+  };
+
+  window.renderTromahTab = function(){
+    var wrap = document.getElementById('tromahListWrap');
+    if(!wrap) return;
+    var commitments = (window.S && window.S.expensesCommitments) || [];
+    var records = (window.S && window.S.expenseRecords) || [];
+    var donorNames = Array.from(new Set(commitments.map(function(c){ return c.donor; }))).sort(function(a,b){ return a.localeCompare(b,'he'); });
+
+    if(!donorNames.length){
+      wrap.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:14px">אין עדיין תורמים עם התחייבות רשומה</div>';
+      return;
+    }
+
+    var h = '<div style="background:#fff;border:1px solid #d5dce3;border-radius:12px;overflow:hidden">';
+    h += '<div style="display:flex;padding:10px 14px;background:#e9edf1;font-size:11px;font-weight:700;color:#344054">';
+    h += '<div style="flex:2">תורם</div><div style="flex:1;text-align:center">התחייבות</div><div style="flex:1;text-align:center">נוצל</div><div style="flex:1;text-align:center">יתרה</div></div>';
+
+    donorNames.forEach(function(dn){
+      var myCommits = commitments.filter(function(c){ return c.donor===dn; });
+      var totalCommit = myCommits.reduce(function(s,c){ return s+c.amount; },0);
+      var myExpenses = records.filter(function(r){ return r.splits.some(function(s){ return s.donor===dn; }); })
+        .map(function(r){
+          var mySplit = r.splits.filter(function(s){ return s.donor===dn; }).reduce(function(s,sp){ return s+sp.amount; },0);
+          return {rec:r, myAmount:mySplit};
+        });
+      var totalUsed = myExpenses.reduce(function(s,o){ return s+o.myAmount; },0);
+      var remaining = totalCommit - totalUsed;
+      var safeId = dn.replace(/[^a-zA-Z0-9]/g,'_');
+
+      h += '<div onclick="toggleTromahRow(\''+dn+'\')" style="display:flex;padding:10px 14px;border-bottom:1px solid #edf1f5;cursor:pointer;align-items:center;background:#fff">';
+      h += '<div style="flex:2;font-weight:700;color:#073f3d"><span class="tromahArrow" data-donor="'+dn+'">\u25b8</span> '+dn+'</div>';
+      h += '<div style="flex:1;text-align:center">'+fmt0(totalCommit)+'</div>';
+      h += '<div style="flex:1;text-align:center">'+fmt0(totalUsed)+'</div>';
+      h += '<div style="flex:1;text-align:center;color:#027a48">'+fmt0(remaining)+'</div>';
+      h += '</div>';
+
+      h += '<div id="tromahBody_'+safeId+'" class="tromahBodyRow" style="display:none;padding:10px 14px 14px;background:#f8fafc;border-bottom:1px solid #edf1f5">';
+      h += '<div style="font-size:11px;font-weight:700;color:#344054;margin-bottom:4px">התחייבויות</div>';
+      h += '<table style="width:100%;font-size:10px;border-collapse:collapse;margin-bottom:8px">';
+      myCommits.forEach(function(c){
+        var yr = c.fromYear===c.toYear ? String(c.fromYear) : (c.fromYear+'\u2013'+c.toYear);
+        h += '<tr><td style="padding:3px 6px;color:#667085">'+c.category+'</td><td style="padding:3px 6px;text-align:center;color:#667085">'+yr+'</td><td style="padding:3px 6px;text-align:center;color:#667085">'+fmt0(c.amount)+'</td></tr>';
+      });
+      h += '</table>';
+      h += '<div style="font-size:11px;font-weight:700;color:#344054;margin-bottom:4px">הוצאות ששויכו</div>';
+      if(myExpenses.length){
+        h += '<table style="width:100%;font-size:10px;border-collapse:collapse">';
+        myExpenses.forEach(function(o){
+          h += '<tr><td style="padding:3px 6px;color:#667085">'+o.rec.number+'</td><td style="padding:3px 6px;color:#667085">'+o.rec.category+'</td><td style="padding:3px 6px;text-align:center;color:#667085">'+MONTH_NAMES_HE[o.rec.month-1]+' '+o.rec.year+'</td><td style="padding:3px 6px;text-align:center;color:#667085">'+fmt0(o.myAmount)+'</td></tr>';
+        });
+        h += '</table>';
+      } else {
+        h += '<div style="font-size:10px;color:#94a3b8">אין עדיין הוצאות ששויכו</div>';
+      }
+      h += '</div>';
+    });
+    h += '</div>';
+    wrap.innerHTML = h;
+  };
+
+  // ============================================================
+  // 5) מספר - פירוט מלא לכל הוצאה (אקורדיון, עולה לפי מספר)
+  // ============================================================
+  window.toggleMisparRow = function(recId){
+    var body = document.getElementById('misparBody_'+recId);
+    var allBodies = document.querySelectorAll('.misparBodyRow');
+    allBodies.forEach(function(b){ if(b.id!=='misparBody_'+recId) b.style.display='none'; });
+    if(body){
+      var isOpen = body.style.display==='block';
+      body.style.display = isOpen ? 'none' : 'block';
+      var arrow = document.querySelector('.misparArrow[data-id="'+recId+'"]');
+      if(arrow) arrow.textContent = isOpen ? '\u25b8' : '\u25be';
+    }
+  };
+
+  window.renderMisparTab = function(){
+    var wrap = document.getElementById('misparListWrap');
+    if(!wrap) return;
+    var records = ((window.S && window.S.expenseRecords) || []).slice().sort(function(a,b){
+      var na = parseFloat(a.number), nb = parseFloat(b.number);
+      if(isNaN(na) || isNaN(nb)) return String(a.number).localeCompare(String(b.number));
+      return na - nb;
+    });
+
+    if(!records.length){
+      wrap.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:14px">אין עדיין הוצאות רשומות</div>';
+      return;
+    }
+
+    var h = '<div style="background:#fff;border:1px solid #d5dce3;border-radius:12px;overflow:hidden">';
+    h += '<div style="display:flex;padding:10px 14px;background:#e9edf1;font-size:11px;font-weight:700;color:#344054">';
+    h += '<div style="flex:1">מס\' הוצאה</div><div style="flex:2">קטגוריה</div><div style="flex:1;text-align:center">חודש</div><div style="flex:1;text-align:center">סכום</div></div>';
+
+    records.forEach(function(r){
+      h += '<div onclick="toggleMisparRow(\''+r.id+'\')" style="display:flex;padding:10px 14px;border-bottom:1px solid #edf1f5;cursor:pointer;align-items:center;background:#fff">';
+      h += '<div style="flex:1;font-weight:700;color:#073f3d"><span class="misparArrow" data-id="'+r.id+'">\u25b8</span> '+r.number+'</div>';
+      h += '<div style="flex:2">'+r.category+'</div>';
+      h += '<div style="flex:1;text-align:center">'+MONTH_NAMES_HE[r.month-1]+' '+r.year+'</div>';
+      h += '<div style="flex:1;text-align:center">'+fmt0(r.total)+'</div>';
+      h += '</div>';
+
+      h += '<div id="misparBody_'+r.id+'" class="misparBodyRow" style="display:none;padding:10px 14px 14px;background:#f8fafc;border-bottom:1px solid #edf1f5">';
+      h += '<table style="width:100%;font-size:10px;border-collapse:collapse">';
+      h += '<thead><tr><th style="padding:3px 6px;text-align:right;color:#344054">תורם</th><th style="padding:3px 6px;text-align:center;color:#344054">סכום</th></tr></thead><tbody>';
+      r.splits.forEach(function(sp){
+        h += '<tr><td style="padding:3px 6px;color:#667085">'+sp.donor+'</td><td style="padding:3px 6px;text-align:center;color:#667085">'+fmt0(sp.amount)+'</td></tr>';
+      });
+      h += '</tbody></table></div>';
+    });
+    h += '</div>';
     wrap.innerHTML = h;
   };
 })();
