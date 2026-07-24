@@ -467,7 +467,9 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
       <div id="expensesSubTab3" onclick="switchExpensesSubTab(3)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">שיוך</div>
       <div id="expensesSubTab4" onclick="switchExpensesSubTab(4)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">תרומה</div>
       <div id="expensesSubTab5" onclick="switchExpensesSubTab(5)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">מספר</div>
+      <div id="expensesSubTab6" onclick="switchExpensesSubTab(6)" style="padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#94a3b8">עלות</div>
       <button id="expensesActionBtn" style="display:none;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#073f3d;color:#fff;margin-inline-start:14px"></button>
+      <button id="expensesImportCostBtn" onclick="importExpensesCost()" style="display:none;border:1px solid #073f3d;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#073f3d;margin-inline-start:8px">יבוא עלות</button>
     </div>
   </div>
 
@@ -502,6 +504,10 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
 
   <div id="expensesSubContent5" style="display:none">
     <div id="misparListWrap"></div>
+  </div>
+
+  <div id="expensesSubContent6" style="display:none">
+    <div id="expensesCostTabWrap"></div>
   </div>
 </div>
 </div>
@@ -26030,6 +26036,7 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
   window.S = window.S || {};
   window.S.expensesCategories = window.S.expensesCategories || [];
   window.EXPENSES_CATEGORIES = window.S.expensesCategories;
+  window.S.expensesCategoryBudget = window.S.expensesCategoryBudget || {};
 
   window.addExpensesCategory = function(){
     var name = prompt('שם הקטגוריה החדשה:');
@@ -26039,7 +26046,10 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     if(window.EXPENSES_CATEGORIES.indexOf(name) !== -1){ alert('קטגוריה בשם הזה כבר קיימת'); return; }
     window.EXPENSES_CATEGORIES.push(name);
     if(typeof window.saveLocally === 'function'){ try{ window.saveLocally(); }catch(e){} }
+    // עדכון מיידי בכל מקום שמציג את רשימת הקטגוריות
+    if(typeof window.renderExpensesCostTab === 'function') window.renderExpensesCostTab();
     renderExpensesMainTable();
+    if(typeof window.renderExpenseRecordsList === 'function'){ try{ window.renderExpenseRecordsList(); }catch(e){} }
   };
   var MONTH_NAMES_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 
@@ -26073,6 +26083,7 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
 
     var commitments = (window.S && window.S.expensesCommitments) || [];
     var records = (window.S && window.S.expenseRecords) || [];
+    var categoryBudgets = (window.S && window.S.expensesCategoryBudget) || {};
 
     var rowsData = {};
     cats.forEach(function(cat){ rowsData[cat] = {vals:{}, total:0, used:0, usedVals:{}}; });
@@ -26080,7 +26091,17 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
       if(selectedYear < c.fromYear || selectedYear > c.toYear) return;
       if(!rowsData[c.category]) rowsData[c.category] = {vals:{}, total:0, used:0, usedVals:{}};
       rowsData[c.category].vals[c.donor] = (rowsData[c.category].vals[c.donor]||0) + c.amount;
-      rowsData[c.category].total += c.amount;
+    });
+    // התקציב הכולל לכל קטגוריה נשלף מטאב "עלות" (הזנה ידנית או ייבוא מאקסל).
+    // אם עדיין לא הוזן ערך ישיר לקטגוריה - נופלים חזרה לסכימת התחייבויות התורמים, לשמירת תאימות אחורה.
+    cats.forEach(function(cat){
+      if(Object.prototype.hasOwnProperty.call(categoryBudgets, cat) && categoryBudgets[cat] !== ''){
+        rowsData[cat].total = Number(categoryBudgets[cat]) || 0;
+      } else {
+        var sum = 0;
+        Object.keys(rowsData[cat].vals).forEach(function(dn){ sum += rowsData[cat].vals[dn]; });
+        rowsData[cat].total = sum;
+      }
     });
     records.forEach(function(r){
       if(r.year !== selectedYear) return;
@@ -26155,6 +26176,125 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     wrap.innerHTML = h;
   };
 
+  // ============================================================
+  // 6) עלות - תקציב שנתי ישיר לכל קטגוריה (הזנה ידנית או ייבוא מאקסל)
+  // ============================================================
+  window.renderExpensesCostTab = function(){
+    var wrap = document.getElementById('expensesCostTabWrap');
+    if(!wrap) return;
+    var cats = window.EXPENSES_CATEGORIES || [];
+    window.S.expensesCategoryBudget = window.S.expensesCategoryBudget || {};
+    if(!cats.length){
+      wrap.innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:14px">אין עדיין קטגוריות - לחץ "+ קטגוריה" בטאב סיכום כדי להוסיף</div>';
+      return;
+    }
+    var budgets = window.S.expensesCategoryBudget;
+    var h = '<div style="font-size:12px;color:#667085;margin-bottom:10px">התקציב השנתי שמוזן כאן לכל קטגוריה הוא המקור לחישובי הסיכום (עמודת "תקציב"). אפשר להזין ידנית או לייבא מקובץ אקסל דרך הכפתור "יבוא עלות" בטאב סיכום.</div>';
+    h += '<table style="width:100%;max-width:480px;border-collapse:collapse;font-size:13px">';
+    h += '<thead><tr><th style="text-align:right;padding:8px;border-bottom:2px solid #94a3b8;background:#e9edf1">קטגוריה</th><th style="text-align:center;padding:8px;border-bottom:2px solid #94a3b8;background:#e9edf1;width:160px">תקציב שנתי (₪)</th></tr></thead><tbody>';
+    cats.forEach(function(cat){
+      var val = Object.prototype.hasOwnProperty.call(budgets, cat) ? budgets[cat] : '';
+      h += '<tr><td style="padding:6px 8px;border-bottom:1px solid #f1f5f9">'+esc(cat)+'</td>'+
+           '<td style="padding:4px 8px;border-bottom:1px solid #f1f5f9;text-align:center">'+
+           '<input type="number" class="v1268-cost-input" data-cat="'+esc(cat)+'" value="'+esc(val)+'" style="width:120px;text-align:center;border:1px solid #cbd5e1;border-radius:6px;padding:5px"></td></tr>';
+    });
+    h += '</tbody></table>';
+    wrap.innerHTML = h;
+    var inputs = wrap.querySelectorAll('.v1268-cost-input');
+    for(var i=0;i<inputs.length;i++){
+      inputs[i].addEventListener('change', function(){
+        window.updateExpensesCategoryBudget(this.getAttribute('data-cat'), this.value);
+      });
+    }
+  };
+
+  window.updateExpensesCategoryBudget = function(cat, val){
+    window.S.expensesCategoryBudget = window.S.expensesCategoryBudget || {};
+    var num = parseFloat(val);
+    window.S.expensesCategoryBudget[cat] = isNaN(num) ? 0 : num;
+    if(typeof window.saveLocally === 'function'){ try{ window.saveLocally(); }catch(e){} }
+    renderExpensesMainTable();
+  };
+
+  // ============================================================
+  // ייבוא עלות מקובץ אקסל (טאב תפעולי, עמודה B=שם קטגוריה, עמודה C=תקציב)
+  // הקריאה נעצרת בשורה שבה כתוב "לא לחישוב" בעמודה B - מיקום השורה אינו קבוע ונבדק דינמית.
+  // הבדיקה עוברת אך ורק על הקטגוריות שכבר קיימות באפליקציה. קטגוריה שקיימת באקסל אך לא נוצרה
+  // באפליקציה - מתעלמים ממנה לגמרי. עצירה עם התראה קורית רק אם לקטגוריה קיימת באפליקציה
+  // לא נמצאה שורה תואמת בדיוק (בשם) באקסל.
+  // ============================================================
+  window.importExpensesCost = function(){
+    if(typeof XLSX === 'undefined'){ alert('שגיאה: ספריית קריאת האקסל (XLSX) לא נטענה. רענן/י את הדף ונסה/י שוב.'); return; }
+    var appCats = window.EXPENSES_CATEGORIES || [];
+    if(!appCats.length){ alert('אין עדיין קטגוריות באפליקציה. יש להוסיף קטגוריות בטאב עלות לפני הייבוא.'); return; }
+    var inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.xlsx';
+    inp.style.display = 'none';
+    document.body.appendChild(inp);
+    inp.onchange = function(e){
+      var file = e.target.files && e.target.files[0];
+      if(inp.parentNode) inp.parentNode.removeChild(inp);
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        try{
+          var data = new Uint8Array(ev.target.result);
+          var wb = XLSX.read(data, {type:'array'});
+          var sheetName = null;
+          for(var i=0;i<wb.SheetNames.length;i++){
+            if(String(wb.SheetNames[i]).trim() === 'תפעולי'){ sheetName = wb.SheetNames[i]; break; }
+          }
+          if(!sheetName){ alert('הייבוא נעצר: לא נמצא טאב "תפעולי" בקובץ שנבחר.'); return; }
+          var ws = wb.Sheets[sheetName];
+          var ref = ws['!ref'] ? XLSX.utils.decode_range(ws['!ref']) : {s:{r:0,c:0},e:{r:500,c:10}};
+          var excelMap = {}; // שם קטגוריה (מהאקסל) -> סכום
+          var stopRow = -1;
+          for(var r=1; r<=ref.e.r; r++){ // r=1 -> שורת אקסל 2 (עמודות ממוספרות מ-0, B=index1, C=index2)
+            var bCell = ws[XLSX.utils.encode_cell({r:r, c:1})];
+            var bVal = (bCell && bCell.v != null) ? String(bCell.v).trim() : '';
+            if(bVal === 'לא לחישוב'){ stopRow = r+1; break; }
+            if(!bVal) continue;
+            var cCell = ws[XLSX.utils.encode_cell({r:r, c:2})];
+            var cVal = (cCell && cCell.v != null && cCell.v !== '') ? Number(cCell.v) : null;
+            if(cVal === null || isNaN(cVal)) continue; // שורת כותרת/מדור (יש שם בעמודה B אך אין סכום בעמודה C) - לא קטגוריית תקציב, מדלגים
+            excelMap[bVal] = cVal;
+          }
+          if(stopRow === -1){
+            alert('הייבוא נעצר: לא נמצאה בעמודה B של טאב תפעולי שורה שכתוב בה בדיוק "לא לחישוב". יש לוודא שהשורה קיימת בקובץ, ורק אז לנסות שוב. שום נתון לא יובא.');
+            return;
+          }
+          // עוברים רק על קטגוריות שקיימות באפליקציה - קטגוריה שקיימת באקסל ולא נוצרה באפליקציה מתעלמים ממנה לגמרי
+          var missing = [];
+          var toImport = {};
+          appCats.forEach(function(cat){
+            if(Object.prototype.hasOwnProperty.call(excelMap, cat)){
+              toImport[cat] = excelMap[cat];
+            } else {
+              missing.push(cat);
+            }
+          });
+          if(missing.length){
+            alert('הייבוא נעצר - לקטגוריות הבאות שקיימות באפליקציה לא נמצאה שורה תואמת בדיוק (באותו שם) בעמודה B של טאב תפעולי:\n\n'+missing.join('\n')+'\n\nיש לוודא ששם הקטגוריה באפליקציה זהה בדיוק לשם בקובץ, או שיש לה שורה עם סכום, ולנסות שוב. שום נתון לא יובא.');
+            return;
+          }
+          window.S.expensesCategoryBudget = window.S.expensesCategoryBudget || {};
+          Object.keys(toImport).forEach(function(cat){
+            window.S.expensesCategoryBudget[cat] = toImport[cat];
+          });
+          if(typeof window.saveLocally === 'function'){ try{ window.saveLocally(); }catch(err){} }
+          renderExpensesMainTable();
+          if(typeof window.renderExpensesCostTab === 'function') window.renderExpensesCostTab();
+          alert('הייבוא הושלם בהצלחה: '+appCats.length+' קטגוריות עודכנו (עצירה בקריאת האקסל לפני שורה '+stopRow+', "לא לחישוב").');
+        }catch(err){
+          alert('שגיאה בקריאת הקובץ: '+(err && err.message ? err.message : err));
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    inp.click();
+  };
+
   function populateYearSelect(){
     var sel = document.getElementById('expensesYearSel');
     if(!sel || sel.options.length) return;
@@ -26170,7 +26310,7 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
   // ============================================================
   // ניווט בין 5 טאבים משניים + כפתור פעולה משותף על שורת הטאבים
   // ============================================================
-  var SUBTAB_COUNT = 5;
+  var SUBTAB_COUNT = 6;
   window.switchExpensesSubTab = function(n){
     for(var i=1;i<=SUBTAB_COUNT;i++){
       var content = document.getElementById('expensesSubContent'+i);
@@ -26180,16 +26320,19 @@ html.v1227-leave-scroll-lock,body.v1227-leave-scroll-lock{overflow:hidden!import
     }
     var actionBtn = document.getElementById('expensesActionBtn');
     if(actionBtn){
-      if(n===1){ actionBtn.style.display='inline-block'; actionBtn.textContent='+ קטגוריה'; actionBtn.onclick=function(){ addExpensesCategory(); }; }
-      else if(n===2){ actionBtn.style.display='inline-block'; actionBtn.textContent='+ התחייבות תורם'; actionBtn.onclick=function(){ openDonorCommitmentModal(); }; }
+      if(n===2){ actionBtn.style.display='inline-block'; actionBtn.textContent='+ התחייבות תורם'; actionBtn.onclick=function(){ openDonorCommitmentModal(); }; }
       else if(n===3){ actionBtn.style.display='inline-block'; actionBtn.textContent='+ הוצאה חדשה'; actionBtn.onclick=function(){ openExpenseRecordModal(); }; }
+      else if(n===6){ actionBtn.style.display='inline-block'; actionBtn.textContent='+ קטגוריה'; actionBtn.onclick=function(){ addExpensesCategory(); }; }
       else { actionBtn.style.display='none'; }
     }
+    var importBtn = document.getElementById('expensesImportCostBtn');
+    if(importBtn){ importBtn.style.display = (n===6 ? 'inline-block' : 'none'); }
     if(n===1){ populateYearSelect(); renderExpensesMainTable(); }
     if(n===2) renderExpensesDonorsList();
     if(n===3) renderExpenseRecordsList();
     if(n===4) renderTromahTab();
     if(n===5) renderMisparTab();
+    if(n===6) renderExpensesCostTab();
   };
 
   var origSwitchTab4 = window.switchTab;
