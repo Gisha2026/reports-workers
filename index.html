@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v1437CL | גישה</title>
+<title>Reports_Workers v1438CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -351,7 +351,7 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v1437CL</span>
+<span class="topbar-title">Reports_Workers v1438CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות ותרומות</div>
 <div class="topbar-left">
@@ -509,6 +509,9 @@ window.wdwGoAnnual = function(){ window.WDW_VIEW_MODE = 'annual'; };
       <div id="expListCountBox" style="flex-shrink:0;border:1px solid #d5dce3;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:700;color:#073f3d;background:#f5f7fa;white-space:nowrap">0 הוצאות</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:nowrap;flex-shrink:0">
         <button type="button" onclick="exportExpenseRecordsListExcel()" style="flex-shrink:0;border:1px solid #073f3d;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#073f3d">ייצוא לאקסל</button>
+        <button type="button" id="v1438LkBtn" onclick="v1438BuildLinksClick()" style="flex-shrink:0;border:1px solid #073f3d;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#073f3d">קישור קבצים</button>
+        <input type="file" id="v1438LkFile" accept=".xlsx" style="display:none" onchange="v1438HandleLinksFile(this)"/>
+        <div id="v1438LkSt" style="font-size:12px;font-weight:600"></div>
         <input type="file" id="expenseDataMatchFile" accept=".xlsx,.xls" style="display:none" onchange="handleExpenseDataMatchFile(this)"/>
         <div id="expDataMatchYearOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center">
           <div style="background:#fff;border-radius:14px;padding:28px 32px;width:380px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.2)">
@@ -8115,7 +8118,7 @@ def run(wb_b64, writes_json, employer_costs_json='{}'):
     ver_sheets = [s for s in wb.sheetnames if s.strip() in ['תורמים','donors']]
     if ver_sheets:
         vs = wb[ver_sheets[0]]
-        vs.cell(1, 5).value = 'v1437CL'
+        vs.cell(1, 5).value = 'v1438CL'
 
     out = io.BytesIO()
     wb.save(out)
@@ -10651,8 +10654,8 @@ window.reactivateWorker=function(i){if(!S||!S.workers||!S.workers[i])return;var 
 
   function finalVersion(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1437CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1438CL';
     }catch(e){}
   }
   document.addEventListener('DOMContentLoaded',function(){installMonthUiHook();setTimeout(transformMonthTables,0);setTimeout(finalVersion,0);});
@@ -10773,9 +10776,9 @@ window.wdwCheckEnded = function(){};
 <script id="v1413CL-dom-balance-calc-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}}
   function donor(){var S=window.S||{}, id=window.WDW_EDIT_DONOR_ID;return (S.wdw&&S.wdw.donors||[]).find(function(d){return String(d.id)===String(id);})||null;}
   function donorBudget(d){return n(d&&(d.totalBudget||d.budget||d.totalAmount||d.totalPeriodAmount));}
   function pfxSeenBefore(current){
@@ -10937,11 +10940,11 @@ window.v780AutoRedistribute=function(posid,workerIdx,changedMonth){
 <script id="v1413CL-annual-dropdown-only">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
 
   function setV(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');
       var t=document.querySelector('.topbar-title');
       if(t) t.textContent=VERSION;
     }catch(e){}
@@ -11038,7 +11041,7 @@ window.v780AutoRedistribute=function(posid,workerIdx,changedMonth){
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Reports_Workers v1437CL | גישה</title>
+<title>Reports_Workers v1438CL | גישה</title>
 <link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' fill='%2300897B' rx='4'/&gt;&lt;text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'&gt;ג&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -11583,7 +11586,7 @@ async function initPyodide(){
 <div class="topbar">
 <div class="topbar-right">
 <div class="topbar-logo">ג</div>
-<span class="topbar-title">Reports_Workers v1437CL</span>
+<span class="topbar-title">Reports_Workers v1438CL</span>
 </div>
 <div class="topbar-center">עמותת גישה — מערכת ניהול שעות</div>
 <div class="topbar-left">
@@ -23161,7 +23164,7 @@ window.v1396ConfirmEndWorker=function(){
 <script id="v780-funded-positions-ui">
 (function(){
   'use strict';
-  var V='v1437CL';
+  var V='v1438CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null);} 
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function n(x){var v=parseFloat(x);return isFinite(v)?v:0;}
@@ -23504,7 +23507,7 @@ p.assignments.push(a);return p;}
   var oldEdit=window.wdwEditDonor217;window.wdwEditDonor217=function(id){window.WDW_ADD_DONOR_MODE=false;window.WDW_EDIT_DONOR_ID=id;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;if(typeof window.switchWDW==='function')window.switchWDW('input');else window.renderWDWInput();};
   window.wdwCloseEditDonor217=function(){window.WDW_EDIT_DONOR_ID=null;window.WDW_ADD_WORKER_FOR=null;window.V780_EDIT_POSITION_ID=null;window.renderWDWInput();};
   window.renderWDWInput=function(){try{if(typeof initWDW==='function')initWDW();}catch(e){}addStyle();ensureFundedPositions();var div=document.getElementById('wdw-input');if(!div)return;var html=header('WDW — ניהול','');html+='<div class="wdw-panel"><div class="wdw-panel-h"><div><div class="wdw-panel-title">תורמים / פרויקטים לניהול</div><div class="wdw-panel-note"></div></div><button class="wdw-navbtn active" onclick="wdwShowAddDonor217()">+ הוסף תורם</button></div>';if(window.WDW_ADD_DONOR_MODE)html+=addDonorForm();var active=donors().filter(function(d){return !donorStatusEnded(d);}),ended=donors().filter(donorStatusEnded);active.forEach(function(d){html+=donorRow(d);});if(ended.length){html+='<div class="wdw-ended-sep">תרומות / פרויקטים שהסתיימו</div>';ended.forEach(function(d){html+=donorRow(d);});}div.innerHTML=html+'</div></div>';};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1437CL';if(document.title.indexOf('v1437CL')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1438CL';if(document.title.indexOf('v1438CL')===-1)document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');},0);});
 
   // v1413CL FINAL FIX: wdwSaveNewDonor217 - handles both form types (radio buttons and visual buttons)
   window.wdwSaveNewDonor217 = function(){
@@ -23874,8 +23877,8 @@ p.assignments.push(a);return p;}
   document.addEventListener('DOMContentLoaded',function(){
     try{syncAll();}catch(e){}
     setTimeout(function(){
-      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1437CL';
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');
+      var t=document.querySelector('.topbar-title'); if(t)t.textContent='Reports_Workers v1438CL';
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');
     },0);
   });
 })();
@@ -23905,7 +23908,7 @@ p.assignments.push(a);return p;}
 <script id="v1413CL-monthly-cost-final-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -23926,7 +23929,7 @@ p.assignments.push(a);return p;}
   window.renderWDWMonthlyCost=function(){var div=document.getElementById('wdw-monthlycost');if(!div)return;var s=S0();if(!s.wdw)s.wdw={};var _vm=s.wdw&&s.wdw.viewMonth;var y=_vm?_vm.substring(0,4):yearNow(); months=monthsOfYear(y), names=workers(), monthNames=['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];var opts='';for(var yy=2024;yy<=2030;yy++)opts+='<option value="'+yy+'" '+(String(yy)===String(y)?'selected':'')+'>'+yy+'</option>';var html='<div class="wdw-shell"><div class="wdw-top"><div><div class="wdw-title">עלות משרה</div><div class="wdw-sub">עלות עובד, ניצול ושארית לפי חודשים — '+esc(y)+'</div></div><label style="font-size:13px;font-weight:700">שנה <select onchange="if(!window.S.wdw)window.S.wdw={};window.S.wdw.viewMonth=this.value+\'-01\';renderWDWMonthlyCost();" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px">'+opts+'</select></label></div>';html+='<div class="wdw-panel"><div style="overflow-x:auto"><table class="wdw-table" style="min-width:1100px;width:max-content"><thead><tr><th>עובד</th><th>שורה</th>';months.forEach(function(m,i){html+='<th style="text-align:center!important">'+monthNames[i]+'</th>';});html+='<th style="text-align:center!important">שנתי</th></tr></thead><tbody>';if(!names.length){html+='<tr><td colspan="15" style="text-align:center!important;color:#64748b;padding:24px!important">אין עובדים להצגה</td></tr>';}names.forEach(function(name,idx){var annual=costAnnual(name), monthly=annual/12, used=months.map(function(m){return usedFor(name,m,monthly);}), totalUsed=used.reduce(function(a,b){return a+b;},0), bg=idx%2?'#fff':'#f8fafc', labels=['עלות חודשית','נוצל ₪','נוצל %','נשאר ₪','נשאר %'];labels.forEach(function(label,ri){html+='<tr style="background:'+bg+'">';if(ri===0)html+='<td rowspan="5"><b>'+esc(name)+'</b><div class="wdw-muted">'+money(annual)+' שנתי</div></td>';html+='<td><b>'+label+'</b></td>';used.forEach(function(u){var v='',color='#334155';if(ri===0)v=money(monthly);if(ri===1){v=money(u);color=(u>monthly*1.001?'#b91c1c':(u>=monthly*.9?'#b45309':'#1d4ed8'));}if(ri===2){var p=monthly?u/monthly*100:0;v=pct(p);color=(p>100?'#b91c1c':(p>=90?'#b45309':'#1d4ed8'));}if(ri===3){v=money(Math.max(0,monthly-u));color='#15803d';}if(ri===4){v=pct(monthly?Math.max(0,monthly-u)/monthly*100:0);color='#15803d';}html+='<td style="text-align:center!important;color:'+color+'">'+v+'</td>';});var av='';if(ri===0)av=money(annual);if(ri===1)av=money(totalUsed);if(ri===2)av=pct(annual?totalUsed/annual*100:0);if(ri===3)av=money(Math.max(0,annual-totalUsed));if(ri===4)av=pct(annual?Math.max(0,annual-totalUsed)/annual*100:0);html+='<td style="text-align:center!important;font-weight:800;background:#edf2f7">'+av+'</td></tr>';});});html+='</tbody></table></div></div></div>';div.innerHTML=html;};
   function showMonthly(){['org','donor','worker','input','reports','monthlypct','monthlycost'].forEach(function(p){var d=document.getElementById('wdw-'+p);if(d)d.style.display=(p==='monthlycost')?'':'none';var b=document.getElementById('wdw-btn-'+p);if(b){b.style.background=(p==='monthlycost')?'#00897B':'#f0f0f0';b.style.color=(p==='monthlycost')?'white':'#333';b.style.fontWeight=(p==='monthlycost')?'bold':'normal';}});var box=document.querySelector('#tab-wdw .s-sec');if(box){box.style.background='transparent';box.style.boxShadow='none';box.style.padding='0';}window.renderWDWMonthlyCost();}
   var oldSwitch=window.switchWDW;window.switchWDW=function(panel){if(panel==='monthlycost'){showMonthly();return;}if(typeof oldSwitch==='function')return oldSwitch.apply(this,arguments);};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');},0);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');},0);});
 })();
 </script>
 
@@ -23934,7 +23937,7 @@ p.assignments.push(a);return p;}
 <script id="v1413CL-monthly-cost-polish-collapse">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   window.v929MonthlyCostOpen = window.v929MonthlyCostOpen || {};
 
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
@@ -23956,7 +23959,7 @@ p.assignments.push(a);return p;}
   function monthCount(st,en){st=ym(st);en=ym(en);if(!st||!en)return 12;var sy=+st.slice(0,4), sm=+st.slice(5,7), ey=+en.slice(0,4), em=+en.slice(5,7);return Math.max(1,(ey-sy)*12+(em-sm)+1);}
   function rowAmount(w,d,m,monthlyCost){if(!rowActive(w,d,m))return 0;var amount=0, vt=String(w.valueType||w.fundingType||'');if(w.fixedMonths&&w.fixedMonths[m]!=null&&String(w.fixedMonths[m]).trim()!=='') amount+=n(w.fixedMonths[m]);else {var isAmt=(vt.indexOf('amount')!==-1||vt.indexOf('סכום')!==-1||(!w.valueType&&!w.fundingType&&w.totalPeriodAmount));if(isAmt&&n(w.totalPeriodAmount)>0){amount+=n(w.totalPeriodAmount)/monthCount(w.startMonth||w.startDate||d.startDate||d.startMonth,w.endMonth||w.endDate||d.endDate||d.endMonth);}else{var p=(w.monthlyPct&&w.monthlyPct[m]!=null&&String(w.monthlyPct[m]).trim()!=='')?n(w.monthlyPct[m]):n(w.value);amount+=monthlyCost*p/100;}}if(w.replaces){amount+=monthlyCost*n(w.replacesPct||w.replacementPct)/100;}(w.extraReplaces||[]).forEach(function(r){var st=ym(r.startMonth||r.replaceStartMonth||w.startMonth), en=ym(r.endMonth||r.replaceEndMonth||w.endMonth);if(st&&m<st)return;if(en&&m>en)return;amount+=monthlyCost*n(r.pct||r.percent||r.value)/100;});return amount;}
   function usedFor(name,m,monthlyCost){var total=0, nn=norm(name);donors().forEach(function(d){(d.workers||[]).forEach(function(w){if(norm(w&&w.name)===nn)total+=rowAmount(w,d,m,monthlyCost);});});return total;}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}}
 
   function cellMoney(v, cls){return '<td class="v929-num '+(cls||'')+'">'+money(v)+'</td>';}
   function detailRow(key,label,values,annual,kind){
@@ -24038,7 +24041,7 @@ p.assignments.push(a);return p;}
 
 <script id="v1413CL-wdw-management-groups-and-tabs-fix">
 (function(){
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   var PANELS=['org','donor','worker','monthlycost','input','reports','monthlypct','positions','splitcost'];
   var TITLES={active:'פעילים',pending:'ממתינים',ended:'הסתיימו',inactive:'לא פעילים'};
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -24055,7 +24058,7 @@ p.assignments.push(a);return p;}
     var end=ym(d&&d.endDate); if(end && end < thisMonth()) return 'ended';
     return 'active';
   }
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}}
   function setPanelButtons(active){
     PANELS.forEach(function(p){
       var b=document.getElementById('wdw-btn-'+p); if(!b)return;
@@ -24165,12 +24168,12 @@ p.assignments.push(a);return p;}
 (function(){
   'use strict';
 
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
 
   function setVersion(){
     try{
       var t=document.querySelector('.topbar-title'); if(t)t.textContent=VERSION;
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');
     }catch(e){}
   }
   function S0(){return window.S || {};}
@@ -24378,7 +24381,7 @@ p.assignments.push(a);return p;}
 <script id="v1413CL-lana-ended-worker-active-month-cost-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,'').replace('%','').replace('—','').trim());return isFinite(x)?x:0;}
   function norm(s){return String(s||'').trim().replace(/\s+/g,' ');}
@@ -24493,7 +24496,7 @@ p.assignments.push(a);return p;}
     window.v486RenderMonthlyPct=function(){var r=oldRender.apply(this,arguments);patchLater();return r;};
     window.v590RenderMonthlyPct=window.v486RenderMonthlyPct;window.v485RenderMonthlyPct=window.v486RenderMonthlyPct;window.v484RenderMonthlyPct=window.v486RenderMonthlyPct;
   }
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}}
   document.addEventListener('click',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-btn-monthlypct,#wdw-monthlypct'))patchLater();},true);
   document.addEventListener('change',function(e){if(e.target&&e.target.closest&&e.target.closest('#wdw-monthlypct'))patchLater();},true);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setV();patchLater();});else{setV();patchLater();}
@@ -24610,11 +24613,11 @@ p.assignments.push(a);return p;}
 <script id="v1413CL-annual-dropdown-only">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
 
   function setV(){
     try{
-      document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');
+      document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');
       var t=document.querySelector('.topbar-title');
       if(t) t.textContent=VERSION;
     }catch(e){}
@@ -24710,7 +24713,7 @@ p.assignments.push(a);return p;}
 <script id="v1413CL-year-dropdown-stability-final">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   var MIN_YEAR=2026;
   function MAX_YEAR(){ return Math.max(2031, (new Date().getFullYear()+5)); }
   function S0(){ try{ if(typeof S!=='undefined' && S) return S; }catch(e){} return window.S || {}; }
@@ -24721,7 +24724,7 @@ p.assignments.push(a);return p;}
   function keyFor(y){ return 'rw_gisha_data_'+String(y||((S0()||{}).year)||MIN_YEAR); }
 
   function setVersion(){
-    try{ document.title=(document.title||VERSION+' | גישה').replace(/v\d+(CH|CL)/,'v1437CL'); }catch(e){}
+    try{ document.title=(document.title||VERSION+' | גישה').replace(/v\d+(CH|CL)/,'v1438CL'); }catch(e){}
     try{ var t=document.querySelector('.topbar-title'); if(t) t.textContent=VERSION; }catch(e){}
   }
 
@@ -24778,7 +24781,7 @@ p.assignments.push(a);return p;}
   }
   function skeletonFrom(cur,y){
     var next={};
-    next.version='v1437CL';
+    next.version='v1438CL';
     next.currentUser=cur.currentUser||'';
     next.currentUserLevel=cur.currentUserLevel||'';
     next.workers=clone(cur.workers||[]);
@@ -26427,14 +26430,304 @@ p.assignments.push(a);return p;}
   }
 })();
 </script>
+
+<script>
+// v1438CL: קישור קבצים - תיקון/בניית היפרלינקים לקבלות סרוקות בעמודה B בטאב הוצאות > שיוך
+// הקוד הפייתוני (PY_LINKS) מועתק מילה במילה מהוצאות_גישה_V12102026_4.html, ללא שינוי בלוגיקה.
+// משתמש במנגנון ה-Pyodide/openpyxl הקיים (pyodide, pyReady, initPyodide) ולא טוען מנוע כפול.
+var PY_LINKS_V1438 = `
+import io,base64,json,re,zipfile,datetime
+
+BASE="https://gisha.sharepoint.com/:b:/r/Shared%20Documents/%D7%9B%D7%A1%D7%A4%D7%99%D7%9D%20%D7%95%D7%9B%D7%97%20%D7%90%D7%93%D7%9D/%D7%94%D7%95%D7%A6%D7%90%D7%95%D7%AA/ALL%20YEARS/Scan/"
+REL_NS="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+HL_TYPE=REL_NS+"/hyperlink"
+AFTER_HL=["printOptions","pageMargins","pageSetup","headerFooter","rowBreaks","colBreaks","customProperties","cellWatches","ignoredErrors","smartTags","drawing","legacyDrawing","legacyDrawingHF","picture","oleObjects","controls","webPublishItems","tableParts","extLst"]
+
+def unesc(s):
+    return s.replace("&lt;","<").replace("&gt;",">").replace("&quot;",'"').replace("&apos;","'").replace("&amp;","&")
+
+def esc(s):
+    return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace('"',"&quot;")
+
+def attrs_of(tag):
+    return dict(re.findall(r'([A-Za-z0-9_:.-]+)="([^"]*)"',tag))
+
+def resolve(base_dir,target):
+    if target.startswith("/"):
+        return target[1:]
+    stack=[]
+    for p in (base_dir+"/"+target).split("/"):
+        if p=="" or p==".":
+            continue
+        if p=="..":
+            if stack:
+                stack.pop()
+        else:
+            stack.append(p)
+    return "/".join(stack)
+
+def num_of(txt):
+    if txt is None:
+        return None
+    try:
+        f=float(str(txt).strip())
+        if f==int(f) and f>0:
+            return int(f)
+    except Exception:
+        return None
+    return None
+
+def year_of(txt):
+    if txt is None:
+        return None
+    m=re.search(r'([0-9]{1,2})[ ]*/[ ]*([0-9]{4})',txt)
+    if m:
+        return m.group(2)
+    try:
+        f=float(txt)
+        if 20000<f<80000:
+            return str((datetime.date(1899,12,30)+datetime.timedelta(days=int(f))).year)
+    except Exception:
+        pass
+    return None
+
+def build_links(excel_b64):
+    src=base64.b64decode(excel_b64)
+    zin=zipfile.ZipFile(io.BytesIO(src))
+    names=zin.namelist()
+    wbx=zin.read("xl/workbook.xml").decode("utf-8")
+    sheets=[attrs_of(t) for t in re.findall(r'<sheet [^>]*/>',wbx)]
+    pick=None
+    for a in sheets:
+        if unesc(a.get("name",""))=="הוצאות":
+            pick=a
+            break
+    if pick is None and sheets:
+        pick=sheets[0]
+    if pick is None:
+        return json.dumps({"ok":False,"msg":"לא נמצא גיליון בקובץ"})
+    wrels=zin.read("xl/_rels/workbook.xml.rels").decode("utf-8")
+    target=None
+    for t in re.findall(r'<Relationship [^>]*/>',wrels):
+        a=attrs_of(t)
+        if a.get("Id")==pick.get("r:id"):
+            target=a.get("Target")
+    if not target:
+        return json.dumps({"ok":False,"msg":"לא נמצא מיקום הגיליון בקובץ"})
+    sheet_path=resolve("xl",target)
+    x=zin.read(sheet_path).decode("utf-8")
+
+    sst=[]
+    if "xl/sharedStrings.xml" in names:
+        sx=zin.read("xl/sharedStrings.xml").decode("utf-8")
+        for si in re.finditer(r'<si>.*?</si>|<si/>',sx,re.S):
+            sst.append(unesc("".join(re.findall(r'<t[^>]*>(.*?)</t>',si.group(0),re.S))))
+
+    def cell_val(attrs,inner):
+        if inner is None:
+            return None
+        t=attrs.get("t","")
+        if t=="inlineStr":
+            return unesc("".join(re.findall(r'<t[^>]*>(.*?)</t>',inner,re.S)))
+        v=re.search(r'<v>(.*?)</v>',inner,re.S)
+        if not v:
+            return None
+        if t=="s":
+            i=int(v.group(1))
+            return sst[i] if i<len(sst) else None
+        return unesc(v.group(1))
+
+    colB={}
+    colD={}
+    for m in re.finditer(r'<c r="([BD])([0-9]+)"([^>]*?)(?:/>|>(.*?)</c>)',x,re.S):
+        row=int(m.group(2))
+        if row<2:
+            continue
+        val=cell_val(attrs_of(m.group(3)),m.group(4))
+        if m.group(1)=="B":
+            colB[row]=val
+        else:
+            colD[row]=val
+    rows=[]
+    years={}
+    for row in sorted(colB):
+        n=num_of(colB[row])
+        if n is None:
+            continue
+        y=year_of(colD.get(row))
+        rows.append((row,n,y))
+        if y:
+            years[y]=years.get(y,0)+1
+    if not rows:
+        return json.dumps({"ok":False,"msg":"לא נמצאו מספרי הוצאה בעמודה B"})
+    if not years:
+        return json.dumps({"ok":False,"msg":"לא נמצאה שנה בעמודה D באף שורה, לכן לא נבנו קישורים"})
+    default_year=sorted(years.items(),key=lambda kv:-kv[1])[0][0]
+
+    sdir=sheet_path.rsplit("/",1)[0]
+    sname=sheet_path.rsplit("/",1)[1]
+    rels_path=sdir+"/_rels/"+sname+".rels"
+    if rels_path in names:
+        rels_xml=zin.read(rels_path).decode("utf-8")
+    else:
+        rels_xml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>'
+    rel_target={}
+    max_id=0
+    for t in re.findall(r'<Relationship [^>]*/>',rels_xml):
+        a=attrs_of(t)
+        rel_target[a.get("Id")]=unesc(a.get("Target",""))
+        mm=re.match(r'rId([0-9]+)$',a.get("Id",""))
+        if mm:
+            max_id=max(max_id,int(mm.group(1)))
+
+    block=re.search(r'<hyperlinks>(.*?)</hyperlinks>',x,re.S)
+    existing={}
+    if block:
+        for e in re.findall(r'<hyperlink [^>]*/>',block.group(1)):
+            existing[attrs_of(e).get("ref")]=attrs_of(e)
+
+    fix_rel={}
+    fix_disp={}
+    add_rels=[]
+    add_elems=[]
+    fixed=0
+    added=0
+    skipped=0
+    filled=0
+    root=re.search(r'<worksheet[^>]*>',x).group(0)
+    ns_attr="" if "xmlns:r=" in root else ' xmlns:r="'+REL_NS+'"'
+    for row,n,y in rows:
+        if not y:
+            filled+=1
+        yy=y or default_year
+        url=BASE+yy+"/"+str(n).zfill(3)+"."+yy[2:]+".pdf?csf=1&web=1"
+        ref="B"+str(row)
+        if ref in existing:
+            rid=existing[ref].get("r:id")
+            if not rid or rid not in rel_target:
+                skipped+=1
+                continue
+            if rel_target[rid]==url:
+                continue
+            fix_rel[rid]=url
+            fix_disp[ref]=url.replace("%20"," ")
+            fixed+=1
+        else:
+            max_id+=1
+            rid="rId"+str(max_id)
+            add_rels.append('<Relationship Id="'+rid+'" Type="'+HL_TYPE+'" Target="'+esc(url)+'" TargetMode="External"/>')
+            add_elems.append('<hyperlink ref="'+ref+'" r:id="'+rid+'"'+ns_attr+'/>')
+            added+=1
+    changed=fixed+added
+    info={"ok":True,"rows":len(rows),"fixed":fixed,"added":added,"skipped":skipped,"changed":changed,"default_year":default_year,"filled":filled}
+    if changed==0:
+        return json.dumps(info)
+
+    def rel_fn(m):
+        e=m.group(0)
+        rid=attrs_of(e).get("Id")
+        if rid in fix_rel:
+            return re.sub(r'Target="[^"]*"',lambda k:'Target="'+esc(fix_rel[rid])+'"',e)
+        return e
+    rels_new=re.sub(r'<Relationship [^>]*/>',rel_fn,rels_xml)
+    if add_rels:
+        rels_new=rels_new.replace("</Relationships>","".join(add_rels)+"</Relationships>")
+
+    def hl_fn(m):
+        e=m.group(0)
+        ref=attrs_of(e).get("ref")
+        if ref in fix_disp and 'display="' in e:
+            return re.sub(r'display="[^"]*"',lambda k:'display="'+esc(fix_disp[ref])+'"',e)
+        return e
+    if block:
+        inner=re.sub(r'<hyperlink [^>]*/>',hl_fn,block.group(1))+"".join(add_elems)
+        x_new=x[:block.start(1)]+inner+x[block.end(1):]
+    else:
+        new_block="<hyperlinks>"+"".join(add_elems)+"</hyperlinks>"
+        pos=None
+        for tag in AFTER_HL:
+            mm=re.search(r'<'+tag+r'[ >/]',x)
+            if mm and (pos is None or mm.start()<pos):
+                pos=mm.start()
+        if pos is None:
+            pos=x.rindex("</worksheet>")
+        x_new=x[:pos]+new_block+x[pos:]
+
+    buf=io.BytesIO()
+    with zipfile.ZipFile(buf,"w") as zout:
+        wrote=False
+        for it in zin.infolist():
+            data=zin.read(it.filename)
+            if it.filename==sheet_path:
+                data=x_new.encode("utf-8")
+            elif it.filename==rels_path:
+                data=rels_new.encode("utf-8")
+                wrote=True
+            ni=zipfile.ZipInfo(it.filename,it.date_time)
+            ni.compress_type=it.compress_type
+            ni.external_attr=it.external_attr
+            ni.create_system=it.create_system
+            zout.writestr(ni,data)
+        if not wrote:
+            zout.writestr(zipfile.ZipInfo(rels_path,(2026,1,1,0,0,0)),rels_new.encode("utf-8"),compress_type=zipfile.ZIP_DEFLATED)
+    info["b64"]=base64.b64encode(buf.getvalue()).decode()
+    return json.dumps(info)
+
+result=build_links(excel_b64)
+result
+`;
+
+function v1438BuildLinksClick(){
+  var inp=document.getElementById('v1438LkFile');
+  if(!inp) return;
+  inp.value='';
+  inp.click();
+}
+
+async function v1438HandleLinksFile(inp){
+  var f=inp.files&&inp.files[0];
+  if(!f) return;
+  var btn=document.getElementById('v1438LkBtn');
+  var st=document.getElementById('v1438LkSt');
+  function msg(t,c){ if(st){ st.textContent=t; st.style.color=c||'inherit'; } }
+  var orig=btn?btn.textContent:'';
+  if(btn){ btn.disabled=true; btn.textContent='בונה קישורים...'; }
+  try{
+    if(!pyReady){
+      msg('טוען מנוע עיצוב (עד 30 שניות בפעם הראשונה)...');
+      await initPyodide();
+      for(var w=0; w<240 && !pyReady; w++){ await new Promise(function(r){ setTimeout(r,500); }); }
+    }
+    if(!pyReady) throw new Error('מנוע העיצוב לא נטען. בדוק חיבור לאינטרנט ונסה שוב');
+    var buf=new Uint8Array(await f.arrayBuffer()), bin='', ch=32768;
+    for(var i=0;i<buf.length;i+=ch) bin+=String.fromCharCode.apply(null,buf.subarray(i,i+ch));
+    pyodide.globals.set('excel_b64', btoa(bin));
+    var res=JSON.parse(await pyodide.runPythonAsync(PY_LINKS_V1438));
+    if(!res.ok){ msg(res.msg,'#c62828'); return; }
+    if(res.changed===0){ msg('כל '+res.rows+' הקישורים כבר נכונים. לא בוצע שינוי ולא ירד קובץ','#2e7d32'); return; }
+    var raw=atob(res.b64), bytes=new Uint8Array(raw.length);
+    for(var j=0;j<raw.length;j++) bytes[j]=raw.charCodeAt(j);
+    var blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    var url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download=f.name; a.click(); URL.revokeObjectURL(url);
+    var t='תוקנו '+res.fixed+' קישורים ונוספו '+res.added+'. שאר הקובץ לא שונה';
+    if(res.filled>0) t+='. בשורות ללא חודש ('+res.filled+') נקבעה השנה '+res.default_year;
+    msg(t,'#2e7d32');
+  }catch(e){
+    msg('שגיאה: '+e.message,'#c62828');
+  }finally{
+    if(btn){ btn.disabled=false; btn.textContent=orig; }
+  }
+}
+</script>
 </body>
 </html>
 </html>
 <script id="v1413CL-final-balance-override">
 (function(){
-var VERSION='Reports_Workers v1437CL';
+var VERSION='Reports_Workers v1438CL';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}
 function d(){var S=window.S||{},id=window.WDW_EDIT_DONOR_ID;return (S.wdw&&S.wdw.donors||[]).find(x=>String(x.id)===String(id));}
 function budget(x){return n(x&&(x.totalBudget||x.budget||x.totalAmount||x.totalPeriodAmount));}
 function pfxsBefore(p){var a=[],s={};[...document.querySelectorAll('#wdw-input .v710-month-cell[data-pfx]')].some(c=>{var q=c.getAttribute('data-pfx');if(q===p)return true;if(q&&!s[q]){s[q]=1;a.push(q)}return false});return a;}
@@ -26452,9 +26745,9 @@ setV();
 
 <script id="v1413CL-v780-manual-free-balance-fix">
 (function(){
-var VERSION='Reports_Workers v1437CL';
+var VERSION='Reports_Workers v1438CL';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}
 function nextM(m){m=String(m||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(m))return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0')}
 function months(a,b){var out=[],c=String(a||'').slice(0,7),e=String(b||'').slice(0,7),g=0;if(!c||!e)return out;while(c<=e&&g++<80){out.push(c);c=nextM(c)}return out}
 function by(id){return document.getElementById(id)}
@@ -26486,9 +26779,9 @@ setV();
 
 <script id="v1413CL-v780-no-date-override-calc-fix">
 (function(){
-var VERSION='Reports_Workers v1437CL';
+var VERSION='Reports_Workers v1438CL';
 function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}
+function setV(){var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}
 function nextM(m){m=String(m||'').slice(0,7);if(!/^\d{4}-\d{2}$/.test(m))return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0')}
 function months(a,b){var out=[],c=String(a||'').slice(0,7),e=String(b||'').slice(0,7),g=0;if(!c||!e)return out;while(c<=e&&g++<80){out.push(c);c=nextM(c)}return out}
 function by(id){return document.getElementById(id)}
@@ -26514,7 +26807,7 @@ setV();
 <script id="v1413CL-monthly-cost-display-only-active-months">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   window.v929MonthlyCostOpen = window.v929MonthlyCostOpen || {};
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
@@ -26581,7 +26874,7 @@ setV();
     });
     return out;
   };
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}}
   function td(v,cls){return '<td class="v929-num '+(cls||'')+'">'+v+'</td>';}
   function detailRow(key,label,values,annual,kind){var html='<tr class="v929-detail-row" data-detail="'+esc(key)+'" style="display:'+(window.v929MonthlyCostOpen[key]?'table-row':'none')+'"><td></td><td class="v929-label">'+esc(label)+'</td>';values.forEach(function(v){html+=td(v,kind||'');});html+='<td class="v929-num v929-annual '+(kind||'')+'">'+annual+'</td></tr>';return html;}
   window.v929ToggleCostWorker=function(key){window.v929MonthlyCostOpen[key]=!window.v929MonthlyCostOpen[key];var open=!!window.v929MonthlyCostOpen[key];document.querySelectorAll('[data-detail="'+CSS.escape(key)+'"]').forEach(function(tr){tr.style.display=open?'table-row':'none';});var ar=document.querySelector('[data-arrow="'+CSS.escape(key)+'"]');if(ar)ar.textContent=open?'▾':'◂';var row=document.querySelector('[data-main="'+CSS.escape(key)+'"]');if(row)row.classList.toggle('open',open);};
@@ -26624,13 +26917,13 @@ setV();
 <script id="v1413CL-calc-monthly-button-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
   function by(id){return document.getElementById(id);}
   function ym(v){var m=String(v||'').match(/^(\d{4})-(\d{2})/);return m?m[1]+'-'+m[2]:'';}
   function nextM(m){m=ym(m);if(!m)return'';var y=+m.slice(0,4),mo=+m.slice(5,7)+1;if(mo>12){mo=1;y++}return y+'-'+String(mo).padStart(2,'0');}
   function months(a,b){var out=[],c=ym(a),e=ym(b),g=0;if(!c||!e)return out;while(c<=e&&g++<120){out.push(c);c=nextM(c)}return out;}
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}}
   function findPosition(posid){var S=window.S||{}, found=null;((S.wdw&&S.wdw.donors)||[]).forEach(function(d){(d.fundedPositions||[]).forEach(function(p){if(String(p.positionId)===String(posid))found=p;});});return found;}
   function readApproved(posid,p){var ft=(by('v780-pos-ft-'+posid)||{}).value||(p&&p.fundingType)||'amount';var val=n((by('v780-pos-val-'+posid)||{}).value||(ft==='amount'?(p&&p.approvedAmount):(p&&p.approvedPct)));return {ft:ft,val:val};}
   window.v780AutoRedistribute=function(posid,workerIdx,changedMonth){
@@ -26769,11 +27062,11 @@ setV();
 </style>
 <script id="v1413CL-budget-employer-costs">
 (function(){
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   var BUDGET_COSTS={"תניה":346430.16,"דווה":310828.32,"אדם":107663.54,"סתיו":251870.94,"מעיין":98476.53,"אודיה":106400.0,"נעה":215994.36,"שי":222861.24,"ליטל":186240.28,"אסנת":296399.16,"סיגי":210502.86,"מוחמד":191387.48,"שאדי":228353.28,"סועאד":226889.76,"ניהאיה":104400.0,"עלא":279649.26,"לנא":38465.14};
   function norm(s){return String(s||'').trim().replace(/\s+/g,' ');}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(x)?x:0;}
-  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}}
+  function setV(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}}
   var old=window.wdwGetEmployerCostByName;
   // v1413CL: פונקציית מילוי-קדימה - מוצא את השנה האחרונה שהוגדרה בפועל, עד ואינו כולל שנים מאוחרות ממנה
   function forwardFillByYear(name, year){
@@ -27012,7 +27305,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
 <script id="v1413CL-donor-year-filter-final">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function ensure(){var s=S0(); if(!s.wdw)s.wdw={donors:[]}; if(!Array.isArray(s.wdw.donors))s.wdw.donors=[]; return s;}
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -27023,7 +27316,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
   function selectedYear(){var s=ensure(), vm=ym(s.wdw.viewMonth);return String(vm?parseInt(vm.slice(0,4),10):(s.year||new Date().getFullYear()));}
   function month(){return selectedYear()+'-01';}
   function donors(){return ensure().wdw.donors||[];}
-  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}}
+  function setVersion(){try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}}
   function statusKey(d){
     var s=String((d&&d.status)||'active').trim().toLowerCase();
     if(s==='לא פעיל'||s==='inactive')return 'inactive';
@@ -27187,7 +27480,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
 
 <script id="v1413CL-version-guard">
 (function(){
-  function setV1030(){try{document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1437CL';}catch(e){}}
+  function setV1030(){try{document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');var t=document.querySelector('.topbar-title');if(t)t.textContent='Reports_Workers v1438CL';}catch(e){}}
   document.addEventListener('DOMContentLoaded',setV1030);
   setTimeout(setV1030,0);
 })();
@@ -27197,7 +27490,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
 <script id="v1413CL-single-source-calculation-only">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   function S0(){return window.S || (typeof S!=='undefined'?S:null) || {};}
   function n(v){var x=parseFloat(String(v==null?'':v).replace(/,/g,'').replace('%','').trim());return isFinite(x)?x:0;}
   function norm(s){return String(s||'').trim().replace(/\s+/g,' ');}
@@ -27239,7 +27532,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
     window.calcWorkerPct=function(row,m){var res={base:0,replacement:0,total:0};if(!row||!row.worker||!row.donor||!m)return res;var active=(typeof window.rowActive==='function')?window.rowActive(row.worker,row.donor,m):true;if(!active)return res;var repl=replacementPct(row.worker,m), total=rowTotalPct(row.worker,row.donor,m), base=Math.max(0,total-repl);res.base=round1(base);res.replacement=round1(repl);res.total=round1(total);return res;};
     if(window.wdwCH768){window.wdwCH768.rowAmount=function(w,d,m){return sourceAmount(w,d,m);};window.wdwCH768.rowPct=function(w,d,m){return rowTotalPct(w,d,m);};window.wdwCH768.monthlyAmount=monthlyAmount;window.wdwCH768.annualAmount=annualAmount;window.wdwCH768.monthlyPct=monthlyPct;window.wdwCH768.annualPct=annualPct;}
     window.wdwMoneyEngine772={monthlyAmount:monthlyAmount,monthlyPct:monthlyPct,annualAmount:annualAmount,annualPct:annualPct,monthlyCost:monthlyCost,annualCost:annualCost};
-    try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}
+    try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}
   }
   wire();
   document.addEventListener('DOMContentLoaded',wire);
@@ -27367,7 +27660,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
 <script id="v1413CL-org-dashboard-clean-redesign">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
   function S0(){
     try{ if(typeof S!=='undefined' && S && (S.wdw||S.workers)) return S; }catch(e){}
     try{ if(window.S && (window.S.wdw||window.S.workers)) return window.S; }catch(e){}
@@ -27406,7 +27699,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
   function attentionRow(label,sub,count,cls){return '<div class="org1110-row"><div><b>'+esc(label)+'</b><small>'+esc(sub)+'</small></div><span class="org1110-count '+cls+'">'+esc(count)+'</span></div>';}
   function miniLink(txt,fn){return '<button class="org1110-link" onclick="'+fn+'">'+esc(txt)+' ‹</button>';}
   function render(){
-    try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1437CL');}catch(e){}
+    try{var t=document.querySelector('.topbar-title');if(t)t.textContent=VERSION;document.title=document.title.replace(/v\d+(CH|CL)/,'v1438CL');}catch(e){}
     var div=document.getElementById('wdw-org');if(!div)return;var m=month(), y=year(), yMonths=monthList(y), ds=donors();
     var active=ds.filter(function(d){return statusKey(d)==='active'&&inRange(d,m);});
     var pending=ds.filter(function(d){return statusKey(d)==='pending'&&inRange(d,m);});
@@ -27429,11 +27722,11 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
 <script id="v1413CL-two-year-dropdowns-final-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
 
   function setVersion(){
     try{
-      document.title = (document.title||'Reports_Workers v1437CL | גישה').replace(/v\d+(CH|CL)/,'v1437CL');
+      document.title = (document.title||'Reports_Workers v1438CL | גישה').replace(/v\d+(CH|CL)/,'v1438CL');
       var t=document.querySelector('.topbar-title');
       if(t) t.textContent=VERSION;
     }catch(e){}
@@ -27588,7 +27881,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
 <script id="v1413CL-final-dropdown-and-syntax-fix">
 (function(){
   'use strict';
-  var VERSION='Reports_Workers v1437CL';
+  var VERSION='Reports_Workers v1438CL';
 
   function S0(){ try{ if(typeof S!=='undefined' && S) return S; }catch(e){} return window.S || {}; }
   function setS(obj){ try{ S=obj; }catch(e){} window.S=obj; }
@@ -27597,7 +27890,7 @@ window.wdwExportMonthlyPctXlsxBothModes=function(monthSuffixForFilename){
   function keyFor(y){ try{ if(typeof storeKey==='function') return storeKey(y); }catch(e){} return 'rw_gisha_data_'+y; }
 
   function setVersion(){
-    try{ document.title=(document.title||VERSION+' | גישה').replace(/v\d+(CH|CL)/,'v1437CL'); }catch(e){}
+    try{ document.title=(document.title||VERSION+' | גישה').replace(/v\d+(CH|CL)/,'v1438CL'); }catch(e){}
     try{ var t=document.querySelector('.topbar-title'); if(t) t.textContent=VERSION; }catch(e){}
   }
 
